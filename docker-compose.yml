@@ -1,10 +1,29 @@
+version: "3"
+
 services:
-  nplay-moderation-bot:
+
+  mariadb:
+    container_name: nplay-moderation-database
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./data/db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  bot:
+    container_name: nplay-moderation-bot
     build:
       context: .
       dockerfile: Dockerfile
-      target: base
-    volumes:
-      - ./src:/home/node/app/src
-    container_name: nplay-moderation-bot
-    command: npm run start
+    image: nplay-moderation-bot
+    restart: on-failure
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+    depends_on:
+      - mariadb

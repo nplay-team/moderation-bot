@@ -1,15 +1,11 @@
-FROM node:21 as base
+FROM node:latest
 
-WORKDIR /home/node/app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm i
+RUN npm install
 
 COPY . .
 
-FROM base as production
-
-ENV NODE_PATH=./build
-
-RUN npm run build
+CMD [ "node", "bot.ts" ]
