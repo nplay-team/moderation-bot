@@ -1,0 +1,35 @@
+{
+	"name": "nplay-moderation-bot",
+	"version": "1.0.0",
+	"description": "A custom moderation bot for the NPLAY community server",
+	"main": "dist/bot.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node dist/bot.js",
+		"build": "tsc",
+		"dev": "ts-node src/bot.ts",
+		"lint": "prettier --check . && eslint . --ext .ts",
+		"format": "prettier --write ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nplay-team/moderation-bot.git"
+	},
+	"author": "NPLAY Bot-Team",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/nplay-team/moderation-bot/issues"
+	},
+	"homepage": "https://github.com/nplay-team/moderation-bot#readme",
+	"devDependencies": {
+		"@types/eslint": "^8.56.10",
+		"@typescript-eslint/eslint-plugin": "^7.9.0",
+		"@typescript-eslint/parser": "^7.9.0",
+		"eslint": "^8.57.0",
+		"eslint-config-prettier": "^9.1.0",
+		"prettier": "^3.2.5",
+		"prettier-plugin-organize-imports": "^3.2.4",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.4.5"
+	}
+}
