@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:lts
 
 WORKDIR /usr/src/app
 
@@ -8,4 +8,6 @@ RUN npm install
 
 COPY . .
 
-CMD [ "node", "bot.ts" ]
+RUN npm run build
+
+CMD [ "node", "dist/bot.js" ]
