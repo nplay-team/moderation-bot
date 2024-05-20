@@ -1,7 +1,6 @@
-version: "3"
+version: '3'
 
 services:
-
   mariadb:
     container_name: nplay-moderation-database
     image: mariadb
@@ -14,7 +13,7 @@ services:
     volumes:
       - ./data/db:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - '3306:3306'
 
   bot:
     container_name: nplay-moderation-bot
