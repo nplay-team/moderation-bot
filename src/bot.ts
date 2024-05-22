@@ -1,7 +1,7 @@
 import { dirname, importx } from '@discordx/importer';
+import { PrismaClient } from '@prisma/client';
 import { IntentsBitField, Partials } from 'discord.js';
 import { Client } from 'discordx';
-import { PrismaClient } from '@prisma/client';
 import 'dotenv/config';
 
 export class NPLAYModerationBot {
