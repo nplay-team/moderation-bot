@@ -19,9 +19,6 @@ model User {
   reports        Report[] @relation(name: "Report_User")
   createdReports Report[] @relation(name: "Report_Reporter")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
   @@index([id])
   @@map("users")
 }
@@ -40,6 +37,7 @@ enum ReportAction {
   WARN
   TIMEOUT
   KICK
+  TEMP_BAN
   BAN
 }
 
@@ -72,8 +70,8 @@ model Report {
   duration Int?
   delDays  Int?
 
-  reporterId String
-  reporter   User   @relation(name: "Report_Reporter", fields: [reporterId], references: [id])
+  issuerId String
+  issuer   User   @relation(name: "Report_Reporter", fields: [issuerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
