@@ -1,15 +1,16 @@
 {
 	"compilerOptions": {
 		/* Language and Environment */
-		"target": "es2022",
+		"target": "ESNext",
 
 		/* Modules */
-		"module": "commonjs",
+		"module": "ESNext",
 		"rootDir": "./src",
+		"moduleResolution": "Node",
 
 		/* Emit */
-		"declaration": true,
-		"declarationMap": true,
+		"declaration": false,
+		"declarationMap": false,
 		"sourceMap": true,
 		"outDir": "./dist",
 
@@ -19,8 +20,13 @@
 
 		/* Type Checking */
 		"strict": true,
+		"noImplicitAny": true,
 
 		/* Completeness */
-		"skipLibCheck": true
-	}
+		"skipLibCheck": true,
+		"emitDecoratorMetadata": false,
+		"experimentalDecorators": true,
+		"importHelpers": true
+	},
+	"exclude": ["node_modules"]
 }
