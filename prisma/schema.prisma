@@ -24,11 +24,12 @@ model User {
 }
 
 model Permission {
-  id         String @id // user or role id
+  id         String @id @default(cuid())
+  userId     String // user or role id
   permission Int    @default(0) // Bitwise permission
   guildId    String
 
-  @@index([id, guildId])
+  @@index([id, userId, guildId])
   @@map("permissions")
 }
 
