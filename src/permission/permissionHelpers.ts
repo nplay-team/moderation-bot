@@ -19,11 +19,15 @@ export async function getUserPermissions(guildMember: GuildMember): Promise<numb
 /**
  * Get the permission bitfield of a mentionable (guild member or role)
  * @param mentionable The mentionable to get the permissions of
+ * @param extendSearch Whether to search for permissions in roles of the mentionable
  * @returns The permission bitfield of the mentionable
  */
-export async function getMentionablePermissions(mentionable: GuildMember | User | Role) {
+export async function getMentionablePermissions(
+	mentionable: GuildMember | User | Role,
+	extendSearch: boolean = true
+) {
 	if (mentionable instanceof User) return null;
-	return mentionable instanceof GuildMember
+	return mentionable instanceof GuildMember && extendSearch
 		? getUserPermissions(mentionable)
 		: getPermissions(mentionable.id, mentionable.guild.id);
 }

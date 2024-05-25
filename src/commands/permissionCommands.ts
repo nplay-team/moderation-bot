@@ -1,26 +1,23 @@
 import {
+	ActionRowBuilder,
 	ApplicationCommandOptionType,
 	CommandInteraction,
 	GuildMember,
+	MessageActionRowComponentBuilder,
 	Role,
+	StringSelectMenuBuilder, StringSelectMenuInteraction,
 	User
 } from 'discord.js';
-import { Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
-import { CommandOnlyOnGuildError } from '../embed/data/genericEmbeds.js';
+import { Discord, Guard, SelectMenuComponent, Slash, SlashGroup, SlashOption } from 'discordx';
+import { CommandOnlyOnGuildError, ComponentStaleError } from '../embed/data/genericEmbeds.js';
 import {
 	PermissionGetEmbed,
 	PermissionListEmbed,
-	PermissionSetEmbed,
-	PermissionSetErrorEmbed
+	PermissionManageEmbed, PermissionManageSuccessEmbed
 } from '../embed/data/permissionEmbeds.js';
 import { createEmbed } from '../embed/embed.js';
-import { RequirePermission } from '../permission/permissionGuard.js';
-import {
-	addPermission,
-	getMentionablePermissions,
-	removePermission,
-	updatePermissions
-} from '../permission/permissionHelpers.js';
+import { OnlyOnGuild, RequirePermission } from '../permission/permissionGuard.js';
+import { decodePermissions, getMentionablePermissions, updatePermissions } from '../permission/permissionHelpers.js';
 import {
 	Permission,
 	PermissionBitmap,
@@ -36,6 +33,9 @@ import {
 })
 @SlashGroup('permissions')
 export abstract class PermissionCommands {
+	private static editPermissionId: string | null = null;
+	private static editPermissionMentionable: GuildMember | User | Role | null = null;
+
 	@Slash({
 		name: 'list',
 		description: 'Listet alle verfügbaren Berechtigungen auf'
@@ -64,13 +64,6 @@ export abstract class PermissionCommands {
 
 		interaction: CommandInteraction
 	) {
-		if (!interaction.guildId) {
-			return await interaction.reply({
-				ephemeral: true,
-				embeds: [createEmbed(CommandOnlyOnGuildError())]
-			});
-		}
-
 		const permissions = await getMentionablePermissions(mentionable);
 
 		await interaction.reply({
@@ -80,113 +73,77 @@ export abstract class PermissionCommands {
 	}
 
 	@Slash({
-		name: 'grant',
-		description: 'Gewährt einem Benutzer oder einer Rolle eine Berechtigung'
+		name: 'manage',
+		description: 'Verwaltet die Berechtigungen eines Benutzers oder einer Rolle'
 	})
-	@Guard(RequirePermission(PermissionBitmapFlags.PermissionGrant))
-	async grantPermission(
+	@Guard(RequirePermission(PermissionBitmapFlags.PermissionManage))
+	async managePermissions(
 		@SlashOption({
 			name: 'mentionable',
-			description: 'Der Benutzer oder die Rolle, dem/welcher die Berechtigung gewährt werden soll',
+			description: 'Der Benutzer/Die Rolle dessen Berechtigungen bearbeitet werden soll',
 			required: true,
 			type: ApplicationCommandOptionType.Mentionable
 		})
 		mentionable: GuildMember | User | Role,
 
-		@SlashChoice(...PermissionCommands.getPermissionChoices())
-		@SlashOption({
-			name: 'permission',
-			description: 'Die Berechtigung, die gewährt werden soll',
-			required: true,
-			type: ApplicationCommandOptionType.String
-		})
-		permission: Permission,
-
 		interaction: CommandInteraction
 	) {
-		if (!interaction.guildId) {
-			return await interaction.reply({
-				ephemeral: true,
-				embeds: [createEmbed(CommandOnlyOnGuildError())]
-			});
-		}
+		PermissionCommands.editPermissionId = interaction.id;
+		PermissionCommands.editPermissionMentionable = mentionable;
 
-		await interaction.deferReply({ ephemeral: true });
+		const permissions = await getMentionablePermissions(mentionable, false)
+		const permissionsArray = decodePermissions(permissions || 0)
 
-		const permissions = await getMentionablePermissions(mentionable);
+		const options = PermissionCommands.getPermissionChoices(permissionsArray)
 
-		if (permissions === null) {
-			return await interaction.editReply({
-				embeds: [createEmbed(PermissionSetErrorEmbed())]
-			});
-		}
+		const menu = new StringSelectMenuBuilder()
+			.setOptions(options)
+			.setCustomId('edit-permissions')
+			.setMinValues(0)
+			.setMaxValues(options.length <= 25 ? options.length : 25)
+			.setPlaceholder('Keine Berechtigungen');
 
-		const newPermissions = addPermission(permissions, permission);
+		const buttonRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(menu);
 
-		// TODO: add modlog entry
-
-		updatePermissions(mentionable.id, interaction.guildId, newPermissions).then(async (perm) => {
-			await interaction.editReply({
-				embeds: [createEmbed(PermissionSetEmbed(perm.permission, mentionable))]
-			});
+		await interaction.reply({
+			components: [buttonRow],
+			embeds: [createEmbed(PermissionManageEmbed(mentionable))]
 		});
 	}
 
-	@Slash({
-		name: 'revoke',
-		description: 'Entzieht einem Benutzer oder einer Rolle eine Berechtigung'
-	})
-	@Guard(RequirePermission(PermissionBitmapFlags.PermissionRevoke))
-	async revokePermission(
-		@SlashOption({
-			name: 'mentionable',
-			description: 'Der Benutzer oder die Rolle, dem/welcher die Berechtigung entzogen werden soll',
-			required: true,
-			type: ApplicationCommandOptionType.Mentionable
-		})
-		mentionable: GuildMember | User | Role,
+	@SelectMenuComponent({id: "edit-permissions"})
+	@Guard(RequirePermission(PermissionBitmapFlags.PermissionManage))
+	async editPermissions(interaction: StringSelectMenuInteraction) {
+		await interaction.deferReply();
 
-		@SlashChoice(...PermissionCommands.getPermissionChoices())
-		@SlashOption({
-			name: 'permission',
-			description: 'Die Berechtigung, die entzogen werden soll',
-			required: true,
-			type: ApplicationCommandOptionType.String
-		})
-		permission: Permission,
-
-		interaction: CommandInteraction
-	) {
-		if (!interaction.guildId) {
-			return await interaction.reply({
-				ephemeral: true,
-				embeds: [createEmbed(CommandOnlyOnGuildError())]
+		if(interaction.message.interaction?.id !== PermissionCommands.editPermissionId || !PermissionCommands.editPermissionMentionable) {
+			return await interaction.message.delete().finally(() => {
+				interaction.followUp({
+					ephemeral: true,
+					embeds: [createEmbed(ComponentStaleError())],
+				}).then((message) => {
+					setTimeout(() => {
+						message.delete();
+					}, 5000);
+				})
 			});
 		}
 
-		await interaction.deferReply({ ephemeral: true });
+		const permissionsArray = interaction.values.map((p) => PermissionBitmap[p as Permission]);
+		const permissions = permissionsArray.reduce((acc, p) => acc | p, 0);
 
-		const permissions = await getMentionablePermissions(mentionable);
-
-		if (!permissions) {
-			return await interaction.editReply({ embeds: [createEmbed(PermissionSetErrorEmbed())] });
-		}
-
-		const newPermissions = removePermission(permissions, permission);
-
-		// TODO: add modlog entry
-
-		updatePermissions(mentionable.id, interaction.guildId, newPermissions).then(async (perm) => {
-			await interaction.editReply({
-				embeds: [createEmbed(PermissionSetEmbed(perm.permission, mentionable))]
+		await updatePermissions(PermissionCommands.editPermissionMentionable.id, interaction.guildId!, permissions).then(async (perm) => {
+			await interaction.followUp({
+				embeds: [createEmbed(PermissionManageSuccessEmbed(PermissionCommands.editPermissionMentionable!))]
 			});
-		});
+		})
 	}
 
-	static getPermissionChoices() {
+	static getPermissionChoices(defaultValues: string[] = []) {
 		return (Object.keys(PermissionBitmap) as Permission[]).map((p) => ({
-			name: getPermissionDescription(p),
-			value: p
+			label: getPermissionDescription(p),
+			value: p,
+			default: defaultValues.includes(p)
 		}));
 	}
 }

@@ -7,3 +7,10 @@ export function CommandOnlyOnGuildError() {
 				.setDescription("Dieser Befehl kann nur in einem Server verwendet werden.")
 				.setColor(EmbedColors.ERROR);
 }
+
+export function ComponentStaleError() {
+		return new EmbedBuilder()
+				.setTitle("Komponente veraltet")
+				.setDescription("Diese Komponente ist veraltet und kann nicht mehr verwendet werden.")
+				.setColor(EmbedColors.ERROR);
+}

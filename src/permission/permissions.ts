@@ -11,8 +11,7 @@ export const PermissionBitmap = {
 	MODLOG_READ: 1 << 3,
 	BAN_APPEAL_MANAGE: 1 << 4,
 	PERMISSION_READ: 1 << 5,
-	PERMISSION_GRANT: 1 << 6,
-	PERMISSION_REVOKE: 1 << 7
+	PERMISSION_MANAGE: 1 << 6
 };
 
 /**
@@ -25,8 +24,7 @@ export enum PermissionBitmapFlags {
 	ModlogRead = 'MODLOG_READ',
 	BanAppealManage = 'BAN_APPEAL_MANAGE',
 	PermissionRead = 'PERMISSION_READ',
-	PermissionGrant = 'PERMISSION_GRANT',
-	PermissionRevoke = 'PERMISSION_REVOKE'
+	PermissionManage = 'PERMISSION_MANAGE'
 }
 
 /**
@@ -52,8 +50,7 @@ export const PermissionBitmapDescriptions = {
 	MODLOG_READ: 'Einsehen des Modlogs',
 	BAN_APPEAL_MANAGE: 'Verwalten von Entbannungsanträgen',
 	PERMISSION_READ: 'Einsehen von Berechtigungen',
-	PERMISSION_GRANT: 'Vergeben von Berechtigungen',
-	PERMISSION_REVOKE: 'Entziehen von Berechtigungen'
+	PERMISSION_MANAGE: 'Vergeben von Berechtigungen'
 };
 
 /**

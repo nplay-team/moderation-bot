@@ -25,33 +25,31 @@ export function PermissionGetEmbed(permissions: number, mentionable: GuildMember
 	const isUser = mentionable instanceof GuildMember || mentionable instanceof User;
 	const name = isUser ? mentionable instanceof GuildMember ? mentionable.user.username : mentionable.username : mentionable.name;
 
+	const decodedPermissions = decodePermissions(permissions);
+
 	return new EmbedBuilder()
 		.setTitle(`Berechtigungen von ${name}`)
-		.setDescription(`${isUser ? "Der Benutzer" : "Die Rolle"} hat die folgenden Berechtigungen:`)
-		.addFields(decodePermissions(permissions).map((p) => ({
-			name: `\`${p}\``,
-			value: getPermissionDescription(p as Permission),
-			inline: true
-		})))
-		.addFields(permissions == 0 ? [{
-				name: "Keine Berechtigungen",
-				value: "Dieser Benutzer oder diese Rolle hat keine Berechtigungen.",
-		}] : [])
+		.setDescription(decodedPermissions.map((p) => getPermissionDescription(p as Permission)).join("\n") || "Keine Berechtigungen")
 		.setColor(EmbedColors.DEFAULT);
 }
 
-export function PermissionSetEmbed(permissions: number, mentionable: GuildMember | User | Role) {
+export function PermissionManageEmbed(mentionable: GuildMember | User | Role) {
 	const isUser = mentionable instanceof GuildMember || mentionable instanceof User;
 	const name = isUser ? mentionable instanceof GuildMember ? mentionable.user.username : mentionable.username : mentionable.name;
 
 	return new EmbedBuilder()
-		.setTitle(`Berechtigungen von ${name} gesetzt`)
-		.setDescription(`${isUser ? "Der Benutzer" : "Die Rolle"} hat nun die folgenden Berechtigungen:`)
-		.addFields(decodePermissions(permissions).map((p) => ({
-			name: `\`${p}\``,
-			value: getPermissionDescription(p as Permission),
-			inline: true
-		})))
+		.setTitle(`Berechtigungen von ${name} setzten`)
+		.setDescription(`Bitte wähle die Berechtigungen in dem Select-Menu aus:`)
+		.setColor(EmbedColors.DEFAULT);
+}
+
+export function PermissionManageSuccessEmbed(mentionable: GuildMember | User | Role) {
+	const isUser = mentionable instanceof GuildMember || mentionable instanceof User;
+	const name = isUser ? mentionable instanceof GuildMember ? mentionable.user.username : mentionable.username : mentionable.name;
+
+	return new EmbedBuilder()
+		.setTitle(`Berechtigungen von ${name} aktualisiert`)
+		.setDescription(`Die Berechtigungen von ${name} wurden erfolgreich aktualisiert.`)
 		.setColor(EmbedColors.SUCCESS);
 }
 

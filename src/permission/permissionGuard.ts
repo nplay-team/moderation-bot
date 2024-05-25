@@ -1,5 +1,6 @@
 import { CommandInteraction, GuildMember } from 'discord.js';
 import { GuardFunction } from 'discordx';
+import { CommandOnlyOnGuildError } from '../embed/data/genericEmbeds.js';
 import { NoPermissionEmbed } from '../embed/data/permissionEmbeds.js';
 import { createEmbed } from '../embed/embed.js';
 import { getUserPermissions, hasPermission } from './permissionHelpers.js';
@@ -28,6 +29,21 @@ export const RequirePermission = (
 		await interaction.reply({
 			ephemeral: true,
 			embeds: [createEmbed(NoPermissionEmbed(permissions))]
+		});
+	};
+};
+
+/**
+ * Require the command to be executed in a guild
+ * @returns The guard function for discordx
+ */
+export const OnlyOnGuild = (): GuardFunction<CommandInteraction> => {
+	return async (interaction, _, next) => {
+		if (interaction.guildId) return next();
+
+		await interaction.reply({
+			ephemeral: true,
+			embeds: [createEmbed(CommandOnlyOnGuildError())]
 		});
 	};
 };
