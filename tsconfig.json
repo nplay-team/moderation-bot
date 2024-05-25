@@ -1,17 +1,17 @@
 {
 	"compilerOptions": {
 		/* Language and Environment */
-		"target": "ESNext",
+		"target": "ES6",
 
 		/* Modules */
-		"module": "ESNext",
+		"module": "Node16",
 		"rootDir": "./src",
-		"moduleResolution": "Node",
+		"moduleResolution": "Node16",
 
 		/* Emit */
 		"declaration": false,
 		"declarationMap": false,
-		"sourceMap": true,
+		"sourceMap": false,
 		"outDir": "./dist",
 
 		/* Interop Constraints */
@@ -28,5 +28,6 @@
 		"experimentalDecorators": true,
 		"importHelpers": true
 	},
+	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules"]
 }
