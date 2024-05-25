@@ -83,8 +83,17 @@ export function permissionsToString(permissions: number) {
 	return permissions == 0
 		? 'Keine'
 		: Object.keys(PermissionBitmap)
-				.filter((p) => permissions & PermissionBitmap[p as Permission])
+				.filter((p) => hasPermission(permissions, p as Permission))
 				.join(', ');
+}
+
+/**
+ * Decodes a permission bitfield into an array of permissions
+ * @param permissions The permission bitfield to decode
+ * @returns An array of permissions
+ */
+export function decodePermissions(permissions: number) {
+	return Object.keys(PermissionBitmap).filter((p) => hasPermission(permissions, p as Permission));
 }
 
 /**

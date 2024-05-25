@@ -6,11 +6,18 @@ import {
 	User
 } from 'discord.js';
 import { Discord, Guard, Slash, SlashChoice, SlashGroup, SlashOption } from 'discordx';
+import { CommandOnlyOnGuildError } from '../embed/data/genericEmbeds.js';
+import {
+	PermissionGetEmbed,
+	PermissionListEmbed,
+	PermissionSetEmbed,
+	PermissionSetErrorEmbed
+} from '../embed/data/permissionEmbeds.js';
+import { createEmbed } from '../embed/embed.js';
 import { RequirePermission } from '../permission/permissionGuard.js';
 import {
 	addPermission,
 	getMentionablePermissions,
-	permissionsToString,
 	removePermission,
 	updatePermissions
 } from '../permission/permissionHelpers.js';
@@ -18,7 +25,6 @@ import {
 	Permission,
 	PermissionBitmap,
 	PermissionBitmapFlags,
-	PermissionBitmapSpecials,
 	getPermissionDescription
 } from '../permission/permissions.js';
 
@@ -37,8 +43,8 @@ export abstract class PermissionCommands {
 	@Guard(RequirePermission(PermissionBitmapFlags.PermissionRead))
 	async listPermissions(interaction: CommandInteraction) {
 		await interaction.reply({
-			content: `\`${permissionsToString(PermissionBitmapSpecials.ALL)}\``,
-			ephemeral: true
+			ephemeral: true,
+			embeds: [createEmbed(PermissionListEmbed(Object.keys(PermissionBitmap)))]
 		});
 	}
 
@@ -60,17 +66,16 @@ export abstract class PermissionCommands {
 	) {
 		if (!interaction.guildId) {
 			return await interaction.reply({
-				content: 'Dieser Befehl kann nur in einem Server verwendet werden',
-				ephemeral: true
+				ephemeral: true,
+				embeds: [createEmbed(CommandOnlyOnGuildError())]
 			});
 		}
 
 		const permissions = await getMentionablePermissions(mentionable);
 
-		// TODO: Add embed
 		await interaction.reply({
-			content: `\`${permissionsToString(permissions || 0)}\``,
-			ephemeral: true
+			ephemeral: true,
+			embeds: [createEmbed(PermissionGetEmbed(permissions || 0, mentionable))]
 		});
 	}
 
@@ -101,8 +106,8 @@ export abstract class PermissionCommands {
 	) {
 		if (!interaction.guildId) {
 			return await interaction.reply({
-				content: 'Dieser Befehl kann nur in einem Server verwendet werden',
-				ephemeral: true
+				ephemeral: true,
+				embeds: [createEmbed(CommandOnlyOnGuildError())]
 			});
 		}
 
@@ -111,9 +116,9 @@ export abstract class PermissionCommands {
 		const permissions = await getMentionablePermissions(mentionable);
 
 		if (permissions === null) {
-			return await interaction.editReply(
-				'Diesem Benutzer können keine Berechtigungen hinzugefügt werden'
-			);
+			return await interaction.editReply({
+				embeds: [createEmbed(PermissionSetErrorEmbed())]
+			});
 		}
 
 		const newPermissions = addPermission(permissions, permission);
@@ -121,9 +126,9 @@ export abstract class PermissionCommands {
 		// TODO: add modlog entry
 
 		updatePermissions(mentionable.id, interaction.guildId, newPermissions).then(async (perm) => {
-			await interaction.editReply(
-				`Die Berechtigung \`${permission}\` wurde ${perm ? 'aktualisiert' : 'gewährt'}`
-			);
+			await interaction.editReply({
+				embeds: [createEmbed(PermissionSetEmbed(perm.permission, mentionable))]
+			});
 		});
 	}
 
@@ -154,8 +159,8 @@ export abstract class PermissionCommands {
 	) {
 		if (!interaction.guildId) {
 			return await interaction.reply({
-				content: 'Dieser Befehl kann nur in einem Server verwendet werden',
-				ephemeral: true
+				ephemeral: true,
+				embeds: [createEmbed(CommandOnlyOnGuildError())]
 			});
 		}
 
@@ -164,9 +169,7 @@ export abstract class PermissionCommands {
 		const permissions = await getMentionablePermissions(mentionable);
 
 		if (!permissions) {
-			return await interaction.editReply(
-				'Diesem Benutzer können keine Berechtigungen entzogen werden'
-			);
+			return await interaction.editReply({ embeds: [createEmbed(PermissionSetErrorEmbed())] });
 		}
 
 		const newPermissions = removePermission(permissions, permission);
@@ -174,9 +177,9 @@ export abstract class PermissionCommands {
 		// TODO: add modlog entry
 
 		updatePermissions(mentionable.id, interaction.guildId, newPermissions).then(async (perm) => {
-			await interaction.editReply(
-				`Die Berechtigung \`${permission}\` wurde ${perm ? 'aktualisiert' : 'entzogen'}`
-			);
+			await interaction.editReply({
+				embeds: [createEmbed(PermissionSetEmbed(perm.permission, mentionable))]
+			});
 		});
 	}
 
