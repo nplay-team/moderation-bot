@@ -108,6 +108,17 @@ export function decodePermissions(permissions: number) {
  * @returns A promise that resolves when the permissions have been updated
  */
 export function updatePermissions(snowflake: string, guildId: string, permissions: number) {
+	if (permissions == 0) {
+		return NPLAYModerationBot.db.permission.delete({
+			where: {
+				id: {
+					snowflake: snowflake,
+					guildId: guildId
+				}
+			}
+		});
+	}
+
 	return NPLAYModerationBot.db.permission.upsert({
 		where: {
 			id: {
