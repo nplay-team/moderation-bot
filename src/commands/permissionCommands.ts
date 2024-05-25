@@ -5,19 +5,25 @@ import {
 	GuildMember,
 	MessageActionRowComponentBuilder,
 	Role,
-	StringSelectMenuBuilder, StringSelectMenuInteraction,
+	StringSelectMenuBuilder,
+	StringSelectMenuInteraction,
 	User
 } from 'discord.js';
 import { Discord, Guard, SelectMenuComponent, Slash, SlashGroup, SlashOption } from 'discordx';
-import { CommandOnlyOnGuildError, ComponentStaleError } from '../embed/data/genericEmbeds.js';
+import { ComponentStaleError } from '../embed/data/genericEmbeds.js';
 import {
 	PermissionGetEmbed,
 	PermissionListEmbed,
-	PermissionManageEmbed, PermissionManageSuccessEmbed
+	PermissionManageEmbed,
+	PermissionManageSuccessEmbed
 } from '../embed/data/permissionEmbeds.js';
 import { createEmbed } from '../embed/embed.js';
-import { OnlyOnGuild, RequirePermission } from '../permission/permissionGuard.js';
-import { decodePermissions, getMentionablePermissions, updatePermissions } from '../permission/permissionHelpers.js';
+import { RequirePermission } from '../permission/permissionGuard.js';
+import {
+	decodePermissions,
+	getMentionablePermissions,
+	updatePermissions
+} from '../permission/permissionHelpers.js';
 import {
 	Permission,
 	PermissionBitmap,
@@ -91,10 +97,10 @@ export abstract class PermissionCommands {
 		PermissionCommands.editPermissionId = interaction.id;
 		PermissionCommands.editPermissionMentionable = mentionable;
 
-		const permissions = await getMentionablePermissions(mentionable, false)
-		const permissionsArray = decodePermissions(permissions || 0)
+		const permissions = await getMentionablePermissions(mentionable, false);
+		const permissionsArray = decodePermissions(permissions || 0);
 
-		const options = PermissionCommands.getPermissionChoices(permissionsArray)
+		const options = PermissionCommands.getPermissionChoices(permissionsArray);
 
 		const menu = new StringSelectMenuBuilder()
 			.setOptions(options)
@@ -111,32 +117,43 @@ export abstract class PermissionCommands {
 		});
 	}
 
-	@SelectMenuComponent({id: "edit-permissions"})
+	@SelectMenuComponent({ id: 'edit-permissions' })
 	@Guard(RequirePermission(PermissionBitmapFlags.PermissionManage))
 	async editPermissions(interaction: StringSelectMenuInteraction) {
 		await interaction.deferReply();
 
-		if(interaction.message.interaction?.id !== PermissionCommands.editPermissionId || !PermissionCommands.editPermissionMentionable) {
+		if (
+			interaction.message.interaction?.id !== PermissionCommands.editPermissionId ||
+			!PermissionCommands.editPermissionMentionable
+		) {
 			return await interaction.message.delete().finally(() => {
-				interaction.followUp({
-					ephemeral: true,
-					embeds: [createEmbed(ComponentStaleError())],
-				}).then((message) => {
-					setTimeout(() => {
-						message.delete();
-					}, 5000);
-				})
+				interaction
+					.followUp({
+						ephemeral: true,
+						embeds: [createEmbed(ComponentStaleError())]
+					})
+					.then((message) => {
+						setTimeout(() => {
+							message.delete();
+						}, 5000);
+					});
 			});
 		}
 
 		const permissionsArray = interaction.values.map((p) => PermissionBitmap[p as Permission]);
 		const permissions = permissionsArray.reduce((acc, p) => acc | p, 0);
 
-		await updatePermissions(PermissionCommands.editPermissionMentionable.id, interaction.guildId!, permissions).then(async (perm) => {
+		await updatePermissions(
+			PermissionCommands.editPermissionMentionable.id,
+			interaction.guildId!,
+			permissions
+		).then(async (perm) => {
 			await interaction.followUp({
-				embeds: [createEmbed(PermissionManageSuccessEmbed(PermissionCommands.editPermissionMentionable!))]
+				embeds: [
+					createEmbed(PermissionManageSuccessEmbed(PermissionCommands.editPermissionMentionable!))
+				]
 			});
-		})
+		});
 	}
 
 	static getPermissionChoices(defaultValues: string[] = []) {
