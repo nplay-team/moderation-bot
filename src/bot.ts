@@ -1,6 +1,6 @@
 import { dirname, importx } from '@discordx/importer';
 import { PrismaClient } from '@prisma/client';
-import { IntentsBitField, Partials } from 'discord.js';
+import { ActivityType, IntentsBitField, Partials } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
 
@@ -43,6 +43,18 @@ export class NPLAYModerationBot {
 
 		this._client.once('ready', async () => {
 			await this._client.initApplicationCommands();
+
+			if(this._client.user) {
+				this._client.user.setPresence({
+					status: 'online',
+					activities: [
+						{
+							name: "euren Nachrichten",
+							type: ActivityType.Listening
+						}
+					]
+				})
+			}
 
 			console.log('Bot started');
 		});
