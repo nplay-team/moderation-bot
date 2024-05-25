@@ -29,7 +29,7 @@ import {
 	dmPermission: false
 })
 @SlashGroup('permissions')
-abstract class PermissionCommands {
+export abstract class PermissionCommands {
 	@Slash({
 		name: 'list',
 		description: 'Listet alle verfügbaren Berechtigungen auf'
