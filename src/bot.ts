@@ -1,4 +1,5 @@
 import { dirname, importx } from '@discordx/importer';
+import { NotBot } from '@discordx/utilities';
 import { PrismaClient } from '@prisma/client';
 import { ActivityType, IntentsBitField, Partials } from 'discord.js';
 import { Client } from 'discordx';
@@ -38,7 +39,8 @@ export class NPLAYModerationBot {
 			],
 			partials: [Partials.Channel, Partials.Message],
 			silent: process.env.NODE_ENV === 'production',
-			botGuilds: guildID ? [guildID] : undefined
+			botGuilds: guildID ? [guildID] : undefined,
+			guards: [NotBot]
 		});
 
 		this._client.once('ready', async () => {
@@ -69,6 +71,24 @@ export class NPLAYModerationBot {
 			throw Error('Could not find BOT_TOKEN in your environment');
 		}
 		await this._client.login(process.env.BOT_TOKEN);
+	}
+
+	private static destroy(): void {
+		this._client.user?.setPresence({ activities: [], status: 'invisible' });
+		this._client.destroy();
+		this._prismaClient.$disconnect();
+	}
+
+	static async restart(): Promise<void> {
+		console.log('Restarting bot...');
+		this.destroy();
+		process.exit(1);
+	}
+
+	static async stop(): Promise<void> {
+		console.log('Stopping bot...');
+		this.destroy();
+		process.exit(0);
 	}
 }
 
