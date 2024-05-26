@@ -1,10 +1,10 @@
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { CommandInteraction, GuildMember, PermissionsBitField } from 'discord.js';
 import { GuardFunction } from 'discordx';
 import { CommandOnlyOnGuildError } from '../embed/data/genericEmbeds.js';
 import { NoPermissionEmbed } from '../embed/data/permissionEmbeds.js';
 import { createEmbed } from '../embed/embed.js';
 import { getUserPermissions, hasPermission } from './permissionHelpers.js';
-import { Permission } from './permissions.js';
+import { Permission, PermissionBitmapFlags } from './permissions.js';
 
 /**
  * Require a permission to be present in the user's or role's permissions
@@ -17,9 +17,11 @@ export const RequirePermission = (
 	return async (interaction, _, next) => {
 		const member = interaction.member as GuildMember;
 
-		if (member.permissions.has('Administrator')) return next();
+		if (member.permissions.has(PermissionsBitField.Flags.Administrator)) return next();
 
 		const userPermissions = await getUserPermissions(member);
+
+		if (hasPermission(userPermissions, PermissionBitmapFlags.Administrator)) return next();
 
 		// Check if the user has all the required permission
 		if (permissions.every((p) => hasPermission(userPermissions, p))) {
@@ -37,13 +39,11 @@ export const RequirePermission = (
  * Require the command to be executed in a guild
  * @returns The guard function for discordx
  */
-export const OnlyOnGuild = (): GuardFunction<CommandInteraction> => {
-	return async (interaction, _, next) => {
-		if (interaction.guildId) return next();
+export const OnlyOnGuild: GuardFunction<CommandInteraction> = async (interaction, _, next) => {
+	if (interaction.guildId) return next();
 
-		await interaction.reply({
-			ephemeral: true,
-			embeds: [createEmbed(CommandOnlyOnGuildError())]
-		});
-	};
+	await interaction.reply({
+		ephemeral: true,
+		embeds: [createEmbed(CommandOnlyOnGuildError())]
+	});
 };

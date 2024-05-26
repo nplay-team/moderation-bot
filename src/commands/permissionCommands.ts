@@ -4,6 +4,7 @@ import {
 	CommandInteraction,
 	GuildMember,
 	MessageActionRowComponentBuilder,
+	PermissionsBitField,
 	Role,
 	StringSelectMenuBuilder,
 	StringSelectMenuInteraction,
@@ -35,7 +36,8 @@ import {
 @SlashGroup({
 	name: 'permissions',
 	description: 'Alle Befehle zum Verwalten von Berechtigungen',
-	dmPermission: false
+	dmPermission: false,
+	defaultMemberPermissions: [PermissionsBitField.Flags.BanMembers]
 })
 @SlashGroup('permissions')
 export abstract class PermissionCommands {

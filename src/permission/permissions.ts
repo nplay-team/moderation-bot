@@ -11,7 +11,9 @@ export const PermissionBitmap = {
 	MODLOG_READ: 1 << 3,
 	BAN_APPEAL_MANAGE: 1 << 4,
 	PERMISSION_READ: 1 << 5,
-	PERMISSION_MANAGE: 1 << 6
+	PERMISSION_MANAGE: 1 << 6,
+	PARAGRAPH_MANAGE: 1 << 7,
+	ADMINISTRATOR: 1 << 8
 };
 
 /**
@@ -24,7 +26,9 @@ export enum PermissionBitmapFlags {
 	ModlogRead = 'MODLOG_READ',
 	BanAppealManage = 'BAN_APPEAL_MANAGE',
 	PermissionRead = 'PERMISSION_READ',
-	PermissionManage = 'PERMISSION_MANAGE'
+	PermissionManage = 'PERMISSION_MANAGE',
+	ParagraphManage = 'PARAGRAPH_MANAGE',
+	Administrator = 'ADMINISTRATOR'
 }
 
 /**
@@ -50,7 +54,9 @@ export const PermissionBitmapDescriptions = {
 	MODLOG_READ: 'Einsehen des Modlogs',
 	BAN_APPEAL_MANAGE: 'Verwalten von Entbannungsanträgen',
 	PERMISSION_READ: 'Einsehen von Berechtigungen',
-	PERMISSION_MANAGE: 'Vergeben von Berechtigungen'
+	PERMISSION_MANAGE: 'Vergeben von Berechtigungen',
+	PARAGRAPH_MANAGE: 'Verwalten von Regelparagraphen',
+	ADMINISTRATOR: 'Administrator'
 };
 
 /**
