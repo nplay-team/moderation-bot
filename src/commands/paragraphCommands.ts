@@ -28,7 +28,7 @@ import {
 import { createEmbed } from '../embed/embed.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permissionGuard.js';
 import { PermissionBitmapFlags } from '../permission/permissions.js';
-import { ReportCommands } from './reportCommands.js';
+import { ParagraphTransformer, getParagraphOptions } from '../reports/reportsHelper.js';
 
 @Discord()
 @SlashGroup({
@@ -121,13 +121,13 @@ export abstract class ParagraphCommands {
 
 	@Slash({ name: 'show', description: 'Zeigt einen Regelparagraphen an' })
 	async showParagraph(
-		@SlashChoice(...(await ReportCommands.getParagraphOptions()))
+		@SlashChoice(...(await getParagraphOptions()))
 		@SlashOption({
 			name: 'name',
 			description: 'Der Name des Regelparagraphen',
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			transformer: ReportCommands.ParagraphTransformer
+			transformer: ParagraphTransformer
 		})
 		paragraphPromise: Promise<Paragraph | undefined>,
 
@@ -150,13 +150,13 @@ export abstract class ParagraphCommands {
 
 	@Slash({ name: 'delete', description: 'Löscht einen Regelparagraphen' })
 	async deleteParagraph(
-		@SlashChoice(...(await ReportCommands.getParagraphOptions()))
+		@SlashChoice(...(await getParagraphOptions()))
 		@SlashOption({
 			name: 'name',
 			description: 'Der Name des Regelparagraphen',
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			transformer: ReportCommands.ParagraphTransformer
+			transformer: ParagraphTransformer
 		})
 		paragraphPromise: Promise<Paragraph | undefined>,
 

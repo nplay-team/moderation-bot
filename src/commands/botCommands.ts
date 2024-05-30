@@ -1,8 +1,8 @@
 import { CommandInteraction, PermissionsBitField } from 'discord.js';
 import { Discord, Guard, Slash, SlashGroup } from 'discordx';
+import { NPLAYModerationBot } from '../bot.js';
 import { RequirePermission } from '../permission/permissionGuard.js';
 import { PermissionBitmapFlags } from '../permission/permissions.js';
-import { NPLAYModerationBot } from '../bot.js';
 
 @Discord()
 @SlashGroup({

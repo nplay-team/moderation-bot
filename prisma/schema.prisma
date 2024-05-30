@@ -62,9 +62,9 @@ model Report {
   guildId String
   action  ReportAction
 
-  reason      String
-  paragraph   Paragraph? @relation(fields: [paragraphId], references: [id])
-  paragraphId String?
+  reason      String?
+  paragraph   Paragraph @relation(fields: [paragraphId], references: [id])
+  paragraphId String
 
   duration Int?
   delDays  Int?

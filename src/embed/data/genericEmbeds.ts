@@ -14,3 +14,10 @@ export function ComponentStaleError() {
 				.setDescription("Diese Komponente ist veraltet und kann nicht mehr verwendet werden.")
 				.setColor(EmbedColors.ERROR);
 }
+
+export function FormatError(field: string, expected: string) {
+		return new EmbedBuilder()
+				.setTitle("Fehlerhafte Eingabe")
+				.setDescription(`Das Feld \`${field}\` muss vom Typ oder im Format \`${expected}\` sein.`)
+				.setColor(EmbedColors.ERROR);
+}
