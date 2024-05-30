@@ -157,8 +157,6 @@ export abstract class ReportCommands {
 
 		const [reason, id] = ['reason', 'id'].map((key) => interaction.fields.getTextInputValue(key));
 
-		console.log(reason, id);
-
 		let report = await getReport(id);
 
 		if (!report) {
