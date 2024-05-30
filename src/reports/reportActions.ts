@@ -18,7 +18,7 @@ export function warnMember(report: Report, message?: Message) {
 	if (!member) return;
 	member
 		.send({
-			embeds: [createEmbed(WarnEmbed(report, member.guild.name))]
+			embeds: [createEmbed(WarnEmbed(report, member.guild.name, message))]
 		})
 		.catch(() => {
 			console.error(`Could not send warn message to ${member.displayName}`);

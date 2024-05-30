@@ -149,7 +149,7 @@ export abstract class PermissionCommands {
 			PermissionCommands.editPermissionMentionable.id,
 			interaction.guildId!,
 			permissions
-		).then(async (perm) => {
+		).then(async () => {
 			await interaction.followUp({
 				embeds: [
 					createEmbed(PermissionManageSuccessEmbed(PermissionCommands.editPermissionMentionable!))
