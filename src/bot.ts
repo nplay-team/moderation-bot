@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import { ActivityType, IntentsBitField, Partials } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
+import { importCommands } from './comandImporter.js';
 
 export class NPLAYModerationBot {
 	private static _client: Client;
@@ -65,7 +66,7 @@ export class NPLAYModerationBot {
 			this._client.executeInteraction(interaction);
 		});
 
-		await importx(`${dirname(import.meta.url)}/commands/**/*.{js,ts}`);
+		await importCommands(`${dirname(import.meta.url)}/commands/**/*.{js,ts}`);
 
 		if (!process.env.BOT_TOKEN) {
 			throw Error('Could not find BOT_TOKEN in your environment');
