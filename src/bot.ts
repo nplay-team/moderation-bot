@@ -1,8 +1,9 @@
-import { dirname, importx } from '@discordx/importer';
+import { NotBot } from '@discordx/utilities';
 import { PrismaClient } from '@prisma/client';
-import { IntentsBitField, Partials } from 'discord.js';
+import { ActivityType, IntentsBitField, Partials } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
+import { dirname, importCommands } from './commandImporter.js';
 
 export class NPLAYModerationBot {
 	private static _client: Client;
@@ -38,11 +39,24 @@ export class NPLAYModerationBot {
 			],
 			partials: [Partials.Channel, Partials.Message],
 			silent: process.env.NODE_ENV === 'production',
-			botGuilds: guildID ? [guildID] : undefined
+			botGuilds: guildID ? [guildID] : undefined,
+			guards: [NotBot]
 		});
 
 		this._client.once('ready', async () => {
 			await this._client.initApplicationCommands();
+
+			if (this._client.user) {
+				this._client.user.setPresence({
+					status: 'online',
+					activities: [
+						{
+							name: 'euren Nachrichten',
+							type: ActivityType.Listening
+						}
+					]
+				});
+			}
 
 			console.log('Bot started');
 		});
@@ -51,12 +65,30 @@ export class NPLAYModerationBot {
 			this._client.executeInteraction(interaction);
 		});
 
-		await importx(`${dirname(import.meta.url)}/commands/**/*.{js,ts}`);
+		await importCommands(`${dirname(import.meta.url)}/commands/**/*.{js,ts}`);
 
 		if (!process.env.BOT_TOKEN) {
 			throw Error('Could not find BOT_TOKEN in your environment');
 		}
 		await this._client.login(process.env.BOT_TOKEN);
+	}
+
+	private static destroy(): void {
+		this._client.user?.setPresence({ activities: [], status: 'invisible' });
+		this._client.destroy();
+		this._prismaClient.$disconnect();
+	}
+
+	static async restart(): Promise<void> {
+		console.log('Restarting bot...');
+		this.destroy();
+		process.exit(1);
+	}
+
+	static async stop(): Promise<void> {
+		console.log('Stopping bot...');
+		this.destroy();
+		process.exit(0);
 	}
 }
 

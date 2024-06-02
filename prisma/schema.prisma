@@ -19,17 +19,15 @@ model User {
   reports        Report[] @relation(name: "Report_User")
   createdReports Report[] @relation(name: "Report_Reporter")
 
-  @@index([id])
   @@map("users")
 }
 
 model Permission {
-  id         String @id @default(cuid())
-  userId     String // user or role id
+  snowflake  String // user or role id
   permission Int    @default(0) // Bitwise permission
   guildId    String
 
-  @@index([id, userId, guildId])
+  @@id(name: "id", [snowflake, guildId])
   @@map("permissions")
 }
 
@@ -53,7 +51,7 @@ model Paragraph {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([id, guildId])
+  @@index([guildId])
   @@map("paragraphs")
 }
 
@@ -64,9 +62,9 @@ model Report {
   guildId String
   action  ReportAction
 
-  reason      String
-  paragraph   Paragraph? @relation(fields: [paragraphId], references: [id])
-  paragraphId String?
+  reason      String?
+  paragraph   Paragraph @relation(fields: [paragraphId], references: [id])
+  paragraphId String
 
   duration Int?
   delDays  Int?
@@ -77,6 +75,6 @@ model Report {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([id, userId, guildId])
+  @@index([userId, guildId])
   @@map("reports")
 }
