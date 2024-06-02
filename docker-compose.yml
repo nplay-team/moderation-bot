@@ -24,5 +24,6 @@ services:
     restart: on-failure
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - mariadb
