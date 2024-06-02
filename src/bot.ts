@@ -1,10 +1,9 @@
-import { dirname, importx } from '@discordx/importer';
 import { NotBot } from '@discordx/utilities';
 import { PrismaClient } from '@prisma/client';
 import { ActivityType, IntentsBitField, Partials } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
-import { importCommands } from './comandImporter.js';
+import { dirname, importCommands } from './comandImporter.js';
 
 export class NPLAYModerationBot {
 	private static _client: Client;
