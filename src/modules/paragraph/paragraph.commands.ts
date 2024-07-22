@@ -49,8 +49,7 @@ export abstract class ParagraphCommands {
 			description: 'Der Name des Regelparagraphen',
 			required: true,
 			type: ApplicationCommandOptionType.String,
-			transformer: ParagraphTransformer
-		})
+		}, ParagraphTransformer)
 		paragraphPromise: Promise<Paragraph | undefined>,
 
 		interaction: CommandInteraction
@@ -66,9 +65,8 @@ export abstract class ParagraphCommands {
 			name: 'name',
 			description: 'Der Name des Regelparagraphen',
 			required: true,
-			type: ApplicationCommandOptionType.String,
-			transformer: ParagraphTransformer
-		})
+			type: ApplicationCommandOptionType.String
+		}, ParagraphTransformer)
 		paragraphPromise: Promise<Paragraph | undefined>,
 
 		interaction: CommandInteraction

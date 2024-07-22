@@ -63,18 +63,16 @@ export abstract class ReportCommands {
 			name: 'paragraph',
 			description: 'Der Absatz des Reports',
 			required: true,
-			type: ApplicationCommandOptionType.String,
-			transformer: ParagraphTransformer
-		})
+			type: ApplicationCommandOptionType.String
+		}, ParagraphTransformer)
 		paragraphPromise: Promise<Paragraph | null>,
 
 		@SlashOption({
 			name: 'duration',
 			description: 'Die Dauer des Reports (nur für Ban und Timeout), Format: dd.MM.yyyy HH:mm',
 			required: false,
-			type: ApplicationCommandOptionType.String,
-			transformer: DurationTransformer
-		})
+			type: ApplicationCommandOptionType.String
+		}, DurationTransformer)
 		duration: number | null,
 
 		@SlashOption({
