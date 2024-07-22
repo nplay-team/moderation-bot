@@ -19,9 +19,9 @@ import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
 import {
 	DurationTransformer,
-	ParagraphTransformer,
 	getActionChoices,
-	getParagraphOptions
+	ParagraphAutocomplete,
+	ParagraphTransformer
 } from './report.helper.js';
 import { createReport, reportModal } from './report.service.js';
 
@@ -58,21 +58,27 @@ export abstract class ReportCommands {
 		})
 		type: string,
 
-		@SlashChoice(...(await getParagraphOptions()))
-		@SlashOption({
-			name: 'paragraph',
-			description: 'Der Absatz des Reports',
-			required: true,
-			type: ApplicationCommandOptionType.String
-		}, ParagraphTransformer)
+		@SlashOption(
+			{
+				name: 'paragraph',
+				description: 'Der Absatz des Reports',
+				required: false,
+				type: ApplicationCommandOptionType.String,
+				autocomplete: ParagraphAutocomplete
+			},
+			ParagraphTransformer
+		)
 		paragraphPromise: Promise<Paragraph | null>,
 
-		@SlashOption({
-			name: 'duration',
-			description: 'Die Dauer des Reports (nur für Ban und Timeout), Format: dd.MM.yyyy HH:mm',
-			required: false,
-			type: ApplicationCommandOptionType.String
-		}, DurationTransformer)
+		@SlashOption(
+			{
+				name: 'duration',
+				description: 'Die Dauer des Reports (nur für Ban und Timeout), Format: dd.MM.yyyy HH:mm',
+				required: false,
+				type: ApplicationCommandOptionType.String
+			},
+			DurationTransformer
+		)
 		duration: number | null,
 
 		@SlashOption({

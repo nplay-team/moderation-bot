@@ -1,6 +1,6 @@
 import { Report as PrismaReport, ReportAction } from '@prisma/client';
 import { parse } from 'date-fns';
-import { Message } from 'discord.js';
+import { AutocompleteInteraction, Message } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
 import { WarnEmbed } from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
@@ -133,19 +133,6 @@ export function getActionChoices() {
 }
 
 /**
- * Get the choices for the paragraph select menu.
- * @returns The choices for the paragraph select menu.
- */
-export async function getParagraphOptions() {
-	return NPLAYModerationBot.db.paragraph.findMany().then((paragraphs) =>
-		paragraphs.map((paragraph) => ({
-			name: paragraph.name + ' - ' + paragraph.summary,
-			value: paragraph.id
-		}))
-	);
-}
-
-/**
  * Warn a member by sending them a message.
  * @param report The report to warn the member about.
  * @param message The warned message, if exists.
@@ -193,4 +180,39 @@ export function DurationTransformer(value: string | undefined) {
 		return -1;
 	}
 	return date.getTime();
+}
+
+export function ParagraphAutocomplete(interaction: AutocompleteInteraction) {
+	const query = interaction.options.getString('paragraph');
+	if (!query) return;
+	NPLAYModerationBot.db.paragraph
+		.findMany({
+			where: {
+				OR: [
+					{
+						name: {
+							contains: query
+						}
+					},
+					{
+						summary: {
+							contains: query
+						}
+					},
+					{
+						content: {
+							contains: query
+						}
+					}
+				]
+			}
+		})
+		.then((paragraphs) => {
+			const response = paragraphs.map((paragraph) => ({
+				name: paragraph.name + ' - ' + paragraph.summary,
+				value: paragraph.id
+			}));
+
+			interaction.respond(response);
+		});
 }

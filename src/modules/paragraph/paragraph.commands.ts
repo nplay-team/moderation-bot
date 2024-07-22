@@ -5,18 +5,10 @@ import {
 	ModalSubmitInteraction,
 	PermissionsBitField
 } from 'discord.js';
-import {
-	Discord,
-	Guard,
-	ModalComponent,
-	Slash,
-	SlashChoice,
-	SlashGroup,
-	SlashOption
-} from 'discordx';
+import { Discord, Guard, ModalComponent, Slash, SlashGroup, SlashOption } from 'discordx';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
-import { ParagraphTransformer, getParagraphOptions } from '../report/report.helper.js';
+import { ParagraphAutocomplete, ParagraphTransformer } from '../report/report.helper.js';
 import { modalParagraphCreate } from './paragraph.components.js';
 import { createParagraph, deleteParagraph, showParagraph } from './paragraph.service.js';
 
@@ -43,13 +35,16 @@ export abstract class ParagraphCommands {
 
 	@Slash({ name: 'show', description: 'Zeigt einen Regelparagraphen an' })
 	async showParagraph(
-		@SlashChoice(...(await getParagraphOptions()))
-		@SlashOption({
-			name: 'name',
-			description: 'Der Name des Regelparagraphen',
-			required: true,
-			type: ApplicationCommandOptionType.String,
-		}, ParagraphTransformer)
+		@SlashOption(
+			{
+				name: 'name',
+				description: 'Der Name des Regelparagraphen',
+				required: true,
+				type: ApplicationCommandOptionType.String,
+				autocomplete: ParagraphAutocomplete
+			},
+			ParagraphTransformer
+		)
 		paragraphPromise: Promise<Paragraph | undefined>,
 
 		interaction: CommandInteraction
@@ -60,13 +55,16 @@ export abstract class ParagraphCommands {
 
 	@Slash({ name: 'delete', description: 'Löscht einen Regelparagraphen' })
 	async deleteParagraph(
-		@SlashChoice(...(await getParagraphOptions()))
-		@SlashOption({
-			name: 'name',
-			description: 'Der Name des Regelparagraphen',
-			required: true,
-			type: ApplicationCommandOptionType.String
-		}, ParagraphTransformer)
+		@SlashOption(
+			{
+				name: 'name',
+				description: 'Der Name des Regelparagraphen',
+				required: true,
+				type: ApplicationCommandOptionType.String,
+				autocomplete: ParagraphAutocomplete
+			},
+			ParagraphTransformer
+		)
 		paragraphPromise: Promise<Paragraph | undefined>,
 
 		interaction: CommandInteraction
