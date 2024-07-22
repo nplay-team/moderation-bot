@@ -11,26 +11,26 @@ import {
 	User
 } from 'discord.js';
 import { Discord, Guard, SelectMenuComponent, Slash, SlashGroup, SlashOption } from 'discordx';
-import { ComponentStaleError } from '../embed/data/genericEmbeds.js';
+import { ComponentStaleError } from '../../embed/data/genericEmbeds.js';
 import {
 	PermissionGetEmbed,
 	PermissionListEmbed,
 	PermissionManageEmbed,
 	PermissionManageSuccessEmbed
-} from '../embed/data/permissionEmbeds.js';
-import { createEmbed } from '../embed/embed.js';
-import { RequirePermission } from '../permission/permissionGuard.js';
+} from '../../embed/data/permissionEmbeds.js';
+import { createEmbed } from '../../embed/embed.js';
+import { RequirePermission } from './permission.guard.js';
 import {
 	decodePermissions,
 	getMentionablePermissions,
 	updatePermissions
-} from '../permission/permissionHelpers.js';
+} from './permission.service.js';
 import {
 	Permission,
 	PermissionBitmap,
 	PermissionBitmapFlags,
 	getPermissionDescription
-} from '../permission/permissions.js';
+} from './permissions.js';
 
 @Discord()
 @SlashGroup({

@@ -18,13 +18,13 @@ import {
 	SlashGroup,
 	SlashOption
 } from 'discordx';
-import { FormatError } from '../embed/data/genericEmbeds.js';
-import { ParagraphNotFoundError } from '../embed/data/paragraphEmbeds.js';
-import { ReportCreated, ReportNotFoundError } from '../embed/data/reportEmbeds.js';
-import { createEmbed } from '../embed/embed.js';
-import { OnlyOnGuild, RequirePermission } from '../permission/permissionGuard.js';
+import { FormatError } from '../../embed/data/genericEmbeds.js';
+import { ParagraphNotFoundError } from '../../embed/data/paragraphEmbeds.js';
+import { ReportCreated, ReportNotFoundError } from '../../embed/data/reportEmbeds.js';
+import { createEmbed } from '../../embed/embed.js';
+import { OnlyOnGuild, RequirePermission } from '../permission/permission.guard.js';
 import { PermissionBitmapFlags } from '../permission/permissions.js';
-import { warnMember } from '../reports/reportActions.js';
+import { warnMember } from './reports.js';
 import {
 	DurationTransformer,
 	ParagraphTransformer,
@@ -33,7 +33,7 @@ import {
 	getParagraphOptions,
 	getReport,
 	updateReport
-} from '../reports/reportsHelper.js';
+} from './report.service.js';
 
 @Discord()
 @SlashGroup({
@@ -138,7 +138,7 @@ export abstract class ReportCommands {
 
 		const idInputComponent = new TextInputBuilder()
 			.setLabel('ID (NICHT BEARBEITEN)')
-			.setValue(report.id)
+			.setValue(report.number.toString())
 			.setRequired(true)
 			.setCustomId('id')
 			.setStyle(1);
@@ -157,7 +157,7 @@ export abstract class ReportCommands {
 
 		const [reason, id] = ['reason', 'id'].map((key) => interaction.fields.getTextInputValue(key));
 
-		let report = await getReport(id);
+		let report = await getReport(+id, interaction.guildId!);
 
 		if (!report) {
 			return interaction.followUp({
@@ -166,7 +166,7 @@ export abstract class ReportCommands {
 			});
 		}
 
-		report = await updateReport(report.id, { reason });
+		report = await updateReport(report.number, report.guildId, { reason });
 
 		switch (report.action) {
 			case ReportAction.WARN:

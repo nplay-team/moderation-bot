@@ -1,8 +1,8 @@
 import { Paragraph, Report as PrismaReport } from '@prisma/client';
 import { Message } from 'discord.js';
-import { NPLAYModerationBot } from '../bot.js';
-import { WarnEmbed } from '../embed/data/reportEmbeds.js';
-import { createEmbed } from '../embed/embed.js';
+import { NPLAYModerationBot } from '../../bot.js';
+import { WarnEmbed } from '../../embed/data/reportEmbeds.js';
+import { createEmbed } from '../../embed/embed.js';
 
 type Report = PrismaReport & { paragraph: Paragraph };
 

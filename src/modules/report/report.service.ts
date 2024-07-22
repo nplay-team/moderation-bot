@@ -1,7 +1,7 @@
 import { Paragraph, Report, ReportAction } from '@prisma/client';
 import { parse } from 'date-fns';
 import { GuildMember } from 'discord.js';
-import { NPLAYModerationBot } from '../bot.js';
+import { NPLAYModerationBot } from '../../bot.js';
 
 /**
  * ReportActionType is a mapping of the ReportAction enum to a string representation.
@@ -29,13 +29,17 @@ export type ReportOptions = {
 
 /**
  * Get a report by its id.
- * @param id The id of the report.
+ * @param number The id of the report.
+ * @param guildId The id of the guild.
  * @returns The report or null if it does not exist.
  */
-export function getReport(id: string) {
+export function getReport(number: number, guildId: string) {
 	return NPLAYModerationBot.db.report.findUnique({
 		where: {
-			id: id
+			id: {
+				number: number,
+				guildId: guildId
+			}
 		},
 		include: {
 			paragraph: true
@@ -48,9 +52,25 @@ export function getReport(id: string) {
  * @param data The data required to create the report.
  * @returns The created report.
  */
-export function createReport(data: ReportOptions) {
+export async function createReport(data: ReportOptions) {
+	const nextNumber = await NPLAYModerationBot.db.report.findFirst({
+		where: {
+			guildId: data.guildId
+		},
+		select: {
+			number: true
+		},
+		orderBy: {
+			number: 'desc'
+		}
+	}).then((report) => {
+		if (!report) return 1;
+		return report.number + 1;
+	})
+
 	return NPLAYModerationBot.db.report.create({
 		data: {
+			number: nextNumber,
 			action:
 				data.type == ReportAction.BAN && data.duration
 					? ReportAction.TEMP_BAN
@@ -89,14 +109,18 @@ export function createReport(data: ReportOptions) {
 
 /**
  * Update a report.
- * @param id The id of the report.
+ * @param number The id of the report.
+ * @param guildId The id of the guild.
  * @param data The data to update.
  * @returns The updated report.
  */
-export function updateReport(id: string, data: Partial<Report>) {
+export function updateReport(number: number, guildId: string, data: Partial<Report>) {
 	return NPLAYModerationBot.db.report.update({
 		where: {
-			id: id
+			id: {
+				number: number,
+				guildId: guildId
+			}
 		},
 		data: data,
 		include: {

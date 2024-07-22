@@ -8,6 +8,11 @@ export const EmbedColors = {
 	WARNING: 0xffff00
 };
 
+/**
+ * Modified an embed with some default info.
+ * @param embed The embed to create.
+ * @returns The modified embed.
+ */
 export function createEmbed(embed: EmbedBuilder) {
 	return embed
 		.setAuthor({

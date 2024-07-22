@@ -17,18 +17,18 @@ import {
 	SlashGroup,
 	SlashOption
 } from 'discordx';
-import { NPLAYModerationBot } from '../bot.js';
+import { NPLAYModerationBot } from '../../bot.js';
 import {
 	ParagraphCreatedEmbed,
 	ParagraphDeletedEmbed,
 	ParagraphLimitReachedError,
 	ParagraphNotFoundError,
 	ParagraphShowEmbed
-} from '../embed/data/paragraphEmbeds.js';
-import { createEmbed } from '../embed/embed.js';
-import { OnlyOnGuild, RequirePermission } from '../permission/permissionGuard.js';
+} from '../../embed/data/paragraphEmbeds.js';
+import { createEmbed } from '../../embed/embed.js';
+import { OnlyOnGuild, RequirePermission } from '../permission/permission.guard.js';
 import { PermissionBitmapFlags } from '../permission/permissions.js';
-import { ParagraphTransformer, getParagraphOptions } from '../reports/reportsHelper.js';
+import { ParagraphTransformer, getParagraphOptions } from '../report/report.service.js';
 
 @Discord()
 @SlashGroup({

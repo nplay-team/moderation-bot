@@ -1,5 +1,5 @@
 import { GuildMember, Role, User } from 'discord.js';
-import { NPLAYModerationBot } from '../bot.js';
+import { NPLAYModerationBot } from '../../bot.js';
 import { Permission, PermissionBitmap } from './permissions.js';
 
 /**

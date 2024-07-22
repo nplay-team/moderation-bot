@@ -3,10 +3,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /**
- * Import all commands from a path
- * @param path The path to import the commands from, needs to be a glob pattern to match the files
+ * Import all modules from a path
+ * @param path The path to import the modules from, needs to be a glob pattern to match the files
  * @example
- * importCommands('src/commands/*.ts');
+ * importCommands('src/modules/*.ts');
  */
 export async function importCommands(path: string) {
 	const g = new Glob(path, {});

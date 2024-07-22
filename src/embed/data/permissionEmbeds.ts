@@ -1,7 +1,7 @@
 import { EmbedBuilder, GuildMember, Role, User } from 'discord.js';
 import { EmbedColors } from '../embed.js';
-import { getPermissionDescription, Permission } from '../../permission/permissions.js';
-import { decodePermissions } from '../../permission/permissionHelpers.js';
+import { getPermissionDescription, Permission } from '../../modules/permission/permissions.js';
+import { decodePermissions } from '../../modules/permission/permission.service.js';
 
 export function NoPermissionEmbed(permissions: string[])  {
 	return new EmbedBuilder()

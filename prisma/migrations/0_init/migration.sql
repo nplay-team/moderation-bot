@@ -30,7 +30,7 @@ CREATE TABLE `paragraphs` (
 
 -- CreateTable
 CREATE TABLE `reports` (
-    `id` VARCHAR(191) NOT NULL,
+    `number` INTEGER NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
     `guildId` VARCHAR(191) NOT NULL,
     `action` ENUM('WARN', 'TIMEOUT', 'KICK', 'TEMP_BAN', 'BAN') NOT NULL,
@@ -42,8 +42,8 @@ CREATE TABLE `reports` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    INDEX `reports_userId_guildId_idx`(`userId`, `guildId`),
-    PRIMARY KEY (`id`)
+    INDEX `reports_userId_guildId_number_idx`(`userId`, `guildId`, `number`),
+    PRIMARY KEY (`number`, `guildId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
