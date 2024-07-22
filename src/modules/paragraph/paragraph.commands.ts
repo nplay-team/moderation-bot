@@ -1,12 +1,9 @@
 import { Paragraph } from '@prisma/client';
 import {
-	ActionRowBuilder,
 	ApplicationCommandOptionType,
 	CommandInteraction,
-	ModalBuilder,
 	ModalSubmitInteraction,
-	PermissionsBitField,
-	TextInputBuilder
+	PermissionsBitField
 } from 'discord.js';
 import {
 	Discord,
@@ -17,18 +14,11 @@ import {
 	SlashGroup,
 	SlashOption
 } from 'discordx';
-import { NPLAYModerationBot } from '../../bot.js';
-import {
-	ParagraphCreatedEmbed,
-	ParagraphDeletedEmbed,
-	ParagraphLimitReachedError,
-	ParagraphNotFoundError,
-	ParagraphShowEmbed
-} from '../../embed/data/paragraphEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
-import { OnlyOnGuild, RequirePermission } from '../permission/permission.guard.js';
-import { PermissionBitmapFlags } from '../permission/permissions.js';
-import { ParagraphTransformer, getParagraphOptions } from '../report/report.service.js';
+import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
+import { PermissionBitmapFlags } from '../permission/permission.types.js';
+import { ParagraphTransformer, getParagraphOptions } from '../report/report.helper.js';
+import { modalParagraphCreate } from './paragraph.components.js';
+import { createParagraph, deleteParagraph, showParagraph } from './paragraph.service.js';
 
 @Discord()
 @SlashGroup({
@@ -42,81 +32,13 @@ import { ParagraphTransformer, getParagraphOptions } from '../report/report.serv
 export abstract class ParagraphCommands {
 	@Slash({ name: 'create', description: 'Erstellt einen neuen Regelparagraphen' })
 	async createParagraph(interaction: CommandInteraction) {
-		const modal = new ModalBuilder()
-			.setTitle(`Neuen Regelparagraph erstellen`)
-			.setCustomId('create-paragraph');
-
-		const nameInputComponent = new TextInputBuilder()
-			.setCustomId('name')
-			.setLabel('Name')
-			.setPlaceholder('z.B. 1.1 oder 3.2')
-			.setRequired(true)
-			.setMaxLength(10)
-			.setStyle(1);
-
-		const summaryInputComponent = new TextInputBuilder()
-			.setCustomId('summary')
-			.setLabel('Kurzbeschreibung')
-			.setPlaceholder('z.B. Beleidigungen')
-			.setRequired(true)
-			.setMaxLength(100)
-			.setStyle(1);
-
-		const contentInputComponent = new TextInputBuilder()
-			.setCustomId('content')
-			.setLabel('Inhalt')
-			.setPlaceholder('Der Paragraph')
-			.setRequired(true)
-			.setMinLength(1)
-			.setMaxLength(2000)
-			.setStyle(2);
-
-		const row1 = new ActionRowBuilder<TextInputBuilder>().addComponents(nameInputComponent);
-
-		const row2 = new ActionRowBuilder<TextInputBuilder>().addComponents(summaryInputComponent);
-
-		const row3 = new ActionRowBuilder<TextInputBuilder>().addComponents(contentInputComponent);
-
-		modal.addComponents(row1, row2, row3);
-
-		await interaction.showModal(modal);
+		await interaction.showModal(modalParagraphCreate());
 	}
 
 	@ModalComponent({ id: 'create-paragraph' })
-	async createParagraphModal(interaction: ModalSubmitInteraction) {
+	async submitModalParagraphCreate(interaction: ModalSubmitInteraction) {
 		await interaction.deferReply();
-
-		const paragraphCount = await NPLAYModerationBot.db.paragraph.count({
-			where: {
-				guildId: interaction.guildId!
-			}
-		});
-
-		if (paragraphCount >= 25) {
-			return await interaction.followUp({
-				ephemeral: true,
-				embeds: [createEmbed(ParagraphLimitReachedError())]
-			});
-		}
-
-		const [name, summary, content] = ['name', 'summary', 'content'].map((id) =>
-			interaction.fields.getTextInputValue(id)
-		);
-
-		NPLAYModerationBot.db.paragraph
-			.create({
-				data: {
-					name,
-					summary,
-					content,
-					guildId: interaction.guildId!
-				}
-			})
-			.then(async (paragraph) => {
-				await interaction.followUp({
-					embeds: [createEmbed(ParagraphCreatedEmbed(paragraph))]
-				});
-			});
+		await createParagraph(interaction);
 	}
 
 	@Slash({ name: 'show', description: 'Zeigt einen Regelparagraphen an' })
@@ -134,18 +56,7 @@ export abstract class ParagraphCommands {
 		interaction: CommandInteraction
 	) {
 		const paragraph = await paragraphPromise;
-
-		if (!paragraph) {
-			return await interaction.reply({
-				ephemeral: true,
-				embeds: [createEmbed(ParagraphNotFoundError())]
-			});
-		}
-
-		await interaction.reply({
-			ephemeral: true,
-			embeds: [createEmbed(ParagraphShowEmbed(paragraph))]
-		});
+		await showParagraph(interaction, paragraph);
 	}
 
 	@Slash({ name: 'delete', description: 'Löscht einen Regelparagraphen' })
@@ -163,23 +74,6 @@ export abstract class ParagraphCommands {
 		interaction: CommandInteraction
 	) {
 		const paragraph = await paragraphPromise;
-
-		if (!paragraph) {
-			return await interaction.reply({
-				ephemeral: true,
-				embeds: [createEmbed(ParagraphNotFoundError())]
-			});
-		}
-
-		await NPLAYModerationBot.db.paragraph.delete({
-			where: {
-				id: paragraph.id
-			}
-		});
-
-		await interaction.reply({
-			ephemeral: true,
-			embeds: [createEmbed(ParagraphDeletedEmbed(paragraph))]
-		});
+		await deleteParagraph(interaction, paragraph);
 	}
 }

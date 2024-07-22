@@ -3,8 +3,8 @@ import { GuardFunction } from 'discordx';
 import { CommandOnlyOnGuildError } from '../../embed/data/genericEmbeds.js';
 import { NoPermissionEmbed } from '../../embed/data/permissionEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
-import { getUserPermissions, hasPermission } from './permission.service.js';
-import { Permission, PermissionBitmapFlags } from './permissions.js';
+import { getUserPermissions, hasPermission } from './permission.helper.js';
+import { Permission, PermissionBitmapFlags } from './permission.types.js';
 
 /**
  * Require a permission to be present in the user's or role's permissions

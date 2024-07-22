@@ -1,13 +1,10 @@
 import { Paragraph, ReportAction } from '@prisma/client';
 import {
-	ActionRowBuilder,
 	ApplicationCommandOptionType,
 	CommandInteraction,
 	GuildMember,
-	ModalBuilder,
 	ModalSubmitInteraction,
-	PermissionsBitField,
-	TextInputBuilder
+	PermissionsBitField
 } from 'discord.js';
 import {
 	Discord,
@@ -18,22 +15,20 @@ import {
 	SlashGroup,
 	SlashOption
 } from 'discordx';
-import { FormatError } from '../../embed/data/genericEmbeds.js';
-import { ParagraphNotFoundError } from '../../embed/data/paragraphEmbeds.js';
 import { ReportCreated, ReportNotFoundError } from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
-import { OnlyOnGuild, RequirePermission } from '../permission/permission.guard.js';
-import { PermissionBitmapFlags } from '../permission/permissions.js';
-import { warnMember } from './reports.js';
+import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
+import { PermissionBitmapFlags } from '../permission/permission.types.js';
 import {
 	DurationTransformer,
 	ParagraphTransformer,
-	createReport,
 	getActionChoices,
 	getParagraphOptions,
 	getReport,
-	updateReport
-} from './report.service.js';
+	updateReport,
+	warnMember
+} from './report.helper.js';
+import { createReport, reportModal } from './report.service.js';
 
 @Discord()
 @SlashGroup({
@@ -100,82 +95,19 @@ export abstract class ReportCommands {
 
 		interaction: CommandInteraction
 	) {
-		const paragraph = await paragraphPromise;
-
-		if (!paragraph) {
-			return interaction.reply({
-				ephemeral: true,
-				embeds: [createEmbed(ParagraphNotFoundError())]
-			});
-		}
-
-		if (duration === -1) {
-			return interaction.reply({
-				ephemeral: true,
-				embeds: [createEmbed(FormatError('duration', 'dd.MM.yyyy HH:mm'))]
-			});
-		}
-
-		const report = await createReport({
-			type: type === ReportAction.BAN && duration ? ReportAction.TEMP_BAN : (type as ReportAction),
-			user: member,
-			issuer: interaction.member as GuildMember,
-			paragraph,
-			guildId: interaction.guildId!,
+		await createReport(
+			interaction,
+			await paragraphPromise,
+			type,
 			duration,
+			member,
 			delDays
-		});
-
-		const menu = new ModalBuilder()
-			.setTitle(`Report gegen ${member.displayName}`)
-			.setCustomId('report');
-
-		const reasonInputComponent = new TextInputBuilder()
-			.setLabel('Begründung')
-			.setRequired(true)
-			.setCustomId('reason')
-			.setStyle(2);
-
-		const idInputComponent = new TextInputBuilder()
-			.setLabel('ID (NICHT BEARBEITEN)')
-			.setValue(report.number.toString())
-			.setRequired(true)
-			.setCustomId('id')
-			.setStyle(1);
-
-		const row1 = new ActionRowBuilder<TextInputBuilder>().addComponents(reasonInputComponent);
-		const row2 = new ActionRowBuilder<TextInputBuilder>().addComponents(idInputComponent);
-
-		menu.addComponents(row1, row2);
-
-		await interaction.showModal(menu);
+		)
 	}
 
 	@ModalComponent({ id: 'report' })
 	async reportModal(interaction: ModalSubmitInteraction) {
 		await interaction.deferReply();
-
-		const [reason, id] = ['reason', 'id'].map((key) => interaction.fields.getTextInputValue(key));
-
-		let report = await getReport(+id, interaction.guildId!);
-
-		if (!report) {
-			return interaction.followUp({
-				ephemeral: true,
-				embeds: [createEmbed(ReportNotFoundError())]
-			});
-		}
-
-		report = await updateReport(report.number, report.guildId, { reason });
-
-		switch (report.action) {
-			case ReportAction.WARN:
-				warnMember(report);
-				break;
-		}
-
-		await interaction.followUp({
-			embeds: [createEmbed(ReportCreated(report))]
-		});
+		await reportModal(interaction);
 	}
 }

@@ -1,185 +1,69 @@
-import { Paragraph, Report, ReportAction } from '@prisma/client';
-import { parse } from 'date-fns';
-import { GuildMember } from 'discord.js';
-import { NPLAYModerationBot } from '../../bot.js';
+import { Paragraph, ReportAction } from '@prisma/client';
+import { CommandInteraction, GuildMember, ModalSubmitInteraction } from 'discord.js';
+import { FormatError } from '../../embed/data/genericEmbeds.js';
+import { ParagraphNotFoundError } from '../../embed/data/paragraphEmbeds.js';
+import { createEmbed } from '../../embed/embed.js';
+import { createReportModal } from './report.components.js';
+import { createDBReport, getReport, updateReport, warnMember } from './report.helper.js';
+import { ReportCreated, ReportNotFoundError } from '../../embed/data/reportEmbeds.js';
 
-/**
- * ReportActionType is a mapping of the ReportAction enum to a string representation.
- */
-export const ReportActionType = {
-	WARN: 'Verwarnung',
-	TIMEOUT: 'Timeout',
-	KICK: 'Kick',
-	TEMP_BAN: 'Temporärer Ban',
-	BAN: 'Ban'
-};
-
-/**
- * Fields that are required to create a report.
- */
-export type ReportOptions = {
-	type: ReportAction;
-	user: GuildMember;
-	issuer: GuildMember;
-	paragraph: Paragraph;
-	guildId: string;
-	duration: number | null;
-	delDays?: number;
-};
-
-/**
- * Get a report by its id.
- * @param number The id of the report.
- * @param guildId The id of the guild.
- * @returns The report or null if it does not exist.
- */
-export function getReport(number: number, guildId: string) {
-	return NPLAYModerationBot.db.report.findUnique({
-		where: {
-			id: {
-				number: number,
-				guildId: guildId
-			}
-		},
-		include: {
-			paragraph: true
-		}
-	});
-}
-
-/**
- * Create a new report.
- * @param data The data required to create the report.
- * @returns The created report.
- */
-export async function createReport(data: ReportOptions) {
-	const nextNumber = await NPLAYModerationBot.db.report.findFirst({
-		where: {
-			guildId: data.guildId
-		},
-		select: {
-			number: true
-		},
-		orderBy: {
-			number: 'desc'
-		}
-	}).then((report) => {
-		if (!report) return 1;
-		return report.number + 1;
-	})
-
-	return NPLAYModerationBot.db.report.create({
-		data: {
-			number: nextNumber,
-			action:
-				data.type == ReportAction.BAN && data.duration
-					? ReportAction.TEMP_BAN
-					: (data.type as ReportAction),
-			duration: data.duration,
-			delDays: data.delDays,
-			guildId: data.guildId,
-			paragraph: {
-				connect: {
-					id: data.paragraph.id
-				}
-			},
-			user: {
-				connectOrCreate: {
-					where: {
-						id: data.user.id
-					},
-					create: {
-						id: data.user.id
-					}
-				}
-			},
-			issuer: {
-				connectOrCreate: {
-					where: {
-						id: data.issuer.id
-					},
-					create: {
-						id: data.issuer.id
-					}
-				}
-			}
-		}
-	});
-}
-
-/**
- * Update a report.
- * @param number The id of the report.
- * @param guildId The id of the guild.
- * @param data The data to update.
- * @returns The updated report.
- */
-export function updateReport(number: number, guildId: string, data: Partial<Report>) {
-	return NPLAYModerationBot.db.report.update({
-		where: {
-			id: {
-				number: number,
-				guildId: guildId
-			}
-		},
-		data: data,
-		include: {
-			paragraph: true
-		}
-	});
-}
-
-/**
- * Get the choices for the action select menu.
- * @returns The choices for the action select menu.
- */
-export function getActionChoices() {
-	// TODO: Temporary due to missing support
-	return [
-		{
-			name: 'Verwarnung',
-			value: ReportAction.WARN
-		}
-	];
-
-	// return Object.entries(ReportActionType).map(([key, value]) => ({
-	// 	name: value,
-	// 	value: key
-	// }));
-}
-
-/**
- * Get the choices for the paragraph select menu.
- * @returns The choices for the paragraph select menu.
- */
-export async function getParagraphOptions() {
-	return NPLAYModerationBot.db.paragraph.findMany().then((paragraphs) =>
-		paragraphs.map((paragraph) => ({
-			name: paragraph.name + ' - ' + paragraph.summary,
-			value: paragraph.id
-		}))
-	);
-}
-
-/**
- * Transform a paragraph id to a paragraph object.
- * @param value The paragraph id.
- * @returns The paragraph object or null if it does not exist.
- */
-export function ParagraphTransformer(value: string) {
-	return NPLAYModerationBot.db.paragraph.findUnique({ where: { id: value } });
-}
-
-/**
- * Transform a date string to a Date object.
- * @param value The date string.
- * @returns The Date object or -1 if the date is invalid.
- */
-export function DurationTransformer(value: string | undefined) {
-	if (!value) return null;
-	const date = parse(value, 'dd.MM.yyyy HH:mm', new Date());
-	if (isNaN(date.getTime())) {
-		return -1;
+export async function createReport(
+	interaction: CommandInteraction,
+	paragraph: Paragraph | null,
+	type: string,
+	duration: number | null,
+	member: GuildMember,
+	delDays: number
+) {
+	if (!paragraph) {
+		return interaction.reply({
+			ephemeral: true,
+			embeds: [createEmbed(ParagraphNotFoundError())]
+		});
 	}
-	return date.getTime();
+
+	if (duration === -1) {
+		return interaction.reply({
+			ephemeral: true,
+			embeds: [createEmbed(FormatError('duration', 'dd.MM.yyyy HH:mm'))]
+		});
+	}
+
+	const report = await createDBReport({
+		type: type === ReportAction.BAN && duration ? ReportAction.TEMP_BAN : (type as ReportAction),
+		user: member,
+		issuer: interaction.member as GuildMember,
+		paragraph,
+		guildId: interaction.guildId!,
+		duration,
+		delDays
+	});
+
+	await interaction.showModal(createReportModal(member, report));
+}
+
+export async function reportModal(interaction: ModalSubmitInteraction) {
+
+	const [reason, id] = ['reason', 'id'].map((key) => interaction.fields.getTextInputValue(key));
+
+	let report = await getReport(+id, interaction.guildId!);
+
+	if (!report) {
+		return interaction.followUp({
+			ephemeral: true,
+			embeds: [createEmbed(ReportNotFoundError())]
+		});
+	}
+
+	report = await updateReport(report.number, report.guildId, { reason });
+
+	switch (report.action) {
+		case ReportAction.WARN:
+			warnMember(report);
+			break;
+	}
+
+	await interaction.followUp({
+		embeds: [createEmbed(ReportCreated(report))]
+	});
 }

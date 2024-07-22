@@ -2,7 +2,7 @@ import { EmbedColors } from '../embed.js';
 import { EmbedBuilder, Message } from 'discord.js';
 import { Paragraph, Report } from '@prisma/client';
 import { TimeFormat } from '@discordx/utilities';
-import { ReportActionType } from '../../modules/report/report.service.js';
+import { ReportActionType } from '../../modules/report/report.helper.js';
 
 export function ReportCreated(report: Report & { paragraph: Paragraph }) {
 	const embed = new EmbedBuilder()

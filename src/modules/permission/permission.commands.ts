@@ -1,36 +1,24 @@
 import {
-	ActionRowBuilder,
 	ApplicationCommandOptionType,
 	CommandInteraction,
 	GuildMember,
-	MessageActionRowComponentBuilder,
 	PermissionsBitField,
 	Role,
-	StringSelectMenuBuilder,
 	StringSelectMenuInteraction,
 	User
 } from 'discord.js';
 import { Discord, Guard, SelectMenuComponent, Slash, SlashGroup, SlashOption } from 'discordx';
-import { ComponentStaleError } from '../../embed/data/genericEmbeds.js';
 import {
 	PermissionGetEmbed,
 	PermissionListEmbed,
-	PermissionManageEmbed,
-	PermissionManageSuccessEmbed
+	PermissionManageEmbed
 } from '../../embed/data/permissionEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
-import { RequirePermission } from './permission.guard.js';
-import {
-	decodePermissions,
-	getMentionablePermissions,
-	updatePermissions
-} from './permission.service.js';
-import {
-	Permission,
-	PermissionBitmap,
-	PermissionBitmapFlags,
-	getPermissionDescription
-} from './permissions.js';
+import { permissionMenu } from './permission.components.js';
+import { RequirePermission } from './permission.guards.js';
+import { getMentionablePermissions } from './permission.helper.js';
+import { editPermissions } from './permission.service.js';
+import { PermissionBitmap, PermissionBitmapFlags } from './permission.types.js';
 
 @Discord()
 @SlashGroup({
@@ -99,22 +87,8 @@ export abstract class PermissionCommands {
 		PermissionCommands.editPermissionId = interaction.id;
 		PermissionCommands.editPermissionMentionable = mentionable;
 
-		const permissions = await getMentionablePermissions(mentionable, false);
-		const permissionsArray = decodePermissions(permissions || 0);
-
-		const options = PermissionCommands.getPermissionChoices(permissionsArray);
-
-		const menu = new StringSelectMenuBuilder()
-			.setOptions(options)
-			.setCustomId('edit-permissions')
-			.setMinValues(0)
-			.setMaxValues(options.length <= 25 ? options.length : 25)
-			.setPlaceholder('Keine Berechtigungen');
-
-		const buttonRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(menu);
-
 		await interaction.reply({
-			components: [buttonRow],
+			components: [permissionMenu(await getMentionablePermissions(mentionable, false))],
 			embeds: [createEmbed(PermissionManageEmbed(mentionable))]
 		});
 	}
@@ -123,46 +97,10 @@ export abstract class PermissionCommands {
 	@Guard(RequirePermission(PermissionBitmapFlags.PermissionManage))
 	async editPermissions(interaction: StringSelectMenuInteraction) {
 		await interaction.deferReply();
-
-		if (
-			interaction.message.interaction?.id !== PermissionCommands.editPermissionId ||
-			!PermissionCommands.editPermissionMentionable
-		) {
-			return await interaction.message.delete().finally(() => {
-				interaction
-					.followUp({
-						ephemeral: true,
-						embeds: [createEmbed(ComponentStaleError())]
-					})
-					.then((message) => {
-						setTimeout(() => {
-							message.delete();
-						}, 5000);
-					});
-			});
-		}
-
-		const permissionsArray = interaction.values.map((p) => PermissionBitmap[p as Permission]);
-		const permissions = permissionsArray.reduce((acc, p) => acc | p, 0);
-
-		await updatePermissions(
-			PermissionCommands.editPermissionMentionable.id,
-			interaction.guildId!,
-			permissions
-		).then(async () => {
-			await interaction.followUp({
-				embeds: [
-					createEmbed(PermissionManageSuccessEmbed(PermissionCommands.editPermissionMentionable!))
-				]
-			});
-		});
-	}
-
-	static getPermissionChoices(defaultValues: string[] = []) {
-		return (Object.keys(PermissionBitmap) as Permission[]).map((p) => ({
-			label: getPermissionDescription(p),
-			value: p,
-			default: defaultValues.includes(p)
-		}));
+		await editPermissions(
+			interaction,
+			PermissionCommands.editPermissionId,
+			PermissionCommands.editPermissionMentionable
+		);
 	}
 }
