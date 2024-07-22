@@ -1,4 +1,4 @@
-import { Paragraph, ReportAction } from '@prisma/client';
+import { Paragraph } from '@prisma/client';
 import {
 	ApplicationCommandOptionType,
 	CommandInteraction,
@@ -15,18 +15,13 @@ import {
 	SlashGroup,
 	SlashOption
 } from 'discordx';
-import { ReportCreated, ReportNotFoundError } from '../../embed/data/reportEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
 import {
 	DurationTransformer,
 	ParagraphTransformer,
 	getActionChoices,
-	getParagraphOptions,
-	getReport,
-	updateReport,
-	warnMember
+	getParagraphOptions
 } from './report.helper.js';
 import { createReport, reportModal } from './report.service.js';
 
@@ -95,14 +90,7 @@ export abstract class ReportCommands {
 
 		interaction: CommandInteraction
 	) {
-		await createReport(
-			interaction,
-			await paragraphPromise,
-			type,
-			duration,
-			member,
-			delDays
-		)
+		await createReport(interaction, await paragraphPromise, type, duration, member, delDays);
 	}
 
 	@ModalComponent({ id: 'report' })

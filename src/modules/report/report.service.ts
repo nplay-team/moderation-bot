@@ -2,10 +2,10 @@ import { Paragraph, ReportAction } from '@prisma/client';
 import { CommandInteraction, GuildMember, ModalSubmitInteraction } from 'discord.js';
 import { FormatError } from '../../embed/data/genericEmbeds.js';
 import { ParagraphNotFoundError } from '../../embed/data/paragraphEmbeds.js';
+import { ReportCreated, ReportNotFoundError } from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
 import { createReportModal } from './report.components.js';
 import { createDBReport, getReport, updateReport, warnMember } from './report.helper.js';
-import { ReportCreated, ReportNotFoundError } from '../../embed/data/reportEmbeds.js';
 
 export async function createReport(
 	interaction: CommandInteraction,
@@ -43,7 +43,6 @@ export async function createReport(
 }
 
 export async function reportModal(interaction: ModalSubmitInteraction) {
-
 	const [reason, id] = ['reason', 'id'].map((key) => interaction.fields.getTextInputValue(key));
 
 	let report = await getReport(+id, interaction.guildId!);
