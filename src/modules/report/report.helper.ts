@@ -151,6 +151,10 @@ export function DurationTransformer(value: string | undefined) {
 	return date.getTime();
 }
 
+/**
+ * Discordx function to autocomplete paragraphs.
+ * @param interaction The autocomplete interaction by discord.js.
+ */
 export function ParagraphAutocomplete(interaction: AutocompleteInteraction) {
 	const query = interaction.options.getString('paragraph');
 	if (!query) return;
