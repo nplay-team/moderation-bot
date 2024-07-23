@@ -1,4 +1,4 @@
-import { Paragraph } from '@prisma/client';
+import { Paragraph, ReportAction } from '@prisma/client';
 import {
 	ApplicationCommandOptionType,
 	CommandInteraction,
@@ -17,13 +17,15 @@ import {
 } from 'discordx';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
+import { createReportModal } from './report.components.js';
 import {
 	DurationTransformer,
 	getActionChoices,
 	ParagraphAutocomplete,
 	ParagraphTransformer
 } from './report.helper.js';
-import { createReport, reportModal } from './report.service.js';
+import { reportModal } from './report.service.js';
+import { ReportOptions } from './report.types.js';
 
 @Discord()
 @SlashGroup({
@@ -94,7 +96,18 @@ export abstract class ReportCommands {
 
 		interaction: CommandInteraction
 	) {
-		await createReport(interaction, await paragraphPromise, type, duration, member, delDays);
+		const data: ReportOptions = {
+			type: type as ReportAction,
+			reportedUserId: member.id,
+			issuerId: interaction.member!.user.id,
+			paragraph: await paragraphPromise,
+			guildId: interaction.guildId!,
+			duration,
+			delDays,
+			message: null
+		};
+
+		await interaction.showModal(createReportModal(member, data));
 	}
 
 	@ModalComponent({ id: 'report' })

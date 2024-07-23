@@ -30,12 +30,15 @@ CREATE TABLE `paragraphs` (
 
 -- CreateTable
 CREATE TABLE `reports` (
+    `id` VARCHAR(191) NOT NULL,
     `number` INTEGER NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
     `guildId` VARCHAR(191) NOT NULL,
     `action` ENUM('WARN', 'TIMEOUT', 'KICK', 'TEMP_BAN', 'BAN') NOT NULL,
+    `status` ENUM('OPENED', 'EXECUTED', 'REVERTED') NOT NULL DEFAULT 'OPENED',
     `reason` VARCHAR(191) NULL,
-    `paragraphId` VARCHAR(191) NOT NULL,
+    `paragraphId` VARCHAR(191) NULL,
+    `message` LONGTEXT NULL,
     `duration` INTEGER NULL,
     `delDays` INTEGER NULL,
     `issuerId` VARCHAR(191) NOT NULL,
@@ -43,14 +46,14 @@ CREATE TABLE `reports` (
     `updatedAt` DATETIME(3) NOT NULL,
 
     INDEX `reports_userId_guildId_number_idx`(`userId`, `guildId`, `number`),
-    PRIMARY KEY (`number`, `guildId`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
 ALTER TABLE `reports` ADD CONSTRAINT `reports_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `reports` ADD CONSTRAINT `reports_paragraphId_fkey` FOREIGN KEY (`paragraphId`) REFERENCES `paragraphs`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `reports` ADD CONSTRAINT `reports_paragraphId_fkey` FOREIGN KEY (`paragraphId`) REFERENCES `paragraphs`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reports` ADD CONSTRAINT `reports_issuerId_fkey` FOREIGN KEY (`issuerId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

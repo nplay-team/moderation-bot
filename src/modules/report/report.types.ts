@@ -1,5 +1,4 @@
 import { Paragraph, Report as PrismaReport, ReportAction } from '@prisma/client';
-import { GuildMember } from 'discord.js';
 
 /**
  * ReportActionType is a mapping of the ReportAction enum to a string representation.
@@ -17,12 +16,13 @@ export const ReportActionType = {
  */
 export type ReportOptions = {
 	type: ReportAction;
-	user: GuildMember;
-	issuer: GuildMember;
-	paragraph: Paragraph;
+	reportedUserId: string;
+	issuerId: string;
 	guildId: string;
+	paragraph: Paragraph | null;
 	duration: number | null;
-	delDays?: number;
+	delDays: number | null;
+	message: string | null;
 };
 
-export type Report = PrismaReport & { paragraph: Paragraph };
+export type Report = PrismaReport & { paragraph: Paragraph | null };

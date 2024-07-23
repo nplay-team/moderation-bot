@@ -1,68 +1,72 @@
-import { Paragraph, ReportAction } from '@prisma/client';
-import { CommandInteraction, GuildMember, ModalSubmitInteraction } from 'discord.js';
-import { FormatError } from '../../embed/data/genericEmbeds.js';
-import { ParagraphNotFoundError } from '../../embed/data/paragraphEmbeds.js';
-import { ReportCreated, ReportNotFoundError } from '../../embed/data/reportEmbeds.js';
+import { ReportAction, ReportStatus } from '@prisma/client';
+import { GuildMember, ModalSubmitInteraction } from 'discord.js';
+import { NPLAYModerationBot } from '../../bot.js';
+import { ReportCreated, WarnEmbed } from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
-import { createReportModal } from './report.components.js';
-import { createDBReport, getReport, updateReport, warnMember } from './report.helper.js';
-
-export async function createReport(
-	interaction: CommandInteraction,
-	paragraph: Paragraph | null,
-	type: string,
-	duration: number | null,
-	member: GuildMember,
-	delDays: number
-) {
-	if (!paragraph) {
-		return interaction.reply({
-			ephemeral: true,
-			embeds: [createEmbed(ParagraphNotFoundError())]
-		});
-	}
-
-	if (duration === -1) {
-		return interaction.reply({
-			ephemeral: true,
-			embeds: [createEmbed(FormatError('duration', 'dd.MM.yyyy HH:mm'))]
-		});
-	}
-
-	const report = await createDBReport({
-		type: type === ReportAction.BAN && duration ? ReportAction.TEMP_BAN : (type as ReportAction),
-		user: member,
-		issuer: interaction.member as GuildMember,
-		paragraph,
-		guildId: interaction.guildId!,
-		duration,
-		delDays
-	});
-
-	await interaction.showModal(createReportModal(member, report));
-}
+import { createDBReport, updateReport } from './report.helper.js';
+import { Report, ReportOptions } from './report.types.js';
 
 export async function reportModal(interaction: ModalSubmitInteraction) {
-	const [reason, id] = ['reason', 'id'].map((key) => interaction.fields.getTextInputValue(key));
+	const [reason, dataBase64] = ['reason', 'data'].map((key) =>
+		interaction.fields.getTextInputValue(key)
+	);
 
-	let report = await getReport(+id, interaction.guildId!);
+	const data: ReportOptions = JSON.parse(atob(dataBase64));
 
-	if (!report) {
-		return interaction.followUp({
-			ephemeral: true,
-			embeds: [createEmbed(ReportNotFoundError())]
-		});
-	}
-
-	report = await updateReport(report.number, report.guildId, { reason });
-
-	switch (report.action) {
-		case ReportAction.WARN:
-			warnMember(report);
-			break;
-	}
+	const report = new NPLAYReport(data, reason);
+	await report.create();
+	await report.execute();
 
 	await interaction.followUp({
-		embeds: [createEmbed(ReportCreated(report))]
+		embeds: [createEmbed(ReportCreated(report.report))]
 	});
+}
+
+export class NPLAYReport {
+	public _report: Report | undefined;
+
+	constructor(
+		private _data: ReportOptions,
+		private _reason?: string
+	) {}
+
+	get report() {
+		if (!this._report) throw new Error('Report not initialized yet');
+		return this._report;
+	}
+
+	get member(): GuildMember | null {
+		const member = NPLAYModerationBot.Client.guilds.cache
+			.get(this.report.guildId)
+			?.members.cache.get(this.report.userId);
+		if (!member) return null;
+		return member;
+	}
+
+	public async create() {
+		this._report = await createDBReport(this._data, this._reason);
+	}
+
+	public async execute() {
+		switch (this.report.action) {
+			case ReportAction.WARN:
+				this.warnMember();
+				break;
+		}
+
+		await updateReport(this.report.id, { status: ReportStatus.EXECUTED });
+	}
+
+	private warnMember() {
+		const member = this.member;
+		if (!member) return;
+
+		member
+			.send({
+				embeds: [createEmbed(WarnEmbed(this.report, member.guild.name))]
+			})
+			.catch(() => {
+				console.error(`Could not send warn message to ${member.displayName}`);
+			});
+	}
 }

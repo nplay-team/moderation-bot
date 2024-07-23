@@ -1,24 +1,18 @@
 import { Report as PrismaReport, ReportAction } from '@prisma/client';
 import { parse } from 'date-fns';
-import { AutocompleteInteraction, Message } from 'discord.js';
+import { AutocompleteInteraction } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { WarnEmbed } from '../../embed/data/reportEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
 import { Report, ReportOptions } from './report.types.js';
 
 /**
  * Get a report by its id.
- * @param number The id of the report.
- * @param guildId The id of the guild.
+ * @param id The id of the report.
  * @returns The report or null if it does not exist.
  */
-export function getReport(number: number, guildId: string) {
+export function getReport(id: string) {
 	return NPLAYModerationBot.db.report.findUnique({
 		where: {
-			id: {
-				number: number,
-				guildId: guildId
-			}
+			id
 		},
 		include: {
 			paragraph: true
@@ -29,9 +23,10 @@ export function getReport(number: number, guildId: string) {
 /**
  * Create a new report.
  * @param data The data required to create the report.
+ * @param reason The reason for the report. Optional.
  * @returns The created report.
  */
-export async function createDBReport(data: ReportOptions) {
+export async function createDBReport(data: ReportOptions, reason?: string) {
 	const nextNumber = await NPLAYModerationBot.db.report
 		.findFirst({
 			where: {
@@ -59,28 +54,32 @@ export async function createDBReport(data: ReportOptions) {
 			duration: data.duration,
 			delDays: data.delDays,
 			guildId: data.guildId,
-			paragraph: {
-				connect: {
-					id: data.paragraph.id
-				}
-			},
+			reason,
+			message: data.message,
+			paragraph: data.paragraph
+				? {
+						connect: {
+							id: data.paragraph.id
+						}
+					}
+				: undefined,
 			user: {
 				connectOrCreate: {
 					where: {
-						id: data.user.id
+						id: data.reportedUserId
 					},
 					create: {
-						id: data.user.id
+						id: data.reportedUserId
 					}
 				}
 			},
 			issuer: {
 				connectOrCreate: {
 					where: {
-						id: data.issuer.id
+						id: data.issuerId
 					},
 					create: {
-						id: data.issuer.id
+						id: data.issuerId
 					}
 				}
 			}
@@ -93,18 +92,14 @@ export async function createDBReport(data: ReportOptions) {
 
 /**
  * Update a report.
- * @param number The id of the report.
- * @param guildId The id of the guild.
+ * @param id The id of the report.
  * @param data The data to update.
  * @returns The updated report.
  */
-export function updateReport(number: number, guildId: string, data: Partial<PrismaReport>) {
+export function updateReport(id: string, data: Partial<PrismaReport>): Promise<Report> {
 	return NPLAYModerationBot.db.report.update({
 		where: {
-			id: {
-				number: number,
-				guildId: guildId
-			}
+			id
 		},
 		data: data,
 		include: {
@@ -133,39 +128,13 @@ export function getActionChoices() {
 }
 
 /**
- * Warn a member by sending them a message.
- * @param report The report to warn the member about.
- * @param message The warned message, if exists.
- */
-export function warnMember(report: Report, message?: Message) {
-	const member = NPLAYModerationBot.Client.guilds.cache
-		.get(report.guildId)
-		?.members.cache.get(report.userId);
-	if (!member) return;
-	member
-		.send({
-			embeds: [createEmbed(WarnEmbed(report, member.guild.name, message))]
-		})
-		.catch(() => {
-			console.error(`Could not send warn message to ${member.displayName}`);
-		});
-}
-
-export function timeoutMember() {}
-
-export function kickMember() {}
-
-export function banMember() {}
-
-export function tempBanMember() {}
-
-/**
  * Transform a paragraph id to a paragraph object.
  * @param value The paragraph id.
  * @returns The paragraph object or null if it does not exist.
  */
-export function ParagraphTransformer(value: string) {
-	return NPLAYModerationBot.db.paragraph.findUnique({ where: { id: value } });
+export function ParagraphTransformer(value?: string) {
+	if (!value) return null;
+	return NPLAYModerationBot.db.paragraph.findUnique({ where: { id: value } }) || null;
 }
 
 /**
