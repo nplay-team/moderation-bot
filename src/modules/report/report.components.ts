@@ -1,10 +1,9 @@
 import { ActionRowBuilder, GuildMember, ModalBuilder, TextInputBuilder } from 'discord.js';
-import { ReportOptions } from './report.types.js';
 
-export function createReportModal(member: GuildMember, data: ReportOptions) {
+export function createReportModal(member: GuildMember, id: string) {
 	const menu = new ModalBuilder()
 		.setTitle(`Report gegen ${member.displayName}`)
-		.setCustomId('report');
+		.setCustomId(`report-${id}`);
 
 	const reasonInputComponent = new TextInputBuilder()
 		.setLabel('Begründung')
@@ -13,17 +12,7 @@ export function createReportModal(member: GuildMember, data: ReportOptions) {
 		.setMaxLength(1000)
 		.setStyle(2);
 
-	const dataInputComponent = new TextInputBuilder()
-		.setLabel('Daten - !NICHT ÄNDERN!')
-		.setRequired(true)
-		.setCustomId('data')
-		.setStyle(2)
-		.setValue(btoa(JSON.stringify(data)));
-
-	const row1 = new ActionRowBuilder<TextInputBuilder>().addComponents(reasonInputComponent);
-	const row2 = new ActionRowBuilder<TextInputBuilder>().addComponents(dataInputComponent);
-
-	menu.addComponents(row1, row2);
+	menu.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(reasonInputComponent));
 
 	return menu;
 }

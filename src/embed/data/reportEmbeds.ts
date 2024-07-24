@@ -69,6 +69,13 @@ export function ReportNotFoundError() {
 		.setColor(EmbedColors.ERROR);
 }
 
+export function ReportFailedMissingData() {
+	return new EmbedBuilder()
+		.setTitle('Report fehlgeschlagen')
+		.setDescription('Der Report konnte nicht erstellt werden, da die Daten vom Command nicht vollständig übermittelt wurden. Bitte versuche es erneut.')
+		.setColor(EmbedColors.ERROR);
+}
+
 export function WarnEmbed(report: Report, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Verwarnung')

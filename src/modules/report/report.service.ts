@@ -1,17 +1,35 @@
 import { ReportAction, ReportStatus } from '@prisma/client';
 import { GuildMember, ModalSubmitInteraction } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { ReportCreated, WarnEmbed } from '../../embed/data/reportEmbeds.js';
+import {
+	ReportCreated,
+	ReportFailedMissingData,
+	WarnEmbed
+} from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
 import { createDBReport, updateReport } from './report.helper.js';
 import { Report, ReportOptions } from './report.types.js';
 
-export async function reportModal(interaction: ModalSubmitInteraction) {
-	const [reason, dataBase64] = ['reason', 'data'].map((key) =>
-		interaction.fields.getTextInputValue(key)
-	);
+let reportDataCache: Record<string, ReportOptions> = {};
 
-	const data: ReportOptions = JSON.parse(atob(dataBase64));
+setInterval(
+	() => {
+		reportDataCache = {};
+	},
+	1000 * 60 * 5
+); // Clear cache every 5 minutes
+
+export async function reportModal(interaction: ModalSubmitInteraction) {
+	const reason = interaction.fields.getTextInputValue('reason');
+
+	const data = pullReportDataFromCache(interaction.customId.split('-')[1]);
+
+	if (!data) {
+		await interaction.followUp({
+			embeds: [createEmbed(ReportFailedMissingData())]
+		});
+		return;
+	}
 
 	const report = new NPLAYReport(data, reason);
 	await report.create();
@@ -69,4 +87,14 @@ export class NPLAYReport {
 				console.error(`Could not send warn message to ${member.displayName}`);
 			});
 	}
+}
+
+export function pushReportDataToCache(id: string, data: ReportOptions) {
+	reportDataCache[id] = data;
+}
+
+export function pullReportDataFromCache(id: string): ReportOptions | undefined {
+	const data = reportDataCache[id];
+	delete reportDataCache[id];
+	return data;
 }

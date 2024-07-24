@@ -24,8 +24,7 @@ import {
 	ParagraphAutocomplete,
 	ParagraphTransformer
 } from './report.helper.js';
-import { reportModal } from './report.service.js';
-import { ReportOptions } from './report.types.js';
+import { pushReportDataToCache, reportModal } from './report.service.js';
 
 @Discord()
 @SlashGroup({
@@ -96,7 +95,7 @@ export abstract class ReportCommands {
 
 		interaction: CommandInteraction
 	) {
-		const data: ReportOptions = {
+		pushReportDataToCache(interaction.id, {
 			type: type as ReportAction,
 			reportedUserId: member.id,
 			issuerId: interaction.member!.user.id,
@@ -105,12 +104,12 @@ export abstract class ReportCommands {
 			duration,
 			delDays,
 			message: null
-		};
+		});
 
-		await interaction.showModal(createReportModal(member, data));
+		await interaction.showModal(createReportModal(member, interaction.id));
 	}
 
-	@ModalComponent({ id: 'report' })
+	@ModalComponent({ id: RegExp('report-.*') })
 	async reportModal(interaction: ModalSubmitInteraction) {
 		await interaction.deferReply();
 		await reportModal(interaction);
