@@ -76,7 +76,7 @@ model Report {
 
   message String? @db.LongText
 
-  duration Int?
+  duration DateTime?
   delDays  Int?
 
   issuerId String

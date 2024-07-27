@@ -15,6 +15,7 @@ import {
 	SlashGroup,
 	SlashOption
 } from 'discordx';
+import { ReportExecutionError } from '../../embed/data/reportEmbeds.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
 import { createReportModal } from './report.components.js';
@@ -80,7 +81,7 @@ export abstract class ReportCommands {
 			},
 			DurationTransformer
 		)
-		duration: number | null,
+		duration: Date | string | null,
 
 		@SlashOption({
 			name: 'del-days',
@@ -95,6 +96,14 @@ export abstract class ReportCommands {
 
 		interaction: CommandInteraction
 	) {
+		if (typeof duration === 'string') {
+			await interaction.reply({
+				embeds: [ReportExecutionError(duration)],
+				ephemeral: true
+			});
+			return;
+		}
+
 		pushReportDataToCache(interaction.id, {
 			type: type as ReportAction,
 			reportedUserId: member.id,

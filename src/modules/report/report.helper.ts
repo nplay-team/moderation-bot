@@ -118,6 +118,10 @@ export function getActionChoices() {
 		{
 			name: 'Verwarnung',
 			value: ReportAction.WARN
+		},
+		{
+			name: 'Timeout',
+			value: ReportAction.TIMEOUT
 		}
 	];
 
@@ -142,13 +146,19 @@ export function ParagraphTransformer(value?: string) {
  * @param value The date string.
  * @returns The Date object or -1 if the date is invalid.
  */
-export function DurationTransformer(value: string | undefined) {
+export function DurationTransformer(value: string | undefined): Date | string | null {
 	if (!value) return null;
 	const date = parse(value, 'dd.MM.yyyy HH:mm', new Date());
+
 	if (isNaN(date.getTime())) {
-		return -1;
+		return 'Das Datum konnte nicht gelesen werden, bitte überprüfe die Formatierung dd.MM.yyyy HH:mm';
 	}
-	return date.getTime();
+
+	if (date.getTime() <= Date.now()) {
+		return 'Das angegebene Datum liegt in der Vergangenheit und ist daher ungültig.';
+	}
+
+	return date;
 }
 
 /**
