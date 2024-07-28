@@ -25,7 +25,7 @@ import {
 	ParagraphAutocomplete,
 	ParagraphTransformer
 } from './report.helper.js';
-import { pushReportDataToCache, reportModal } from './report.service.js';
+import { pushReportDataToCache, reportModal, revertReport } from './report.service.js';
 
 @Discord()
 @SlashGroup({
@@ -122,5 +122,24 @@ export abstract class ReportCommands {
 	async reportModal(interaction: ModalSubmitInteraction) {
 		await interaction.deferReply();
 		await reportModal(interaction);
+	}
+
+	@Slash({
+		name: 'revert',
+		description: 'Löscht einen Report und macht die Aktion rückgängig'
+	})
+	@Guard(RequirePermission(PermissionBitmapFlags.ReportDelete))
+	async revertReport(
+		@SlashOption({
+			name: 'report',
+			description: 'Die ID des Reports',
+			required: true,
+			type: ApplicationCommandOptionType.String
+		})
+		reportId: string,
+		interaction: CommandInteraction
+	) {
+		await interaction.deferReply();
+		await revertReport(reportId, interaction);
 	}
 }

@@ -1,7 +1,7 @@
 import { EmbedColors } from '../embed.js';
 import { EmbedBuilder, EmbedField, RestOrArray } from 'discord.js';
 import { TimeFormat } from '@discordx/utilities';
-import { Report } from '../../modules/report/report.types.js';
+import { Report, ReportActionType } from '../../modules/report/report.types.js';
 import { ReportAction } from '@prisma/client';
 
 const actionColorMap: Record<ReportAction, number> = {
@@ -14,7 +14,7 @@ const actionColorMap: Record<ReportAction, number> = {
 
 export function ReportCreated(report: Report) {
 	return new EmbedBuilder()
-		.setTitle('Report erstellt')
+		.setTitle(`${ReportActionType[report.action]} erstellt`)
 		.setDescription(`Der Report wurde erfolgreich erstellt.`)
 		.addFields(getReportFields(report))
 		.setFooter({
@@ -42,6 +42,47 @@ export function ReportFailedMissingData() {
 		.setTitle('Report fehlgeschlagen')
 		.setDescription('Der Report konnte nicht erstellt werden, da die Daten vom Command nicht vollständig übermittelt wurden. Bitte versuche es erneut.')
 		.setColor(EmbedColors.ERROR);
+}
+
+export function ReportReverted(report: Report) {
+	return new EmbedBuilder()
+		.setTitle('Report zurückgenommen')
+		.setDescription('Der Report wurde erfolgreich zurückgenommen.')
+		.addFields([
+			{
+				name: 'ID',
+				value: `#${report.number}`,
+				inline: false
+			},
+			{
+				name: 'Grund',
+				value: report.reason || 'Kein Grund angegeben',
+				inline: false
+			},
+			{
+				name: 'Moderator',
+				value: `<@${report.issuerId}>`,
+				inline: false
+			}
+		])
+		.setFooter({
+			text: report.id
+		})
+		.setColor(EmbedColors.SUCCESS);
+}
+
+export function RevertEmbed(report: Report, guildName: string, reverterId: string) {
+	return new EmbedBuilder()
+		.setTitle('Report zurückgenommen')
+		.setDescription(`Der Report mit der ID **#${report.number}** auf dem **${guildName}** Server wurde zurückgenommen. Eventuelle Timeouts oder Bans wurden aufgehoben.`)
+		.addFields([{
+			name: 'Moderator',
+			value: `<@${reverterId}>`,
+		}])
+		.setFooter({
+			text: report.id
+		})
+		.setColor(EmbedColors.SUCCESS);
 }
 
 export function WarnEmbed(report: Report, guildName: string) {

@@ -1,11 +1,14 @@
-import { ModalSubmitInteraction } from 'discord.js';
+import { CommandInteraction, ModalSubmitInteraction } from 'discord.js';
 import {
 	ReportCreated,
 	ReportExecutionError,
-	ReportFailedMissingData
+	ReportFailedMissingData,
+	ReportNotFoundError,
+	ReportReverted
 } from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
 import { NPLAYReport } from './NPLAYReport.js';
+import { getReport } from './report.helper.js';
 import { ReportOptions } from './report.types.js';
 
 let reportDataCache: Record<string, ReportOptions> = {};
@@ -53,4 +56,27 @@ export function pullReportDataFromCache(id: string): ReportOptions | undefined {
 	const data = reportDataCache[id];
 	delete reportDataCache[id];
 	return data;
+}
+
+export async function revertReport(id: string, interaction: CommandInteraction) {
+	const report = await getReport(id);
+	if (!report) {
+		await interaction.followUp({
+			embeds: [createEmbed(ReportNotFoundError())]
+		});
+		return;
+	}
+
+	NPLAYReport.fromReport(report)
+		.revert(interaction.member!.user.id)
+		.then(() => {
+			interaction.followUp({
+				embeds: [createEmbed(ReportReverted(report))]
+			});
+		})
+		.catch((e) => {
+			interaction.followUp({
+				embeds: [createEmbed(ReportExecutionError(e.message))]
+			});
+		});
 }

@@ -1,7 +1,7 @@
 import { ReportAction, ReportStatus } from '@prisma/client';
 import { GuildMember } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { KickEmbed, TimeoutEmbed, WarnEmbed } from '../../embed/data/reportEmbeds.js';
+import { KickEmbed, RevertEmbed, TimeoutEmbed, WarnEmbed } from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
 import { createDBReport, updateReport } from './report.helper.js';
 import { Report, ReportOptions } from './report.types.js';
@@ -19,12 +19,14 @@ export class NPLAYReport {
 		return this._report;
 	}
 
-	get member(): GuildMember | null {
-		const member = NPLAYModerationBot.Client.guilds.cache
-			.get(this.report.guildId)
-			?.members.cache.get(this.report.userId);
-		if (!member) return null;
-		return member;
+	get member(): Promise<GuildMember | null> {
+		return NPLAYModerationBot.Client.guilds.fetch(this.report.guildId).then(async (guild) => {
+			try {
+				return await guild.members.fetch(this.report.userId);
+			} catch {
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -54,8 +56,48 @@ export class NPLAYReport {
 		await updateReport(this.report.id, { status: ReportStatus.EXECUTED });
 	}
 
+	/**
+	 * Reverts the report, marks it as reverted in the database and sends a message to the reported user.
+	 * @param reverterId The id of the user who reverted the report.
+	 */
+	public async revert(reverterId: string | "system") {
+		await updateReport(this.report.id, { status: ReportStatus.REVERTED });
+
+		switch (this.report.action) {
+			case ReportAction.TIMEOUT:
+				const member = await this.member;
+				console.log(member?.displayName);
+				if (member) {
+					console.log(member.isCommunicationDisabled());
+					await member.timeout(null);
+				}
+				break;
+
+			case ReportAction.TEMP_BAN || ReportAction.BAN:
+				const guild = await NPLAYModerationBot.Client.guilds.fetch(this.report.guildId);
+				await guild.bans.remove(this.report.userId);
+				break;
+		}
+
+		const guild = await NPLAYModerationBot.Client.guilds.fetch(this.report.guildId).catch(() => {
+			console.error(`Could not fetch guild ${this.report.guildId}`);
+		});
+
+		const guildName = guild ? guild.name : 'Unbekannt';
+
+		await NPLAYModerationBot.Client.users.fetch(this.report.userId).then(async (user) => {
+			await user
+				.send({
+					embeds: [createEmbed(RevertEmbed(this.report, guildName, reverterId))]
+				})
+				.catch(() => {
+					console.error(`Could not send revert message to ${user.username}`);
+				});
+		});
+	}
+
 	private async warnMember() {
-		const member = this.member;
+		const member = await this.member;
 		if (!member) return;
 
 		member
@@ -68,7 +110,7 @@ export class NPLAYReport {
 	}
 
 	private async timeoutMember() {
-		const member = this.member;
+		const member = await this.member;
 		if (!member) return;
 
 		if (!this.report.duration) {
@@ -94,7 +136,7 @@ export class NPLAYReport {
 	}
 
 	private async kickMember() {
-		const member = this.member;
+		const member = await this.member;
 		if (!member) return;
 
 		// IMPORTANT: Send the message before kicking the member!!
@@ -108,5 +150,27 @@ export class NPLAYReport {
 			.finally(async () => {
 				await member.kick(this.report.reason || 'Kein Grund angegeben');
 			});
+	}
+
+	/**
+	 * Creates a new NPLAYReport instance from a Report object.
+	 * @param report The report object to create the instance from.
+	 */
+	public static fromReport(report: Report) {
+		const data: ReportOptions = {
+			type: report.action,
+			reportedUserId: report.userId,
+			issuerId: report.issuerId,
+			paragraph: report.paragraph,
+			guildId: report.guildId,
+			duration: report.duration,
+			delDays: report.delDays,
+			message: report.message
+		};
+
+		const nplayReport = new NPLAYReport(data, report.reason || undefined);
+		nplayReport._report = report;
+
+		return nplayReport;
 	}
 }

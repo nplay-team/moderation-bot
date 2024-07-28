@@ -9,10 +9,17 @@ import { Report, ReportOptions } from './report.types.js';
  * @param id The id of the report.
  * @returns The report or null if it does not exist.
  */
-export function getReport(id: string) {
-	return NPLAYModerationBot.db.report.findUnique({
+export function getReport(id: string): Promise<Report | null> {
+	return NPLAYModerationBot.db.report.findFirst({
 		where: {
-			id
+			OR: [
+				{
+					id
+				},
+				{
+					number: isNaN(+id) ? -1 : +id
+				}
+			]
 		},
 		include: {
 			paragraph: true
