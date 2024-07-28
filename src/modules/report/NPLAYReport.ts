@@ -59,10 +59,13 @@ export class NPLAYReport {
 	/**
 	 * Reverts the report, marks it as reverted in the database and sends a message to the reported user.
 	 * @param reverterId The id of the user who reverted the report.
+	 * @param preventModlogRemoval Whether the modlog entry should be removed or not. Default: false
 	 */
-	public async revert(reverterId: string | "system") {
-		await updateReport(this.report.id, { status: ReportStatus.REVERTED });
-
+	public async revert(reverterId: string, preventModlogRemoval = false) {
+		if (!preventModlogRemoval) {
+			await updateReport(this.report.id, { status: ReportStatus.REVERTED });
+		}
+		
 		switch (this.report.action) {
 			case ReportAction.TIMEOUT:
 				const member = await this.member;
