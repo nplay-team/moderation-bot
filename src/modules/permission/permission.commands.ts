@@ -12,8 +12,8 @@ import {
 	PermissionGetEmbed,
 	PermissionListEmbed,
 	PermissionManageEmbed
-} from '@/embed/data/permissionEmbeds.js';
-import { createEmbed } from '@/embed/embed.js';
+} from '../../embed/data/permissionEmbeds.js';
+import { createEmbed } from '../../embed/embed.js';
 import { permissionMenu } from './permission.components.js';
 import { RequirePermission } from './permission.guards.js';
 import { getMentionablePermissions } from './permission.helper.js';
