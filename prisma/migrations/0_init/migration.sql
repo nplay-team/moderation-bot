@@ -39,7 +39,7 @@ CREATE TABLE `reports` (
     `reason` VARCHAR(191) NULL,
     `paragraphId` VARCHAR(191) NULL,
     `message` LONGTEXT NULL,
-    `duration` INTEGER NULL,
+    `duration` DATETIME(3) NULL,
     `delDays` INTEGER NULL,
     `issuerId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

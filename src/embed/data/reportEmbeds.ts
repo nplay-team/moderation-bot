@@ -1,5 +1,5 @@
 import { EmbedColors } from '../embed.js';
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, EmbedField, RestOrArray } from 'discord.js';
 import { TimeFormat } from '@discordx/utilities';
 import { ReportActionType, Report } from '../../modules/report/report.types.js';
 
@@ -69,6 +69,13 @@ export function ReportNotFoundError() {
 		.setColor(EmbedColors.ERROR);
 }
 
+export function ReportExecutionError(message: string) {
+	return new EmbedBuilder()
+		.setTitle('Report konnte nicht erstellt werden')
+		.setDescription(`\`\`\`${message}\`\`\``)
+		.setColor(EmbedColors.ERROR);
+}
+
 export function ReportFailedMissingData() {
 	return new EmbedBuilder()
 		.setTitle('Report fehlgeschlagen')
@@ -80,26 +87,60 @@ export function WarnEmbed(report: Report, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Verwarnung')
 		.setDescription(`Du hast eine Verwarnung auf dem **${guildName}** Server erhalten.`)
-		.addFields([
-			{
-				name: "Grund",
-				value: report.reason || 'Kein Grund angegeben'
-			},
-			{
-				name: "Regel, gegen die du verstoßen hast",
-				value: report.paragraph ? `${report.paragraph.name} - ${report.paragraph.summary}\n${report.paragraph.content}` : "Kein Paragraph angegeben"
-			},
-			{
-				name: "Deine Nachricht",
-				value: report.message ? `[Link](${report.message})` : "Keine Nachricht angegeben"
-			},
-			{
-				name: "Moderator",
-				value: `<@${report.issuerId}>`
-			}
-		])
+		.addFields(getReportFields(report))
 		.setFooter({
 			text: report.id
 		})
 		.setColor(EmbedColors.WARNING);
+}
+
+export function TimeoutEmbed(report: Report, guildName: string) {
+	return new EmbedBuilder()
+		.setTitle('Timeout')
+		.setDescription(`Du wurdest für eine bestimmte Zeit auf dem **${guildName}** Server gesperrt.`)
+		.addFields(getReportFields(report))
+		.setFooter({
+			text: report.id
+		})
+		.setColor(EmbedColors.WARNING);
+}
+
+function getReportFields(report: Report) {
+	const base: RestOrArray<EmbedField> = [
+		{
+			name: 'ID',
+			value: `#${report.number}`,
+			inline: false
+		},
+		{
+			name: "Grund",
+			value: report.reason || 'Kein Grund angegeben',
+			inline: false
+		},
+		{
+			name: "Regel, gegen die du verstoßen hast",
+			value: report.paragraph ? `${report.paragraph.name} - ${report.paragraph.summary}\n${report.paragraph.content}` : "Kein Paragraph angegeben",
+			inline: false
+		},
+		{
+			name: "Deine Nachricht",
+			value: report.message ? `[Link](${report.message})` : "Keine Nachricht angegeben",
+			inline: false
+		},
+		{
+			name: "Moderator",
+			value: `<@${report.issuerId}>`,
+			inline: false
+		}
+	]
+	
+	if (report.duration) {
+		base.push({
+			name: 'Gültig bis',
+			value: TimeFormat.Default(report.duration),
+			inline: false
+		});
+	}
+	
+	return base;
 }

@@ -20,7 +20,7 @@ export type ReportOptions = {
 	issuerId: string;
 	guildId: string;
 	paragraph: Paragraph | null;
-	duration: number | null;
+	duration: Date | null;
 	delDays: number | null;
 	message: string | null;
 };
