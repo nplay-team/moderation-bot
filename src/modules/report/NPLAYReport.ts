@@ -66,9 +66,7 @@ export class NPLAYReport {
 		switch (this.report.action) {
 			case ReportAction.TIMEOUT:
 				const member = await this.member;
-				console.log(member?.displayName);
 				if (member) {
-					console.log(member.isCommunicationDisabled());
 					await member.timeout(null);
 				}
 				break;
