@@ -60,7 +60,7 @@ export function pullReportDataFromCache(id: string): ReportOptions | undefined {
 
 export async function revertReport(id: string, interaction: CommandInteraction) {
 	const report = await getReport(id);
-	if (!report) {
+	if (!report || report.status !== 'EXECUTED') {
 		await interaction.followUp({
 			embeds: [createEmbed(ReportNotFoundError())]
 		});
