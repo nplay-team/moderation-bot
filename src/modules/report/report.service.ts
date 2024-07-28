@@ -3,8 +3,8 @@ import {
 	ReportCreated,
 	ReportExecutionError,
 	ReportFailedMissingData
-} from '../../embed/data/reportEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
+} from '@/embed/data/reportEmbeds.js';
+import { createEmbed } from '@/embed/embed.js';
 import { NPLAYReport } from './NPLAYReport.js';
 import { ReportOptions } from './report.types.js';
 

@@ -1,8 +1,8 @@
 import { ReportAction, ReportStatus } from '@prisma/client';
 import { GuildMember } from 'discord.js';
-import { NPLAYModerationBot } from '../../bot.js';
-import { TimeoutEmbed, WarnEmbed } from '../../embed/data/reportEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
+import { NPLAYModerationBot } from '@/bot.js';
+import { TimeoutEmbed, WarnEmbed } from '@/embed/data/reportEmbeds.js';
+import { createEmbed } from '@/embed/embed.js';
 import { createDBReport, updateReport } from './report.helper.js';
 import { Report, ReportOptions } from './report.types.js';
 

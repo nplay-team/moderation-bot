@@ -1,14 +1,14 @@
 import { Paragraph } from '@prisma/client';
 import { CommandInteraction, ModalSubmitInteraction } from 'discord.js';
-import { NPLAYModerationBot } from '../../bot.js';
+import { NPLAYModerationBot } from '@/bot.js';
 import {
 	ParagraphCreatedEmbed,
 	ParagraphDeletedEmbed,
 	ParagraphLimitReachedError,
 	ParagraphNotFoundError,
 	ParagraphShowEmbed
-} from '../../embed/data/paragraphEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
+} from '@/embed/data/paragraphEmbeds.js';
+import { createEmbed } from '@/embed/embed.js';
 
 export async function createParagraph(interaction: ModalSubmitInteraction) {
 	const paragraphCount = await NPLAYModerationBot.db.paragraph.count({

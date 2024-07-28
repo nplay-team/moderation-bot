@@ -15,7 +15,7 @@ import {
 	SlashGroup,
 	SlashOption
 } from 'discordx';
-import { ReportExecutionError } from '../../embed/data/reportEmbeds.js';
+import { ReportExecutionError } from '@/embed/data/reportEmbeds.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
 import { createReportModal } from './report.components.js';

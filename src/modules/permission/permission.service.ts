@@ -1,7 +1,7 @@
 import { GuildMember, Role, StringSelectMenuInteraction, User } from 'discord.js';
-import { ComponentStaleError } from '../../embed/data/genericEmbeds.js';
-import { PermissionManageSuccessEmbed } from '../../embed/data/permissionEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
+import { ComponentStaleError } from '@/embed/data/genericEmbeds.js';
+import { PermissionManageSuccessEmbed } from '@/embed/data/permissionEmbeds.js';
+import { createEmbed } from '@/embed/embed.js';
 import { updatePermissions } from './permission.helper.js';
 import { Permission, PermissionBitmap } from './permission.types.js';
 

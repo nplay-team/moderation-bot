@@ -1,8 +1,8 @@
 import { CommandInteraction, GuildMember, PermissionsBitField } from 'discord.js';
 import { GuardFunction } from 'discordx';
-import { CommandOnlyOnGuildError } from '../../embed/data/genericEmbeds.js';
-import { NoPermissionEmbed } from '../../embed/data/permissionEmbeds.js';
-import { createEmbed } from '../../embed/embed.js';
+import { CommandOnlyOnGuildError } from '@/embed/data/genericEmbeds.js';
+import { NoPermissionEmbed } from '@/embed/data/permissionEmbeds.js';
+import { createEmbed } from '@/embed/embed.js';
 import { getUserPermissions, hasPermission } from './permission.helper.js';
 import { Permission, PermissionBitmapFlags } from './permission.types.js';
 

@@ -1,7 +1,7 @@
 import { Report as PrismaReport, ReportAction } from '@prisma/client';
 import { parse } from 'date-fns';
 import { AutocompleteInteraction } from 'discord.js';
-import { NPLAYModerationBot } from '../../bot.js';
+import { NPLAYModerationBot } from '@/bot.js';
 import { Report, ReportOptions } from './report.types.js';
 
 /**
