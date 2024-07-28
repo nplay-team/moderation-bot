@@ -1,6 +1,6 @@
 import { GuildMember, Role, User } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { Permission, PermissionBitmap, getPermissionDescription } from './permission.types.js';
+import { getPermissionDescription, Permission, PermissionBitmap } from './permission.types.js';
 
 // ==============================
 // PUBLIC FUNCTIONS

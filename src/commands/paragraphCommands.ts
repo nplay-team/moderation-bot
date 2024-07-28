@@ -28,7 +28,7 @@ import {
 import { createEmbed } from '../embed/embed.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permissionGuard.js';
 import { PermissionBitmapFlags } from '../permission/permissions.js';
-import { ParagraphTransformer, getParagraphOptions } from '../reports/reportsHelper.js';
+import { getParagraphOptions, ParagraphTransformer } from '../reports/reportsHelper.js';
 
 @Discord()
 @SlashGroup({

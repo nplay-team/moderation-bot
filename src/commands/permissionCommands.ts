@@ -26,10 +26,10 @@ import {
 	updatePermissions
 } from '../permission/permissionHelpers.js';
 import {
+	getPermissionDescription,
 	Permission,
 	PermissionBitmap,
-	PermissionBitmapFlags,
-	getPermissionDescription
+	PermissionBitmapFlags
 } from '../permission/permissions.js';
 
 @Discord()
