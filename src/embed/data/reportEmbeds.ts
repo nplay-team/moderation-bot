@@ -1,17 +1,16 @@
 import { EmbedColors } from '../embed.js';
-import { EmbedBuilder, Message } from 'discord.js';
-import { Paragraph, Report } from '@prisma/client';
+import { EmbedBuilder } from 'discord.js';
 import { TimeFormat } from '@discordx/utilities';
-import { ReportActionType } from '../../reports/reportsHelper.js';
+import { ReportActionType, Report } from '../../modules/report/report.types.js';
 
-export function ReportCreated(report: Report & { paragraph: Paragraph }) {
+export function ReportCreated(report: Report) {
 	const embed = new EmbedBuilder()
 		.setTitle('Report erstellt')
 		.setDescription(`Der Report wurde erfolgreich erstellt.`)
 		.addFields(
 			{
 				name: 'ID',
-				value: report.id,
+				value: `#${report.number}`,
 				inline: true
 			},
 			{
@@ -20,7 +19,7 @@ export function ReportCreated(report: Report & { paragraph: Paragraph }) {
 			},
 			{
 				name: 'Paragraph',
-				value: report.paragraph.name,
+				value: report.paragraph ? report.paragraph.name : "Kein Paragraph angegeben",
 				inline: true
 			},
 			{
@@ -39,6 +38,9 @@ export function ReportCreated(report: Report & { paragraph: Paragraph }) {
 				inline: true
 			}
 		)
+		.setFooter({
+			text: report.id
+		})
 		.setColor(EmbedColors.SUCCESS);
 
 	if (report.duration) {
@@ -67,7 +69,14 @@ export function ReportNotFoundError() {
 		.setColor(EmbedColors.ERROR);
 }
 
-export function WarnEmbed(report: Report & { paragraph: Paragraph }, guildName: string, message?: Message) {
+export function ReportFailedMissingData() {
+	return new EmbedBuilder()
+		.setTitle('Report fehlgeschlagen')
+		.setDescription('Der Report konnte nicht erstellt werden, da die Daten vom Command nicht vollständig übermittelt wurden. Bitte versuche es erneut.')
+		.setColor(EmbedColors.ERROR);
+}
+
+export function WarnEmbed(report: Report, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Verwarnung')
 		.setDescription(`Du hast eine Verwarnung auf dem **${guildName}** Server erhalten.`)
@@ -77,17 +86,20 @@ export function WarnEmbed(report: Report & { paragraph: Paragraph }, guildName: 
 				value: report.reason || 'Kein Grund angegeben'
 			},
 			{
-				name: "Regel gegen die du verstoßen hast",
-				value: `${report.paragraph.name} - ${report.paragraph.summary}\n${report.paragraph.content}`
+				name: "Regel, gegen die du verstoßen hast",
+				value: report.paragraph ? `${report.paragraph.name} - ${report.paragraph.summary}\n${report.paragraph.content}` : "Kein Paragraph angegeben"
 			},
 			{
 				name: "Deine Nachricht",
-				value: message?.content || "Keine Nachricht vorhanden"
+				value: report.message ? `[Link](${report.message})` : "Keine Nachricht angegeben"
 			},
 			{
 				name: "Moderator",
 				value: `<@${report.issuerId}>`
 			}
 		])
+		.setFooter({
+			text: report.id
+		})
 		.setColor(EmbedColors.WARNING);
 }

@@ -5,7 +5,7 @@ import { EmbedColors } from '../embed.js';
 export function ParagraphCreatedEmbed(paragraph: Paragraph) {
 	return new EmbedBuilder()
 		.setTitle(`Regelparagraph ${paragraph.name} erstellt`)
-		.setDescription(`Der Regelparagraph \`${paragraph.name}\` wurde erfolgreich erstellt. Damit dieser auch im Autocomplete verfügbar ist, muss der Bot neu gestartet werden.`)
+		.setDescription(`Der Regelparagraph \`${paragraph.name}\` wurde erfolgreich erstellt.`)
 		.addFields([
 			{
 				name: "Zusammenfassung",
