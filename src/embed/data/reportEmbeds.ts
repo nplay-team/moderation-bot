@@ -1,65 +1,26 @@
 import { EmbedColors } from '../embed.js';
 import { EmbedBuilder, EmbedField, RestOrArray } from 'discord.js';
 import { TimeFormat } from '@discordx/utilities';
-import { ReportActionType, Report } from '../../modules/report/report.types.js';
+import { Report } from '../../modules/report/report.types.js';
+import { ReportAction } from '@prisma/client';
+
+const actionColorMap: Record<ReportAction, number> = {
+	WARN: EmbedColors.WARNING,
+	TIMEOUT: EmbedColors.WARNING,
+	KICK: EmbedColors.ERROR,
+	TEMP_BAN: EmbedColors.ERROR,
+	BAN: EmbedColors.ERROR
+}
 
 export function ReportCreated(report: Report) {
-	const embed = new EmbedBuilder()
+	return new EmbedBuilder()
 		.setTitle('Report erstellt')
 		.setDescription(`Der Report wurde erfolgreich erstellt.`)
-		.addFields(
-			{
-				name: 'ID',
-				value: `#${report.number}`,
-				inline: true
-			},
-			{
-				name: 'Grund',
-				value: report.reason || 'Kein Grund angegeben'
-			},
-			{
-				name: 'Paragraph',
-				value: report.paragraph ? report.paragraph.name : "Kein Paragraph angegeben",
-				inline: true
-			},
-			{
-				name: 'Benutzer',
-				value: `<@${report.userId}>`,
-				inline: true
-			},
-			{
-				name: 'Moderator',
-				value: `<@${report.issuerId}>`,
-				inline: true
-			},
-			{
-				name: 'Aktion',
-				value: ReportActionType[report.action],
-				inline: true
-			}
-		)
+		.addFields(getReportFields(report))
 		.setFooter({
 			text: report.id
 		})
-		.setColor(EmbedColors.SUCCESS);
-
-	if (report.duration) {
-		embed.addFields({
-			name: 'Gültig bis',
-			value: TimeFormat.Default(report.duration),
-			inline: true
-		});
-	}
-
-	if (report.delDays) {
-		embed.addFields({
-			name: 'Nachrichten löschen',
-			value: `${report.delDays} Tage`,
-			inline: true
-		});
-	}
-
-	return embed;
+		.setColor(actionColorMap[report.action]);
 }
 
 export function ReportNotFoundError() {
@@ -91,7 +52,7 @@ export function WarnEmbed(report: Report, guildName: string) {
 		.setFooter({
 			text: report.id
 		})
-		.setColor(EmbedColors.WARNING);
+		.setColor(actionColorMap[report.action]);
 }
 
 export function TimeoutEmbed(report: Report, guildName: string) {
@@ -102,7 +63,18 @@ export function TimeoutEmbed(report: Report, guildName: string) {
 		.setFooter({
 			text: report.id
 		})
-		.setColor(EmbedColors.WARNING);
+		.setColor(actionColorMap[report.action]);
+}
+
+export function KickEmbed(report: Report, guildName: string) {
+	return new EmbedBuilder()
+		.setTitle('Kick')
+		.setDescription(`Du wurdest vom **${guildName}** Server gekickt.`)
+		.addFields(getReportFields(report))
+		.setFooter({
+			text: report.id
+		})
+		.setColor(actionColorMap[report.action]);
 }
 
 function getReportFields(report: Report) {

@@ -1,7 +1,7 @@
 import { ReportAction, ReportStatus } from '@prisma/client';
 import { GuildMember } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { TimeoutEmbed, WarnEmbed } from '../../embed/data/reportEmbeds.js';
+import { KickEmbed, TimeoutEmbed, WarnEmbed } from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
 import { createDBReport, updateReport } from './report.helper.js';
 import { Report, ReportOptions } from './report.types.js';
@@ -46,6 +46,9 @@ export class NPLAYReport {
 			case ReportAction.TIMEOUT:
 				await this.timeoutMember();
 				break;
+			case ReportAction.KICK:
+				await this.kickMember();
+				break;
 		}
 
 		await updateReport(this.report.id, { status: ReportStatus.EXECUTED });
@@ -87,6 +90,23 @@ export class NPLAYReport {
 			})
 			.catch(() => {
 				console.error(`Could not send timeout message to ${member.displayName}`);
+			});
+	}
+
+	private async kickMember() {
+		const member = this.member;
+		if (!member) return;
+
+		// IMPORTANT: Send the message before kicking the member!!
+		member
+			.send({
+				embeds: [createEmbed(KickEmbed(this.report, member.guild.name))]
+			})
+			.catch(() => {
+				console.error(`Could not send kick message to ${member.displayName}`);
+			})
+			.finally(async () => {
+				await member.kick(this.report.reason || 'Kein Grund angegeben');
 			});
 	}
 }

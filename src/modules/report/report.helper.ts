@@ -122,6 +122,10 @@ export function getActionChoices() {
 		{
 			name: 'Timeout',
 			value: ReportAction.TIMEOUT
+		},
+		{
+			name: 'Kick',
+			value: ReportAction.KICK
 		}
 	];
 
