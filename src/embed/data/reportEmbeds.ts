@@ -1,7 +1,7 @@
 import { EmbedColors } from '../embed.js';
 import { EmbedBuilder, EmbedField, RestOrArray } from 'discord.js';
 import { TimeFormat } from '@discordx/utilities';
-import { Report, ReportActionType } from '../../modules/report/report.types.js';
+import { ReportActionType, Report } from '../../modules/report/report.types.js';
 
 export function ReportCreated(report: Report) {
 	const embed = new EmbedBuilder()

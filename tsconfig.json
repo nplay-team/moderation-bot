@@ -7,9 +7,6 @@
 		"module": "Node16",
 		"rootDir": "./src",
 		"moduleResolution": "Node16",
-		"paths": {
-			"@/*": ["src/*"]
-		},
 
 		/* Emit */
 		"declaration": false,
