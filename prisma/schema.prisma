@@ -58,6 +58,7 @@ model Paragraph {
 enum ReportStatus {
   OPENED
   EXECUTED
+  DONE
   REVERTED
 }
 

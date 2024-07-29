@@ -1,7 +1,14 @@
 import { ReportAction, ReportStatus } from '@prisma/client';
 import { GuildMember } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { KickEmbed, RevertEmbed, TimeoutEmbed, WarnEmbed } from '../../embed/data/reportEmbeds.js';
+import {
+	BanEmbed,
+	KickEmbed,
+	RevertEmbed,
+	TempBanEmbed,
+	TimeoutEmbed,
+	WarnEmbed
+} from '../../embed/data/reportEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
 import { createDBReport, updateReport } from './report.helper.js';
 import { Report, ReportOptions } from './report.types.js';
@@ -51,9 +58,15 @@ export class NPLAYReport {
 			case ReportAction.KICK:
 				await this.kickMember();
 				break;
+			case ReportAction.TEMP_BAN:
+				await this.banMember();
+				break;
+			case ReportAction.BAN:
+				await this.banMember();
+				break;
 		}
 
-		await updateReport(this.report.id, { status: ReportStatus.EXECUTED });
+		this._report = await updateReport(this.report.id, { status: this.report.action === ReportAction.TEMP_BAN ? ReportStatus.EXECUTED : ReportStatus.DONE });
 	}
 
 	/**
@@ -63,9 +76,14 @@ export class NPLAYReport {
 	 */
 	public async revert(reverterId: string, preventModlogRemoval = false) {
 		if (!preventModlogRemoval) {
-			await updateReport(this.report.id, { status: ReportStatus.REVERTED });
+			this._report = await updateReport(this.report.id, { status: ReportStatus.REVERTED });
 		}
 		
+		async function revertBan(nplayReport: NPLAYReport) {
+			const guild = await NPLAYModerationBot.Client.guilds.fetch(nplayReport.report.guildId);
+			await guild.bans.remove(nplayReport.report.userId);
+		}
+
 		switch (this.report.action) {
 			case ReportAction.TIMEOUT:
 				const member = await this.member;
@@ -74,9 +92,15 @@ export class NPLAYReport {
 				}
 				break;
 
-			case ReportAction.TEMP_BAN || ReportAction.BAN:
-				const guild = await NPLAYModerationBot.Client.guilds.fetch(this.report.guildId);
-				await guild.bans.remove(this.report.userId);
+			case ReportAction.TEMP_BAN:
+				await revertBan(this);
+				if (preventModlogRemoval) {
+					this._report = await updateReport(this.report.id, { status: ReportStatus.DONE });
+				}
+				break;
+				
+			case ReportAction.BAN:
+				await revertBan(this);
 				break;
 		}
 
@@ -150,6 +174,30 @@ export class NPLAYReport {
 			})
 			.finally(async () => {
 				await member.kick(this.report.reason || 'Kein Grund angegeben');
+			});
+	}
+
+	private async banMember() {
+		const guild = await NPLAYModerationBot.Client.guilds.fetch(this.report.guildId);
+		const member = await guild.members.fetch(this.report.userId);
+
+		const embed = this.report.duration
+			? TempBanEmbed(this.report, guild.name)
+			: BanEmbed(this.report, guild.name);
+
+		// IMPORTANT: Send the message before banning the member!!
+		member
+			.send({
+				embeds: [createEmbed(embed)]
+			})
+			.catch(() => {
+				console.error(`Could not send (temp)ban message to ${member.displayName}`);
+			})
+			.finally(async () => {
+				await member.ban({
+					deleteMessageSeconds: this.report.delDays ? this.report.delDays * 86400 : undefined, // 86400 seconds = 1 day
+					reason: this.report.reason || 'Kein Grund angegeben'
+				});
 			});
 	}
 

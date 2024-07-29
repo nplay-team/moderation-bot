@@ -2,6 +2,7 @@ import { Paragraph, Report as PrismaReport, ReportAction } from '@prisma/client'
 
 /**
  * ReportActionType is a mapping of the ReportAction enum to a string representation.
+ * This is used to display the action in a human-readable format.
  */
 export const ReportActionType = {
 	WARN: 'Verwarnung',

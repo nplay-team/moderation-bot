@@ -118,6 +118,28 @@ export function KickEmbed(report: Report, guildName: string) {
 		.setColor(actionColorMap[report.action]);
 }
 
+export function TempBanEmbed(report: Report, guildName: string) {
+	return new EmbedBuilder()
+		.setTitle('Temporärer Ban')
+		.setDescription(`Du wurdest temporär vom **${guildName}** Server gebannt.`)
+		.addFields(getReportFields(report))
+		.setFooter({
+			text: report.id
+		})
+		.setColor(actionColorMap[report.action]);
+}
+
+export function BanEmbed(report: Report, guildName: string) {
+	return new EmbedBuilder()
+		.setTitle('Ban')
+		.setDescription(`Du wurdest vom **${guildName}** Server permanent gebannt.`) // TODO: Ban appeal
+		.addFields(getReportFields(report))
+		.setFooter({
+			text: report.id
+		})
+		.setColor(actionColorMap[report.action]);
+}
+
 function getReportFields(report: Report) {
 	const base: RestOrArray<EmbedField> = [
 		{

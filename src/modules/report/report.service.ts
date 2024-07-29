@@ -1,3 +1,4 @@
+import { ReportAction } from '@prisma/client';
 import { CommandInteraction, ModalSubmitInteraction } from 'discord.js';
 import {
 	ReportCreated,
@@ -32,6 +33,10 @@ export async function reportModal(interaction: ModalSubmitInteraction) {
 		return;
 	}
 
+	if (data.type === ReportAction.BAN && data.duration) {
+		data.type = ReportAction.TEMP_BAN;
+	}
+
 	const report = new NPLAYReport(data, reason);
 	await report.create();
 	await report
@@ -60,7 +65,7 @@ export function pullReportDataFromCache(id: string): ReportOptions | undefined {
 
 export async function revertReport(id: string, interaction: CommandInteraction) {
 	const report = await getReport(id);
-	if (!report || report.status !== 'EXECUTED') {
+	if (!report || (report.status !== 'EXECUTED' && report.status !== 'DONE')) {
 		await interaction.followUp({
 			embeds: [createEmbed(ReportNotFoundError())]
 		});

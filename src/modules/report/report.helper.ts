@@ -2,7 +2,7 @@ import { Report as PrismaReport, ReportAction } from '@prisma/client';
 import { parse } from 'date-fns';
 import { AutocompleteInteraction } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { Report, ReportOptions } from './report.types.js';
+import { Report, ReportActionType, ReportOptions } from './report.types.js';
 
 /**
  * Get a report by its id.
@@ -120,26 +120,12 @@ export function updateReport(id: string, data: Partial<PrismaReport>): Promise<R
  * @returns The choices for the action select menu.
  */
 export function getActionChoices() {
-	// TODO: Temporary due to missing support
-	return [
-		{
-			name: 'Verwarnung',
-			value: ReportAction.WARN
-		},
-		{
-			name: 'Timeout',
-			value: ReportAction.TIMEOUT
-		},
-		{
-			name: 'Kick',
-			value: ReportAction.KICK
-		}
-	];
-
-	// return Object.entries(ReportActionType).map(([key, value]) => ({
-	// 	name: value,
-	// 	value: key
-	// }));
+	return Object.entries(ReportActionType)
+		.map(([key, value]) => ({
+			name: value,
+			value: key
+		}))
+		.filter((choice) => choice.value !== ReportAction.TEMP_BAN);
 }
 
 /**
