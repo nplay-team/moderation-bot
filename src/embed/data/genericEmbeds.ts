@@ -21,3 +21,10 @@ export function FormatError(field: string, expected: string) {
 				.setDescription(`Das Feld \`${field}\` muss vom Typ oder im Format \`${expected}\` sein.`)
 				.setColor(EmbedColors.ERROR);
 }
+
+export function UnknownError(e: unknown) {
+		return new EmbedBuilder()
+				.setTitle("Unbekannter Fehler")
+				.setDescription(`\`\`\`${e}\`\`\``)
+				.setColor(EmbedColors.ERROR);
+}

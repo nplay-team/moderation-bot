@@ -2,8 +2,8 @@ import { ActionRowBuilder, GuildMember, ModalBuilder, TextInputBuilder } from 'd
 
 export function createReportModal(member: GuildMember, id: string) {
 	const menu = new ModalBuilder()
-		.setTitle(`Report gegen ${member.displayName}`)
-		.setCustomId(`report-${id}`);
+		.setTitle(`Moderative Handlung gegen ${member.displayName}`)
+		.setCustomId(`moderate-${id}`);
 
 	const reasonInputComponent = new TextInputBuilder()
 		.setLabel('Begründung')

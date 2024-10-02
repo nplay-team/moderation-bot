@@ -4,6 +4,7 @@ import { ActivityType, IntentsBitField, Partials } from 'discord.js';
 import { Client } from 'discordx';
 import 'dotenv/config';
 import { dirname, importCommands } from './command.importer.js';
+import './tasks/autoBanRevert.js';
 
 export class NPLAYModerationBot {
 	private static _client: Client;

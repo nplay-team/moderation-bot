@@ -1,18 +1,25 @@
-import { Report as PrismaReport, ReportAction } from '@prisma/client';
-import { parse } from 'date-fns';
+import { ModerationAction, Moderation as PrismaReport } from '@prisma/client';
+import * as chrono from 'chrono-node';
 import { AutocompleteInteraction } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { Report, ReportOptions } from './report.types.js';
+import { Moderation, ModerationActionType, ModerationOptions } from './moderate.types.js';
 
 /**
- * Get a report by its id.
- * @param id The id of the report.
- * @returns The report or null if it does not exist.
+ * Get a moderation by its id.
+ * @param id The id of the moderation.
+ * @returns The moderation or null if it does not exist.
  */
-export function getReport(id: string) {
-	return NPLAYModerationBot.db.report.findUnique({
+export function getReport(id: string): Promise<Moderation | null> {
+	return NPLAYModerationBot.db.moderation.findFirst({
 		where: {
-			id
+			OR: [
+				{
+					id
+				},
+				{
+					number: isNaN(+id) ? -1 : +id
+				}
+			]
 		},
 		include: {
 			paragraph: true
@@ -21,13 +28,13 @@ export function getReport(id: string) {
 }
 
 /**
- * Create a new report.
- * @param data The data required to create the report.
- * @param reason The reason for the report. Optional.
- * @returns The created report.
+ * Create a new moderation.
+ * @param data The data required to create the moderation.
+ * @param reason The reason for the moderation. Optional.
+ * @returns The created moderation.
  */
-export async function createDBReport(data: ReportOptions, reason?: string) {
-	const nextNumber = await NPLAYModerationBot.db.report
+export async function createDBReport(data: ModerationOptions, reason?: string) {
+	const nextNumber = await NPLAYModerationBot.db.moderation
 		.findFirst({
 			where: {
 				guildId: data.guildId
@@ -44,13 +51,13 @@ export async function createDBReport(data: ReportOptions, reason?: string) {
 			return report.number + 1;
 		});
 
-	return NPLAYModerationBot.db.report.create({
+	return NPLAYModerationBot.db.moderation.create({
 		data: {
 			number: nextNumber,
 			action:
-				data.type == ReportAction.BAN && data.duration
-					? ReportAction.TEMP_BAN
-					: (data.type as ReportAction),
+				data.type == ModerationAction.BAN && data.duration
+					? ModerationAction.TEMP_BAN
+					: (data.type as ModerationAction),
 			duration: data.duration,
 			delDays: data.delDays,
 			guildId: data.guildId,
@@ -91,13 +98,13 @@ export async function createDBReport(data: ReportOptions, reason?: string) {
 }
 
 /**
- * Update a report.
- * @param id The id of the report.
+ * Update a moderation.
+ * @param id The id of the moderation.
  * @param data The data to update.
- * @returns The updated report.
+ * @returns The updated moderation.
  */
-export function updateReport(id: string, data: Partial<PrismaReport>): Promise<Report> {
-	return NPLAYModerationBot.db.report.update({
+export function updateModeration(id: string, data: Partial<PrismaReport>): Promise<Moderation> {
+	return NPLAYModerationBot.db.moderation.update({
 		where: {
 			id
 		},
@@ -113,18 +120,12 @@ export function updateReport(id: string, data: Partial<PrismaReport>): Promise<R
  * @returns The choices for the action select menu.
  */
 export function getActionChoices() {
-	// TODO: Temporary due to missing support
-	return [
-		{
-			name: 'Verwarnung',
-			value: ReportAction.WARN
-		}
-	];
-
-	// return Object.entries(ReportActionType).map(([key, value]) => ({
-	// 	name: value,
-	// 	value: key
-	// }));
+	return Object.entries(ModerationActionType)
+		.map(([key, value]) => ({
+			name: value,
+			value: key
+		}))
+		.filter((choice) => choice.value !== ModerationAction.TEMP_BAN);
 }
 
 /**
@@ -142,13 +143,27 @@ export function ParagraphTransformer(value?: string) {
  * @param value The date string.
  * @returns The Date object or -1 if the date is invalid.
  */
-export function DurationTransformer(value: string | undefined) {
+export function DurationTransformer(value: string | undefined): Date | string | null {
 	if (!value) return null;
-	const date = parse(value, 'dd.MM.yyyy HH:mm', new Date());
+
+	const date = chrono.de.parseDate(
+		value,
+		{
+			instant: new Date(),
+			timezone: 'Europe/Berlin'
+		},
+		{ forwardDate: true }
+	);
+
 	if (isNaN(date.getTime())) {
-		return -1;
+		return 'Das Dauer konnte nicht gelesen werden, bitte versuche es erneut.';
 	}
-	return date.getTime();
+
+	if (date.getTime() <= Date.now()) {
+		return 'Das angegebene Datum liegt in der Vergangenheit und ist daher ungültig.';
+	}
+
+	return date;
 }
 
 /**
