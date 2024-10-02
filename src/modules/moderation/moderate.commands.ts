@@ -37,7 +37,7 @@ export abstract class ModerateCommands {
 	async moderateWarn(
 		@SlashOption({
 			name: 'member',
-			description: 'Der Benutzer, gegen den der Report erstellt werden soll',
+			description: 'Der Benutzer, gegen den vorgegangen werden soll',
 			required: true,
 			type: ApplicationCommandOptionType.User
 		})
@@ -80,7 +80,7 @@ export abstract class ModerateCommands {
 	async moderateTimeout(
 		@SlashOption({
 			name: 'member',
-			description: 'Der Benutzer, gegen den der Report erstellt werden soll',
+			description: 'Der Benutzer, gegen den vorgegangen werden soll',
 			required: true,
 			type: ApplicationCommandOptionType.User
 		})
@@ -134,6 +134,50 @@ export abstract class ModerateCommands {
 	}
 
 	@Slash({
+		name: 'kick',
+		description: 'Kickt einen Benutzer'
+	})
+	@SlashGroup('moderate')
+	@Guard(RequirePermission(PermissionBitmapFlags.ModerationCreate))
+	async moderateKick(
+		@SlashOption({
+			name: 'member',
+			description: 'Der Benutzer, gegen den vorgegangen werden soll',
+			required: true,
+			type: ApplicationCommandOptionType.User
+		})
+			member: GuildMember,
+
+		@SlashOption(
+			{
+				name: 'paragraph',
+				description: 'Der Regelparagraph, gegen den verstoßen wurde',
+				required: false,
+				type: ApplicationCommandOptionType.String,
+				autocomplete: ParagraphAutocomplete
+			},
+			ParagraphTransformer
+		)
+			paragraphPromise: Promise<Paragraph | null>,
+
+		interaction: CommandInteraction
+	) {
+		pushReportDataToCache(interaction.id, {
+			type: ModerationAction.KICK,
+			reportedUserId: member.id,
+			issuerId: interaction.member!.user.id,
+			paragraph: await paragraphPromise,
+			guildId: interaction.guildId!,
+			duration: null,
+			delDays: null,
+			message: null
+		});
+
+		await interaction.showModal(createReportModal(member, interaction.id));
+	}
+
+
+	@Slash({
 		name: 'ban',
 		description: 'Bannt einen Benutzer temporär oder permanent'
 	})
@@ -142,7 +186,7 @@ export abstract class ModerateCommands {
 	async moderateBan(
 		@SlashOption({
 			name: 'member',
-			description: 'Der Benutzer, gegen den der Report erstellt werden soll',
+			description: 'Der Benutzer, gegen den vorgegangen werden soll',
 			required: true,
 			type: ApplicationCommandOptionType.User
 		})
