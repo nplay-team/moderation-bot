@@ -146,7 +146,7 @@ export abstract class ModerateCommands {
 			required: true,
 			type: ApplicationCommandOptionType.User
 		})
-			member: GuildMember,
+		member: GuildMember,
 
 		@SlashOption(
 			{
@@ -158,7 +158,7 @@ export abstract class ModerateCommands {
 			},
 			ParagraphTransformer
 		)
-			paragraphPromise: Promise<Paragraph | null>,
+		paragraphPromise: Promise<Paragraph | null>,
 
 		interaction: CommandInteraction
 	) {
@@ -175,7 +175,6 @@ export abstract class ModerateCommands {
 
 		await interaction.showModal(createReportModal(member, interaction.id));
 	}
-
 
 	@Slash({
 		name: 'ban',
