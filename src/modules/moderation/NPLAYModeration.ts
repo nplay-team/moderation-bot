@@ -87,9 +87,10 @@ export class NPLAYModeration {
 			await guild.bans.remove(nplayModeration.report.userId);
 		}
 
+		const member = await this.member;
+
 		switch (this.report.action) {
 			case ModerationAction.TIMEOUT:
-				const member = await this.member;
 				if (member) {
 					await member.timeout(null);
 				}

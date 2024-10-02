@@ -2,7 +2,7 @@ import { ModerationAction, Moderation as PrismaReport } from '@prisma/client';
 import * as chrono from 'chrono-node';
 import { AutocompleteInteraction } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { ModerationActionType, Moderation, ModerationOptions } from './moderate.types.js';
+import { Moderation, ModerationActionType, ModerationOptions } from './moderate.types.js';
 
 /**
  * Get a moderation by its id.
