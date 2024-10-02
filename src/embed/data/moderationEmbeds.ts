@@ -15,7 +15,7 @@ const actionColorMap: Record<ModerationAction, number> = {
 export function ModerationCreated(report: Moderation) {
 	return new EmbedBuilder()
 		.setTitle(`${ModerationActionType[report.action]} erstellt`)
-		.setDescription(`Die moderative Handlung wurde erfolgreich vollstreckt.`)
+		.setDescription(`Die Moderationshandlung wurde erfolgreich vollstreckt.`)
 		.addFields(getReportFields(report))
 		.setFooter({
 			text: report.id
@@ -25,14 +25,14 @@ export function ModerationCreated(report: Moderation) {
 
 export function ModerationNotFoundError() {
 	return new EmbedBuilder()
-		.setTitle('Moderative Aktion nicht gefunden')
+		.setTitle('Moderation nicht gefunden')
 		.setDescription('Die angegebene Moderation konnte nicht gefunden werden.')
 		.setColor(EmbedColors.ERROR);
 }
 
 export function ModerationExecutionError(message: string) {
 	return new EmbedBuilder()
-		.setTitle('Die moderative Handlung konnte nicht vollstreckt werden')
+		.setTitle('Die Moderationshandlung konnte nicht vollstreckt werden')
 		.setDescription(`\`\`\`${message}\`\`\``)
 		.setColor(EmbedColors.ERROR);
 }
@@ -40,14 +40,14 @@ export function ModerationExecutionError(message: string) {
 export function ModerationFailedMissingData() {
 	return new EmbedBuilder()
 		.setTitle('Moderation fehlgeschlagen')
-		.setDescription('Die moderative Handlung konnte nicht vollstreckt werden, da die Daten vom Command nicht vollständig übermittelt wurden. Bitte versuche es erneut.')
+		.setDescription('Die Moderationshandlung konnte nicht vollstreckt werden, da die Daten vom Command nicht vollständig übermittelt wurden. Bitte versuche es erneut.')
 		.setColor(EmbedColors.ERROR);
 }
 
 export function ModerationReverted(report: Moderation) {
 	return new EmbedBuilder()
 		.setTitle('Moderation zurückgenommen')
-		.setDescription('Die moderative Handlung wurde erfolgreich zurückgenommen.')
+		.setDescription('Die Moderationshandlung wurde erfolgreich zurückgenommen.')
 		.addFields([
 			{
 				name: 'ID',
@@ -74,7 +74,7 @@ export function ModerationReverted(report: Moderation) {
 export function RevertEmbed(report: Moderation, guildName: string, reverterId: string) {
 	return new EmbedBuilder()
 		.setTitle('Moderation zurückgenommen')
-		.setDescription(`Die moderative Handlung mit der ID **#${report.number}** auf dem **${guildName}** Server wurde zurückgenommen. Eventuelle Timeouts oder Bans wurden aufgehoben.`)
+		.setDescription(`Die Moderationshandlung mit der ID **#${report.number}** auf dem **${guildName}** Server wurde zurückgenommen. Eventuelle Timeouts oder Bans wurden aufgehoben.`)
 		.addFields([{
 			name: 'Moderator',
 			value: `<@${reverterId}>`,
