@@ -1,10 +1,10 @@
-import { Paragraph, Report as PrismaReport, ReportAction } from '@prisma/client';
+import { ModerationAction, Paragraph, Moderation as PrismaModeration } from '@prisma/client';
 
 /**
  * ReportActionType is a mapping of the ReportAction enum to a string representation.
  * This is used to display the action in a human-readable format.
  */
-export const ReportActionType = {
+export const ModerationActionType = {
 	WARN: 'Verwarnung',
 	TIMEOUT: 'Timeout',
 	KICK: 'Kick',
@@ -13,10 +13,10 @@ export const ReportActionType = {
 };
 
 /**
- * Fields that are required to create a report.
+ * Fields that are required to create a moderation.
  */
-export type ReportOptions = {
-	type: ReportAction;
+export type ModerationOptions = {
+	type: ModerationAction;
 	reportedUserId: string;
 	issuerId: string;
 	guildId: string;
@@ -26,4 +26,4 @@ export type ReportOptions = {
 	message: string | null;
 };
 
-export type Report = PrismaReport & { paragraph: Paragraph | null };
+export type Moderation = PrismaModeration & { paragraph: Paragraph | null };

@@ -1,10 +1,10 @@
 import { EmbedColors } from '../embed.js';
 import { EmbedBuilder, EmbedField, RestOrArray } from 'discord.js';
 import { TimeFormat } from '@discordx/utilities';
-import { Report, ReportActionType } from '../../modules/report/report.types.js';
-import { ReportAction } from '@prisma/client';
+import { Moderation, ModerationActionType } from '../../modules/moderation/moderate.types.js';
+import { ModerationAction } from '@prisma/client';
 
-const actionColorMap: Record<ReportAction, number> = {
+const actionColorMap: Record<ModerationAction, number> = {
 	WARN: EmbedColors.WARNING,
 	TIMEOUT: EmbedColors.WARNING,
 	KICK: EmbedColors.ERROR,
@@ -12,10 +12,10 @@ const actionColorMap: Record<ReportAction, number> = {
 	BAN: EmbedColors.ERROR
 }
 
-export function ReportCreated(report: Report) {
+export function ModerationCreated(report: Moderation) {
 	return new EmbedBuilder()
-		.setTitle(`${ReportActionType[report.action]} erstellt`)
-		.setDescription(`Der Report wurde erfolgreich erstellt.`)
+		.setTitle(`${ModerationActionType[report.action]} erstellt`)
+		.setDescription(`Die moderative Handlung wurde erfolgreich vollstreckt.`)
 		.addFields(getReportFields(report))
 		.setFooter({
 			text: report.id
@@ -23,31 +23,31 @@ export function ReportCreated(report: Report) {
 		.setColor(actionColorMap[report.action]);
 }
 
-export function ReportNotFoundError() {
+export function ModerationNotFoundError() {
 	return new EmbedBuilder()
-		.setTitle('Report nicht gefunden')
-		.setDescription('Der angegebene Report konnte nicht gefunden werden.')
+		.setTitle('Moderative Aktion nicht gefunden')
+		.setDescription('Die angegebene Moderation konnte nicht gefunden werden.')
 		.setColor(EmbedColors.ERROR);
 }
 
-export function ReportExecutionError(message: string) {
+export function ModerationExecutionError(message: string) {
 	return new EmbedBuilder()
-		.setTitle('Report konnte nicht erstellt werden')
+		.setTitle('Die moderative Handlung konnte nicht vollstreckt werden')
 		.setDescription(`\`\`\`${message}\`\`\``)
 		.setColor(EmbedColors.ERROR);
 }
 
-export function ReportFailedMissingData() {
+export function ModerationFailedMissingData() {
 	return new EmbedBuilder()
-		.setTitle('Report fehlgeschlagen')
-		.setDescription('Der Report konnte nicht erstellt werden, da die Daten vom Command nicht vollständig übermittelt wurden. Bitte versuche es erneut.')
+		.setTitle('Moderation fehlgeschlagen')
+		.setDescription('Die moderative Handlung konnte nicht vollstreckt werden, da die Daten vom Command nicht vollständig übermittelt wurden. Bitte versuche es erneut.')
 		.setColor(EmbedColors.ERROR);
 }
 
-export function ReportReverted(report: Report) {
+export function ModerationReverted(report: Moderation) {
 	return new EmbedBuilder()
-		.setTitle('Report zurückgenommen')
-		.setDescription('Der Report wurde erfolgreich zurückgenommen.')
+		.setTitle('Moderation zurückgenommen')
+		.setDescription('Die moderative Handlung wurde erfolgreich zurückgenommen.')
 		.addFields([
 			{
 				name: 'ID',
@@ -71,10 +71,10 @@ export function ReportReverted(report: Report) {
 		.setColor(EmbedColors.SUCCESS);
 }
 
-export function RevertEmbed(report: Report, guildName: string, reverterId: string) {
+export function RevertEmbed(report: Moderation, guildName: string, reverterId: string) {
 	return new EmbedBuilder()
-		.setTitle('Report zurückgenommen')
-		.setDescription(`Der Report mit der ID **#${report.number}** auf dem **${guildName}** Server wurde zurückgenommen. Eventuelle Timeouts oder Bans wurden aufgehoben.`)
+		.setTitle('Moderation zurückgenommen')
+		.setDescription(`Die moderative Handlung mit der ID **#${report.number}** auf dem **${guildName}** Server wurde zurückgenommen. Eventuelle Timeouts oder Bans wurden aufgehoben.`)
 		.addFields([{
 			name: 'Moderator',
 			value: `<@${reverterId}>`,
@@ -85,7 +85,7 @@ export function RevertEmbed(report: Report, guildName: string, reverterId: strin
 		.setColor(EmbedColors.SUCCESS);
 }
 
-export function WarnEmbed(report: Report, guildName: string) {
+export function WarnEmbed(report: Moderation, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Verwarnung')
 		.setDescription(`Du hast eine Verwarnung auf dem **${guildName}** Server erhalten.`)
@@ -96,7 +96,7 @@ export function WarnEmbed(report: Report, guildName: string) {
 		.setColor(actionColorMap[report.action]);
 }
 
-export function TimeoutEmbed(report: Report, guildName: string) {
+export function TimeoutEmbed(report: Moderation, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Timeout')
 		.setDescription(`Du wurdest für eine bestimmte Zeit auf dem **${guildName}** Server gesperrt.`)
@@ -107,7 +107,7 @@ export function TimeoutEmbed(report: Report, guildName: string) {
 		.setColor(actionColorMap[report.action]);
 }
 
-export function KickEmbed(report: Report, guildName: string) {
+export function KickEmbed(report: Moderation, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Kick')
 		.setDescription(`Du wurdest vom **${guildName}** Server gekickt.`)
@@ -118,7 +118,7 @@ export function KickEmbed(report: Report, guildName: string) {
 		.setColor(actionColorMap[report.action]);
 }
 
-export function TempBanEmbed(report: Report, guildName: string) {
+export function TempBanEmbed(report: Moderation, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Temporärer Ban')
 		.setDescription(`Du wurdest temporär vom **${guildName}** Server gebannt.`)
@@ -129,7 +129,7 @@ export function TempBanEmbed(report: Report, guildName: string) {
 		.setColor(actionColorMap[report.action]);
 }
 
-export function BanEmbed(report: Report, guildName: string) {
+export function BanEmbed(report: Moderation, guildName: string) {
 	return new EmbedBuilder()
 		.setTitle('Ban')
 		.setDescription(`Du wurdest vom **${guildName}** Server permanent gebannt.`) // TODO: Ban appeal
@@ -140,7 +140,7 @@ export function BanEmbed(report: Report, guildName: string) {
 		.setColor(actionColorMap[report.action]);
 }
 
-function getReportFields(report: Report) {
+function getReportFields(report: Moderation) {
 	const base: RestOrArray<EmbedField> = [
 		{
 			name: 'ID',

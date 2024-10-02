@@ -40,6 +40,7 @@
 	"dependencies": {
 		"@discordx/utilities": "^7.0.1",
 		"@prisma/client": "^5.17.0",
+		"chrono-node": "^2.7.7",
 		"cron": "^3.1.7",
 		"date-fns": "^3.6.0",
 		"discord.js": "^14.15.3",

@@ -6,9 +6,9 @@ import {
 	PermissionsBitField
 } from 'discord.js';
 import { Discord, Guard, ModalComponent, Slash, SlashGroup, SlashOption } from 'discordx';
+import { ParagraphAutocomplete, ParagraphTransformer } from '../moderation/moderate.helper.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
-import { ParagraphAutocomplete, ParagraphTransformer } from '../report/report.helper.js';
 import { modalParagraphCreate } from './paragraph.components.js';
 import { createParagraph, deleteParagraph, showParagraph } from './paragraph.service.js';
 

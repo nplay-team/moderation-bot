@@ -1,17 +1,17 @@
-import { ReportAction, ReportStatus } from '@prisma/client';
+import { ModerationAction, ReportStatus } from '@prisma/client';
 import { CronJob } from 'cron';
 import { NPLAYModerationBot } from '../bot.js';
-import { NPLAYReport } from '../modules/report/NPLAYReport.js';
-import { Report } from '../modules/report/report.types.js';
+import { NPLAYModeration } from '../modules/moderation/NPLAYModeration.js';
+import { Moderation } from '../modules/moderation/moderate.types.js';
 
 /**
  * This task will run hourly to check if any temporary bans have expired.
  * If so, it will unban the user.
  */
 new CronJob('0 0 * * * *', async () => {
-	const bans: Report[] = await NPLAYModerationBot.db.report.findMany({
+	const bans: Moderation[] = await NPLAYModerationBot.db.moderation.findMany({
 		where: {
-			action: ReportAction.TEMP_BAN,
+			action: ModerationAction.TEMP_BAN,
 			duration: {
 				lte: new Date()
 			},
@@ -24,7 +24,7 @@ new CronJob('0 0 * * * *', async () => {
 
 	if (NPLAYModerationBot.Client.user !== null) {
 		for (const ban of bans) {
-			await NPLAYReport.fromReport(ban).revert(NPLAYModerationBot.Client.user.id, true);
+			await NPLAYModeration.fromReport(ban).revert(NPLAYModerationBot.Client.user.id, true);
 		}
 	}
 }).start();

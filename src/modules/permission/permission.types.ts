@@ -5,9 +5,9 @@
  * PERMISSIONS_BITMAP.REPORT_CREATE // => 10
  */
 export const PermissionBitmap = {
-	REPORT_READ: 1 << 0,
-	REPORT_CREATE: 1 << 1,
-	REPORT_DELETE: 1 << 2,
+	MODERATION_READ: 1 << 0,
+	MODERATION_CREATE: 1 << 1,
+	MODERATION_DELETE: 1 << 2,
 	MODLOG_READ: 1 << 3,
 	BAN_APPEAL_MANAGE: 1 << 4,
 	PERMISSION_READ: 1 << 5,
@@ -20,9 +20,9 @@ export const PermissionBitmap = {
  * An enum that represents all permission keys
  */
 export enum PermissionBitmapFlags {
-	ReportRead = 'REPORT_READ',
-	ReportCreate = 'REPORT_CREATE',
-	ReportDelete = 'REPORT_DELETE',
+	ModerationRead = 'MODERATION_READ',
+	ModerationCreate = 'MODERATION_CREATE',
+	ModerationDelete = 'MODERATION_DELETE',
 	ModlogRead = 'MODLOG_READ',
 	BanAppealManage = 'BAN_APPEAL_MANAGE',
 	PermissionRead = 'PERMISSION_READ',
@@ -48,9 +48,9 @@ export type Permission = keyof typeof PermissionBitmap;
  * All available descriptions for permissions
  */
 export const PermissionBitmapDescriptions = {
-	REPORT_READ: 'Einsehen von Reports',
-	REPORT_CREATE: 'Erstellen von Reports',
-	REPORT_DELETE: 'Löschen von Reports',
+	MODERATION_READ: 'Einsehen von moderativen Aktionen',
+	MODERATION_CREATE: 'Moderieren von Benutzern',
+	MODERATION_DELETE: 'Löschen/Revidieren von moderativen Handlungen',
 	MODLOG_READ: 'Einsehen des Modlogs',
 	BAN_APPEAL_MANAGE: 'Verwalten von Entbannungsanträgen',
 	PERMISSION_READ: 'Einsehen von Berechtigungen',

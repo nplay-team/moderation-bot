@@ -1,18 +1,17 @@
-import { ReportAction } from '@prisma/client';
 import { CommandInteraction, ModalSubmitInteraction } from 'discord.js';
 import {
-	ReportCreated,
-	ReportExecutionError,
-	ReportFailedMissingData,
-	ReportNotFoundError,
-	ReportReverted
-} from '../../embed/data/reportEmbeds.js';
+	ModerationCreated,
+	ModerationExecutionError,
+	ModerationFailedMissingData,
+	ModerationNotFoundError,
+	ModerationReverted
+} from '../../embed/data/moderationEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
-import { NPLAYReport } from './NPLAYReport.js';
-import { getReport } from './report.helper.js';
-import { ReportOptions } from './report.types.js';
+import { NPLAYModeration } from './NPLAYModeration.js';
+import { getReport } from './moderate.helper.js';
+import { ModerationOptions } from './moderate.types.js';
 
-let reportDataCache: Record<string, ReportOptions> = {};
+let reportDataCache: Record<string, ModerationOptions> = {};
 
 setInterval(
 	() => {
@@ -28,36 +27,32 @@ export async function reportModal(interaction: ModalSubmitInteraction) {
 
 	if (!data) {
 		await interaction.followUp({
-			embeds: [createEmbed(ReportFailedMissingData())]
+			embeds: [createEmbed(ModerationFailedMissingData())]
 		});
 		return;
 	}
 
-	if (data.type === ReportAction.BAN && data.duration) {
-		data.type = ReportAction.TEMP_BAN;
-	}
-
-	const report = new NPLAYReport(data, reason);
+	const report = new NPLAYModeration(data, reason);
 	await report.create();
 	await report
 		.execute()
 		.catch((e) => {
 			interaction.followUp({
-				embeds: [createEmbed(ReportExecutionError(e.message))]
+				embeds: [createEmbed(ModerationExecutionError(e.message))]
 			});
 		})
 		.then(() => {
 			interaction.followUp({
-				embeds: [createEmbed(ReportCreated(report.report))]
+				embeds: [createEmbed(ModerationCreated(report.report))]
 			});
 		});
 }
 
-export function pushReportDataToCache(id: string, data: ReportOptions) {
+export function pushReportDataToCache(id: string, data: ModerationOptions) {
 	reportDataCache[id] = data;
 }
 
-export function pullReportDataFromCache(id: string): ReportOptions | undefined {
+export function pullReportDataFromCache(id: string): ModerationOptions | undefined {
 	const data = reportDataCache[id];
 	delete reportDataCache[id];
 	return data;
@@ -67,21 +62,21 @@ export async function revertReport(id: string, interaction: CommandInteraction) 
 	const report = await getReport(id);
 	if (!report || (report.status !== 'EXECUTED' && report.status !== 'DONE')) {
 		await interaction.followUp({
-			embeds: [createEmbed(ReportNotFoundError())]
+			embeds: [createEmbed(ModerationNotFoundError())]
 		});
 		return;
 	}
 
-	NPLAYReport.fromReport(report)
+	NPLAYModeration.fromReport(report)
 		.revert(interaction.member!.user.id)
 		.then(() => {
 			interaction.followUp({
-				embeds: [createEmbed(ReportReverted(report))]
+				embeds: [createEmbed(ModerationReverted(report))]
 			});
 		})
 		.catch((e) => {
 			interaction.followUp({
-				embeds: [createEmbed(ReportExecutionError(e.message))]
+				embeds: [createEmbed(ModerationExecutionError(e.message))]
 			});
 		});
 }

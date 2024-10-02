@@ -16,8 +16,8 @@ datasource db {
 ///--- USER & PERMISSION MANAGEMENT ---///
 model User {
   id             String   @id
-  reports        Report[] @relation(name: "Report_User")
-  createdReports Report[] @relation(name: "Report_Reporter")
+  reports        Moderation[] @relation(name: "Moderation_User")
+  createdReports Moderation[] @relation(name: "Moderation_Issuer")
 
   @@map("users")
 }
@@ -32,7 +32,7 @@ model Permission {
 }
 
 ///--- REPORTS & MODERATION ---///
-enum ReportAction {
+enum ModerationAction {
   WARN
   TIMEOUT
   KICK
@@ -46,7 +46,8 @@ model Paragraph {
   summary String
   content String
   guildId String
-  reports Report[]
+  
+  moderations Moderation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,13 +63,13 @@ enum ReportStatus {
   REVERTED
 }
 
-model Report {
+model Moderation {
   id      String       @id @default(cuid())
   number  Int
-  user    User         @relation(name: "Report_User", fields: [userId], references: [id])
+  user    User         @relation(name: "Moderation_User", fields: [userId], references: [id])
   userId  String
   guildId String
-  action  ReportAction
+  action  ModerationAction
   status  ReportStatus @default(OPENED)
 
   reason      String?
@@ -81,11 +82,11 @@ model Report {
   delDays  Int?
 
   issuerId String
-  issuer   User   @relation(name: "Report_Reporter", fields: [issuerId], references: [id])
+  issuer   User   @relation(name: "Moderation_Issuer", fields: [issuerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId, guildId, number])
-  @@map("reports")
+  @@map("moderations")
 }

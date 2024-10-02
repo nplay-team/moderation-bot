@@ -1,4 +1,4 @@
-import { ReportAction, ReportStatus } from '@prisma/client';
+import { ModerationAction, ReportStatus } from '@prisma/client';
 import { GuildMember } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
 import {
@@ -8,16 +8,16 @@ import {
 	TempBanEmbed,
 	TimeoutEmbed,
 	WarnEmbed
-} from '../../embed/data/reportEmbeds.js';
+} from '../../embed/data/moderationEmbeds.js';
 import { createEmbed } from '../../embed/embed.js';
-import { createDBReport, updateReport } from './report.helper.js';
-import { Report, ReportOptions } from './report.types.js';
+import { createDBReport, updateModeration } from './moderate.helper.js';
+import { Moderation, ModerationOptions } from './moderate.types.js';
 
-export class NPLAYReport {
-	public _report: Report | undefined;
+export class NPLAYModeration {
+	public _report: Moderation | undefined;
 
 	constructor(
-		private _data: ReportOptions,
+		private _data: ModerationOptions,
 		private _reason?: string
 	) {}
 
@@ -37,7 +37,7 @@ export class NPLAYReport {
 	}
 
 	/**
-	 * Creates a new report in the database.
+	 * Creates a new moderation in the database.
 	 * Needs to be called before `execute` as initialization.
 	 */
 	public async create() {
@@ -45,61 +45,64 @@ export class NPLAYReport {
 	}
 
 	/**
-	 * Executes the report action.
+	 * Executes the moderation action.
 	 */
 	public async execute() {
 		switch (this.report.action) {
-			case ReportAction.WARN:
+			case ModerationAction.WARN:
 				await this.warnMember();
 				break;
-			case ReportAction.TIMEOUT:
+			case ModerationAction.TIMEOUT:
 				await this.timeoutMember();
 				break;
-			case ReportAction.KICK:
+			case ModerationAction.KICK:
 				await this.kickMember();
 				break;
-			case ReportAction.TEMP_BAN:
+			case ModerationAction.TEMP_BAN:
 				await this.banMember();
 				break;
-			case ReportAction.BAN:
+			case ModerationAction.BAN:
 				await this.banMember();
 				break;
 		}
 
-		this._report = await updateReport(this.report.id, { status: this.report.action === ReportAction.TEMP_BAN ? ReportStatus.EXECUTED : ReportStatus.DONE });
+		this._report = await updateModeration(this.report.id, {
+			status:
+				this.report.action === ModerationAction.TEMP_BAN ? ReportStatus.EXECUTED : ReportStatus.DONE
+		});
 	}
 
 	/**
-	 * Reverts the report, marks it as reverted in the database and sends a message to the reported user.
-	 * @param reverterId The id of the user who reverted the report.
+	 * Reverts the moderation, marks it as reverted in the database and sends a message to the reported user.
+	 * @param reverterId The id of the user who reverted the moderation.
 	 * @param preventModlogRemoval Whether the modlog entry should be removed or not. Default: false
 	 */
 	public async revert(reverterId: string, preventModlogRemoval = false) {
 		if (!preventModlogRemoval) {
-			this._report = await updateReport(this.report.id, { status: ReportStatus.REVERTED });
+			this._report = await updateModeration(this.report.id, { status: ReportStatus.REVERTED });
 		}
-		
-		async function revertBan(nplayReport: NPLAYReport) {
-			const guild = await NPLAYModerationBot.Client.guilds.fetch(nplayReport.report.guildId);
-			await guild.bans.remove(nplayReport.report.userId);
+
+		async function revertBan(nplayModeration: NPLAYModeration) {
+			const guild = await NPLAYModerationBot.Client.guilds.fetch(nplayModeration.report.guildId);
+			await guild.bans.remove(nplayModeration.report.userId);
 		}
 
 		switch (this.report.action) {
-			case ReportAction.TIMEOUT:
+			case ModerationAction.TIMEOUT:
 				const member = await this.member;
 				if (member) {
 					await member.timeout(null);
 				}
 				break;
 
-			case ReportAction.TEMP_BAN:
+			case ModerationAction.TEMP_BAN:
 				await revertBan(this);
 				if (preventModlogRemoval) {
-					this._report = await updateReport(this.report.id, { status: ReportStatus.DONE });
+					this._report = await updateModeration(this.report.id, { status: ReportStatus.DONE });
 				}
 				break;
-				
-			case ReportAction.BAN:
+
+			case ModerationAction.BAN:
 				await revertBan(this);
 				break;
 		}
@@ -202,24 +205,24 @@ export class NPLAYReport {
 	}
 
 	/**
-	 * Creates a new NPLAYReport instance from a Report object.
-	 * @param report The report object to create the instance from.
+	 * Creates a new NPLAYModeration instance from a Report object.
+	 * @param moderation The moderation object to create the instance from.
 	 */
-	public static fromReport(report: Report) {
-		const data: ReportOptions = {
-			type: report.action,
-			reportedUserId: report.userId,
-			issuerId: report.issuerId,
-			paragraph: report.paragraph,
-			guildId: report.guildId,
-			duration: report.duration,
-			delDays: report.delDays,
-			message: report.message
+	public static fromReport(moderation: Moderation) {
+		const data: ModerationOptions = {
+			type: moderation.action,
+			reportedUserId: moderation.userId,
+			issuerId: moderation.issuerId,
+			paragraph: moderation.paragraph,
+			guildId: moderation.guildId,
+			duration: moderation.duration,
+			delDays: moderation.delDays,
+			message: moderation.message
 		};
 
-		const nplayReport = new NPLAYReport(data, report.reason || undefined);
-		nplayReport._report = report;
+		const nplayModeration = new NPLAYModeration(data, moderation.reason || undefined);
+		nplayModeration._report = moderation;
 
-		return nplayReport;
+		return nplayModeration;
 	}
 }
