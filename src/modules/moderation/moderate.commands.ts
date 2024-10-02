@@ -257,14 +257,14 @@ export abstract class ModerateCommands {
 
 	@Slash({
 		name: 'revert',
-		description: 'Löscht einen Report und macht die Aktion rückgängig'
+		description: 'Revidiert eine Moderationshandlung'
 	})
 	@SlashGroup('moderate')
 	@Guard(RequirePermission(PermissionBitmapFlags.ModerationDelete))
 	async revertReport(
 		@SlashOption({
 			name: 'id',
-			description: 'Die ID der moderativen Handlung',
+			description: 'Die ID der Moderationshandlung',
 			required: true,
 			type: ApplicationCommandOptionType.String
 		})
