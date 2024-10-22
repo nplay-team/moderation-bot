@@ -1,8 +1,9 @@
-import { ModerationAction, Moderation as PrismaReport } from '@prisma/client';
+import { ModerationAction, Moderation as PrismaModeration, Paragraph } from '@prisma/client';
 import * as chrono from 'chrono-node';
 import { AutocompleteInteraction } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { Moderation, ModerationActionType, ModerationOptions } from './moderate.types.js';
+import { Moderation, ModerationActionType, ModerationOptions, ModerationStatus } from './moderate.types.js';
+import { TimeFormat } from '@discordx/utilities';
 
 /**
  * Get a moderation by its id.
@@ -103,7 +104,7 @@ export async function createDBReport(data: ModerationOptions, reason?: string) {
  * @param data The data to update.
  * @returns The updated moderation.
  */
-export function updateModeration(id: string, data: Partial<PrismaReport>): Promise<Moderation> {
+export function updateModeration(id: string, data: Partial<PrismaModeration>): Promise<Moderation> {
 	return NPLAYModerationBot.db.moderation.update({
 		where: {
 			id
@@ -203,4 +204,16 @@ export function ParagraphAutocomplete(interaction: AutocompleteInteraction) {
 
 			interaction.respond(response);
 		});
+}
+
+/**
+ * Create a moderation field for a modlog embed.
+ * @param moderation The moderation to create the field for.
+ * @returns The created field.
+ */
+export function createModlogModerationField(moderation: PrismaModeration & { paragraph?: Paragraph | null }) {
+	return {
+		name: `#${moderation.number} - ${moderation.action} - ${moderation.id}`,
+		value: `**Grund:** ${moderation.reason || 'Kein Grund angegeben'}\n` + `**Dauer:** ${moderation.duration ? TimeFormat.Default(moderation.duration) : 'Permanent'}\n` + `**Paragraph:** ${moderation.paragraph?.name || 'Kein Paragraph'}\n` + `**Status:** ${ModerationStatus[moderation.status]}\n` + `**Datum:** ${TimeFormat.Default(moderation.createdAt)}\n`+ `**Moderator:** <@${moderation.issuerId}>`
+	};
 }

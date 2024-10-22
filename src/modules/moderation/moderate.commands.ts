@@ -7,6 +7,7 @@ import {
 	PermissionsBitField
 } from 'discord.js';
 import { Discord, Guard, ModalComponent, Slash, SlashGroup, SlashOption } from 'discordx';
+import { NPLAYModerationBot } from '../../bot.js';
 import { ModerationExecutionError } from '../../embed/data/moderationEmbeds.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
@@ -16,7 +17,7 @@ import {
 	ParagraphAutocomplete,
 	ParagraphTransformer
 } from './moderate.helper.js';
-import { pushReportDataToCache, reportModal, revertReport } from './moderate.service.js';
+import { generateModlog, pushReportDataToCache, reportModal, revertReport } from './moderate.service.js';
 
 @Discord()
 @SlashGroup({
@@ -273,5 +274,25 @@ export abstract class ModerateCommands {
 	) {
 		await interaction.deferReply();
 		await revertReport(reportId, interaction);
+	}
+
+	@Slash({
+		name: 'info',
+		description: 'Gibt alle Moderationshandlungen zu einem Benutzer aus'
+	})
+	@SlashGroup('moderate')
+	@Guard(RequirePermission(PermissionBitmapFlags.ModerationDelete))
+	async moderateInfo(
+		@SlashOption({
+			name: 'member',
+			description: 'Der Benutzer, dessen Moderationshandlungen angezeigt werden sollen',
+			required: true,
+			type: ApplicationCommandOptionType.User
+		})
+		user: GuildMember,
+		interaction: CommandInteraction
+	) {
+		await interaction.deferReply();
+		await generateModlog(user, interaction);
 	}
 }

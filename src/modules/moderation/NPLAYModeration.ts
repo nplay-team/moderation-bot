@@ -153,7 +153,9 @@ export class NPLAYModeration {
 		await member.timeout(
 			this.report.duration.getTime() - this.report.createdAt.getTime(),
 			this.report.reason || 'Kein Grund angegeben'
-		);
+		).catch(() => {
+			throw new Error('Der Timeout konnte nicht gesetzt werden.');
+		});
 
 		member
 			.send({
