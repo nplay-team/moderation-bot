@@ -150,12 +150,14 @@ export class NPLAYModeration {
 			throw new Error('Die maximale Dauer für einen Timeout beträgt 28 Tage.');
 		}
 
-		await member.timeout(
-			this.report.duration.getTime() - this.report.createdAt.getTime(),
-			this.report.reason || 'Kein Grund angegeben'
-		).catch(() => {
-			throw new Error('Der Timeout konnte nicht gesetzt werden.');
-		});
+		await member
+			.timeout(
+				this.report.duration.getTime() - this.report.createdAt.getTime(),
+				this.report.reason || 'Kein Grund angegeben'
+			)
+			.catch(() => {
+				throw new Error('Der Timeout konnte nicht gesetzt werden.');
+			});
 
 		member
 			.send({

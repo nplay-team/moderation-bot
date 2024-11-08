@@ -1,9 +1,14 @@
-import { ModerationAction, Moderation as PrismaModeration, Paragraph } from '@prisma/client';
+import { TimeFormat } from '@discordx/utilities';
+import { ModerationAction, Paragraph, Moderation as PrismaModeration } from '@prisma/client';
 import * as chrono from 'chrono-node';
 import { AutocompleteInteraction } from 'discord.js';
 import { NPLAYModerationBot } from '../../bot.js';
-import { Moderation, ModerationActionType, ModerationOptions, ModerationStatus } from './moderate.types.js';
-import { TimeFormat } from '@discordx/utilities';
+import {
+	Moderation,
+	ModerationActionType,
+	ModerationOptions,
+	ModerationStatus
+} from './moderate.types.js';
 
 /**
  * Get a moderation by its id.
@@ -211,9 +216,17 @@ export function ParagraphAutocomplete(interaction: AutocompleteInteraction) {
  * @param moderation The moderation to create the field for.
  * @returns The created field.
  */
-export function createModlogModerationField(moderation: PrismaModeration & { paragraph?: Paragraph | null }) {
+export function createModlogModerationField(
+	moderation: PrismaModeration & { paragraph?: Paragraph | null }
+) {
 	return {
 		name: `#${moderation.number} - ${moderation.action} - ${moderation.id}`,
-		value: `**Grund:** ${moderation.reason || 'Kein Grund angegeben'}\n` + `**Dauer:** ${moderation.duration ? TimeFormat.Default(moderation.duration) : 'Permanent'}\n` + `**Paragraph:** ${moderation.paragraph?.name || 'Kein Paragraph'}\n` + `**Status:** ${ModerationStatus[moderation.status]}\n` + `**Datum:** ${TimeFormat.Default(moderation.createdAt)}\n`+ `**Moderator:** <@${moderation.issuerId}>`
+		value:
+			`**Grund:** ${moderation.reason || 'Kein Grund angegeben'}\n` +
+			`**Dauer:** ${moderation.duration ? TimeFormat.Default(moderation.duration) : 'Permanent'}\n` +
+			`**Paragraph:** ${moderation.paragraph?.name || 'Kein Paragraph'}\n` +
+			`**Status:** ${ModerationStatus[moderation.status]}\n` +
+			`**Datum:** ${TimeFormat.Default(moderation.createdAt)}\n` +
+			`**Moderator:** <@${moderation.issuerId}>`
 	};
 }

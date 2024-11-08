@@ -2,5 +2,5 @@
 	"verbose": true,
 	"watch": ["src"],
 	"ext": "ts",
-	"exec": "tsc -p tsconfig.json && node dist/bot.js"
+	"exec": "rm -rf dist && tsc -p tsconfig.json && node dist/bot.js"
 }

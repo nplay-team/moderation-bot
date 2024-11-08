@@ -29,8 +29,8 @@ export type ModerationOptions = {
 export type Moderation = PrismaModeration & { paragraph: Paragraph | null };
 
 export const ModerationStatus = {
-	OPENED: "Eröffnet",
-	EXECUTED: "Ausgeführt",
-	DONE: "Erledigt",
-	REVERTED: "Zurückgenommen"
-}
+	OPENED: 'Eröffnet',
+	EXECUTED: 'Ausgeführt',
+	DONE: 'Erledigt',
+	REVERTED: 'Zurückgenommen'
+};

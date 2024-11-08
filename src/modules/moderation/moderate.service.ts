@@ -1,4 +1,6 @@
+import { TimeFormat } from '@discordx/utilities';
 import { CommandInteraction, EmbedBuilder, GuildMember, ModalSubmitInteraction } from 'discord.js';
+import { NPLAYModerationBot } from '../../bot.js';
 import {
 	ModerationCreated,
 	ModerationExecutionError,
@@ -9,9 +11,7 @@ import {
 import { createEmbed, EmbedColors } from '../../embed/embed.js';
 import { NPLAYModeration } from './NPLAYModeration.js';
 import { createModlogModerationField, getReport } from './moderate.helper.js';
-import { ModerationOptions, ModerationStatus } from './moderate.types.js';
-import { TimeFormat } from '@discordx/utilities';
-import { NPLAYModerationBot } from '../../bot.js';
+import { ModerationOptions } from './moderate.types.js';
 
 let reportDataCache: Record<string, ModerationOptions> = {};
 
@@ -33,7 +33,7 @@ export async function reportModal(interaction: ModalSubmitInteraction) {
 		});
 		return;
 	}
-	
+
 	// TODO: Check if member is timeoutable/bannable by the bot
 
 	const report = new NPLAYModeration(data, reason);
@@ -64,8 +64,8 @@ export function pullReportDataFromCache(id: string): ModerationOptions | undefin
 
 export async function revertReport(id: string, interaction: CommandInteraction) {
 	const report = await getReport(id);
-	
-	if (!report || report.status === "REVERTED") {
+
+	if (!report || report.status === 'REVERTED') {
 		await interaction.followUp({
 			embeds: [createEmbed(ModerationNotFoundError())]
 		});
@@ -92,51 +92,54 @@ export async function generateModlog(guildMember: GuildMember, interaction: Comm
 			userId: guildMember.id,
 			guildId: interaction.guildId!,
 			NOT: {
-				status: "REVERTED"
-			} 
+				status: 'REVERTED'
+			}
 		},
 		include: {
 			paragraph: true
 		}
-	})
-	
+	});
+
 	const infoEmbed = new EmbedBuilder()
-		.setTitle("NPLAY-Moderation Datenauskunft")
+		.setTitle('NPLAY-Moderation Datenauskunft')
 		.addFields([
 			{
-				name: "Name",
-				value: guildMember.user.username,
+				name: 'Name',
+				value: guildMember.user.username
 			},
 			{
-				name: "Nutzer-ID",
-				value: guildMember.user.id,
+				name: 'Nutzer-ID',
+				value: guildMember.user.id
 			},
 			{
-				name: "Avatar",
-				value: `[Link](${guildMember.user.displayAvatarURL()})`,
+				name: 'Avatar',
+				value: `[Link](${guildMember.user.displayAvatarURL()})`
 			},
 			{
-				name: "Rollen",
-				value: guildMember.roles.cache.filter((role) => !role.name.includes("everyone")).map((role) => `<@&${role.id}>`).join(" "),
+				name: 'Rollen',
+				value: guildMember.roles.cache
+					.filter((role) => !role.name.includes('everyone'))
+					.map((role) => `<@&${role.id}>`)
+					.join(' ')
 			},
 			{
-				name: "Erstellt am",
-				value: `${TimeFormat.Default(guildMember.user.createdAt)} (${TimeFormat.RelativeTime(guildMember.user.createdAt)})`,
+				name: 'Erstellt am',
+				value: `${TimeFormat.Default(guildMember.user.createdAt)} (${TimeFormat.RelativeTime(guildMember.user.createdAt)})`
 			},
 			{
-				name: "Beigetreten am",
-				value: `${TimeFormat.Default(guildMember.joinedAt!)} (${TimeFormat.RelativeTime(guildMember.joinedAt!)})`,
+				name: 'Beigetreten am',
+				value: `${TimeFormat.Default(guildMember.joinedAt!)} (${TimeFormat.RelativeTime(guildMember.joinedAt!)})`
 			}
 		])
 		.setThumbnail(guildMember.user.displayAvatarURL())
 		.setColor(EmbedColors.DEFAULT);
-	
+
 	const moderationsEmbed = new EmbedBuilder()
-		.setTitle("Moderationsverlauf")
+		.setTitle('Moderationsverlauf')
 		.addFields(moderations.map((moderation) => createModlogModerationField(moderation)))
 		.setThumbnail(NPLAYModerationBot.Client.user!.displayAvatarURL())
 		.setColor(EmbedColors.DEFAULT);
-	
+
 	await interaction.followUp({
 		embeds: [createEmbed(infoEmbed), moderationsEmbed]
 	});

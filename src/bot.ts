@@ -1,14 +1,39 @@
-import { NotBot } from '@discordx/utilities';
 import { PrismaClient } from '@prisma/client';
-import { ActivityType, IntentsBitField, Partials } from 'discord.js';
-import { Client } from 'discordx';
+import { ActivityType, IntentsBitField, Partials, Client } from 'discord.js';
 import 'dotenv/config';
-import { dirname, importCommands } from './command.importer.js';
+import NPLAYBotInteractionHandler from './NPLAYBotInteractionHandler.js';
 import './tasks/autoBanRevert.js';
+import { CommandKit } from 'commandkit';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export class NPLAYModerationBot {
-	private static _client: Client;
+	public static guildID = process.env.GUILD_ID;
+
+	private static _client: Client = new Client({
+		intents: [
+			IntentsBitField.Flags.Guilds,
+			IntentsBitField.Flags.GuildMessages,
+			IntentsBitField.Flags.DirectMessages,
+			IntentsBitField.Flags.MessageContent
+		],
+		partials: [Partials.Channel, Partials.Message]
+	});
+	
+	private static _commandKit: CommandKit = new CommandKit({
+		client: this._client,
+		commandsPath: path.join(path.dirname(fileURLToPath(import.meta.url)), 'commands'),
+		eventsPath: path.join(path.dirname(fileURLToPath(import.meta.url)), 'events'),
+		validationsPath: path.join(path.dirname(fileURLToPath(import.meta.url)), 'validations'),
+		devGuildIds: this.guildID ? [this.guildID] : undefined,
+		skipBuiltInValidations: true,
+		bulkRegister: true,
+	});
+
+
 	private static _prismaClient: PrismaClient;
+
+	public static interactions: NPLAYBotInteractionHandler = new NPLAYBotInteractionHandler();
 
 	/**
 	 * The discord.js client
@@ -35,30 +60,13 @@ export class NPLAYModerationBot {
 	 * Start the bot
 	 */
 	static async start(): Promise<void> {
-		const guildID = process.env.GUILD_ID;
-
-		if (!guildID) {
+		if (!this.guildID) {
 			console.warn(
 				'GUILD_ID not found in environment variables, bot will fall back to global modules'
 			);
 		}
 
-		this._client = new Client({
-			intents: [
-				IntentsBitField.Flags.Guilds,
-				IntentsBitField.Flags.GuildMessages,
-				IntentsBitField.Flags.DirectMessages,
-				IntentsBitField.Flags.MessageContent
-			],
-			partials: [Partials.Channel, Partials.Message],
-			silent: process.env.NODE_ENV === 'production',
-			botGuilds: guildID ? [guildID] : undefined,
-			guards: [NotBot]
-		});
-
 		this._client.once('ready', async () => {
-			await this._client.initApplicationCommands();
-
 			if (this._client.user) {
 				this._client.user.setPresence({
 					status: 'online',
@@ -75,15 +83,18 @@ export class NPLAYModerationBot {
 		});
 
 		this._client.on('interactionCreate', (interaction) => {
-			this._client.executeInteraction(interaction);
+			this.interactions.handleInteraction(interaction)
 		});
 
-		await importCommands(`${dirname(import.meta.url)}/modules/**/*.{js,ts}`);
-
+		//await this.interactions.importCommands();
+		
 		if (!process.env.BOT_TOKEN) {
 			throw Error('Could not find BOT_TOKEN in your environment');
 		}
-		await this._client.login(process.env.BOT_TOKEN);
+
+		await this._client.login(process.env.BOT_TOKEN).then(() => {
+			//this.interactions.registerCommands();
+		});
 	}
 
 	private static destroy(): void {

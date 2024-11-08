@@ -7,7 +7,6 @@ import {
 	PermissionsBitField
 } from 'discord.js';
 import { Discord, Guard, ModalComponent, Slash, SlashGroup, SlashOption } from 'discordx';
-import { NPLAYModerationBot } from '../../bot.js';
 import { ModerationExecutionError } from '../../embed/data/moderationEmbeds.js';
 import { OnlyOnGuild, RequirePermission } from '../permission/permission.guards.js';
 import { PermissionBitmapFlags } from '../permission/permission.types.js';
@@ -17,7 +16,12 @@ import {
 	ParagraphAutocomplete,
 	ParagraphTransformer
 } from './moderate.helper.js';
-import { generateModlog, pushReportDataToCache, reportModal, revertReport } from './moderate.service.js';
+import {
+	generateModlog,
+	pushReportDataToCache,
+	reportModal,
+	revertReport
+} from './moderate.service.js';
 
 @Discord()
 @SlashGroup({
