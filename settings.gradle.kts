@@ -1,2 +1,2 @@
-rootProject.name = "moderation-bot"
+rootProject.name = "moderationbot"
 

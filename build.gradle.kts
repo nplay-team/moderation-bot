@@ -19,6 +19,10 @@ dependencies {
     }
 
     implementation("com.github.kaktushose:jda-commands:4.0.0-beta.2")
+ 
+    implementation("ch.qos.logback:logback-core:1.5.6")
+    implementation("ch.qos.logback:logback-classic:1.5.6")
+    implementation("org.slf4j:slf4j-api:2.0.9")
 }
 
 tasks.test {
