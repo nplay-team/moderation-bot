@@ -1,6 +1,0 @@
-{
-	"verbose": true,
-	"watch": ["src"],
-	"ext": "ts",
-	"exec": "rm -rf dist && tsc -p tsconfig.json && node dist/bot.js"
-}
