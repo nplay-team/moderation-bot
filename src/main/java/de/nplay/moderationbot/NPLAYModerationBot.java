@@ -1,6 +1,7 @@
 package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.JDACommands;
+import com.github.kaktushose.jda.commands.annotations.Produces;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -18,6 +19,7 @@ public class NPLAYModerationBot {
     private final JDA api;
     private final JDACommands commands;
     private final Guild guild;
+    private final Database database;
 
     /**
      * Constructor of the bot, creates a JDA instance and initiates all relevant services.
@@ -34,6 +36,8 @@ public class NPLAYModerationBot {
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build();
 
+        database = new Database(this);
+        
         commands = JDACommands.start(api, NPLAYModerationBot.class, "de.nplay.moderationbot");
         commands.getDependencyInjector().registerProvider(this);
 
@@ -70,5 +74,10 @@ public class NPLAYModerationBot {
 
     public Guild getGuild() {
         return guild;
+    }
+    
+    @Produces(skipIndexing = true)
+    public Database getDatabase() {
+        return database;
     }
 }
