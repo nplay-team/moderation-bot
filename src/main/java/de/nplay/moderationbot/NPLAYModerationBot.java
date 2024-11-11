@@ -2,6 +2,8 @@ package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.JDACommands;
 import com.github.kaktushose.jda.commands.annotations.Produces;
+import com.github.kaktushose.jda.commands.data.EmbedCache;
+import com.github.kaktushose.jda.commands.embeds.JsonErrorMessageFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -11,15 +13,18 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.util.Objects;
+import java.util.Set;
+
 /**
  * The main class of the bot
  */
 public class NPLAYModerationBot {
 
-    private final JDA api;
-    private final JDACommands commands;
+    private final JDA jda;
+    private final JDACommands jdaCommands;
     private final Guild guild;
-    private final Database database;
+    private final EmbedCache embedCache;
 
     /**
      * Constructor of the bot, creates a JDA instance and initiates all relevant services.
@@ -27,23 +32,28 @@ public class NPLAYModerationBot {
      * @param guildId The guild the bot should listen to
      * @param token   The discord bot token
      */
-    private NPLAYModerationBot(long guildId, String token) {
-        api = JDABuilder.createDefault(token)
-                .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT)
+    private NPLAYModerationBot(String guildId, String token) throws InterruptedException {
+        jda = JDABuilder.createDefault(token)
+                .enableIntents(
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.GUILD_PRESENCES,
+                        GatewayIntent.MESSAGE_CONTENT
+                )
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .build();
+                .build().awaitReady();
 
-        database = new Database(this);
-        
-        commands = JDACommands.start(api, NPLAYModerationBot.class, "de.nplay.moderationbot");
-        commands.getDependencyInjector().registerProvider(this);
+        guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
 
-        guild = api.getGuildById(guildId);
+        jdaCommands = JDACommands.start(jda, NPLAYModerationBot.class, "de.nplay.moderationbot");
+        embedCache = new EmbedCache("embeds.json");
+        jdaCommands.getDependencyInjector().registerProvider(this);
+        jdaCommands.getImplementationRegistry().setErrorMessageFactory(new JsonErrorMessageFactory(embedCache));
+        jdaCommands.getImplementationRegistry().setGuildScopeProvider(commandData -> Set.of(guild.getIdLong()));
 
-        api.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
+        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
     }
 
     /**
@@ -53,7 +63,7 @@ public class NPLAYModerationBot {
      * @param token   The discord bot token
      * @return The {@link NPLAYModerationBot} instance
      */
-    public static NPLAYModerationBot start(long guildId, String token) {
+    public static NPLAYModerationBot start(String guildId, String token) throws InterruptedException {
         return new NPLAYModerationBot(guildId, token);
     }
 
@@ -61,23 +71,23 @@ public class NPLAYModerationBot {
      * Shuts the bot and all relevant services down.
      */
     public void shutdown() {
-        api.shutdown();
+        jda.shutdown();
     }
 
-    public JDA getApi() {
-        return api;
+    public JDA getJda() {
+        return jda;
     }
 
-    public JDACommands getCommands() {
-        return commands;
+    public JDACommands getJdaCommands() {
+        return jdaCommands;
     }
 
     public Guild getGuild() {
         return guild;
     }
-    
+
     @Produces(skipIndexing = true)
-    public Database getDatabase() {
-        return database;
+    public EmbedCache getEmbedCache() {
+        return embedCache;
     }
 }

@@ -24,4 +24,5 @@ services:
     restart: on-failure
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
+      - BOT_GUILD=${BOT_GUILD}
       - DATABASE_URL=${DATABASE_URL}

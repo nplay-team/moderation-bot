@@ -10,15 +10,20 @@
 
 # NPLAY-Moderation
 
-This bot was created specifically for the Discord [server](https://discord.gg/qcpeZQhJf5) of the german YouTuber and Twitch Streamer [NPLAY](https://www.youtube.com/user/nordrheintvplay). The sole purpose of the bot is to provide custom moderation features.
+This bot was created specifically for the Discord [server](https://discord.gg/qcpeZQhJf5) of the german YouTuber and
+Twitch Streamer [NPLAY](https://www.youtube.com/user/nordrheintvplay). The sole purpose of the bot is to provide custom
+moderation features.
 
 ## Test Server
 
-The bot is in constant development. Join the test [server](https://discord.gg/JYWezvQ) to receive regular updates, make suggestions and test preview versions. This is also the place to get support if you want to host the bot by yourself.
+The bot is in constant development. Join the test [server](https://discord.gg/JYWezvQ) to receive regular updates, make
+suggestions and test preview versions. This is also the place to get support if you want to host the bot by yourself.
 
 ## Installation
 
-Due to the high level of customization, we do not provide a public instance that anyone can invite. However, you can still host your own version of the bot. Therefore, you should have a basic understanding of the Node ecosystem, MySQL, Discord bots in general and Docker.
+Due to the high level of customization, we do not provide a public instance that anyone can invite. However, you can
+still host your own version of the bot. Therefore, you should have a basic understanding of the Node ecosystem, MySQL,
+Discord bots in general and Docker.
 
 First clone the repository:
 
@@ -26,7 +31,8 @@ First clone the repository:
 git clone https://github.com/nplay-team/moderation-bot.git
 ```
 
-After you've cloned the repository, make sure to have an `.env` file providing the required variables. You can find an example [here](https://github.com/nplay-team/moderation-bot/blob/main/.env.example).
+After you've cloned the repository, make sure to have an `.env` file providing the required variables. You can find an
+example [here](https://github.com/nplay-team/moderation-bot/blob/main/.env.example).
 
 Then you can start the bot by running:
 

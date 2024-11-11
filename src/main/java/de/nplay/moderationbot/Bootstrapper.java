@@ -16,15 +16,8 @@ public class Bootstrapper {
         long startTime = System.currentTimeMillis();
         try {
             log.info("Starting NPLAY-Bot...");
-            
-            String token = System.getenv("BOT_TOKEN");
-            String guildId = System.getenv("BOT_GUILD");
-            
-            if(token == null || guildId == null) {
-                throw new RuntimeException("Error starting bot, missing BOT_TOKEN and/or BOT_GUILD.");
-            }
 
-            var bot = NPLAYModerationBot.start(Long.parseLong(guildId), token);
+            var bot = NPLAYModerationBot.start(System.getenv("BOT_GUILD"), System.getenv("BOT_TOKEN"));
             Thread.setDefaultUncaughtExceptionHandler((t, e) -> log.error("An uncaught exception has occurred!", e));
             Runtime.getRuntime().addShutdownHook(new Thread(bot::shutdown));
 
