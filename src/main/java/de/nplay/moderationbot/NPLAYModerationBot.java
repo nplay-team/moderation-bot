@@ -4,6 +4,13 @@ import com.github.kaktushose.jda.commands.JDACommands;
 import com.github.kaktushose.jda.commands.annotations.Produces;
 import com.github.kaktushose.jda.commands.data.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.JsonErrorMessageFactory;
+import de.chojo.sadu.datasource.DataSourceCreator;
+import de.chojo.sadu.mapper.RowMapperRegistry;
+import de.chojo.sadu.postgresql.databases.PostgreSql;
+import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
+import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
+import de.chojo.sadu.updater.QueryReplacement;
+import de.chojo.sadu.updater.SqlUpdater;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -12,7 +19,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,6 +32,7 @@ import java.util.Set;
  */
 public class NPLAYModerationBot {
 
+    private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
     private final JDA jda;
     private final JDACommands jdaCommands;
     private final Guild guild;
@@ -54,6 +66,28 @@ public class NPLAYModerationBot {
         jdaCommands.getImplementationRegistry().setGuildScopeProvider(commandData -> Set.of(guild.getIdLong()));
 
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
+
+        var dataSource = DataSourceCreator.create(PostgreSql.get())
+                .configure(config -> config.host(System.getenv("POSTGRES_HOST"))
+                        .port(System.getenv("POSTGRES_PORT"))
+                        .user(System.getenv("POSTGRES_USER"))
+                        .password(System.getenv("POSTGRES_PASSWORD"))
+                        .database(System.getenv("POSTGRES_DATABASE"))
+                )
+                .create()
+                .build();
+
+        var config = QueryConfiguration.builder(dataSource)
+                .setExceptionHandler(err -> log.error("An error occurred during a database request", err))
+                .setRowMapperRegistry(new RowMapperRegistry().register(PostgresqlMapper.getDefaultMapper()))
+                .build();
+        QueryConfiguration.setDefault(config);
+
+        try {
+            SqlUpdater.builder(dataSource, PostgreSql.get()).execute();
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException("Failed to migrate database!", e);
+        }
     }
 
     /**
