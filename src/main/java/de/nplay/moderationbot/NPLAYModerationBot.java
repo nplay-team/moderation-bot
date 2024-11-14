@@ -9,7 +9,6 @@ import de.chojo.sadu.mapper.RowMapperRegistry;
 import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
-import de.chojo.sadu.updater.QueryReplacement;
 import de.chojo.sadu.updater.SqlUpdater;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
