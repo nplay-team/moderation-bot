@@ -33,7 +33,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:6.1.0")
     implementation("de.chojo.sadu", "sadu-datasource", saduVersion)
     implementation("de.chojo.sadu", "sadu-queries", saduVersion)
-    implementation("de.chojo.sadu", "sadu-mapping", saduVersion)
+    implementation("de.chojo.sadu", "sadu-mapper", saduVersion)
     implementation("de.chojo.sadu", "sadu-postgresql", saduVersion)
     implementation("de.chojo.sadu", "sadu-updater", saduVersion)
 
