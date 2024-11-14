@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,11 @@ public class NPLAYModerationBot {
      *
      * @param guildId The guild the bot should listen to
      * @param token   The discord bot token
+     *                
+     * @hidden The {@link SuppressWarnings} annotation is used to suppress an error message of sadu, which is caused
+     * due to the using of {@link ApiStatus.Internal} marked {@link de.chojo.sadu.core.updater.UpdaterBuilder} class.
      */
+    @SuppressWarnings("UnstableApiUsage")
     private NPLAYModerationBot(String guildId, String token) throws InterruptedException {
         jda = JDABuilder.createDefault(token)
                 .enableIntents(
