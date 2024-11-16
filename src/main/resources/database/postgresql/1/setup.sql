@@ -1,12 +1,5 @@
 -- create types
-CREATE TYPE REPORTACTION AS ENUM ('WARN', 'TIMEOUT', 'KICK', 'TEMP_BAN', 'BAN');
-
-/**
-  OPENED - The report is created
-  DONE - All pending actions (like unbanning after validUntil) are executed
-  REVERTED - The report got reverted / is not valid anymore
- */
-CREATE TYPE REPORTSTATUS AS ENUM ('OPENED', 'DONE', 'REVERTED');
+CREATE TYPE REPORTTYPE AS ENUM ('WARN', 'TIMEOUT', 'KICK', 'TEMP_BAN', 'BAN');
 
 -- create tables
 CREATE TABLE users (
@@ -21,26 +14,35 @@ CREATE TABLE roles (
 
 CREATE TABLE rule_paragraphs (
     id SERIAL NOT NULL PRIMARY KEY,
-    number TEXT,
-    title TEXT,
+    number TEXT NOT NULL,
+    title TEXT NOT NULL,
+    content TEXT
+);
+
+CREATE TABLE message_references (
+    messageId BIGINT NOT NULL PRIMARY KEY,
+    channelId BIGINT NOT NULL,
     content TEXT
 );
 
 CREATE TABLE moderations (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     userId BIGINT NOT NULL,
-    guildId BIGINT NOT NULL,
-    action REPORTACTION NOT NULL,
-    status REPORTSTATUS NOT NULL DEFAULT 'OPENED',
+    type REPORTTYPE NOT NULL,
+    reverted BOOLEAN,
     
     reason TEXT,
     paragraphId INT,
-    referenceMessage TEXT,
-    validUntil DATE,
     
-    issuerId BIGINT,
+    referenceMessage BIGINT,
     
-    CONSTRAINT fkey_moderations_userId FOREIGN KEY (userId) REFERENCES users (id) ON DELETE RESTRICT,
+    revokeAt TIMESTAMP,
+    duration BIGINT, -- in seconds
+    
+    issuerId BIGINT NOT NULL,
+    
+    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    
     CONSTRAINT fkey_moderations_paragraphId FOREIGN KEY (paragraphId) REFERENCES rule_paragraphs (id) ON DELETE SET NULL,
-    CONSTRAINT fkey_moderations_issuerId FOREIGN KEY (issuerId) REFERENCES users (id) ON DELETE SET NULL
+    CONSTRAINT fkey_moderations_referenceMessage FOREIGN KEY (referenceMessage) REFERENCES message_references (messageId) ON DELETE SET NULL
 );
