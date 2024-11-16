@@ -20,29 +20,29 @@ CREATE TABLE rule_paragraphs (
 );
 
 CREATE TABLE message_references (
-    messageId BIGINT NOT NULL PRIMARY KEY,
-    channelId BIGINT NOT NULL,
+    message_id BIGINT NOT NULL PRIMARY KEY,
+    channel_id BIGINT NOT NULL,
     content TEXT
 );
 
 CREATE TABLE moderations (
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    userId BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
     type REPORTTYPE NOT NULL,
     reverted BOOLEAN,
     
     reason TEXT,
-    paragraphId INT,
+    paragraph_id INT,
     
-    referenceMessage BIGINT,
+    reference_message BIGINT,
     
-    revokeAt TIMESTAMP,
+    revoke_at TIMESTAMP,
     duration BIGINT, -- in seconds
     
-    issuerId BIGINT NOT NULL,
+    issuer_id BIGINT NOT NULL,
     
-    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
-    CONSTRAINT fkey_moderations_paragraphId FOREIGN KEY (paragraphId) REFERENCES rule_paragraphs (id) ON DELETE SET NULL,
-    CONSTRAINT fkey_moderations_referenceMessage FOREIGN KEY (referenceMessage) REFERENCES message_references (messageId) ON DELETE SET NULL
+    CONSTRAINT fkey_moderations_paragraphId FOREIGN KEY (paragraph_id) REFERENCES rule_paragraphs (id) ON DELETE SET NULL,
+    CONSTRAINT fkey_moderations_referenceMessage FOREIGN KEY (reference_message) REFERENCES message_references (message_id) ON DELETE SET NULL
 );
