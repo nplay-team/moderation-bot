@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.permissions;
 
-import java.util.Set;
+import java.util.*;
 
 public class BotPermissions {
     
@@ -26,6 +26,19 @@ public class BotPermissions {
         int combined = 0;
         for (BotPermissionBitfield permission : permissions) {
             combined |= permission.value;
+        }
+        return combined;
+    }
+
+    /**
+     * Combines multiple permissions into one integer.
+     * @param permissions the list of integer to combine
+     * @return the combined permissions
+     */
+    public static int combine(List<Integer> permissions) {
+        int combined = 0;
+        for (int permission : permissions) {
+            combined |= permission;
         }
         return combined;
     }
@@ -117,5 +130,39 @@ public class BotPermissions {
             }
         }
         return true;
+    }
+
+    /**
+     * Decodes a bitfield permission value to a List of {@link BotPermissionBitfield}
+     * @param permissions the current bitfield permission value
+     * @return the list of all included {@link BotPermissionBitfield}
+     */
+    public static List<BotPermissionBitfield> decodePermissions(int permissions) {
+        List<BotPermissionBitfield> decodedPermissions = new ArrayList<>();
+        
+        for (BotPermissionBitfield permission : BotPermissionBitfield.values()) {
+            if(hasPermission(permissions, permission)) {
+                decodedPermissions.add(permission);
+            }
+        }
+        
+        return decodedPermissions;
+    }
+
+    /**
+     * Creates a human-readable, line-by-line overview of all included permissions of a bitfield permission value
+     * @param permissions the current bitfield permission value
+     * @return the permission list string
+     */
+    public static String getPermissionListString(int permissions) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (BotPermissionBitfield permission : BotPermissionBitfield.values()) {
+            if(hasPermission(permissions, permission)) {
+                stringBuilder.append(String.format("`%s`", permission.humanReadableName)).append("\n");
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }

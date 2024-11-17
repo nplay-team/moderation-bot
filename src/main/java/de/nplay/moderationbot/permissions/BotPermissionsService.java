@@ -8,12 +8,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for basic CRUD operations on user or role permissions
- *
  */
 public class BotPermissionsService {
     /**
@@ -98,9 +95,9 @@ public class BotPermissionsService {
      * @param userId      the id of the user
      * @param permissions the bitfield permission value
      */
-    public static void createUserPermissions(long userId, int permissions) {
+    public static void createUserPermissions(UserSnowflake userId, int permissions) {
         Query.query("INSERT INTO users(id, permissions) VALUES(? ,?) ON CONFLICT DO NOTHING")
-                .single(Call.of().bind(userId).bind(permissions))
+                .single(Call.of().bind(userId.getIdLong()).bind(permissions))
                 .insert();
     }
 
@@ -110,9 +107,9 @@ public class BotPermissionsService {
      * @param userId      the id of the user
      * @param permissions the bitfield permission value
      */
-    public static void updateUserPermissions(long userId, int permissions) {
-        Query.query("UPDATE users SET permissions = ? WHERE user_id = ?")
-                .single(Call.of().bind(permissions).bind(userId))
+    public static void updateUserPermissions(UserSnowflake userId, int permissions) {
+        Query.query("UPDATE users SET permissions = ? WHERE id = ?")
+                .single(Call.of().bind(permissions).bind(userId.getIdLong()))
                 .update();
     }
 
@@ -122,10 +119,30 @@ public class BotPermissionsService {
      *
      * @param userId the id of the user
      */
-    public static void deleteUserPermissions(long userId) {
-        Query.query("DELETE FROM users WHERE user_id = ?")
-                .single(Call.of().bind(userId))
+    public static void deleteUserPermissions(UserSnowflake userId) {
+        Query.query("DELETE FROM users WHERE id = ?")
+                .single(Call.of().bind(userId.getIdLong()))
                 .delete();
+    }
+
+    /**
+     * Sets the permissions for a user. If the user does not have existing permissions,
+     * it creates a new entry. Otherwise, it updates the existing permissions.
+     *
+     * @param userId      the id of the user
+     * @param permissions the bitfield permission value
+     */
+    public static void setUserPermissions(UserSnowflake userId, int permissions) {
+        var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
+                .single(Call.of().bind(userId.getIdLong()))
+                .mapAs(UserPermissions.class)
+                .first();
+
+        if (userPermissions.isEmpty()) {
+            createUserPermissions(userId, permissions);
+        } else {
+            updateUserPermissions(userId, permissions);
+        }
     }
 
     /**
@@ -161,7 +178,7 @@ public class BotPermissionsService {
      * @param permissions the bitfield permission value
      */
     public static void updateRolePermissions(long roleId, int permissions) {
-        Query.query("UPDATE roles SET permissions = ? WHERE role_id = ?")
+        Query.query("UPDATE roles SET permissions = ? WHERE id = ?")
                 .single(Call.of().bind(permissions).bind(roleId))
                 .update();
     }
@@ -173,12 +190,28 @@ public class BotPermissionsService {
      * @param roleId the id of the role
      */
     public static void deleteRolePermissions(long roleId) {
-        Query.query("DELETE FROM roles WHERE role_id = ?")
+        Query.query("DELETE FROM roles WHERE id = ?")
                 .single(Call.of().bind(roleId))
                 .delete();
     }
 
-    public static boolean hasUserPermissions(UserSnowflake user, BotPermissionBitfield permission) {
-        return BotPermissions.hasPermission(getUserPermissions(user).permissions, permission);
+    /**
+     * Sets the permissions for a role. If the role does not have existing permissions,
+     * it creates a new entry. Otherwise, it updates the existing permissions.
+     *
+     * @param roleId      the id of the user
+     * @param permissions the bitfield permission value
+     */
+    public static void setRolePermissions(long roleId, int permissions) {
+        var rolePermissions = Query.query("SELECT * FROM roles WHERE id = ?")
+                .single(Call.of().bind(roleId))
+                .mapAs(RolePermissions.class)
+                .first();
+
+        if (rolePermissions.isEmpty()) {
+            createRolePermissions(roleId, permissions);
+        } else {
+            updateRolePermissions(roleId, permissions);
+        }
     }
 }
