@@ -15,10 +15,7 @@ import org.slf4j.LoggerFactory;
  * Utility methods for basic CRUD operations on user or role permissions
  *
  */
-public class PermissionsService {
-
-    private static final Logger log = LoggerFactory.getLogger(PermissionsService.class);
-
+public class BotPermissionsService {
     /**
      * Mapping of a user permission
      *

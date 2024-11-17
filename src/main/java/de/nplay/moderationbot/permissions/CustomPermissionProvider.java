@@ -12,16 +12,16 @@ public class CustomPermissionProvider implements PermissionsProvider {
 
     @Override
     public boolean hasPermission(@NotNull User user, @NotNull Context context) {
-        var userPermissions = PermissionsService.getUserPermissions(user).permissions();
+        var userPermissions = BotPermissionsService.getUserPermissions(user).permissions();
         if (BotPermissions.hasPermission(userPermissions, BotPermissionBitfield.ADMINISTRATOR)) {
             return true;
         }
-        return BotPermissions.hasPermission(PermissionsService.getUserPermissions(user).permissions(), context.getInteractionDefinition().getPermissions());
+        return BotPermissions.hasPermission(BotPermissionsService.getUserPermissions(user).permissions(), context.getInteractionDefinition().getPermissions());
     }
 
     @Override
     public boolean hasPermission(@NotNull Member member, @NotNull Context context) {
-        var memberPermissions = PermissionsService.getMemberPermissions(member).permissions();
+        var memberPermissions = BotPermissionsService.getMemberPermissions(member).permissions();
         if (BotPermissions.hasPermission(memberPermissions, BotPermissionBitfield.ADMINISTRATOR)) {
             return true;
         }
