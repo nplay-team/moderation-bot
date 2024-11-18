@@ -22,10 +22,13 @@ public class BotPermissionsCommands {
     private Member targetMember;
     private Role targetRole;
 
-    private static class NoneOption {
-        public static String label = "Keine Berechtigungen (löscht automatisch alle)";
-        public static String value = "NONE";
-    }
+
+    private static final net.dv8tion.jda.api.interactions.components.selections.SelectOption NONE_OPTION =
+            net.dv8tion.jda.api.interactions.components.selections.SelectOption.of(
+                    "Keine Berechtigungen (löscht automatisch alle)",
+                    "NONE"
+            );
+
 
     @SlashCommand(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissionFlags.PERMISSION_READ)
@@ -56,7 +59,7 @@ public class BotPermissionsCommands {
             menu.addOption(permission.humanReadableName, permission.name());
         }
 
-        menu.addOption(NoneOption.label, NoneOption.value);
+        menu.addOptions(NONE_OPTION);
 
         var currentPermissions = BotPermissionsService.getMemberPermissions(member).permissions();
         menu.setDefaultValues(BotPermissions.decodePermissions(currentPermissions).stream().map(Enum::name).toList());
@@ -85,7 +88,7 @@ public class BotPermissionsCommands {
             menu.addOption(permission.humanReadableName, permission.name());
         }
 
-        menu.addOption(NoneOption.label, NoneOption.value);
+        menu.addOptions(NONE_OPTION);
 
         var currentPermissions = BotPermissionsService.getRolePermissions(role.getIdLong()).permissions();
         menu.setDefaultValues(BotPermissions.decodePermissions(currentPermissions).stream().map(Enum::name).toList());
