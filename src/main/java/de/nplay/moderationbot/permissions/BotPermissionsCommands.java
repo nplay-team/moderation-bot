@@ -22,12 +22,17 @@ public class BotPermissionsCommands {
     private Member targetMember;
     private Role targetRole;
 
+    private static class NoneOption {
+        public static String label = "Keine Berechtigungen (löscht automatisch alle)";
+        public static String value = "NONE";
+    }
+
     @SlashCommand(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissionFlags.PERMISSION_READ)
+    @SuppressWarnings("ConstantConditions")
     public void onPermissionsList(CommandEvent event, @Optional Member member) {
         Member target = member == null ? event.getMember() : member;
 
-        assert target != null;
         event.reply(embedCache.getEmbed("permissionsList")
                 .injectValue("target", target.getEffectiveName())
                 .injectValue("permissions", BotPermissions.getPermissionListString(BotPermissionsService.getMemberPermissions(target).permissions()))
@@ -51,7 +56,7 @@ public class BotPermissionsCommands {
             menu.addOption(permission.humanReadableName, permission.name());
         }
 
-        menu.addOption("Keine Berechtigungen (löscht automatisch alle)", "NONE");
+        menu.addOption(NoneOption.label, NoneOption.value);
 
         var currentPermissions = BotPermissionsService.getMemberPermissions(member).permissions();
         menu.setDefaultValues(BotPermissions.decodePermissions(currentPermissions).stream().map(Enum::name).toList());
@@ -80,7 +85,7 @@ public class BotPermissionsCommands {
             menu.addOption(permission.humanReadableName, permission.name());
         }
 
-        menu.addOption("Keine Berechtigungen (löscht automatisch alle)", "NONE");
+        menu.addOption(NoneOption.label, NoneOption.value);
 
         var currentPermissions = BotPermissionsService.getRolePermissions(role.getIdLong()).permissions();
         menu.setDefaultValues(BotPermissions.decodePermissions(currentPermissions).stream().map(Enum::name).toList());
@@ -98,7 +103,7 @@ public class BotPermissionsCommands {
     @Permissions(BotPermissionFlags.PERMISSION_MANAGE)
     public void onMemberPermissionSelect(ComponentEvent event, List<String> selection) {
         int permissions = selection.contains("NONE") ? 0 : BotPermissions.combine(
-                selection.stream().map(sel -> BotPermissionBitfield.valueOf(sel).value).toList()
+                selection.stream().map(it -> BotPermissionBitfield.valueOf(it).value).toList()
         );
 
         BotPermissionsService.setUserPermissions(targetMember, permissions);
@@ -116,9 +121,9 @@ public class BotPermissionsCommands {
     @Permissions(BotPermissionFlags.PERMISSION_MANAGE)
     public void onRolePermissionSelect(ComponentEvent event, List<String> selection) {
         int permissions = selection.contains("NONE") ? 0 : BotPermissions.combine(
-                selection.stream().map(sel -> BotPermissionBitfield.valueOf(sel).value).toList()
+                selection.stream().map(it -> BotPermissionBitfield.valueOf(it).value).toList()
         );
-        
+
         BotPermissionsService.setRolePermissions(targetRole.getIdLong(), permissions);
 
         event.keepComponents(false).reply(
