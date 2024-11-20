@@ -37,7 +37,7 @@ CREATE TABLE moderations (
     reference_message BIGINT,
     
     revoke_at TIMESTAMP,
-    duration BIGINT, -- in seconds
+    duration BIGINT, -- in millis
     
     issuer_id BIGINT NOT NULL,
     

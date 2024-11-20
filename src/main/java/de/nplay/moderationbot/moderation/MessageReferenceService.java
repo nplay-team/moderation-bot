@@ -53,13 +53,13 @@ public class MessageReferenceService {
      * Gets a {@link MessageReference} based on the message id
      *
      * @param messageId the id of the message
-     * @return an Optional holding the {@link MessageReference}
+     * @return a {@link MessageReference}
      */
-    public static Optional<MessageReference> getMessageReference(long messageId) {
+    public static MessageReference getMessageReference(long messageId) {
         return Query.query("SELECT * FROM message_references WHERE message_id = ?")
                 .single(Call.of().bind(messageId))
                 .mapAs(MessageReference.class)
-                .first();
+                .first().orElseThrow();
     }
 
     /**
