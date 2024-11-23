@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.moderation;
 
-public enum ModerationType {
+public enum ModerationActType {
     WARN,
     TIMEOUT,
     KICK,

@@ -4,8 +4,9 @@ import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
 import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.annotations.interactions.SlashCommand;
 import com.github.kaktushose.jda.commands.dispatching.interactions.commands.CommandEvent;
+import de.nplay.moderationbot.moderation.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.moderation.ModerationType;
 import de.nplay.moderationbot.permissions.BotPermissionFlags;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -23,8 +24,13 @@ public class TestCommands {
     @Permissions(BotPermissionFlags.MODERATION_CREATE)
     @SuppressWarnings("ConstantConditions")
     public void onModerate(CommandEvent event, Member member) {
-        var moderationInsertion = ModerationService.createModeration(member.getIdLong(), ModerationType.WARN, event.getMember().getIdLong(), null, null, null, null);
-        var moderation = ModerationService.getModeration(moderationInsertion.keys().getFirst());
+        ModerationActBuilder moderationActBuilder = new ModerationActBuilder()
+                .setUserId(member.getIdLong())
+                .setType(ModerationActType.WARN)
+                .setIssuerId(event.getMember().getIdLong());
+
+        var moderationInsertion = ModerationService.createModerationAct(moderationActBuilder.build());
+        var moderation = ModerationService.getModerationAct(moderationInsertion.keys().getFirst());
         event.reply(moderation.toString());
     }
 }

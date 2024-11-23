@@ -7,7 +7,6 @@ import de.chojo.sadu.queries.api.query.Query;
 import de.chojo.sadu.queries.api.results.writing.insertion.InsertionResult;
 import de.nplay.moderationbot.rules.RuleService;
 
-import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Optional;
@@ -27,20 +26,20 @@ public class ModerationService {
      * @param reason           The reason for the moderation.
      * @param paragraph        The rule paragraph associated with the moderation.
      * @param referenceMessage The reference message associated with the moderation.
-     * @param revoke_at        The timestamp when the moderation will be revoked.
+     * @param revokeAt         The timestamp when the moderation will be revoked.
      * @param duration         The duration of the moderation.
      * @param issuerId         The ID of the user who issued the moderation.
      * @param created_at       The date when the moderation was created.
      */
-    public record Moderation(
+    public record ModerationAct(
             long id,
             long userId,
-            ModerationType type,
-            Optional<Boolean> reverted,
+            ModerationActType type,
+            Boolean reverted,
             Optional<String> reason,
             Optional<RuleService.RuleParagraph> paragraph,
             Optional<MessageReferenceService.MessageReference> referenceMessage,
-            Optional<Timestamp> revoke_at,
+            Optional<Timestamp> revokeAt,
             Optional<Long> duration,
             long issuerId,
             Date created_at
@@ -52,16 +51,16 @@ public class ModerationService {
          * @return a {@link RowMapping} of this record
          */
         @MappingProvider("")
-        public static RowMapping<Moderation> map() {
-            return row -> new Moderation(
+        public static RowMapping<ModerationAct> map() {
+            return row -> new ModerationAct(
                     row.getLong("id"),
                     row.getLong("user_id"),
-                    ModerationType.valueOf(row.getString("type")),
-                    Optional.ofNullable(row.getBoolean("reverted") ? row.getBoolean("reverted") : null),
+                    ModerationActType.valueOf(row.getString("type")),
+                    row.getBoolean("reverted"),
                     Optional.ofNullable(row.getString("reason")),
                     Optional.ofNullable(row.getInt("paragraph_id") == 0 ? null : RuleService.getRuleParagraph(row.getInt("paragraph_id"))),
                     Optional.ofNullable(row.getLong("reference_message") == 0 ? null : MessageReferenceService.getMessageReference(row.getLong("reference_message"))),
-                    Optional.ofNullable(row.getTimestamp("revoke_at")),
+                    Optional.ofNullable(row.getTimestamp("revokeAt")),
                     Optional.ofNullable(row.getLong("duration") == 0 ? null : row.getLong("duration")),
                     row.getLong("issuer_id"),
                     row.getDate("created_at")
@@ -78,7 +77,7 @@ public class ModerationService {
                     ", reason=" + reason +
                     ", paragraph=" + paragraph +
                     ", referenceMessage=" + referenceMessage +
-                    ", revoke_at=" + revoke_at +
+                    ", revokeAt=" + revokeAt +
                     ", duration=" + duration +
                     ", issuerId=" + issuerId +
                     ", created_at=" + created_at +
@@ -87,52 +86,58 @@ public class ModerationService {
     }
 
     /**
+     * Creates a new moderation record in the database.
+     *
+     * @param act The {@link ModerationAct} to create.
+     * @return The {@link InsertionResult} (with keys) of the operation.
+     */
+    public static InsertionResult createModerationAct(ModerationAct act) {
+        return Query.query("INSERT INTO moderations (user_id, type, reverted, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration) VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?, ?)")
+                .single(Call.of()
+                        .bind(act.userId)
+                        .bind(act.type)
+                        .bind(act.reverted)
+                        .bind(act.issuerId)
+                        .bind(act.reason.orElse(null))
+                        .bind(act.paragraph.map(RuleService.RuleParagraph::id).orElse(null))
+                        .bind(act.referenceMessage.map(MessageReferenceService.MessageReference::messageId).orElse(null))
+                        .bind(act.revokeAt.orElse(null))
+                        .bind(act.duration.orElse(null))
+                ).insertAndGetKeys();
+    }
+
+    /**
      * Retrieves a moderation by its ID.
      *
      * @param moderationId The ID of the moderation to retrieve.
-     * @return The {@link Moderation} record.
+     * @return The {@link ModerationAct} record.
      */
-    public static Moderation getModeration(long moderationId) {
+    public static ModerationAct getModerationAct(long moderationId) {
         return Query.query("SELECT * FROM moderations WHERE id = ?")
                 .single(Call.of().bind(moderationId))
-                .mapAs(Moderation.class)
+                .mapAs(ModerationAct.class)
                 .first().orElseThrow();
     }
 
     /**
-     * Creates a new moderation record in the database.
+     * Updates an existing moderation record in the database.
      *
-     * @param userId           The ID of the user being moderated.
-     * @param type             The type of moderation.
-     * @param issuerId         The ID of the user issuing the moderation.
-     * @param reason           The reason for the moderation.
-     * @param paragraph        The rule paragraph associated with the moderation.
-     * @param referenceMessage The reference message associated with the moderation.
-     * @param duration         The duration of the moderation.
-     * @return The {@link InsertionResult} (with keys) of the operation.
+     * @param act The {@link ModerationAct} to update.
      */
-    public static InsertionResult createModeration(
-            long userId,
-            ModerationType type,
-            long issuerId,
-            @Nullable String reason,
-            @Nullable RuleService.RuleParagraph paragraph,
-            @Nullable MessageReferenceService.MessageReference referenceMessage,
-            @Nullable Long duration
-    ) {
-        Optional<Timestamp> revoke_at = duration == null ? Optional.empty() : Optional.of(new Timestamp(System.currentTimeMillis() + duration));
-
-        return Query.query("INSERT INTO moderations (user_id, type, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration) VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?)")
+    public static void updateModerationAct(ModerationAct act) {
+        Query.query("UPDATE moderations SET user_id = ?, type = ?::reporttype, reverted = ?, issuer_id = ?, reason = ?, paragraph_id = ?, reference_message = ?, revoke_at = ?, duration = ? WHERE id = ?")
                 .single(Call.of()
-                        .bind(userId)
-                        .bind(type)
-                        .bind(issuerId)
-                        .bind(reason)
-                        .bind(paragraph == null ? null : paragraph.id())
-                        .bind(referenceMessage == null ? null : referenceMessage.messageId())
-                        .bind(revoke_at.orElse(null))
-                        .bind(duration)
-                ).insertAndGetKeys();
+                        .bind(act.userId)
+                        .bind(act.type)
+                        .bind(act.issuerId)
+                        .bind(act.reverted)
+                        .bind(act.reason.orElse(null))
+                        .bind(act.paragraph.map(RuleService.RuleParagraph::id).orElse(null))
+                        .bind(act.referenceMessage.map(MessageReferenceService.MessageReference::messageId).orElse(null))
+                        .bind(act.revokeAt.orElse(null))
+                        .bind(act.duration.orElse(null))
+                        .bind(act.id)
+                ).update();
     }
 
     /**
@@ -140,9 +145,9 @@ public class ModerationService {
      *
      * @param moderationId The ID of the moderation to delete.
      */
-    public static void deleteModeration(long moderationId) {
+    public static void deleteModerationAct(long moderationId) {
         Query.query("DELETE FROM moderations WHERE id = ?")
-                .single(Call.call().bind(moderationId))
+                .single(Call.of().bind(moderationId))
                 .delete();
     }
 }

@@ -29,7 +29,7 @@ CREATE TABLE moderations (
     id BIGSERIAL NOT NULL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     type REPORTTYPE NOT NULL,
-    reverted BOOLEAN,
+    reverted BOOLEAN NOT NULL DEFAULT FALSE,
     
     reason TEXT,
     paragraph_id INT,
