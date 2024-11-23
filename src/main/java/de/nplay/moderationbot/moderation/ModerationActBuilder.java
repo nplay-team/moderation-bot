@@ -3,7 +3,6 @@ package de.nplay.moderationbot.moderation;
 import de.nplay.moderationbot.rules.RuleService;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -13,14 +12,14 @@ public class ModerationActBuilder {
     private long id;
     private long userId;
     private ModerationActType type;
-    private Boolean reverted;
+    private Boolean reverted = false;
     private String reason;
     private RuleService.RuleParagraph paragraph;
     private MessageReferenceService.MessageReference referenceMessage;
     private Timestamp revokeAt;
     private Long duration;
     private long issuerId;
-    private Date createdAt;
+    private Timestamp createdAt = new Timestamp(System.currentTimeMillis());
 
     /**
      * Sets the ID of the moderation act.
@@ -138,7 +137,7 @@ public class ModerationActBuilder {
      * @param createdAt the creation date to set
      * @return the current instance of {@link ModerationActBuilder}
      */
-    public ModerationActBuilder setCreatedAt(Date createdAt) {
+    public ModerationActBuilder setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
         return this;
     }

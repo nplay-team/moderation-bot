@@ -8,7 +8,6 @@ import de.chojo.sadu.queries.api.results.writing.insertion.InsertionResult;
 import de.nplay.moderationbot.rules.RuleService;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -42,7 +41,7 @@ public class ModerationService {
             Optional<Timestamp> revokeAt,
             Optional<Long> duration,
             long issuerId,
-            Date created_at
+            Timestamp created_at
     ) {
 
         /**
@@ -60,10 +59,10 @@ public class ModerationService {
                     Optional.ofNullable(row.getString("reason")),
                     Optional.ofNullable(row.getInt("paragraph_id") == 0 ? null : RuleService.getRuleParagraph(row.getInt("paragraph_id"))),
                     Optional.ofNullable(row.getLong("reference_message") == 0 ? null : MessageReferenceService.getMessageReference(row.getLong("reference_message"))),
-                    Optional.ofNullable(row.getTimestamp("revokeAt")),
+                    Optional.ofNullable(row.getTimestamp("revoke_at")),
                     Optional.ofNullable(row.getLong("duration") == 0 ? null : row.getLong("duration")),
                     row.getLong("issuer_id"),
-                    row.getDate("created_at")
+                    row.getTimestamp("created_at")
             );
         }
 
