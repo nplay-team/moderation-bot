@@ -15,51 +15,16 @@ import java.util.Optional;
 public class MessageReferenceService {
 
     /**
-     * Mapping of a message reference
-     *
-     * @param messageId the message id
-     * @param channelId the channel id the message was sent in
-     * @param content   Optional holding the content of the message
-     */
-    public record MessageReference(long messageId, long channelId, Optional<String> content) {
-
-        /**
-         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
-         *
-         * @return a {@link RowMapping} of this record
-         */
-        @MappingProvider("")
-        public static RowMapping<MessageReference> map() {
-            return row -> new MessageReference(
-                    row.getLong("message_id"),
-                    row.getLong("channel_id"),
-                    Optional.ofNullable(row.getString("content"))
-            );
-        }
-
-        /**
-         * Gets the jump url to this message reference
-         *
-         * @param guild the {@link Guild} instance the bot is running on
-         * @return the jump url to this message reference
-         */
-        public String jumpUrl(Guild guild) {
-            return String.format("https://discord.com/channels/%d/%d/%d", guild.getIdLong(), channelId, messageId);
-        }
-
-    }
-
-    /**
      * Gets a {@link MessageReference} based on the message id
      *
      * @param messageId the id of the message
-     * @return a {@link MessageReference}
+     * @return an Optional holding the {@link MessageReference}
      */
-    public static MessageReference getMessageReference(long messageId) {
+    public static Optional<MessageReference> getMessageReference(long messageId) {
         return Query.query("SELECT * FROM message_references WHERE message_id = ?")
                 .single(Call.of().bind(messageId))
                 .mapAs(MessageReference.class)
-                .first().orElseThrow();
+                .first();
     }
 
     /**
@@ -94,5 +59,40 @@ public class MessageReferenceService {
         Query.query("DELETE FROM message_references where message_id = ?")
                 .single(Call.of().bind(messageId))
                 .delete();
+    }
+
+    /**
+     * Mapping of a message reference
+     *
+     * @param messageId the message id
+     * @param channelId the channel id the message was sent in
+     * @param content   Optional holding the content of the message
+     */
+    public record MessageReference(long messageId, long channelId, Optional<String> content) {
+
+        /**
+         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
+         *
+         * @return a {@link RowMapping} of this record
+         */
+        @MappingProvider("")
+        public static RowMapping<MessageReference> map() {
+            return row -> new MessageReference(
+                    row.getLong("message_id"),
+                    row.getLong("channel_id"),
+                    Optional.ofNullable(row.getString("content"))
+            );
+        }
+
+        /**
+         * Gets the jump url to this message reference
+         *
+         * @param guild the {@link Guild} instance the bot is running on
+         * @return the jump url to this message reference
+         */
+        public String jumpUrl(Guild guild) {
+            return String.format("https://discord.com/channels/%d/%d/%d", guild.getIdLong(), channelId, messageId);
+        }
+
     }
 }

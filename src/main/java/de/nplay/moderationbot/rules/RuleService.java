@@ -12,16 +12,41 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class for reading rule paragraphs from the database
- * 
  */
 public class RuleService {
 
     /**
+     * Gets a {@link RuleParagraph} based on the id
+     *
+     * @param id the internal id
+     * @return an Optional holding the {@link RuleParagraph}
+     */
+    public static Optional<RuleParagraph> getRuleParagraph(int id) {
+        return Query.query("SELECT * FROM rule_paragraphs WHERE id = ?")
+                .single(Call.of().bind(id))
+                .mapAs(RuleParagraph.class)
+                .first();
+    }
+
+    /**
+     * Gets a mapping of the internal ids and the paragraph number
+     *
+     * @return a Map containing all internal ids and their corresponding paragraph number
+     */
+    public static Map<Integer, String> getParagraphIdMapping() {
+        return Query.query("SELECT id, number FROM rule_paragraphs")
+                .single()
+                .map(row -> new MappingPair(row.getInt("id"), row.getString("number")))
+                .all().stream()
+                .collect(Collectors.toMap(MappingPair::id, MappingPair::number));
+    }
+
+    /**
      * Mapping of a rule paragraph
-     * 
-     * @param id the internal id of the entry
-     * @param number the paragraph number
-     * @param title the title of the paragraph
+     *
+     * @param id      the internal id of the entry
+     * @param number  the paragraph number
+     * @param title   the title of the paragraph
      * @param content the content of the paragraph
      */
     public record RuleParagraph(int id, @NotNull String number, @NotNull String title, Optional<String> content) {
@@ -43,37 +68,11 @@ public class RuleService {
     }
 
     /**
-     * Gets a {@link RuleParagraph} based on the id
-     * 
-     * @param id the interal id 
-     * @return a {@link RuleParagraph}
-     */
-    public static RuleParagraph getRuleParagraph(int id) {
-        return Query.query("SELECT * FROM rule_paragraphs WHERE id = ?")
-                .single(Call.of().bind(id))
-                .mapAs(RuleParagraph.class)
-                .first().orElseThrow();
-    }
-
-    /**
      * Internal class used to map the sadu result
-     * 
-     * @param id the internal id of a paragraph
+     *
+     * @param id     the internal id of a paragraph
      * @param number the paragraph number
      */
     private record MappingPair(Integer id, String number) {
-    }
-
-    /**
-     * Gets a mapping of the internal ids and the paragraph number
-     * 
-     * @return a Map containing all internal ids and their corresponding paragraph number
-     */
-    public static Map<Integer, String> getParagraphIdMapping() {
-        return Query.query("SELECT id, number FROM rule_paragraphs")
-                .single()
-                .map(row -> new MappingPair(row.getInt("id"), row.getString("number")))
-                .all().stream()
-                .collect(Collectors.toMap(MappingPair::id, MappingPair::number));
     }
 }
