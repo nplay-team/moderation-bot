@@ -66,7 +66,6 @@ public class NPLAYModerationBot {
         embedCache = new EmbedCache("embeds.json");
         jdaCommands.getDependencyInjector().registerProvider(this);
         jdaCommands.getImplementationRegistry().setErrorMessageFactory(new JsonErrorMessageFactory(embedCache));
-        jdaCommands.getImplementationRegistry().setGuildScopeProvider(commandData -> Set.of(guild.getIdLong()));
 
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
 
