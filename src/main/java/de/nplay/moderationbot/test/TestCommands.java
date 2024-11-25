@@ -17,7 +17,7 @@ public class TestCommands {
     @SlashCommand(value = "test ping", desc = "Testet die Erreichbarkeit des Bots.")
     @Permissions(BotPermissionFlags.MODERATION_READ)
     public void onPing(CommandEvent event) {
-        event.reply("Test bestanden!");
+        event.reply("Täst bestanden!");
     }
 
     @SlashCommand(value = "test moderate", desc = "Testet das Moderationssystem", isGuildOnly = true)
@@ -29,8 +29,8 @@ public class TestCommands {
                 .setType(ModerationActType.WARN)
                 .setIssuerId(event.getMember().getIdLong());
 
-        var moderationInsertion = ModerationService.createModerationAct(moderationActBuilder.build());
-        var moderation = ModerationService.getModerationAct(moderationInsertion.keys().getFirst());
+        long id = ModerationService.createModerationAct(moderationActBuilder.build());
+        var moderation = ModerationService.getModerationAct(id);
         event.reply(moderation.toString());
     }
 }

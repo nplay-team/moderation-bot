@@ -16,19 +16,15 @@ import java.util.List;
 @Interaction
 public class BotPermissionsCommands {
 
-    @Inject
-    private EmbedCache embedCache;
-
-    private Member targetMember;
-    private Role targetRole;
-
-
     private static final net.dv8tion.jda.api.interactions.components.selections.SelectOption NONE_OPTION =
             net.dv8tion.jda.api.interactions.components.selections.SelectOption.of(
                     "Keine Berechtigungen (löscht automatisch alle)",
                     "NONE"
             );
-
+    @Inject
+    private EmbedCache embedCache;
+    private Member targetMember;
+    private Role targetRole;
 
     @SlashCommand(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissionFlags.PERMISSION_READ)

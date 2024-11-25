@@ -10,7 +10,7 @@ public enum BotPermissionBitfield {
     PERMISSION_MANAGE(1 << 6, "Vergeben von Berechtigungen"),
     PARAGRAPH_MANAGE(1 << 7, "Verwalten von Regelparagraphen"),
     ADMINISTRATOR(1 << 8, "Administrator");
-    
+
     public final int value;
     public final String humanReadableName;
 

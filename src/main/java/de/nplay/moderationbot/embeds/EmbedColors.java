@@ -5,9 +5,9 @@ public enum EmbedColors {
     ERROR("#ff0000"),
     SUCCESS("#00ff00"),
     WARNING("#ffff00");
-    
+
     public final String hexColor;
-    
+
     EmbedColors(String hexColor) {
         this.hexColor = hexColor;
     }

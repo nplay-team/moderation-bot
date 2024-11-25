@@ -1,11 +1,14 @@
 package de.nplay.moderationbot.permissions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class BotPermissions {
-    
+
     /**
      * Combines multiple permissions into one integer.
+     *
      * @param permissions the list of integer to combine
      * @return the combined permissions
      */
@@ -16,9 +19,10 @@ public class BotPermissions {
         }
         return combined;
     }
-    
+
     /**
      * Combines multiple permissions into one integer.
+     *
      * @param permissions the list of {@link BotPermissionBitfield} to combine
      * @return the combined permissions
      */
@@ -32,6 +36,7 @@ public class BotPermissions {
 
     /**
      * Combines multiple permissions into one integer.
+     *
      * @param permissions the list of integer to combine
      * @return the combined permissions
      */
@@ -45,8 +50,9 @@ public class BotPermissions {
 
     /**
      * Adds one permission to a permission integer.
+     *
      * @param permissions the current bitfield permission value
-     * @param permission the {@link BotPermissionBitfield} to add
+     * @param permission  the {@link BotPermissionBitfield} to add
      * @return the new permissions
      */
     public static int addPermission(int permissions, BotPermissionBitfield permission) {
@@ -55,7 +61,8 @@ public class BotPermissions {
 
     /**
      * Adds multiple permissions to a permission integer.
-     * @param permissions the current bitfield permission value
+     *
+     * @param permissions      the current bitfield permission value
      * @param permissionsToAdd the list of {@link BotPermissionBitfield} to add
      * @return the new permissions
      */
@@ -69,8 +76,9 @@ public class BotPermissions {
 
     /**
      * Removes one permission from a permission integer.
+     *
      * @param permissions the current bitfield permission value
-     * @param permission the {@link BotPermissionBitfield} to add
+     * @param permission  the {@link BotPermissionBitfield} to add
      * @return the new permissions
      */
     public static int removePermission(int permissions, BotPermissionBitfield permission) {
@@ -79,7 +87,8 @@ public class BotPermissions {
 
     /**
      * Removes multiple permissions from a permission integer.
-     * @param permissions the current bitfield permission value
+     *
+     * @param permissions         the current bitfield permission value
      * @param permissionsToRemove the list of {@link BotPermissionBitfield} to remove
      * @return the new permissions
      */
@@ -92,18 +101,20 @@ public class BotPermissions {
     }
 
     /**
-     * Checks whether a specific permission is present in the provided permission integer. 
+     * Checks whether a specific permission is present in the provided permission integer.
+     *
      * @param permissions the current bitfield permission value
-     * @param permission the {@link BotPermissionBitfield} to check against
+     * @param permission  the {@link BotPermissionBitfield} to check against
      * @return Whether the permission is present or not
      */
     public static boolean hasPermission(int permissions, BotPermissionBitfield permission) {
         return (permissions & permission.value) != 0;
     }
-    
+
     /**
      * Checks whether multiple permissions are present in the provided permission integer.
-     * @param permissions the current bitfield permission value
+     *
+     * @param permissions        the current bitfield permission value
      * @param permissionsToCheck a list of {@link BotPermissionBitfield} to check against
      * @return Whether all permissions are present or not
      */
@@ -118,7 +129,8 @@ public class BotPermissions {
 
     /**
      * Checks whether multiple permissions are present in the provided permission integer.
-     * @param permissions the current bitfield permission value
+     *
+     * @param permissions     the current bitfield permission value
      * @param permissionNames a list of permission names to check against
      * @return Whether all permissions are present or not
      */
@@ -134,23 +146,25 @@ public class BotPermissions {
 
     /**
      * Decodes a bitfield permission value to a List of {@link BotPermissionBitfield}
+     *
      * @param permissions the current bitfield permission value
      * @return the list of all included {@link BotPermissionBitfield}
      */
     public static List<BotPermissionBitfield> decodePermissions(int permissions) {
         List<BotPermissionBitfield> decodedPermissions = new ArrayList<>();
-        
+
         for (BotPermissionBitfield permission : BotPermissionBitfield.values()) {
-            if(hasPermission(permissions, permission)) {
+            if (hasPermission(permissions, permission)) {
                 decodedPermissions.add(permission);
             }
         }
-        
+
         return decodedPermissions;
     }
 
     /**
      * Creates a human-readable, line-by-line overview of all included permissions of a bitfield permission value
+     *
      * @param permissions the current bitfield permission value
      * @return the permission list string
      */
@@ -158,7 +172,7 @@ public class BotPermissions {
         StringBuilder stringBuilder = new StringBuilder();
 
         for (BotPermissionBitfield permission : BotPermissionBitfield.values()) {
-            if(hasPermission(permissions, permission)) {
+            if (hasPermission(permissions, permission)) {
                 stringBuilder.append(String.format("`%s`", permission.humanReadableName)).append("\n");
             }
         }

@@ -14,46 +14,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class BotPermissionsService {
     /**
-     * Mapping of a user permission
-     *
-     * @param userId      the id of the user
-     * @param permissions the bitfield permission value
-     * @see BotPermissionBitfield
-     */
-    public record UserPermissions(long userId, int permissions) {
-
-        /**
-         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
-         *
-         * @return a {@link RowMapping} of this record
-         */
-        @MappingProvider("")
-        public static RowMapping<UserPermissions> map() {
-            return row -> new UserPermissions(row.getLong("id"), row.getInt(("permissions")));
-        }
-    }
-
-    /**
-     * Mapping of a role permission
-     *
-     * @param roleId      the id of the role
-     * @param permissions the bitfield permission value
-     * @see BotPermissionBitfield
-     */
-    public record RolePermissions(long roleId, int permissions) {
-
-        /**
-         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
-         *
-         * @return a {@link RowMapping} of this record
-         */
-        @MappingProvider("")
-        public static RowMapping<RolePermissions> map() {
-            return row -> new RolePermissions(row.getLong("id"), row.getInt(("permissions")));
-        }
-    }
-
-    /**
      * Gets the {@link UserPermissions} of a user. Returns empty permissions if no user entry exists
      *
      * @param user the user
@@ -212,6 +172,46 @@ public class BotPermissionsService {
             createRolePermissions(roleId, permissions);
         } else {
             updateRolePermissions(roleId, permissions);
+        }
+    }
+
+    /**
+     * Mapping of a user permission
+     *
+     * @param userId      the id of the user
+     * @param permissions the bitfield permission value
+     * @see BotPermissionBitfield
+     */
+    public record UserPermissions(long userId, int permissions) {
+
+        /**
+         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
+         *
+         * @return a {@link RowMapping} of this record
+         */
+        @MappingProvider("")
+        public static RowMapping<UserPermissions> map() {
+            return row -> new UserPermissions(row.getLong("id"), row.getInt(("permissions")));
+        }
+    }
+
+    /**
+     * Mapping of a role permission
+     *
+     * @param roleId      the id of the role
+     * @param permissions the bitfield permission value
+     * @see BotPermissionBitfield
+     */
+    public record RolePermissions(long roleId, int permissions) {
+
+        /**
+         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
+         *
+         * @return a {@link RowMapping} of this record
+         */
+        @MappingProvider("")
+        public static RowMapping<RolePermissions> map() {
+            return row -> new RolePermissions(row.getLong("id"), row.getInt(("permissions")));
         }
     }
 }

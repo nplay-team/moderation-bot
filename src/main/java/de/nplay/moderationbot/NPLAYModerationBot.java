@@ -43,7 +43,6 @@ public class NPLAYModerationBot {
      *
      * @param guildId The guild the bot should listen to
      * @param token   The discord bot token
-     *                
      * @hidden The {@link SuppressWarnings} annotation is used to suppress an error message of sadu, which is caused
      * due to the using of {@link ApiStatus.Internal} marked {@link de.chojo.sadu.core.updater.UpdaterBuilder} class.
      */
