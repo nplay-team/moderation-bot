@@ -30,6 +30,15 @@ public class MessageReferenceService {
     /**
      * Creates a new message reference
      *
+     * @param reference the {@link MessageReference} to create
+     */
+    public static void createMessageReference(MessageReference reference) {
+        createMessageReference(reference.messageId, reference.channelId, reference.content.orElse(null));
+    }
+
+    /**
+     * Creates a new message reference
+     *
      * @param messageId the message id
      * @param channelId the channel id the message was sent in
      */
@@ -45,7 +54,7 @@ public class MessageReferenceService {
      * @param content   Optional holding the content of the message
      */
     public static void createMessageReference(long messageId, long channelId, @Nullable String content) {
-        Query.query("INSERT INTO message_references VALUES(?, ?, ?)")
+        Query.query("INSERT INTO message_references VALUES(?, ?, ?) ON CONFLICT DO NOTHING")
                 .single(Call.of().bind(messageId).bind(channelId).bind(content))
                 .insert();
     }

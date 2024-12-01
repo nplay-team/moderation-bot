@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * The main class of the bot

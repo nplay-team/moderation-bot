@@ -66,12 +66,12 @@ public class ModerationActCreateBuilder {
     }
 
     /**
-     * Sets the reference message associated with the moderation act.
+     * Sets the message reference associated with the moderation act.
      *
      * @param message the referenced {@link Message}
      * @return the current instance of {@link ModerationActCreateBuilder}
      */
-    public ModerationActCreateBuilder setReferenceMessage(Message message) {
+    public ModerationActCreateBuilder setMessageReference(Message message) {
         this.referenceMessage = new MessageReferenceService.MessageReference(
                 message.getIdLong(),
                 message.getChannelIdLong(),
@@ -112,6 +112,9 @@ public class ModerationActCreateBuilder {
      * @return The id of the moderation act
      */
     public long create() {
+        if (referenceMessage != null) {
+            MessageReferenceService.createMessageReference(referenceMessage);
+        }
         return ModerationService.createModerationAct(build());
     }
 

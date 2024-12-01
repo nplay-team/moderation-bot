@@ -192,18 +192,18 @@ public class ModerationService {
         @Override
         public String toString() {
             return "Moderation{" +
-                   "id=" + id +
-                   ", userId=" + userId +
-                   ", type=" + type +
-                   ", reverted=" + reverted +
-                   ", reason=" + reason +
-                   ", paragraph=" + paragraph +
-                   ", referenceMessage=" + referenceMessage +
-                   ", revokeAt=" + revokeAt +
-                   ", duration=" + duration +
-                   ", issuerId=" + issuerId +
-                   ", created_at=" + created_at +
-                   '}';
+                    "id=" + id +
+                    ", userId=" + userId +
+                    ", type=" + type +
+                    ", reverted=" + reverted +
+                    ", reason=" + reason +
+                    ", paragraph=" + paragraph +
+                    ", referenceMessage=" + referenceMessage +
+                    ", revokeAt=" + revokeAt +
+                    ", duration=" + duration +
+                    ", issuerId=" + issuerId +
+                    ", created_at=" + created_at +
+                    '}';
         }
     }
 }
