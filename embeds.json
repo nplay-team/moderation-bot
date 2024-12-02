@@ -42,7 +42,7 @@
   },
   "executionFailed": {
     "title": "Command Ausführung fehlgeschlagen",
-    "description": "Bei der Command Ausführung ist ein plötzlicher Fehler aufgetreten. Bitte leite die Fehlermeldung an <@393843637437464588> weiter.",
+    "description": "Bei der Command Ausführung ist ein plötzlicher Fehler aufgetreten. Bitte leite die Fehlermeldung an <@395908417879015424> weiter.",
     "fields": [
       {
         "name": "Fehlermeldung",
@@ -55,5 +55,25 @@
     "title": "Unbekannte Interaktion",
     "description": "Diese Interaktion ist abgelaufen und steht nicht mehr zur Verfügung",
     "color": "#ff0000"
+  },
+  "permissionsEdit": {
+    "title": "Berechtigungen von **{target}**",
+    "description": "Bitte wähle die Berechtigungen in dem Select-Menu aus:",
+    "color": "{color}"
+  },
+  "memberPermissionsList": {
+    "title": "Benutzer-Berechtigungen von **{target}**",
+    "description": "{permissions}",
+    "color": "{color}"
+  },
+  "rolePermissionsList": {
+    "title": "Rollen-Berechtigungen von **{target}**",
+    "description": "{permissions}",
+    "color": "{color}"
+  },
+  "permissionsList": {
+    "title": "Berechtigungen von **{target}**",
+    "description": "{permissions}",
+    "color": "{color}"
   }
 }
