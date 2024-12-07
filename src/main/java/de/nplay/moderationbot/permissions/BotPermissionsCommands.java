@@ -29,7 +29,7 @@ public class BotPermissionsCommands {
     @SlashCommand(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissionFlags.PERMISSION_READ)
     @SuppressWarnings("ConstantConditions")
-    public void onPermissionsList(CommandEvent event, @Optional Member member) {
+    public void onPermissionsList(CommandEvent event, @Optional @Param("Der Benutzer, dessen Berechtigungen abgerufen werden sollen.") Member member) {
         Member target = member == null ? event.getMember() : member;
 
         event.reply(embedCache.getEmbed("permissionsList")
@@ -41,7 +41,7 @@ public class BotPermissionsCommands {
 
     @SlashCommand(value = "permissions manage member", desc = "Verwaltet die Berechtigungen eines Benutzers.", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissionFlags.PERMISSION_MANAGE)
-    public void onManageMemberPermissions(CommandEvent event, Member member) {
+    public void onManageMemberPermissions(CommandEvent event, @Param("Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.") Member member) {
         targetMember = member;
 
         var menu = event.getSelectMenu(
@@ -70,7 +70,7 @@ public class BotPermissionsCommands {
 
     @SlashCommand(value = "permissions manage role", desc = "Verwaltet die Berechtigungen einer Rolle.", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissionFlags.PERMISSION_MANAGE)
-    public void onManageRolePermissions(CommandEvent event, Role role) {
+    public void onManageRolePermissions(CommandEvent event, @Param("Die Rolle, dessen Berechtigungen bearbeitet werden sollen.") Role role) {
         targetRole = role;
 
         var menu = event.getSelectMenu(

@@ -75,5 +75,25 @@
     "title": "Berechtigungen von **{target}**",
     "description": "{permissions}",
     "color": "{color}"
+  },
+  "moderationActExecuted": {
+    "title": "{type} erfolgreich ausgeführt!",
+    "fields": [
+      {
+        "name": "ID",
+        "value": "{id}",
+        "inline": true
+      },
+      {
+        "name": "Betroffener Nutzer",
+        "value": "<@{member}>",
+        "inline": true
+      },
+      {
+        "name": "Begründung",
+        "value": "{reason}"
+      }
+    ],
+    "color": "{color}"
   }
 }
