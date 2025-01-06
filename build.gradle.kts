@@ -20,14 +20,14 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    implementation("net.dv8tion:JDA:5.2.1") {
+    implementation("net.dv8tion:JDA:5.2.2") {
         exclude(module = "opus-java")
     }
 
-    implementation("com.github.kaktushose:jda-commands:c520ea2583")
+    implementation("com.github.kaktushose:jda-commands:737f90b697")
 
-    implementation("ch.qos.logback:logback-core:1.5.6")
-    implementation("ch.qos.logback:logback-classic:1.5.6")
+    implementation("ch.qos.logback:logback-core:1.5.13")
+    implementation("ch.qos.logback:logback-classic:1.5.13")
     implementation("org.slf4j:slf4j-api:2.0.9")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.zaxxer:HikariCP:6.1.0")
