@@ -5,11 +5,16 @@ import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Interaction
 public class ModerationCommands {
@@ -21,9 +26,38 @@ public class ModerationCommands {
 
     private ModerationActCreateBuilder moderationActBuilder;
 
-    @SlashCommand(value = "moderation warn", desc = "Verwarnt einen Benutzer", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @SlashCommand(value = "moderation warn", desc = "Verwarnt einen Benutzer", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
     public void warnMember(CommandEvent event, @Param("Der Benutzer, der verwarnt werden soll.") Member target) {
-        this.moderationActBuilder = ModerationService.warn(target).setIssuer(event.getMember());
+        this.moderationActBuilder = ModerationService.warn(target);
+        common(event);
+    }
+
+    @SlashCommand(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    public void timeoutMember(CommandEvent event, @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target, @Param("Für wie lange der Timeout andauern soll") Duration until) {
+        this.moderationActBuilder = ModerationService
+                .timeout(target)
+                .setDuration(until.getSeconds() * 1000);
+        common(event);
+    }
+
+    @SlashCommand(value = "moderation kick", desc = "Kickt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
+    public void kickMember(CommandEvent event, @Param("Der Benutzer, der gekickt werden soll.") Member target) {
+        this.moderationActBuilder = ModerationService.kick(target);
+        common(event);
+    }
+
+    @SlashCommand(value = "moderation ban", desc = "Bannt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    public void banMember(CommandEvent event, @Param("Der Benutzer, der gekickt werden soll.") Member target, @Optional @Param("Für wie lange der Ban andauern soll") Duration until) {
+        if (until != null) {
+            this.moderationActBuilder = ModerationService.tempBan(target).setDuration(until.getSeconds() * 1000);
+        } else {
+            this.moderationActBuilder = ModerationService.ban(target);
+        }
+        common(event);
+    }
+
+    private void common(CommandEvent event) {
+        this.moderationActBuilder.setIssuer(event.getMember());
         event.replyModal("onModerate");
     }
 
@@ -32,12 +66,32 @@ public class ModerationCommands {
         this.moderationActBuilder.setReason(reason);
         var moderation = ModerationService.getModerationAct(this.moderationActBuilder.create());
 
+        List<EmbedDTO.Field> fields = new ArrayList<>();
+
+        fields.add(new EmbedDTO.Field("ID", Long.toString(moderation.id()), true));
+        fields.add(new EmbedDTO.Field("Betroffener Nutzer", String.format("<@%s>", moderation.userId()), true));
+        fields.add(new EmbedDTO.Field("Begründung", moderation.reason().orElse("Keine Begründung angegeben."), false));
+
+        if (moderation.type().isTemp() && moderation.revokeAt().isPresent()) {
+            fields.add(new EmbedDTO.Field("Aktiv bis", String.format("<t:%s:f>", moderation.revokeAt().get().getTime() / 1000), true));
+        }
+
+        if (moderation.paragraph().isPresent()) {
+            fields.add(new EmbedDTO.Field("Regel", moderation.paragraph().get().toString(), true));
+        }
+
+        if (moderation.referenceMessage().isPresent()) {
+            fields.add(new EmbedDTO.Field("Referenznachricht", moderation.referenceMessage().get().content().orElse("__Inhalt konnte nicht geladen werden__"), false));
+        }
+
         var embed = embedCache.getEmbed("moderationActExecuted")
-                .injectValue("id", moderation.id())
                 .injectValue("type", moderation.type().humanReadableString)
-                .injectValue("member", moderation.userId())
-                .injectValue("reason", moderation.reason())
                 .injectValue("color", EmbedColors.SUCCESS.hexColor);
+
+        embed.setFields(fields.toArray(new EmbedDTO.Field[0]));
+        embed.setFooter(new EmbedDTO.Footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName()));
+
+        // TODO: Send Message to Modlog Channel
 
         event.reply(embed);
     }

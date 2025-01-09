@@ -92,7 +92,7 @@ public class ModerationActCreateBuilder {
             this.duration = duration;
             return this;
         }
-        throw new IllegalArgumentException("Cannot set duration on moderaction act with type: " + type);
+        throw new IllegalArgumentException("Cannot set duration on moderation act with type: " + type);
     }
 
     /**

@@ -51,6 +51,11 @@ public class RuleService {
      */
     public record RuleParagraph(int id, @NotNull String number, @NotNull String title, Optional<String> content) {
 
+        @Override
+        public String toString() {
+            return number + " - " + title;
+        }
+
         /**
          * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
          *
