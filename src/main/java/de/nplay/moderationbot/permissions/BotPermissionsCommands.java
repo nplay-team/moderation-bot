@@ -2,9 +2,9 @@ package de.nplay.moderationbot.permissions;
 
 import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.data.EmbedCache;
-import com.github.kaktushose.jda.commands.dispatching.interactions.commands.CommandEvent;
-import com.github.kaktushose.jda.commands.dispatching.interactions.components.ComponentEvent;
+import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
+import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
+import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -44,10 +44,7 @@ public class BotPermissionsCommands {
     public void onManageMemberPermissions(CommandEvent event, @Param("Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.") Member member) {
         targetMember = member;
 
-        var menu = event.getSelectMenu(
-                        "BotPermissionsCommands.onMemberPermissionSelect",
-                        net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.class)
-                .createCopy();
+        var menu = ((net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu) event.getSelectMenu("onMemberPermissionSelect")).createCopy();
         menu.getOptions().clear();
         menu.setMaxValues(SelectMenu.OPTIONS_MAX_AMOUNT);
 
@@ -60,12 +57,15 @@ public class BotPermissionsCommands {
         var currentPermissions = BotPermissionsService.getMemberPermissions(member).permissions();
         menu.setDefaultValues(BotPermissions.decodePermissions(currentPermissions).stream().map(Enum::name).toList());
 
-        event.getReplyContext().getBuilder().addActionRow(menu.build());
-        event.reply(
-                embedCache.getEmbed("permissionsEdit")
-                        .injectValue("target", member.getEffectiveName())
-                        .injectValue("color", EmbedColors.DEFAULT.hexColor)
-        );
+        event.jdaEvent()
+                .replyEmbeds(
+                        embedCache.getEmbed("permissionsEdit")
+                                .injectValue("target", member.getEffectiveName())
+                                .injectValue("color", EmbedColors.DEFAULT.hexColor)
+                                .toMessageEmbed()
+                )
+                .addActionRow(menu.build())
+                .queue();
     }
 
     @SlashCommand(value = "permissions manage role", desc = "Verwaltet die Berechtigungen einer Rolle.", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
@@ -73,10 +73,7 @@ public class BotPermissionsCommands {
     public void onManageRolePermissions(CommandEvent event, @Param("Die Rolle, dessen Berechtigungen bearbeitet werden sollen.") Role role) {
         targetRole = role;
 
-        var menu = event.getSelectMenu(
-                        "BotPermissionsCommands.onRolePermissionSelect",
-                        net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu.class)
-                .createCopy();
+        var menu = ((net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu) event.getSelectMenu("onRolePermissionSelect")).createCopy();
         menu.getOptions().clear();
         menu.setMaxValues(SelectMenu.OPTIONS_MAX_AMOUNT);
 
@@ -89,12 +86,15 @@ public class BotPermissionsCommands {
         var currentPermissions = BotPermissionsService.getRolePermissions(role.getIdLong()).permissions();
         menu.setDefaultValues(BotPermissions.decodePermissions(currentPermissions).stream().map(Enum::name).toList());
 
-        event.getReplyContext().getBuilder().addActionRow(menu.build());
-        event.reply(
-                embedCache.getEmbed("permissionsEdit")
-                        .injectValue("target", role.getName())
-                        .injectValue("color", EmbedColors.DEFAULT.hexColor)
-        );
+        event.jdaEvent()
+                .replyEmbeds(
+                        embedCache.getEmbed("permissionsEdit")
+                                .injectValue("target", role.getName())
+                                .injectValue("color", EmbedColors.DEFAULT.hexColor)
+                                .toMessageEmbed()
+                )
+                .addActionRow(menu.build())
+                .queue();
     }
 
     @StringSelectMenu(value = "Wähle eine oder mehrere Berechtigungen aus")
@@ -107,7 +107,7 @@ public class BotPermissionsCommands {
 
         BotPermissionsService.setUserPermissions(targetMember, permissions);
 
-        event.keepComponents(false).reply(
+        event.with().keepComponents(false).reply(
                 embedCache.getEmbed("memberPermissionsList")
                         .injectValue("target", targetMember.getEffectiveName())
                         .injectValue("permissions", BotPermissions.getPermissionListString(BotPermissionsService.getUserPermissions(targetMember).permissions()))
@@ -125,7 +125,7 @@ public class BotPermissionsCommands {
 
         BotPermissionsService.setRolePermissions(targetRole.getIdLong(), permissions);
 
-        event.keepComponents(false).reply(
+        event.with().keepComponents(false).reply(
                 embedCache.getEmbed("rolePermissionsList")
                         .injectValue("target", targetRole.getName())
                         .injectValue("permissions", BotPermissions.getPermissionListString(BotPermissionsService.getRolePermissions(targetRole.getIdLong()).permissions()))
