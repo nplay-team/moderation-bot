@@ -4,7 +4,7 @@ import com.github.kaktushose.jda.commands.annotations.interactions.ContextComman
 import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
 import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.annotations.interactions.SlashCommand;
-import com.github.kaktushose.jda.commands.dispatching.interactions.commands.CommandEvent;
+import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.permissions.BotPermissionFlags;
 import net.dv8tion.jda.api.entities.Member;

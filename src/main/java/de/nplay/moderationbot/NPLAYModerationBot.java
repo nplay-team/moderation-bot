@@ -2,8 +2,9 @@ package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.JDACommands;
 import com.github.kaktushose.jda.commands.annotations.Produces;
-import com.github.kaktushose.jda.commands.data.EmbedCache;
-import com.github.kaktushose.jda.commands.embeds.JsonErrorMessageFactory;
+import com.github.kaktushose.jda.commands.dependency.DefaultDependencyInjector;
+import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.github.kaktushose.jda.commands.embeds.error.JsonErrorMessageFactory;
 import de.chojo.sadu.datasource.DataSourceCreator;
 import de.chojo.sadu.mapper.RowMapperRegistry;
 import de.chojo.sadu.postgresql.databases.PostgreSql;
@@ -61,11 +62,16 @@ public class NPLAYModerationBot {
 
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
 
-        jdaCommands = JDACommands.start(jda, NPLAYModerationBot.class, "de.nplay.moderationbot");
         embedCache = new EmbedCache("embeds.json");
-        jdaCommands.getDependencyInjector().registerProvider(this);
-        jdaCommands.getImplementationRegistry().setErrorMessageFactory(new JsonErrorMessageFactory(embedCache));
 
+        var dependencyInjector = new DefaultDependencyInjector();
+        dependencyInjector.registerProvider(this);
+
+        jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
+                .dependencyInjector(dependencyInjector)
+                .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
+                .start();
+        
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
 
         var dataSource = DataSourceCreator.create(PostgreSql.get())
