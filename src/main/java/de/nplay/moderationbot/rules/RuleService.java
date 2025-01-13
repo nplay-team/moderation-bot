@@ -6,6 +6,7 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,6 +16,18 @@ import java.util.stream.Collectors;
  */
 public class RuleService {
 
+    /**
+     * Gets a {@link List<RuleParagraph>} of all rule paragraphs
+     *
+     * @return a List containing all {@link RuleParagraph}
+     */
+    public static List<RuleParagraph> getRuleParagraphs() {
+        return Query.query("SELECT * FROM rule_paragraphs")
+                .single()
+                .mapAs(RuleParagraph.class)
+                .all();
+    }
+    
     /**
      * Gets a {@link RuleParagraph} based on the id
      *
@@ -33,12 +46,10 @@ public class RuleService {
      *
      * @return a Map containing all internal ids and their corresponding paragraph number
      */
-    public static Map<Integer, String> getParagraphIdMapping() {
-        return Query.query("SELECT id, number FROM rule_paragraphs")
-                .single()
-                .map(row -> new MappingPair(row.getInt("id"), row.getString("number")))
-                .all().stream()
-                .collect(Collectors.toMap(MappingPair::id, MappingPair::number));
+    public static Map<Integer, RuleParagraph> getParagraphIdMapping() {
+        return getRuleParagraphs()
+                .stream()
+                .collect(Collectors.toMap(r -> r.id, r -> r));
     }
 
     /**
@@ -50,19 +61,13 @@ public class RuleService {
      * @param content the content of the paragraph
      */
     public record RuleParagraph(int id, @NotNull String number, @NotNull String title, Optional<String> content) {
-
-        @Override
-        public String toString() {
-            return number + " - " + title;
-        }
-
         /**
          * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
          *
          * @return a {@link RowMapping} of this record
          */
         @MappingProvider("")
-        public RowMapping<RuleParagraph> map() {
+        public static RowMapping<RuleParagraph> map() {
             return row -> new RuleParagraph(
                     row.getInt("id"),
                     row.getString("number"),
@@ -70,14 +75,10 @@ public class RuleService {
                     Optional.ofNullable(row.getString("content"))
             );
         }
-    }
 
-    /**
-     * Internal class used to map the sadu result
-     *
-     * @param id     the internal id of a paragraph
-     * @param number the paragraph number
-     */
-    private record MappingPair(Integer id, String number) {
+        @Override
+        public String toString() {
+            return number + " - " + title;
+        }
     }
 }

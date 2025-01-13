@@ -1,9 +1,7 @@
 package de.nplay.moderationbot.test;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.ContextCommand;
-import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
-import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
-import com.github.kaktushose.jda.commands.annotations.interactions.SlashCommand;
+import com.github.kaktushose.jda.commands.annotations.interactions.*;
+import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.permissions.BotPermissionFlags;
@@ -35,6 +33,16 @@ public class TestCommands {
         long id = ModerationService.warn(event.getMember()).setIssuer(event.getMember()).setMessageReference(message).create();
         var moderation = ModerationService.getModerationAct(id);
         event.reply(moderation.toString());
+    }
+
+    @SlashCommand(value = "test autocomplete", desc = "Testet die Autocomplete-Funktion")
+    public void onAutocompleteCommand(CommandEvent event, String test) {
+        event.reply(test);
+    }
+
+    @AutoComplete("test autocomplete")
+    public void onAutocomplete(AutoCompleteEvent event) {
+        event.replyChoiceStrings("test1", "test2", "test3");
     }
 
 }

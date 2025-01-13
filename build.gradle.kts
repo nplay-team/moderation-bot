@@ -24,7 +24,7 @@ dependencies {
         exclude(module = "opus-java")
     }
 
-    implementation("com.github.kaktushose:jda-commands:737f90b697")
+    implementation("com.github.kaktushose:jda-commands:04d210a221")
 
     implementation("ch.qos.logback:logback-core:1.5.13")
     implementation("ch.qos.logback:logback-classic:1.5.13")
@@ -47,7 +47,7 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
     options.compilerArgs.add("-parameters")
-    sourceCompatibility = "21"
+    sourceCompatibility = "23"
 }
 
 tasks.withType<ShadowJar> {
