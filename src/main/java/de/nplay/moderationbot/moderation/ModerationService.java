@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Utility class for managing moderation acts.
@@ -174,7 +175,8 @@ public class ModerationService {
             Optional<Timestamp> revokeAt,
             Optional<Long> duration,
             long issuerId,
-            Timestamp created_at
+            Timestamp created_at,
+            Optional<Integer> delDays
     ) {
 
         private static final Logger logger = LoggerFactory.getLogger(ModerationAct.class);
@@ -197,7 +199,8 @@ public class ModerationService {
                     Optional.ofNullable(row.getTimestamp("revoke_at")),
                     Optional.ofNullable(row.getLong("duration") == 0 ? null : row.getLong("duration")),
                     row.getLong("issuer_id"),
-                    row.getTimestamp("created_at")
+                    row.getTimestamp("created_at"),
+                    Optional.empty()
             );
         }
 
@@ -205,6 +208,7 @@ public class ModerationService {
          * Executes the moderation action.
          */
         public void execute(EmbedCache embedCache) {
+            logger.info("Executing moderation action: {}", this);
             var issuer = Bootstrapper.bot.getJda().getUserById(issuerId);
             var member = Bootstrapper.bot.getGuild().retrieveMemberById(userId).complete();
 
@@ -227,10 +231,12 @@ public class ModerationService {
 
                 case TEMP_BAN -> {
                     logger.info("User {} has been temp banned by {}", userId, issuerId);
+                    member.ban(delDays.orElse(0), TimeUnit.DAYS).reason(reason.orElse(null)).queue();
                 }
 
                 case BAN -> {
                     logger.info("User {} has been banned by {}", userId, issuerId);
+                    member.ban(delDays.orElse(0), TimeUnit.DAYS).reason(reason.orElse(null)).queue();
                 }
             }
         }
@@ -275,7 +281,7 @@ public class ModerationService {
                 if (embedDTO != null) {
                     EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
                     embedBuilder.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
-                    user.openPrivateChannel().flatMap(it -> it.sendMessageEmbeds(embedBuilder.build())).queue();
+                    user.openPrivateChannel().flatMap(it -> it.sendMessageEmbeds(embedBuilder.build())).complete();
                 }
             }
         }

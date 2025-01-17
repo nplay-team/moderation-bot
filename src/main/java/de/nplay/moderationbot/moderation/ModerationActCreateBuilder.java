@@ -13,6 +13,7 @@ import java.util.Optional;
  * Builder class for creating instances of {@link ModerationService.ModerationAct} used for creating a new moderation action.
  */
 public class ModerationActCreateBuilder {
+    private long id;
     private long userId;
     private ModerationActType type;
     private String reason;
@@ -20,6 +21,12 @@ public class ModerationActCreateBuilder {
     private MessageReferenceService.MessageReference referenceMessage;
     private long duration;
     private long issuerId;
+    private int delDays;
+
+    public ModerationActCreateBuilder setId(long id) {
+        this.id = id;
+        return this;
+    }
 
     /**
      * Sets the user ID of the moderation act.
@@ -107,6 +114,18 @@ public class ModerationActCreateBuilder {
     }
 
     /**
+     * Sets the number of days to delete messages for the moderation act.
+     * Warning: This value is not stored in DB and is only available runtime.
+     *
+     * @param delDays the number of days to delete messages
+     *                (0 to 7, 0 means no deletion)
+     */
+    public ModerationActCreateBuilder setDelDays(int delDays) {
+        this.delDays = delDays;
+        return this;
+    }
+
+    /**
      * Creates a new moderation record in the database.
      *
      * @return The id of the moderation act
@@ -123,9 +142,9 @@ public class ModerationActCreateBuilder {
      *
      * @return a new instance of {@link ModerationService.ModerationAct}
      */
-    private ModerationService.ModerationAct build() {
+    public ModerationService.ModerationAct build() {
         return new ModerationService.ModerationAct(
-                -1,
+                Optional.ofNullable(id).orElse(-1L),
                 userId,
                 type,
                 false,
@@ -135,7 +154,8 @@ public class ModerationActCreateBuilder {
                 duration == 0 ? Optional.empty() : Optional.of(new Timestamp(System.currentTimeMillis() + duration)),
                 duration == 0 ? Optional.empty() : Optional.of(duration),
                 issuerId,
-                new Timestamp(System.currentTimeMillis())
+                new Timestamp(System.currentTimeMillis()),
+                Optional.ofNullable(delDays)
         );
     }
 }

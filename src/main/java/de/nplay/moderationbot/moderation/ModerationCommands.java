@@ -1,6 +1,7 @@
 package de.nplay.moderationbot.moderation;
 
 import com.github.kaktushose.jda.commands.annotations.Inject;
+import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
@@ -55,12 +56,19 @@ public class ModerationCommands {
     }
 
     @SlashCommand(value = "moderation ban", desc = "Bannt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
-    public void banMember(CommandEvent event, @Param("Der Benutzer, der gekickt werden soll.") Member target, @Optional @Param("Für wie lange der Ban andauern soll") Duration until, @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
+    public void banMember(
+            CommandEvent event,
+            @Param("Der Benutzer, der gekickt werden soll.") Member target,
+            @Optional @Param("Für wie lange der Ban andauern soll") Duration until,
+            @Optional @Max(7) @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") Integer delDays,
+            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
+    ) {
         if (until != null) {
             this.moderationActBuilder = ModerationService.tempBan(target).setDuration(until.getSeconds() * 1000);
         } else {
             this.moderationActBuilder = ModerationService.ban(target);
         }
+        if (delDays != null) this.moderationActBuilder.setDelDays(delDays);
         handleModeration(event, paragraph);
     }
 
@@ -78,11 +86,12 @@ public class ModerationCommands {
     @Modal(value = "Begründung angeben")
     public void onModerate(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         this.moderationActBuilder.setReason(reason);
-        var moderation = ModerationService.getModerationAct(this.moderationActBuilder.create());
+        var moderationId = this.moderationActBuilder.create();
+        var moderation = this.moderationActBuilder.setId(moderationId).build();
 
         List<EmbedDTO.Field> fields = new ArrayList<>();
 
-        fields.add(new EmbedDTO.Field("ID", Long.toString(moderation.id()), true));
+        fields.add(new EmbedDTO.Field("ID", Long.toString(moderationId), true));
         fields.add(new EmbedDTO.Field("Betroffener Nutzer", String.format("<@%s>", moderation.userId()), true));
         fields.add(new EmbedDTO.Field("Begründung", moderation.reason().orElse("Keine Begründung angegeben."), false));
 
@@ -96,6 +105,10 @@ public class ModerationCommands {
 
         if (moderation.referenceMessage().isPresent()) {
             fields.add(new EmbedDTO.Field("Referenznachricht", moderation.referenceMessage().get().content().orElse("__Inhalt konnte nicht geladen werden__"), false));
+        }
+
+        if (moderation.delDays().isPresent() && moderation.delDays().get() > 0) {
+            fields.add(new EmbedDTO.Field("Nachrichten löschen", String.format("Für %d Tage", moderation.delDays().get()), true));
         }
 
         var embed = embedCache.getEmbed("moderationActExecuted")
