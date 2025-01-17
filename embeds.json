@@ -79,5 +79,163 @@
   "moderationActExecuted": {
     "title": "{type} erfolgreich ausgeführt!",
     "color": "{color}"
+  },
+  "warnEmbed": {
+    "title": "Verwarnung",
+    "description": "Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!",
+    "color": "{color}",
+    "fields": [
+      {
+        "name": "Begründung",
+        "value": "{reason}",
+        "inline": true
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{date}>",
+        "inline": true
+      },
+      {
+        "name": "Regel, gegen die du verstoßen hast",
+        "value": "{paragraph}",
+        "inline": false
+      },
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Zuständiger Moderator",
+        "value": "<@{issuerId}>"
+      }
+    ],
+    "author": {
+      "name": "{issuerUsername}",
+      "iconUrl": "{issuerAvatarURL}"
+    }
+  },
+  "timeoutEmbed": {
+    "title": "Timeout",
+    "description": "Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!",
+    "color": "{color}",
+    "fields": [
+      {
+        "name": "Begründung",
+        "value": "{reason}",
+        "inline": true
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{date}>",
+        "inline": true
+      },
+      {
+        "name": "Aufhebung",
+        "value": "<t:{until}:R>"
+      },
+      {
+        "name": "Regel, gegen die du verstoßen hast",
+        "value": "{paragraph}"
+      },
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Zuständiger Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      }
+    ]
+  },
+  "kickEmbed": {
+    "title": "Kick",
+    "description": "Du wurdest vom **NPLAY** Discord Server gekickt!",
+    "color": "{color}",
+    "fields": [
+      {
+        "name": "Begründung",
+        "value": "{reason}",
+        "inline": true
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{date}>",
+        "inline": true
+      },
+      {
+        "name": "Regel, gegen die du verstoßen hast",
+        "value": "{paragraph}"
+      },
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Zuständiger Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      }
+    ]
+  },
+  "tempBanEmbed": {
+    "title": "Temporärer Bann",
+    "description": "Du wurdest temporär vom **NPLAY** Discord Server gebannt!",
+    "color": "{color}",
+    "fields": [
+      {
+        "name": "Begründung",
+        "value": "{reason}",
+        "inline": true
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{date}>",
+        "inline": true
+      },
+      {
+        "name": "Aufhebung",
+        "value": "<t:{until}:R>"
+      },
+      {
+        "name": "Regel, gegen die du verstoßen hast",
+        "value": "{paragraph}"
+      },
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Zuständiger Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      }
+    ]
+  },
+  "banEmbed": {
+    "title": "Ban",
+    "description": "Du wurdest vom **NPLAY** Discord Server gebannt!",
+    "color": "{color}",
+    "fields": [
+      {
+        "name": "Begründung",
+        "value": "{reason}",
+        "inline": true
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{date}>",
+        "inline": true
+      },
+      {
+        "name": "Regel, gegen die du verstoßen hast",
+        "value": "{paragraph}"
+      },
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Zuständiger Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      }
+    ]
   }
 }

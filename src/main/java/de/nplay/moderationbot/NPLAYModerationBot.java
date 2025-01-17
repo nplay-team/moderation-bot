@@ -12,6 +12,8 @@ import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.backend.DurationAdapter;
+import de.nplay.moderationbot.backend.DurationMax;
+import de.nplay.moderationbot.backend.DurationMaxValidator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -73,6 +75,7 @@ public class NPLAYModerationBot {
                 .dependencyInjector(dependencyInjector)
                 .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
                 .adapter(Duration.class, new DurationAdapter())
+                .validator(DurationMax.class, new DurationMaxValidator()) // TODO: this is temporary, until jda-commands implements @Implementation
                 .start();
         
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);

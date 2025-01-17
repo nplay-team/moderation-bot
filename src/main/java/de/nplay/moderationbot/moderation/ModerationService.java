@@ -1,20 +1,30 @@
 package de.nplay.moderationbot.moderation;
 
+import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
+import de.chojo.sadu.mapper.rowmapper.RowMapper;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import de.nplay.moderationbot.Bootstrapper;
+import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.rules.RuleService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Utility class for managing moderation acts.
  */
 public class ModerationService {
-
     /**
      * Warns a member
      *
@@ -167,8 +177,10 @@ public class ModerationService {
             Timestamp created_at
     ) {
 
+        private static final Logger logger = LoggerFactory.getLogger(ModerationAct.class);
+        
         /**
-         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
+         * Mapping method for the {@link RowMapper RowMapper}
          *
          * @return a {@link RowMapping} of this record
          */
@@ -187,6 +199,85 @@ public class ModerationService {
                     row.getLong("issuer_id"),
                     row.getTimestamp("created_at")
             );
+        }
+
+        /**
+         * Executes the moderation action.
+         */
+        public void execute(EmbedCache embedCache) {
+            var issuer = Bootstrapper.bot.getJda().getUserById(issuerId);
+            var member = Bootstrapper.bot.getGuild().retrieveMemberById(userId).complete();
+
+            sendMessageToUser(embedCache, issuer, member.getUser());
+
+            switch (type) {
+                case WARN -> {
+                    logger.info("User {} has been warned by {}", userId, issuerId);
+                }
+
+                case TIMEOUT -> {
+                    logger.info("User {} has been timed out by {} until {}", userId, issuerId, revokeAt.orElse(null));
+                    member.timeoutUntil(revokeAt.get().toInstant()).reason(reason.orElse(null)).queue();
+                }
+
+                case KICK -> {
+                    logger.info("User {} has been kicked by {}", userId, issuerId);
+                    member.kick().reason(reason.orElse(null)).queue();
+                }
+
+                case TEMP_BAN -> {
+                    logger.info("User {} has been temp banned by {}", userId, issuerId);
+                }
+
+                case BAN -> {
+                    logger.info("User {} has been banned by {}", userId, issuerId);
+                }
+            }
+        }
+
+        private void sendMessageToUser(EmbedCache embedCache, User issuer, User user) {
+            var issuerId = issuer != null ? issuer.getId() : Bootstrapper.bot.getJda().getSelfUser().getId();
+            var issuerUsername = issuer != null ? issuer.getEffectiveName() : "System";
+
+            Map<String, Object> defaultInjectValues = new HashMap<>();
+            defaultInjectValues.put("issuerId", issuerId);
+            defaultInjectValues.put("issuerUsername", issuerUsername);
+            defaultInjectValues.put("reason", reason.orElse("?DEL?"));
+            defaultInjectValues.put("date", created_at.getTime() / 1000);
+            defaultInjectValues.put("paragraph", paragraph.map(ruleParagraph -> ruleParagraph + "\n" + ruleParagraph.content().orElse("/")).orElse("?DEL?"));
+            defaultInjectValues.put("id", id);
+
+            if (user != null) {
+                EmbedDTO embedDTO = null;
+
+                switch (type) {
+                    case WARN -> {
+                        embedDTO = embedCache.getEmbed("warnEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.WARNING);
+                    }
+
+                    case TIMEOUT -> {
+                        embedDTO = embedCache.getEmbed("timeoutEmbed").injectValues(defaultInjectValues).injectValue("until", revokeAt.get().getTime() / 1000).injectValue("color", EmbedColors.WARNING);
+                    }
+
+                    case KICK -> {
+                        embedDTO = embedCache.getEmbed("kickEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
+                    }
+
+                    case TEMP_BAN -> {
+                        embedDTO = embedCache.getEmbed("tempBanEmbed").injectValues(defaultInjectValues).injectValue("until", revokeAt.get().getTime() / 1000).injectValue("color", EmbedColors.ERROR);
+                    }
+
+                    case BAN -> {
+                        embedDTO = embedCache.getEmbed("banEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
+                    }
+                }
+
+                if (embedDTO != null) {
+                    EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
+                    embedBuilder.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
+                    user.openPrivateChannel().flatMap(it -> it.sendMessageEmbeds(embedBuilder.build())).queue();
+                }
+            }
         }
 
         @Override

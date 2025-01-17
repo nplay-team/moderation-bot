@@ -11,4 +11,9 @@ public enum EmbedColors {
     EmbedColors(String hexColor) {
         this.hexColor = hexColor;
     }
+
+    @Override
+    public String toString() {
+        return hexColor;
+    }
 }

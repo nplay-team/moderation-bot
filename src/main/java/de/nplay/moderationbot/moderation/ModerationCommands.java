@@ -7,6 +7,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
+import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.Permission;
@@ -40,7 +41,7 @@ public class ModerationCommands {
     }
 
     @SlashCommand(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
-    public void timeoutMember(CommandEvent event, @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target, @Param("Für wie lange der Timeout andauern soll") Duration until, @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
+    public void timeoutMember(CommandEvent event, @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target, @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200) Duration until, @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         this.moderationActBuilder = ModerationService
                 .timeout(target)
                 .setDuration(until.getSeconds() * 1000);
@@ -99,24 +100,29 @@ public class ModerationCommands {
 
         var embed = embedCache.getEmbed("moderationActExecuted")
                 .injectValue("type", moderation.type().humanReadableString)
-                .injectValue("color", EmbedColors.SUCCESS.hexColor);
+                .injectValue("color", EmbedColors.SUCCESS);
 
         embed.setFields(fields.toArray(new EmbedDTO.Field[0]));
         embed.setFooter(new EmbedDTO.Footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName()));
 
-        // TODO: Send Message to Modlog Channel
+        moderation.execute(embedCache);
 
         event.reply(embed);
     }
 
     @AutoComplete("moderation")
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
+        if (!event.getName().equals("paragraph"))
+            return; // TODO: this is temporary, until jda-commands supports selecting options
+        
         var rules = RuleService.getParagraphIdMapping();
 
         Set<Command.Choice> choices = new HashSet<>();
 
         for (var entry : rules.entrySet()) {
-            choices.add(new Command.Choice(entry.getValue().toString(), Integer.toString(entry.getKey())));
+            if (entry.getValue().toString().toLowerCase().contains(event.getValue().toLowerCase())) {
+                choices.add(new Command.Choice(entry.getValue().toString(), Integer.toString(entry.getKey())));
+            }
         }
 
         event.replyChoices(choices);

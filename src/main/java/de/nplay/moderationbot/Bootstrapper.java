@@ -7,6 +7,8 @@ public class Bootstrapper {
 
     private final static Logger log = LoggerFactory.getLogger(Bootstrapper.class);
 
+    public static NPLAYModerationBot bot;
+
     /**
      * Main entry point of the Bot
      */
@@ -17,7 +19,7 @@ public class Bootstrapper {
         try {
             log.info("Starting NPLAY-Bot...");
 
-            var bot = NPLAYModerationBot.start(System.getenv("BOT_GUILD"), System.getenv("BOT_TOKEN"));
+            bot = NPLAYModerationBot.start(System.getenv("BOT_GUILD"), System.getenv("BOT_TOKEN"));
             Thread.setDefaultUncaughtExceptionHandler((t, e) -> log.error("An uncaught exception has occurred!", e));
             Runtime.getRuntime().addShutdownHook(new Thread(bot::shutdown));
 

@@ -35,7 +35,7 @@ public class BotPermissionsCommands {
         event.reply(embedCache.getEmbed("permissionsList")
                 .injectValue("target", target.getEffectiveName())
                 .injectValue("permissions", BotPermissions.getPermissionListString(BotPermissionsService.getMemberPermissions(target).permissions()))
-                .injectValue("color", EmbedColors.DEFAULT.hexColor)
+                .injectValue("color", EmbedColors.DEFAULT)
         );
     }
 
@@ -61,7 +61,7 @@ public class BotPermissionsCommands {
                 .replyEmbeds(
                         embedCache.getEmbed("permissionsEdit")
                                 .injectValue("target", member.getEffectiveName())
-                                .injectValue("color", EmbedColors.DEFAULT.hexColor)
+                                .injectValue("color", EmbedColors.DEFAULT)
                                 .toMessageEmbed()
                 )
                 .addActionRow(menu.build())
@@ -90,7 +90,7 @@ public class BotPermissionsCommands {
                 .replyEmbeds(
                         embedCache.getEmbed("permissionsEdit")
                                 .injectValue("target", role.getName())
-                                .injectValue("color", EmbedColors.DEFAULT.hexColor)
+                                .injectValue("color", EmbedColors.DEFAULT)
                                 .toMessageEmbed()
                 )
                 .addActionRow(menu.build())
@@ -111,7 +111,7 @@ public class BotPermissionsCommands {
                 embedCache.getEmbed("memberPermissionsList")
                         .injectValue("target", targetMember.getEffectiveName())
                         .injectValue("permissions", BotPermissions.getPermissionListString(BotPermissionsService.getUserPermissions(targetMember).permissions()))
-                        .injectValue("color", EmbedColors.DEFAULT.hexColor)
+                        .injectValue("color", EmbedColors.DEFAULT)
         );
     }
 
@@ -129,7 +129,7 @@ public class BotPermissionsCommands {
                 embedCache.getEmbed("rolePermissionsList")
                         .injectValue("target", targetRole.getName())
                         .injectValue("permissions", BotPermissions.getPermissionListString(BotPermissionsService.getRolePermissions(targetRole.getIdLong()).permissions()))
-                        .injectValue("color", EmbedColors.DEFAULT.hexColor)
+                        .injectValue("color", EmbedColors.DEFAULT)
         );
     }
 }
