@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +27,8 @@ import java.util.concurrent.TimeUnit;
  * Utility class for managing moderation acts.
  */
 public class ModerationService {
+    private static final Logger log = LoggerFactory.getLogger(ModerationService.class);
+
     /**
      * Warns a member
      *
@@ -85,8 +88,8 @@ public class ModerationService {
     public static long createModerationAct(ModerationAct act) {
         return Query.query("""
                 INSERT INTO moderations
-                (user_id, type, reverted, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration)
-                VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?, ?)
+                (user_id, type, reverted, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration, created_at)
+                VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?, ?, ?)
                 """
         ).single(Call.of()
                 .bind(act.userId)
@@ -98,6 +101,7 @@ public class ModerationService {
                 .bind(act.referenceMessage.map(MessageReferenceService.MessageReference::messageId).orElse(null))
                 .bind(act.revokeAt.orElse(null))
                 .bind(act.duration.orElse(null))
+                .bind(act.created_at)
         ).insertAndGetKeys().keys().getFirst();
     }
 
@@ -112,6 +116,18 @@ public class ModerationService {
                 .single(Call.of().bind(moderationId))
                 .mapAs(ModerationAct.class)
                 .first().orElseThrow();
+    }
+
+    /**
+     * Retrieves all moderation's, which need to be reverted.
+     *
+     * @return a list of {@link ModerationAct} records.
+     */
+    public static List<ModerationAct> getModerationActsToRevert() {
+        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ?")
+                .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
+                .mapAs(ModerationAct.class)
+                .all();
     }
 
     /**
@@ -136,6 +152,16 @@ public class ModerationService {
                 .bind(act.duration.orElse(null))
                 .bind(act.id)
         ).update();
+    }
+
+    public static void revertModerationAct(ModerationAct act) {
+        act.revert();
+
+        Query.query("UPDATE moderations SET reverted = true WHERE id = ?")
+                .single(Call.of().bind(act.id))
+                .update();
+
+        log.info("Reverted moderation act with id {}", act.id);
     }
 
     /**
@@ -239,6 +265,20 @@ public class ModerationService {
                     member.ban(delDays.orElse(0), TimeUnit.DAYS).reason(reason.orElse(null)).queue();
                 }
             }
+        }
+
+        public void revert() {
+            if (type == ModerationActType.BAN || type == ModerationActType.TEMP_BAN) {
+                var guild = Bootstrapper.bot.getGuild();
+
+                try {
+                    guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue();
+                } catch (Exception e) {
+                    logger.error("Failed to unban user {}", userId, e);
+                }
+            }
+
+            logger.info("Reverting moderation action: {}", this);
         }
 
         private void sendMessageToUser(EmbedCache embedCache, User issuer, User user) {
