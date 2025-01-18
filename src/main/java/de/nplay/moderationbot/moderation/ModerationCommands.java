@@ -10,7 +10,7 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
-import de.nplay.moderationbot.permissions.BotPermissionFlags;
+import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -71,7 +71,7 @@ public class ModerationCommands {
     }
 
     @SlashCommand(value = "moderation revert", desc = "Hebt eine Moderationshandlung auf", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
-    @Permissions(BotPermissionFlags.MODERATION_DELETE)
+    @Permissions(BotPermissions.MODERATION_DELETE)
     public void revertModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die aufgehoben werden soll") long moderationId) {
         var moderation = ModerationService.getModerationAct(moderationId);
 
