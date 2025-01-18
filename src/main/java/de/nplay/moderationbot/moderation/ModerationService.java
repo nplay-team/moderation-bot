@@ -323,7 +323,7 @@ public class ModerationService {
                 }
             }
 
-            if (type == ModerationActType.TIMEOUT) {
+            if (type == ModerationActType.TIMEOUT || type == ModerationActType.WARN) {
                 var user = Bootstrapper.bot.getJda().getUserById(userId);
                 var issuer = Bootstrapper.bot.getJda().getUserById(issuerId);
                 var issuerUsername = issuer != null ? issuer.getName() : "System";
@@ -332,7 +332,7 @@ public class ModerationService {
                 if (user != null) {
                     user.openPrivateChannel().flatMap(it -> it.sendMessageEmbeds(
                                     embedCache
-                                            .getEmbed("timeoutReverted")
+                                            .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")
                                             .injectValue("date", created_at.getTime() / 1000)
                                             .injectValue("id", id)
                                             .injectValue("issuerId", issuerId)

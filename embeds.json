@@ -238,6 +238,26 @@
       }
     ]
   },
+  "warnReverted": {
+    "title": "Warn aufgehoben",
+    "description": "Dein Warn auf dem **NPLAY** Discord Server wurde wieder zurückgenommen!",
+    "fields": [
+      {
+        "name": "Warn vom",
+        "value": "<t:{date}>",
+        "inline": true
+      },
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Zuständiger Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      }
+    ],
+    "color": "{color}"
+  },
   "timeoutReverted": {
     "title": "Timeout aufgehoben",
     "description": "Dein Timeout auf dem **NPLAY** Discord Server ist nun aufgehoben!",
