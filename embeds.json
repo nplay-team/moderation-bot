@@ -61,16 +61,6 @@
     "description": "Bitte wähle die Berechtigungen in dem Select-Menu aus:",
     "color": "{color}"
   },
-  "memberPermissionsList": {
-    "title": "Benutzer-Berechtigungen von **{target}**",
-    "description": "{permissions}",
-    "color": "{color}"
-  },
-  "rolePermissionsList": {
-    "title": "Rollen-Berechtigungen von **{target}**",
-    "description": "{permissions}",
-    "color": "{color}"
-  },
   "permissionsList": {
     "title": "Berechtigungen von **{target}**",
     "description": "{permissions}",

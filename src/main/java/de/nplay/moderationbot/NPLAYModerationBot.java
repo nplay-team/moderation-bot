@@ -11,6 +11,7 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.permissions.BotPermissionsProvider;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -70,6 +71,7 @@ public class NPLAYModerationBot {
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .dependencyInjector(dependencyInjector)
                 .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
+                .permissionsProvider(new BotPermissionsProvider())
                 .start();
         
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
