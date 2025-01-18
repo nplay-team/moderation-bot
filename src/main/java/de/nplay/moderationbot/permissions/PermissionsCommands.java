@@ -10,7 +10,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.embeds.EmbedColors;
-import de.nplay.moderationbot.permissions.BotPermissionsService.Permissions;
+import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
@@ -31,7 +31,7 @@ public class PermissionsCommands {
     private EmbedCache embedCache;
     private ISnowflake target;
 
-    @com.github.kaktushose.jda.commands.annotations.interactions.Permissions(BotPermissions.PERMISSION_READ)
+    @Permissions(BotPermissions.PERMISSION_READ)
     @SlashCommand(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     public void onPermissionsList(CommandEvent event,
                                   @Optional @Param("Der Benutzer, dessen Berechtigungen abgerufen werden sollen.")
@@ -45,7 +45,7 @@ public class PermissionsCommands {
         );
     }
 
-    @com.github.kaktushose.jda.commands.annotations.interactions.Permissions(BotPermissions.PERMISSION_MANAGE)
+    @Permissions(BotPermissions.PERMISSION_MANAGE)
     @SlashCommand(value = "permissions manage member", desc = "Verwaltet die Berechtigungen eines Benutzers.", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     public void onManageMemberPermissions(CommandEvent event,
                                           @Param("Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.")
@@ -55,8 +55,8 @@ public class PermissionsCommands {
 
     }
 
+    @Permissions(BotPermissions.PERMISSION_MANAGE)
     @SlashCommand(value = "permissions manage role", desc = "Verwaltet die Berechtigungen einer Rolle.", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
-    @com.github.kaktushose.jda.commands.annotations.interactions.Permissions(BotPermissions.PERMISSION_MANAGE)
     public void onManageRolePermissions(CommandEvent event,
                                         @Param("Die Rolle, dessen Berechtigungen bearbeitet werden sollen.")
                                         Role role) {
@@ -64,7 +64,7 @@ public class PermissionsCommands {
         replyMenu(event, BotPermissionsService.getRolePermissions(role), role.getName());
     }
 
-    private void replyMenu(ReplyableEvent<?> event, Permissions holder, String target) {
+    private void replyMenu(ReplyableEvent<?> event, EntityPermissions holder, String target) {
         var selectMenu = ((StringSelectMenu) event.getSelectMenu("onPermissionsSelect")).createCopy();
         selectMenu.getOptions().clear();
         Arrays.stream(BotPermissions.BitFields.values()).forEach(it -> selectMenu.addOption(it.displayName, it.name()));
@@ -82,7 +82,7 @@ public class PermissionsCommands {
                 );
     }
 
-    @com.github.kaktushose.jda.commands.annotations.interactions.Permissions(BotPermissions.PERMISSION_MANAGE)
+    @Permissions(BotPermissions.PERMISSION_MANAGE)
     @com.github.kaktushose.jda.commands.annotations.interactions.StringSelectMenu(value = "Wähle eine oder mehrere Berechtigungen aus")
     @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(label = "dummy option", value = "dummy value")
     @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(label = "dummy option 2", value = "dummy value 2")
