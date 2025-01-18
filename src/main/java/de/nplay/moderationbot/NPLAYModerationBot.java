@@ -136,6 +136,11 @@ public class NPLAYModerationBot {
     }
 
     @Produces(skipIndexing = true)
+    public NPLAYModerationBot getBot() {
+        return this;
+    }
+
+    @Produces(skipIndexing = true)
     public EmbedCache getEmbedCache() {
         return embedCache;
     }

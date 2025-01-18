@@ -275,7 +275,7 @@
   },
   "reversionFailed": {
     "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{id}** konnte nicht rückgängig gemacht werden, bzw. existiert nicht!",
+    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
     "color": "#ff0000"
   }
 }
