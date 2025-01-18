@@ -283,25 +283,16 @@ public class ModerationService {
                 EmbedDTO embedDTO = null;
 
                 switch (type) {
-                    case WARN -> {
-                        embedDTO = embedCache.getEmbed("warnEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.WARNING);
-                    }
-
-                    case TIMEOUT -> {
-                        embedDTO = embedCache.getEmbed("timeoutEmbed").injectValues(defaultInjectValues).injectValue("until", revokeAt.get().getTime() / 1000).injectValue("color", EmbedColors.WARNING);
-                    }
-
-                    case KICK -> {
-                        embedDTO = embedCache.getEmbed("kickEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
-                    }
-
-                    case TEMP_BAN -> {
-                        embedDTO = embedCache.getEmbed("tempBanEmbed").injectValues(defaultInjectValues).injectValue("until", revokeAt.get().getTime() / 1000).injectValue("color", EmbedColors.ERROR);
-                    }
-
-                    case BAN -> {
-                        embedDTO = embedCache.getEmbed("banEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
-                    }
+                    case WARN ->
+                            embedDTO = embedCache.getEmbed("warnEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.WARNING);
+                    case TIMEOUT ->
+                            embedDTO = embedCache.getEmbed("timeoutEmbed").injectValues(defaultInjectValues).injectValue("until", revokeAt.get().getTime() / 1000).injectValue("color", EmbedColors.WARNING);
+                    case KICK ->
+                            embedDTO = embedCache.getEmbed("kickEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
+                    case TEMP_BAN ->
+                            embedDTO = embedCache.getEmbed("tempBanEmbed").injectValues(defaultInjectValues).injectValue("until", revokeAt.get().getTime() / 1000).injectValue("color", EmbedColors.ERROR);
+                    case BAN ->
+                            embedDTO = embedCache.getEmbed("banEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
                 }
 
                 if (embedDTO != null) {

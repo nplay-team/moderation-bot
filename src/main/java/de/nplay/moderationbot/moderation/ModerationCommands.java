@@ -15,8 +15,6 @@ import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -28,7 +26,6 @@ import java.util.Set;
 @Interaction
 public class ModerationCommands {
 
-    private static final Logger log = LoggerFactory.getLogger(ModerationCommands.class);
     @Inject
     private EmbedCache embedCache;
 
@@ -94,7 +91,7 @@ public class ModerationCommands {
             var paragraph = RuleService.getRuleParagraph(Integer.parseInt(paragraphId));
             paragraph.ifPresent(this.moderationActBuilder::setParagraph);
         }
-        
+
         event.replyModal("onModerate");
     }
 
@@ -142,7 +139,7 @@ public class ModerationCommands {
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
         if (!event.getName().equals("paragraph"))
             return; // TODO: this is temporary, until jda-commands supports selecting options
-        
+
         var rules = RuleService.getParagraphIdMapping();
 
         Set<Command.Choice> choices = new HashSet<>();
