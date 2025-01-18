@@ -15,6 +15,7 @@ import de.nplay.moderationbot.backend.DurationAdapter;
 import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.backend.DurationMaxValidator;
 import de.nplay.moderationbot.permissions.BotPermissionsProvider;
+import de.nplay.moderationbot.tasks.AutomaticUnbanTask;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -31,12 +32,16 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The main class of the bot
  */
 public class NPLAYModerationBot {
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
     private final JDA jda;
     private final JDACommands jdaCommands;
@@ -103,6 +108,8 @@ public class NPLAYModerationBot {
         } catch (SQLException | IOException e) {
             throw new RuntimeException("Failed to migrate database!", e);
         }
+
+        scheduler.scheduleAtFixedRate(new AutomaticUnbanTask(guild, embedCache), 0, 1, TimeUnit.MINUTES);
     }
 
     /**
@@ -133,11 +140,6 @@ public class NPLAYModerationBot {
 
     public Guild getGuild() {
         return guild;
-    }
-
-    @Produces(skipIndexing = true)
-    public NPLAYModerationBot getBot() {
-        return this;
     }
 
     @Produces(skipIndexing = true)

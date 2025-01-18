@@ -11,25 +11,17 @@ public class Bootstrapper {
 
     private final static Logger log = LoggerFactory.getLogger(Bootstrapper.class);
 
-    public static NPLAYModerationBot bot;
-
     /**
      * Main entry point of the Bot
      */
     public static void main(String[] args) {
         Thread.currentThread().setName("Bot");
-
         long startTime = System.currentTimeMillis();
         try {
             log.info("Starting NPLAY-Bot...");
-
-            bot = NPLAYModerationBot.start(System.getenv("BOT_GUILD"), System.getenv("BOT_TOKEN"));
+            NPLAYModerationBot bot = NPLAYModerationBot.start(System.getenv("BOT_GUILD"), System.getenv("BOT_TOKEN"));
             Thread.setDefaultUncaughtExceptionHandler((_, e) -> log.error("An uncaught exception has occurred!", e));
             Runtime.getRuntime().addShutdownHook(new Thread(bot::shutdown));
-
-            var scheduler = Executors.newScheduledThreadPool(1);
-            scheduler.scheduleAtFixedRate(new AutomaticUnbanTask(), 0, 1, TimeUnit.MINUTES);
-            
             log.info("Successfully started NPLAY-Moderation-Bot! Took {} ms", System.currentTimeMillis() - startTime);
         } catch (Exception e) {
             log.error("Failed to start!", e);

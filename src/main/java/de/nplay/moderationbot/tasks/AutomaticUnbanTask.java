@@ -1,13 +1,13 @@
 package de.nplay.moderationbot.tasks;
 
+import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.moderation.ModerationService;
+import net.dv8tion.jda.api.entities.Guild;
 
-import java.util.TimerTask;
-
-public class AutomaticUnbanTask extends TimerTask {
+public record AutomaticUnbanTask(Guild guild, EmbedCache embedCache) implements Runnable {
 
     @Override
     public void run() {
-        ModerationService.getModerationActsToRevert().forEach(ModerationService::revertModerationAct);
+        ModerationService.getModerationActsToRevert().forEach(it -> it.revert(guild, embedCache));
     }
 }

@@ -1,8 +1,7 @@
-package de.nplay.moderationbot.moderation;
+package de.nplay.moderationbot.moderation.commands;
 
 import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
-import com.github.kaktushose.jda.commands.annotations.interactions.Optional;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
@@ -12,18 +11,25 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
+import de.nplay.moderationbot.moderation.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.ModerationActType;
+import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
 
 @Interaction
 public class ModerationCommands {
@@ -35,20 +41,17 @@ public class ModerationCommands {
 
     @AutoComplete("moderation")
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
-        if (!event.getName().equals("paragraphId"))
+        if (!event.getName().equals("paragraph"))
             return; // TODO: this is temporary, until jda-commands supports selecting options
 
         var rules = RuleService.getParagraphIdMapping();
-
-        Set<Command.Choice> choices = new HashSet<>();
-
-        for (var entry : rules.entrySet()) {
-            if (entry.getValue().toString().toLowerCase().contains(event.getValue().toLowerCase())) {
-                choices.add(new Command.Choice(entry.getValue().toString(), Integer.toString(entry.getKey())));
-            }
-        }
-
-        event.replyChoices(choices);
+        rules.values().removeIf(it -> !it.shortDisplay().toLowerCase().contains(event.getValue().toLowerCase()));
+        event.replyChoices(rules.entrySet().stream()
+                .map(it -> new Command.Choice(
+                        it.getValue().shortDisplay(),
+                        Integer.toString(it.getKey()))
+                ).toList()
+        );
     }
 
     @SlashCommand(value = "moderation warn", desc = "Verwarnt einen Benutzer", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
@@ -86,12 +89,10 @@ public class ModerationCommands {
             Integer delDays,
             @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
     ) {
+        moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
         if (until != null) {
-            moderationActBuilder = ModerationActBuilder.tempBan(target, event.getUser(), delDays).duration(until.getSeconds() * 1000);
-        } else {
-            moderationActBuilder = ModerationActBuilder.ban(target, event.getUser(), delDays);
+            moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
         }
-        moderationActBuilder.paragraph(paragraph);
         event.replyModal("onModerate");
     }
 
@@ -103,23 +104,23 @@ public class ModerationCommands {
         List<EmbedDTO.Field> fields = new ArrayList<>();
 
         fields.add(new EmbedDTO.Field("ID", Long.toString(moderationAct.id()), true));
-        fields.add(new EmbedDTO.Field("Betroffener Nutzer", String.format("<@%s>", moderationAct.userId()), true));
+        fields.add(new EmbedDTO.Field("Betroffener Nutzer", "<@%s>".formatted(moderationAct.userId()), true));
         fields.add(new EmbedDTO.Field("Begründung", moderationAct.reason().orElse("Keine Begründung angegeben."), false));
 
         if (moderationAct.type().isTemp() && moderationAct.revokeAt().isPresent()) {
-            fields.add(new EmbedDTO.Field("Aktiv bis", String.format("<t:%s:f>", moderationAct.revokeAt().get().getTime() / 1000), true));
+            fields.add(new EmbedDTO.Field("Aktiv bis", "<t:%s:f>".formatted(moderationAct.revokeAt().get().getTime() / 1000), true));
         }
 
         if (moderationAct.paragraph().isPresent()) {
-            fields.add(new EmbedDTO.Field("Regel", moderationAct.paragraph().get().toString(), true));
+            fields.add(new EmbedDTO.Field("Regel", moderationAct.paragraph().get().shortDisplay(), true));
         }
 
         if (moderationAct.referenceMessage().isPresent()) {
-            fields.add(new EmbedDTO.Field("Referenznachricht", moderationAct.referenceMessage().get().content().orElse("__Inhalt konnte nicht geladen werden__"), false));
+            fields.add(new EmbedDTO.Field("Referenznachricht", moderationAct.referenceMessage().get().content(), false));
         }
 
         if (moderationAct.delDays().isPresent() && moderationAct.delDays().get() > 0) {
-            fields.add(new EmbedDTO.Field("Nachrichten löschen", String.format("Für %d Tage", moderationAct.delDays().get()), true));
+            fields.add(new EmbedDTO.Field("Nachrichten löschen", "Für %d Tage".formatted(moderationAct.delDays().get()), true));
         }
 
         var embed = embedCache.getEmbed("moderationActExecuted")
@@ -135,34 +136,31 @@ public class ModerationCommands {
     }
 
     private void sendMessageToUser(ModerationAct moderationAct, ReplyableEvent<?> event) {
-        var issuerId = moderationAct.issuerId();
-        var issuerUsername = event.getJDA().retrieveUserById(issuerId).complete().getEffectiveName();
-
-        Map<String, Object> defaultInjectValues = new HashMap<>();
-        defaultInjectValues.put("issuerId", issuerId);
-        defaultInjectValues.put("issuerUsername", issuerUsername);
-        defaultInjectValues.put("reason", moderationAct.reason().orElse("?DEL?"));
-        defaultInjectValues.put("date", System.currentTimeMillis() / 1000);
-        defaultInjectValues.put("paragraphId", moderationAct.paragraph().map(ruleParagraph -> ruleParagraph + "\n" + ruleParagraph.content().orElse("/")).orElse("?DEL?"));
-        defaultInjectValues.put("id", moderationAct.id());
+        Map<String, Object> defaultInjectValues = Map.of(
+                "issuerId", moderationAct.issuerId(),
+                "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getEffectiveName(),
+                "reason", moderationAct.reason().orElse("?DEL?"),
+                "date", System.currentTimeMillis() / 1000,
+                "paragraph", moderationAct.paragraph().map(RuleParagraph::fullDisplay).orElse("?DEL?"),
+                "id", moderationAct.id()
+        );
 
         EmbedDTO embedDTO = switch (moderationAct.type()) {
-            case WARN ->
-                    embedCache.getEmbed("warnEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.WARNING);
-            case TIMEOUT ->
-                    embedCache.getEmbed("timeoutEmbed").injectValues(defaultInjectValues).injectValue("until", moderationAct.revokeAt().get().getTime() / 1000).injectValue("color", EmbedColors.WARNING);
-            case KICK ->
-                    embedCache.getEmbed("kickEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
-            case TEMP_BAN ->
-                    embedCache.getEmbed("tempBanEmbed").injectValues(defaultInjectValues).injectValue("until", moderationAct.revokeAt().get().getTime() / 1000).injectValue("color", EmbedColors.ERROR);
-            case BAN ->
-                    embedCache.getEmbed("banEmbed").injectValues(defaultInjectValues).injectValue("color", EmbedColors.ERROR);
+            case WARN -> embedCache.getEmbed("warnEmbed").injectValue("color", EmbedColors.WARNING);
+            case TIMEOUT -> embedCache.getEmbed("timeoutEmbed").injectValue("color", EmbedColors.WARNING);
+            case KICK -> embedCache.getEmbed("kickEmbed").injectValue("color", EmbedColors.ERROR);
+            case TEMP_BAN -> embedCache.getEmbed("tempBanEmbed").injectValue("color", EmbedColors.ERROR);
+            case BAN -> embedCache.getEmbed("banEmbed").injectValue("color", EmbedColors.ERROR);
         };
-
-        event.getJDA().retrieveUserById(moderationAct.userId()).queue(user -> {
-            EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
-            embedBuilder.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
-            user.openPrivateChannel().flatMap(it -> it.sendMessageEmbeds(embedBuilder.build())).complete();
-        }, new ErrorHandler().ignore(ErrorResponse.UNKNOWN_USER));
+        embedDTO.injectValues(defaultInjectValues);
+        if (moderationAct.revokeAt().isPresent()) {
+            embedDTO.injectValue("until", moderationAct.revokeAt().get().getTime() / 1000);
+        }
+        EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
+        embedBuilder.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
+        event.getJDA().retrieveUserById(moderationAct.userId())
+                .flatMap(User::openPrivateChannel)
+                .flatMap(channel -> channel.sendMessageEmbeds(embedBuilder.build()))
+                .queue(_ -> {}, UNKNOWN_USER_HANDLER);
     }
 }

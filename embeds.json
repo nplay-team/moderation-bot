@@ -98,11 +98,7 @@
         "name": "Zuständiger Moderator",
         "value": "<@{issuerId}>"
       }
-    ],
-    "author": {
-      "name": "{issuerUsername}",
-      "iconUrl": "{issuerAvatarURL}"
-    }
+    ]
   },
   "timeoutEmbed": {
     "title": "Timeout",

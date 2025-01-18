@@ -23,12 +23,12 @@ public class RevertCommand {
     public void revertModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die aufgehoben werden soll") long moderationId) {
         var moderation = ModerationService.getModerationAct(moderationId);
 
-        if (moderation == null) {
+        if (moderation.isEmpty()) {
             event.reply(embedCache.getEmbed("reversionFailed").injectValue("id", moderationId).injectValue("color", EmbedColors.ERROR));
             return;
         }
+        moderation.get().revert(event.getGuild(), embedCache);
 
-        ModerationService.revertModerationAct(moderation);
         event.reply(embedCache.getEmbed("reversionSuccessful").injectValue("id", moderationId).injectValue("color", EmbedColors.SUCCESS));
     }
 

@@ -27,7 +27,7 @@ public class RuleService {
                 .mapAs(RuleParagraph.class)
                 .all();
     }
-    
+
     /**
      * Gets a {@link RuleParagraph} based on the id
      *
@@ -76,9 +76,12 @@ public class RuleService {
             );
         }
 
-        @Override
-        public String toString() {
+        public String shortDisplay() {
             return number + " - " + title;
+        }
+
+        public String fullDisplay() {
+            return "%s\n%s".formatted(shortDisplay(), content.orElse("/"));
         }
     }
 }

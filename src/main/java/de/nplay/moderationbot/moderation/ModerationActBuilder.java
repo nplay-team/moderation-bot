@@ -1,10 +1,7 @@
 package de.nplay.moderationbot.moderation;
 
-import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,6 +18,15 @@ import java.util.function.Consumer;
 public class ModerationActBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationActBuilder.class);
+    private Consumer<ModerationActCreateData> consumer;
+    private long targetId;
+    private ModerationActType type;
+    private String reason;
+    private Integer paragraphId;
+    private Message messageReference;
+    private long duration;
+    private int deletionDays;
+    private long issuerId;
 
     public static ModerationActBuilder warn(Member target, User issuer) {
         return new ModerationActBuilder().issuer(issuer)
@@ -33,74 +39,36 @@ public class ModerationActBuilder {
         return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.TIMEOUT)
                 .target(target)
-                .action(action -> {
-                    if (action.revokeAt().isEmpty()) {
-                        throw new IllegalStateException("Cannot perform timeout without TemporaryCreateAction");
+                .action(data -> {
+                    if (data.revokeAt().isEmpty()) {
+                        throw new IllegalStateException("Cannot perform timeout without duration being set!");
                     }
-                    log.info("User {} has been timed out by {} until {}", target, issuer, action.duration());
-                    target.timeoutUntil(action.revokeAt().get().toInstant()).reason(action.reason()).queue();
+                    log.info("User {} has been timed out by {} until {}", target, issuer, data.duration());
+                    target.timeoutUntil(data.revokeAt().get().toInstant()).reason(data.reason()).queue();
                 });
     }
 
     public static ModerationActBuilder kick(Member target, User issuer) {
-        return new ModerationActBuilder()
-                .target(target)
+        return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.KICK)
-                .issuer(issuer)
-                .action(action -> {
+                .target(target)
+                .action(data -> {
                     log.info("User {} has been kicked by {}", target, issuer);
-                    target.kick().reason(action.reason()).queue();
+                    target.kick().reason(data.reason()).queue();
                 });
     }
 
-    public static ModerationActBuilder tempBan(Member target, User issuer, @Nullable Integer delDays) {
-        return new ModerationActBuilder()
-                .target(target)
-                .type(ModerationActType.TEMP_BAN)
-                .issuer(issuer)
-                .action(action -> {
-                    log.info("User {} has been temp banned by {}", target, issuer);
-                    target.ban(delDays == null ? 0 : delDays, TimeUnit.DAYS).reason(action.reason()).queue();
-                });
-    }
-
-    public static ModerationActBuilder ban(Member target, User issuer, @Nullable Integer delDays) {
-        return new ModerationActBuilder()
-                .target(target)
+    public static ModerationActBuilder ban(Member target, User issuer) {
+        return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.BAN)
-                .issuer(issuer)
-                .action(action -> {
-                    log.info("User {} has been banned by {}", target, issuer);
-                    target.ban(delDays == null ? 0 : delDays, TimeUnit.DAYS).reason(action.reason()).queue();
+                .target(target)
+                .action(data -> {
+                    log.info("User {} has been{} banned by {}", target, data.revokeAt().isPresent() ? " temp" : "", issuer);
+                    target.ban(data.deletionDays(), TimeUnit.DAYS).reason(data.reason()).queue();
                 });
     }
 
-    public record ModerationActCreateAction(
-            long targetId,
-            @NotNull ModerationActType type,
-            long issuerId,
-            @Nullable String reason,
-            @Nullable MessageReference messageReference,
-            @Nullable Integer paragraphId,
-            @Nullable Long duration,
-            @NotNull Consumer<ModerationActCreateAction> consumer) {
-
-        public Optional<Timestamp> revokeAt() {
-            return duration == null ? Optional.empty() : Optional.of(new Timestamp(System.currentTimeMillis() + duration));
-        }
-
-    }
-
-    private Consumer<ModerationActCreateAction> consumer;
-    private long targetId;
-    private ModerationActType type;
-    private String reason;
-    private Integer paragraphId;
-    private MessageReference messageReference;
-    private long duration;
-    private long issuerId;
-
-    public ModerationActBuilder issuer(UserSnowflake issuer) {
+    public ModerationActBuilder issuer(@NotNull UserSnowflake issuer) {
         this.issuerId = issuer.getIdLong();
         return this;
     }
@@ -115,12 +83,12 @@ public class ModerationActBuilder {
         return this;
     }
 
-    public ModerationActBuilder action(Consumer<ModerationActCreateAction> consumer) {
+    public ModerationActBuilder action(@NotNull Consumer<ModerationActCreateData> consumer) {
         this.consumer = consumer;
         return this;
     }
 
-    public ModerationActBuilder reason(@Nullable String reason) {
+    public ModerationActBuilder reason(@NotNull String reason) {
         this.reason = reason;
         return this;
     }
@@ -133,12 +101,8 @@ public class ModerationActBuilder {
         return this;
     }
 
-    public ModerationActBuilder messageReference(Message message) {
-        this.messageReference = new MessageReference(
-                message.getIdLong(),
-                message.getChannelIdLong(),
-                Optional.of(message.getContentRaw())
-        );
+    public ModerationActBuilder messageReference(@Nullable Message message) {
+        this.messageReference = message;
         return this;
     }
 
@@ -148,19 +112,46 @@ public class ModerationActBuilder {
             this.duration = duration;
             return this;
         }
-        throw new IllegalArgumentException("Cannot set duration on moderation act with type: " + type);
+        throw new UnsupportedOperationException("Cannot set duration on moderation act with type: " + type);
     }
 
-    public ModerationActCreateAction build() {
-        return new ModerationActCreateAction(
-                targetId,
-                type,
-                issuerId,
-                reason,
-                messageReference,
-                paragraphId,
-                duration,
-                consumer
-        );
+    public ModerationActBuilder deletionDays(int days) {
+        if (type == ModerationActType.BAN || type == ModerationActType.TEMP_BAN) {
+            deletionDays = days;
+            return this;
+        }
+        throw new UnsupportedOperationException("Cannot set deletion days on moderation act with type: " + type);
+    }
+
+    public ModerationActCreateData build() {
+        return new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays, consumer);
+    }
+
+    public record ModerationActCreateData(
+            long targetId,
+            @NotNull ModerationActType type,
+            long issuerId,
+            @Nullable String reason,
+            @Nullable Message messageReference,
+            @Nullable Integer paragraphId,
+            long duration,
+            int deletionDays,
+            @NotNull Consumer<ModerationActCreateData> consumer) {
+
+        public ModerationActCreateData {
+            Checks.isSnowflake(targetId + "", "targetId");
+            Checks.notNull(type, "ModerationActType");
+            Checks.isSnowflake(issuerId + "", "issuerId");
+            Checks.notNull(consumer, "ModerationActCreateData Consumer");
+        }
+
+        public Optional<Timestamp> revokeAt() {
+            return duration == 0 ? Optional.empty() : Optional.of(new Timestamp(System.currentTimeMillis() + duration));
+        }
+
+        public Optional<Long> messageReferenceId() {
+            return Optional.ofNullable(messageReference).map(ISnowflake::getIdLong);
+        }
+
     }
 }
