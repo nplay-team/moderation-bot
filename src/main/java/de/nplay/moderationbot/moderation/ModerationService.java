@@ -206,7 +206,7 @@ public class ModerationService {
     ) {
 
         private static final Logger logger = LoggerFactory.getLogger(ModerationAct.class);
-        
+
         /**
          * Mapping method for the {@link RowMapper RowMapper}
          *
@@ -267,23 +267,9 @@ public class ModerationService {
             }
         }
 
-        public void revert() {
-            if (type == ModerationActType.BAN || type == ModerationActType.TEMP_BAN) {
-                var guild = Bootstrapper.bot.getGuild();
-
-                try {
-                    guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue();
-                } catch (Exception e) {
-                    logger.error("Failed to unban user {}", userId, e);
-                }
-            }
-
-            logger.info("Reverting moderation action: {}", this);
-        }
-
         private void sendMessageToUser(EmbedCache embedCache, User issuer, User user) {
             var issuerId = issuer != null ? issuer.getId() : Bootstrapper.bot.getJda().getSelfUser().getId();
-            var issuerUsername = issuer != null ? issuer.getEffectiveName() : "System";
+            var issuerUsername = issuer != null ? issuer.getName() : "System";
 
             Map<String, Object> defaultInjectValues = new HashMap<>();
             defaultInjectValues.put("issuerId", issuerId);
@@ -324,6 +310,41 @@ public class ModerationService {
                     user.openPrivateChannel().flatMap(it -> it.sendMessageEmbeds(embedBuilder.build())).complete();
                 }
             }
+        }
+
+        public void revert() {
+            if (type == ModerationActType.BAN || type == ModerationActType.TEMP_BAN) {
+                var guild = Bootstrapper.bot.getGuild();
+
+                try {
+                    guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue();
+                } catch (Exception e) {
+                    logger.error("Failed to unban user {}", userId, e);
+                }
+            }
+
+            if (type == ModerationActType.TIMEOUT) {
+                var user = Bootstrapper.bot.getJda().getUserById(userId);
+                var issuer = Bootstrapper.bot.getJda().getUserById(issuerId);
+                var issuerUsername = issuer != null ? issuer.getName() : "System";
+                var embedCache = Bootstrapper.bot.getEmbedCache();
+                
+                if (user != null) {
+                    user.openPrivateChannel().flatMap(it -> it.sendMessageEmbeds(
+                                    embedCache
+                                            .getEmbed("timeoutReverted")
+                                            .injectValue("date", created_at.getTime() / 1000)
+                                            .injectValue("id", id)
+                                            .injectValue("issuerId", issuerId)
+                                            .injectValue("issuerUsername", issuerUsername)
+                                            .injectValue("color", EmbedColors.SUCCESS)
+                                            .toMessageEmbed()
+                            )
+                    ).queue();
+                }
+            }
+
+            logger.info("Reverting moderation action: {}", this);
         }
 
         @Override

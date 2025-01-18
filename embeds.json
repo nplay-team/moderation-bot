@@ -237,5 +237,25 @@
         "value": "<@{issuerId}> ({issuerUsername})"
       }
     ]
+  },
+  "timeoutReverted": {
+    "title": "Timeout aufgehoben",
+    "description": "Dein Timeout auf dem **NPLAY** Discord Server ist nun aufgehoben!",
+    "fields": [
+      {
+        "name": "Timeout vom",
+        "value": "<t:{date}>",
+        "inline": true
+      },
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Zuständiger Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      }
+    ],
+    "color": "{color}"
   }
 }
