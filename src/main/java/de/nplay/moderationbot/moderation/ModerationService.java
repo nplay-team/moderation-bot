@@ -347,7 +347,7 @@ public class ModerationService {
         public String toString() {
             return "Moderation{" +
                     "id=" + id +
-                    ", userId=" + userId +
+                    ", snowflakeId=" + userId +
                     ", type=" + type +
                     ", reverted=" + reverted +
                     ", reason=" + reason +

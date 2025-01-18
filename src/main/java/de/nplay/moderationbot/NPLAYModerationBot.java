@@ -14,6 +14,7 @@ import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.backend.DurationAdapter;
 import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.backend.DurationMaxValidator;
+import de.nplay.moderationbot.permissions.BotPermissionsProvider;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -74,6 +75,7 @@ public class NPLAYModerationBot {
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .dependencyInjector(dependencyInjector)
                 .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
+                .permissionsProvider(new BotPermissionsProvider())
                 .adapter(Duration.class, new DurationAdapter())
                 .validator(DurationMax.class, new DurationMaxValidator()) // TODO: this is temporary, until jda-commands implements @Implementation
                 .start();
