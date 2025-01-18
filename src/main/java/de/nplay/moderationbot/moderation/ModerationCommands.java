@@ -10,6 +10,7 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
+import de.nplay.moderationbot.permissions.BotPermissionFlags;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -70,6 +71,20 @@ public class ModerationCommands {
         }
         if (delDays != null) this.moderationActBuilder.setDelDays(delDays);
         handleModeration(event, paragraph);
+    }
+
+    @SlashCommand(value = "moderation revert", desc = "Hebt eine Moderationshandlung auf", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @Permissions(BotPermissionFlags.MODERATION_DELETE)
+    public void revertModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die aufgehoben werden soll") long moderationId) {
+        var moderation = ModerationService.getModerationAct(moderationId);
+
+        if (moderation == null) {
+            event.reply(embedCache.getEmbed("reversionFailed").injectValue("id", moderationId).injectValue("color", EmbedColors.ERROR));
+            return;
+        }
+
+        ModerationService.revertModerationAct(moderation);
+        event.reply(embedCache.getEmbed("reversionSuccessful").injectValue("id", moderationId).injectValue("color", EmbedColors.SUCCESS));
     }
 
     private void handleModeration(CommandEvent event, @Nullable String paragraphId) {

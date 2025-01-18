@@ -323,6 +323,11 @@ public class ModerationService {
                 }
             }
 
+            if (type == ModerationActType.TIMEOUT) {
+                var member = Bootstrapper.bot.getGuild().getMemberById(userId);
+                if (member != null) member.removeTimeout().queue();
+            }
+
             if (type == ModerationActType.TIMEOUT || type == ModerationActType.WARN) {
                 var user = Bootstrapper.bot.getJda().getUserById(userId);
                 var issuer = Bootstrapper.bot.getJda().getUserById(issuerId);

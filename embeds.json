@@ -277,5 +277,15 @@
       }
     ],
     "color": "{color}"
+  },
+  "reversionSuccessful": {
+    "title": "Erfolgreich",
+    "description": "Die Moderationshandlung mit der ID **#{id}** wurde erfolgreich rückgängig gemacht!",
+    "color": "{color}"
+  },
+  "reversionFailed": {
+    "title": "Fehler",
+    "description": "Die Moderationshandlung mit der ID **#{id}** konnte nicht rückgängig gemacht werden, bzw. existiert nicht!",
+    "color": "#ff0000"
   }
 }
