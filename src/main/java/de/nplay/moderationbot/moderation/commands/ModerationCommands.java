@@ -65,8 +65,8 @@ public class ModerationCommands {
     @SlashCommand(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
     public void timeoutMember(CommandEvent event,
                               @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target,
-                              @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
-                              Duration until, @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
+                              @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200) Duration until,
+                              @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000).paragraph(paragraph);
         event.replyModal("onModerate");
     }
@@ -85,8 +85,7 @@ public class ModerationCommands {
             @Param("Der Benutzer, der gekickt werden soll.") Member target,
             @Optional @Param("Für wie lange der Ban andauern soll") Duration until,
             @Optional @Max(7)
-            @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
-            Integer delDays,
+            @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") Integer delDays,
             @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
     ) {
         moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
@@ -130,7 +129,9 @@ public class ModerationCommands {
         embed.setFields(fields.toArray(new EmbedDTO.Field[0]));
         embed.setFooter(new EmbedDTO.Footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName()));
 
-        action.consumer().accept(action);
+        // Executes the action (e.g. kicks the user)
+        action.executor().accept(action);
+        
         sendMessageToUser(moderationAct, event);
         event.reply(embed);
     }
@@ -152,10 +153,13 @@ public class ModerationCommands {
             case TEMP_BAN -> embedCache.getEmbed("tempBanEmbed").injectValue("color", EmbedColors.ERROR);
             case BAN -> embedCache.getEmbed("banEmbed").injectValue("color", EmbedColors.ERROR);
         };
+
         embedDTO.injectValues(defaultInjectValues);
+
         if (moderationAct.revokeAt().isPresent()) {
             embedDTO.injectValue("until", moderationAct.revokeAt().get().getTime() / 1000);
         }
+
         EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
         embedBuilder.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
         event.getJDA().retrieveUserById(moderationAct.userId())

@@ -7,15 +7,13 @@ import java.util.Collection;
 
 public class BotPermissions {
 
+    public static final String ADMINISTRATOR = "ADMINISTRATOR";
     public static final String MODERATION_READ = "MODERATION_READ";
     public static final String MODERATION_CREATE = "MODERATION_CREATE";
+    public static final String MODERATION_REVERT = "MODERATION_REVERT";
     public static final String MODERATION_DELETE = "MODERATION_DELETE";
-    public static final String MODLOG_READ = "MODLOG_READ";
-    public static final String BAN_APPEAL_MANAGE = "BAN_APPEAL_MANAGE";
     public static final String PERMISSION_READ = "PERMISSION_READ";
     public static final String PERMISSION_MANAGE = "PERMISSION_MANAGE";
-    public static final String PARAGRAPH_MANAGE = "PARAGRAPH_MANAGE";
-    public static final String ADMINISTRATOR = "ADMINISTRATOR";
 
     /// Combines multiple permissions into one integer.
     public static int combine(@NotNull Collection<Integer> permissions) {
@@ -35,15 +33,13 @@ public class BotPermissions {
     }
 
     public enum BitFields {
-        MODERATION_READ(1, "Einsehen von moderativen Aktionen"),
-        MODERATION_CREATE(1 << 1, "Moderieren von Benutzern"),
-        MODERATION_DELETE(1 << 2, "Löschen/Revidieren von moderativen Handlungen"),
-        MODLOG_READ(1 << 3, "Einsehen des Modlogs"),
-        BAN_APPEAL_MANAGE(1 << 4, "Verwalten von Entbannungsanträgen"),
+        ADMINISTRATOR(1, "Administrator"),
+        MODERATION_READ(1 << 1, "Einsehen von moderativen Handlung"),
+        MODERATION_CREATE(1 << 2, "Moderieren von Benutzern"),
+        MODERATION_REVERT(1 << 3, "Rückgängig machen von moderativen Handlungen"),
+        MODERATION_DELETE(1 << 4, "Löschen von moderativen Handlungen"),
         PERMISSION_READ(1 << 5, "Einsehen von Berechtigungen"),
-        PERMISSION_MANAGE(1 << 6, "Vergeben von Berechtigungen"),
-        PARAGRAPH_MANAGE(1 << 7, "Verwalten von Regelparagraphen"),
-        ADMINISTRATOR(1 << 8, "Administrator");
+        PERMISSION_MANAGE(1 << 6, "Vergeben von Berechtigungen");
 
         public final int value;
         public final String displayName;

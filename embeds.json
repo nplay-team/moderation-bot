@@ -272,6 +272,16 @@
   "reversionFailed": {
     "title": "Fehler",
     "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
-    "color": "#ff0000"
+    "color": "{color}"
+  },
+  "deletionSuccessful": {
+    "title": "Erfolgreich",
+    "description": "Die Moderationshandlung mit der ID **#{id}** wurde erfolgreich gelöscht!",
+    "color": "{color}"
+  },
+  "deletionFailed": {
+    "title": "Fehler",
+    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
+    "color": "{color}"
   }
 }

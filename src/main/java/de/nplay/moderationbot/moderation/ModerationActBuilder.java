@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public class ModerationActBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationActBuilder.class);
-    private Consumer<ModerationActCreateData> consumer;
+    private Consumer<ModerationActCreateData> executor;
     private long targetId;
     private ModerationActType type;
     private String reason;
@@ -32,14 +32,14 @@ public class ModerationActBuilder {
         return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.WARN)
                 .target(issuer)
-                .action(_ -> log.info("User {} has been warned by {}", target, issuer));
+                .executor(_ -> log.info("User {} has been warned by {}", target, issuer));
     }
 
     public static ModerationActBuilder timeout(Member target, User issuer) {
         return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.TIMEOUT)
                 .target(target)
-                .action(data -> {
+                .executor(data -> {
                     if (data.revokeAt().isEmpty()) {
                         throw new IllegalStateException("Cannot perform timeout without duration being set!");
                     }
@@ -52,7 +52,7 @@ public class ModerationActBuilder {
         return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.KICK)
                 .target(target)
-                .action(data -> {
+                .executor(data -> {
                     log.info("User {} has been kicked by {}", target, issuer);
                     target.kick().reason(data.reason()).queue();
                 });
@@ -62,7 +62,7 @@ public class ModerationActBuilder {
         return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.BAN)
                 .target(target)
-                .action(data -> {
+                .executor(data -> {
                     log.info("User {} has been{} banned by {}", target, data.revokeAt().isPresent() ? " temp" : "", issuer);
                     target.ban(data.deletionDays(), TimeUnit.DAYS).reason(data.reason()).queue();
                 });
@@ -83,8 +83,8 @@ public class ModerationActBuilder {
         return this;
     }
 
-    public ModerationActBuilder action(@NotNull Consumer<ModerationActCreateData> consumer) {
-        this.consumer = consumer;
+    public ModerationActBuilder executor(@NotNull Consumer<ModerationActCreateData> consumer) {
+        this.executor = consumer;
         return this;
     }
 
@@ -124,7 +124,7 @@ public class ModerationActBuilder {
     }
 
     public ModerationActCreateData build() {
-        return new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays, consumer);
+        return new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays, executor);
     }
 
     public record ModerationActCreateData(
@@ -136,13 +136,14 @@ public class ModerationActBuilder {
             @Nullable Integer paragraphId,
             long duration,
             int deletionDays,
-            @NotNull Consumer<ModerationActCreateData> consumer) {
+            @NotNull Consumer<ModerationActCreateData> executor
+    ) {
 
         public ModerationActCreateData {
             Checks.isSnowflake(targetId + "", "targetId");
             Checks.notNull(type, "ModerationActType");
             Checks.isSnowflake(issuerId + "", "issuerId");
-            Checks.notNull(consumer, "ModerationActCreateData Consumer");
+            Checks.notNull(executor, "ModerationActCreateData Consumer");
         }
 
         public Optional<Timestamp> revokeAt() {

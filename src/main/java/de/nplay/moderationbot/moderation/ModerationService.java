@@ -159,13 +159,13 @@ public class ModerationService {
                 case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {}, UNKNOWN_USER_HANDLER);
                 case TIMEOUT -> {
                     guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {}, UNKNOWN_USER_HANDLER);
-                    sendMessage(guild, embedCache);
+                    sendRevertMessageToUser(guild, embedCache);
                 }
-                case WARN -> sendMessage(guild, embedCache);
+                case WARN -> sendRevertMessageToUser(guild, embedCache);
             }
         }
 
-        private void sendMessage(Guild guild, EmbedCache embedCache) {
+        private void sendRevertMessageToUser(Guild guild, EmbedCache embedCache) {
             guild.retrieveMemberById(userId).flatMap(it -> it.getUser().openPrivateChannel())
                     .flatMap(channel -> channel.sendMessageEmbeds(embedCache
                             .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")

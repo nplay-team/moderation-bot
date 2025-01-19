@@ -142,6 +142,10 @@ public class NPLAYModerationBot {
         return guild;
     }
 
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
     @Produces(skipIndexing = true)
     public EmbedCache getEmbedCache() {
         return embedCache;
