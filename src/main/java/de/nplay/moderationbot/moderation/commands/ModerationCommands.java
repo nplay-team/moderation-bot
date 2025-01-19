@@ -139,7 +139,7 @@ public class ModerationCommands {
     private void sendMessageToUser(ModerationAct moderationAct, ReplyableEvent<?> event) {
         Map<String, Object> defaultInjectValues = Map.of(
                 "issuerId", moderationAct.issuerId(),
-                "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getEffectiveName(),
+                "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getName(),
                 "reason", moderationAct.reason().orElse("?DEL?"),
                 "date", System.currentTimeMillis() / 1000,
                 "paragraph", moderationAct.paragraph().map(RuleParagraph::fullDisplay).orElse("?DEL?"),
