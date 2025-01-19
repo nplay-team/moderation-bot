@@ -8,6 +8,7 @@ import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -103,6 +104,13 @@ public class ModerationService {
                 .first().orElseThrow();
     }
 
+    public static List<ModerationAct> getModerationActs() {
+        return Query.query("SELECT * FROM moderations")
+                .single()
+                .mapAs(ModerationAct.class)
+                .all();
+    }
+ 
     /**
      * Updates an existing moderation record in the database.
      *
