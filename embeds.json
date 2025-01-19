@@ -96,7 +96,7 @@
       },
       {
         "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}>"
+        "value": "<@{issuerId}> ({issuerUsername})"
       }
     ]
   },
@@ -238,8 +238,12 @@
         "value": "#{id}"
       },
       {
-        "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "name": "Begründung",
+        "value": "{reason}"
+      },
+      {
+        "name": "Revidierender Moderator",
+        "value": "<@{revertedById}> ({revertedByUsername})"
       }
     ],
     "color": "{color}"
@@ -258,8 +262,12 @@
         "value": "#{id}"
       },
       {
+        "name": "Begründung",
+        "value": "{reason}"
+      },
+      {
         "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{revertedById}> ({revertedByUsername})"
       }
     ],
     "color": "{color}"
@@ -271,7 +279,7 @@
   },
   "reversionFailed": {
     "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
+    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht oder wurde bereits rückgängig gemacht!",
     "color": "{color}"
   },
   "deletionSuccessful": {

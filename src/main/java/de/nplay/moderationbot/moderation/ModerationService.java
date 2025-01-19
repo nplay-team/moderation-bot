@@ -11,10 +11,12 @@ import de.nplay.moderationbot.moderation.ModerationActBuilder.ModerationActCreat
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Optional;
@@ -48,8 +50,8 @@ public class ModerationService {
 
         var id = Query.query("""
                 INSERT INTO moderations
-                (user_id, type, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration)
-                VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?)
+                (user_id, type, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration, created_at, reverted)
+                VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?, ?, false)
                 """
         ).single(Call.of()
                 .bind(data.targetId())
@@ -60,6 +62,7 @@ public class ModerationService {
                 .bind(data.messageReferenceId().orElse(null))
                 .bind(data.revokeAt().orElse(null))
                 .bind(data.duration())
+                .bind(new Timestamp(System.currentTimeMillis()))
         ).insertAndGetKeys().keys().getFirst();
 
         return getModerationAct(id).orElseThrow();
@@ -118,6 +121,9 @@ public class ModerationService {
             long userId,
             ModerationActType type,
             Boolean reverted,
+            Optional<Long> revertedBy,
+            Optional<Timestamp> revertedAt,
+            Optional<String> revertingReason,
             Optional<String> reason,
             Optional<RuleService.RuleParagraph> paragraph,
             Optional<MessageReferenceService.MessageReference> referenceMessage,
@@ -139,6 +145,9 @@ public class ModerationService {
                     row.getLong("user_id"),
                     ModerationActType.valueOf(row.getString("type")),
                     row.getBoolean("reverted"),
+                    Optional.ofNullable(row.getLong("reverted_by") == 0 ? null : row.getLong("reverted_by")),
+                    Optional.ofNullable(row.getTimestamp("reverted_at")),
+                    Optional.ofNullable(row.getString("revert_reason")),
                     Optional.ofNullable(row.getString("reason")),
                     RuleService.getRuleParagraph(row.getInt("paragraph_id")),
                     MessageReferenceService.getMessageReference(row.getLong("reference_message")),
@@ -150,32 +159,43 @@ public class ModerationService {
             );
         }
 
-        public void revert(Guild guild, EmbedCache embedCache) {
+        public void revert(Guild guild, EmbedCache embedCache, User revertedBy, @Nullable String reason) {
             log.info("Reverting moderation action: {}", this);
-            Query.query("UPDATE moderations SET reverted = true WHERE id = ?")
-                    .single(Call.of().bind(id))
+
+            Query.query("UPDATE moderations SET reverted = true, reverted_by = ?, reverted_at = ?, revert_reason = ? WHERE id = ?")
+                    .single(Call.of()
+                            .bind(revertedBy.getIdLong())
+                            .bind(new Timestamp(System.currentTimeMillis()))
+                            .bind(reason)
+                            .bind(id))
                     .update();
+
             switch (type) {
                 case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {}, UNKNOWN_USER_HANDLER);
                 case TIMEOUT -> {
                     guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {}, UNKNOWN_USER_HANDLER);
-                    sendRevertMessageToUser(guild, embedCache);
+                    sendRevertMessageToUser(guild, embedCache, revertedBy, Optional.ofNullable(reason));
                 }
-                case WARN -> sendRevertMessageToUser(guild, embedCache);
+                case WARN -> sendRevertMessageToUser(guild, embedCache, revertedBy, Optional.ofNullable(reason));
             }
         }
 
-        private void sendRevertMessageToUser(Guild guild, EmbedCache embedCache) {
+        private void sendRevertMessageToUser(Guild guild, EmbedCache embedCache, User revertedBy, Optional<String> revertingReason) {
+            var embed = embedCache
+                    .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")
+                    .injectValue("date", createdAt.getTime() / 1000)
+                    .injectValue("id", id)
+                    .injectValue("reason", revertingReason.orElse("?DEL?"))
+                    .injectValue("revertedById", revertedBy.getIdLong())
+                    .injectValue("revertedByUsername", revertedBy.getName())
+                    .injectValue("color", EmbedColors.SUCCESS).toEmbedBuilder();
+
+            embed.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
+
             guild.retrieveMemberById(userId).flatMap(it -> it.getUser().openPrivateChannel())
-                    .flatMap(channel -> channel.sendMessageEmbeds(embedCache
-                            .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")
-                            .injectValue("date", createdAt.getTime() / 1000)
-                            .injectValue("id", id)
-                            .injectValue("issuerId", issuerId)
-                            .injectValue("issuerUsername", guild.retrieveMemberById(issuerId).complete().getEffectiveName())
-                            .injectValue("color", EmbedColors.SUCCESS)
-                            .toMessageEmbed())
-                    ).queue(_ -> {}, UNKNOWN_USER_HANDLER);
+                    .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))
+                    .queue(_ -> {
+                    }, UNKNOWN_USER_HANDLER);
         }
     }
 }

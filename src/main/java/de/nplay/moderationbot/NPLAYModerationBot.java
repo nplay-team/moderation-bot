@@ -15,7 +15,7 @@ import de.nplay.moderationbot.backend.DurationAdapter;
 import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.backend.DurationMaxValidator;
 import de.nplay.moderationbot.permissions.BotPermissionsProvider;
-import de.nplay.moderationbot.tasks.AutomaticUnbanTask;
+import de.nplay.moderationbot.tasks.AutomaticRevertTask;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -109,7 +109,7 @@ public class NPLAYModerationBot {
             throw new RuntimeException("Failed to migrate database!", e);
         }
 
-        scheduler.scheduleAtFixedRate(new AutomaticUnbanTask(guild, embedCache), 0, 1, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(new AutomaticRevertTask(guild, embedCache, jda.getSelfUser()), 0, 1, TimeUnit.MINUTES);
     }
 
     /**
