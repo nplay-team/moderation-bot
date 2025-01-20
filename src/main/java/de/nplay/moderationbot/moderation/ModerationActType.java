@@ -4,8 +4,8 @@ public enum ModerationActType {
     WARN("Verwarnung"),
     TIMEOUT("Timeout"),
     KICK("Kick"),
-    TEMP_BAN("Temporärer Ban"),
-    BAN("Ban");
+    TEMP_BAN("Temporärer Bann"),
+    BAN("Bann");
 
     public final String humanReadableString;
 

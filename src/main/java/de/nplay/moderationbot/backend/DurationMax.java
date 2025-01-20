@@ -14,6 +14,6 @@ import java.time.Duration;
 public @interface DurationMax {
     long value();
 
-    String message() default "Die angegebene Dauer ist zu groß!";
+    String message() default "Die angegebene Dauer ist zu lang!";
 }
 
