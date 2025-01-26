@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
 
@@ -103,7 +104,7 @@ public class ModerationCommands {
 
         fields.add(new EmbedDTO.Field("ID", Long.toString(moderationAct.id()), true));
         fields.add(new EmbedDTO.Field("Betroffener Nutzer", "<@%s>".formatted(moderationAct.userId()), true));
-        fields.add(new EmbedDTO.Field("Begründung", moderationAct.reason() != null ? moderationAct.reason() : "Keine Begründung angegeben.", false));
+        fields.add(new EmbedDTO.Field("Begründung", Objects.requireNonNullElse(moderationAct.reason(), "Keine Begründung angegeben."), false));
 
         if (moderationAct.type().isTemp() && moderationAct.revokeAt() != null) {
             fields.add(new EmbedDTO.Field("Aktiv bis", "<t:%s:f>".formatted(moderationAct.revokeAt().getTime() / 1000), true));
@@ -139,7 +140,7 @@ public class ModerationCommands {
         Map<String, Object> defaultInjectValues = Map.of(
                 "issuerId", moderationAct.issuerId(),
                 "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getName(),
-                "reason", moderationAct.reason() != null ? moderationAct.reason() : "?DEL?",
+                "reason", Objects.requireNonNullElse(moderationAct.reason(), "?DEL?"),
                 "date", System.currentTimeMillis() / 1000,
                 "paragraph", moderationAct.paragraph() != null ? moderationAct.paragraph().fullDisplay() : "?DEL?",
                 "id", moderationAct.id()

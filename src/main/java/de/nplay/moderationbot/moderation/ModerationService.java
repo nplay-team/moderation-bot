@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
@@ -185,7 +186,7 @@ public class ModerationService {
                     .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")
                     .injectValue("date", createdAt.getTime() / 1000)
                     .injectValue("id", id)
-                    .injectValue("reason", revertingReason != null ? revertingReason : "?DEL?")
+                    .injectValue("reason", Objects.requireNonNullElse(revertingReason, "?DEL?"))
                     .injectValue("revertedById", revertedBy.getIdLong())
                     .injectValue("revertedByUsername", revertedBy.getName())
                     .injectValue("color", EmbedColors.SUCCESS).toEmbedBuilder();
