@@ -174,18 +174,18 @@ public class ModerationService {
                 case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {}, UNKNOWN_USER_HANDLER);
                 case TIMEOUT -> {
                     guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {}, UNKNOWN_USER_HANDLER);
-                    sendRevertMessageToUser(guild, embedCache, revertedBy, Optional.ofNullable(reason));
+                    sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
                 }
-                case WARN -> sendRevertMessageToUser(guild, embedCache, revertedBy, Optional.ofNullable(reason));
+                case WARN -> sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
             }
         }
 
-        private void sendRevertMessageToUser(Guild guild, EmbedCache embedCache, User revertedBy, Optional<String> revertingReason) {
+        private void sendRevertMessageToUser(Guild guild, EmbedCache embedCache, User revertedBy, @Nullable String revertingReason) {
             var embed = embedCache
                     .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")
                     .injectValue("date", createdAt.getTime() / 1000)
                     .injectValue("id", id)
-                    .injectValue("reason", revertingReason.orElse("?DEL?"))
+                    .injectValue("reason", revertingReason != null ? revertingReason : "?DEL?")
                     .injectValue("revertedById", revertedBy.getIdLong())
                     .injectValue("revertedByUsername", revertedBy.getName())
                     .injectValue("color", EmbedColors.SUCCESS).toEmbedBuilder();

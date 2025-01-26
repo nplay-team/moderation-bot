@@ -16,7 +16,6 @@ import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import de.nplay.moderationbot.rules.RuleService;
-import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -104,7 +103,7 @@ public class ModerationCommands {
 
         fields.add(new EmbedDTO.Field("ID", Long.toString(moderationAct.id()), true));
         fields.add(new EmbedDTO.Field("Betroffener Nutzer", "<@%s>".formatted(moderationAct.userId()), true));
-        fields.add(new EmbedDTO.Field("Begründung", java.util.Optional.ofNullable(moderationAct.reason()).orElse("Keine Begründung angegeben."), false));
+        fields.add(new EmbedDTO.Field("Begründung", moderationAct.reason() != null ? moderationAct.reason() : "Keine Begründung angegeben.", false));
 
         if (moderationAct.type().isTemp() && moderationAct.revokeAt() != null) {
             fields.add(new EmbedDTO.Field("Aktiv bis", "<t:%s:f>".formatted(moderationAct.revokeAt().getTime() / 1000), true));
@@ -140,9 +139,9 @@ public class ModerationCommands {
         Map<String, Object> defaultInjectValues = Map.of(
                 "issuerId", moderationAct.issuerId(),
                 "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getName(),
-                "reason", java.util.Optional.ofNullable(moderationAct.reason()).orElse("?DEL?"),
+                "reason", moderationAct.reason() != null ? moderationAct.reason() : "?DEL?",
                 "date", System.currentTimeMillis() / 1000,
-                "paragraph", java.util.Optional.ofNullable(moderationAct.paragraph()).map(RuleParagraph::fullDisplay).orElse("?DEL?"),
+                "paragraph", moderationAct.paragraph() != null ? moderationAct.paragraph().fullDisplay() : "?DEL?",
                 "id", moderationAct.id()
         );
 
