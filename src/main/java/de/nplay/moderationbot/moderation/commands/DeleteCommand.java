@@ -18,8 +18,9 @@ import org.slf4j.LoggerFactory;
 public class DeleteCommand {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteCommand.class);
+
     @Inject
-    EmbedCache embedCache;
+    private EmbedCache embedCache;
 
     @SlashCommand(value = "moderation delete", desc = "Löscht eine Moderationshandlung", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissions.MODERATION_DELETE)

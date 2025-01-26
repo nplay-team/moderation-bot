@@ -95,11 +95,11 @@ public class ModerationService {
                 .bind(act.type)
                 .bind(act.issuerId)
                 .bind(act.reverted)
-                .bind(act.reason.orElse(null))
-                .bind(act.paragraph.map(RuleService.RuleParagraph::id).orElse(null))
-                .bind(act.referenceMessage.map(MessageReferenceService.MessageReference::messageId).orElse(null))
-                .bind(act.revokeAt.orElse(null))
-                .bind(act.duration.orElse(null))
+                .bind(act.reason)
+                .bind(act.paragraph != null ? act.paragraph.id() : null)
+                .bind(act.referenceMessage != null ? act.referenceMessage.messageId() : null)
+                .bind(act.revokeAt)
+                .bind(act.duration)
                 .bind(act.id)
         ).update();
     }
@@ -117,21 +117,21 @@ public class ModerationService {
 
 
     public record ModerationAct(
-            long id,
-            long userId,
+            Long id,
+            Long userId,
             ModerationActType type,
             Boolean reverted,
-            Optional<Long> revertedBy,
-            Optional<Timestamp> revertedAt,
-            Optional<String> revertingReason,
-            Optional<String> reason,
-            Optional<RuleService.RuleParagraph> paragraph,
-            Optional<MessageReferenceService.MessageReference> referenceMessage,
-            Optional<Timestamp> revokeAt,
-            Optional<Long> duration,
-            long issuerId,
+            @Nullable Long revertedBy,
+            @Nullable Timestamp revertedAt,
+            @Nullable String revertingReason,
+            @Nullable String reason,
+            @Nullable RuleService.RuleParagraph paragraph,
+            @Nullable MessageReferenceService.MessageReference referenceMessage,
+            @Nullable Timestamp revokeAt,
+            @Nullable Long duration,
+            Long issuerId,
             Timestamp createdAt,
-            Optional<Integer> delDays
+            @Nullable Integer delDays
     ) {
         /**
          * Mapping method for the {@link RowMapper RowMapper}
@@ -145,17 +145,17 @@ public class ModerationService {
                     row.getLong("user_id"),
                     ModerationActType.valueOf(row.getString("type")),
                     row.getBoolean("reverted"),
-                    Optional.ofNullable(row.getLong("reverted_by") == 0 ? null : row.getLong("reverted_by")),
-                    Optional.ofNullable(row.getTimestamp("reverted_at")),
-                    Optional.ofNullable(row.getString("revert_reason")),
-                    Optional.ofNullable(row.getString("reason")),
-                    RuleService.getRuleParagraph(row.getInt("paragraph_id")),
-                    MessageReferenceService.getMessageReference(row.getLong("reference_message")),
-                    Optional.ofNullable(row.getTimestamp("revoke_at")),
-                    Optional.ofNullable(row.getLong("duration") == 0 ? null : row.getLong("duration")),
+                    row.getLong("reverted_by") == 0 ? null : row.getLong("reverted_by"),
+                    row.getTimestamp("reverted_at"),
+                    row.getString("revert_reason"),
+                    row.getString("reason"),
+                    RuleService.getRuleParagraph(row.getInt("paragraph_id")).orElse(null),
+                    MessageReferenceService.getMessageReference(row.getLong("reference_message")).orElse(null),
+                    row.getTimestamp("revoke_at"),
+                    row.getLong("duration") == 0 ? null : row.getLong("duration"),
                     row.getLong("issuer_id"),
                     row.getTimestamp("created_at"),
-                    Optional.empty()
+                    null
             );
         }
 

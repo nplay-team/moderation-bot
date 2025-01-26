@@ -104,22 +104,22 @@ public class ModerationCommands {
 
         fields.add(new EmbedDTO.Field("ID", Long.toString(moderationAct.id()), true));
         fields.add(new EmbedDTO.Field("Betroffener Nutzer", "<@%s>".formatted(moderationAct.userId()), true));
-        fields.add(new EmbedDTO.Field("Begründung", moderationAct.reason().orElse("Keine Begründung angegeben."), false));
+        fields.add(new EmbedDTO.Field("Begründung", java.util.Optional.ofNullable(moderationAct.reason()).orElse("Keine Begründung angegeben."), false));
 
-        if (moderationAct.type().isTemp() && moderationAct.revokeAt().isPresent()) {
-            fields.add(new EmbedDTO.Field("Aktiv bis", "<t:%s:f>".formatted(moderationAct.revokeAt().get().getTime() / 1000), true));
+        if (moderationAct.type().isTemp() && moderationAct.revokeAt() != null) {
+            fields.add(new EmbedDTO.Field("Aktiv bis", "<t:%s:f>".formatted(moderationAct.revokeAt().getTime() / 1000), true));
         }
 
-        if (moderationAct.paragraph().isPresent()) {
-            fields.add(new EmbedDTO.Field("Regel", moderationAct.paragraph().get().shortDisplay(), true));
+        if (moderationAct.paragraph() != null) {
+            fields.add(new EmbedDTO.Field("Regel", moderationAct.paragraph().shortDisplay(), true));
         }
 
-        if (moderationAct.referenceMessage().isPresent()) {
-            fields.add(new EmbedDTO.Field("Referenznachricht", moderationAct.referenceMessage().get().content(), false));
+        if (moderationAct.referenceMessage() != null) {
+            fields.add(new EmbedDTO.Field("Referenznachricht", moderationAct.referenceMessage().content(), false));
         }
 
-        if (moderationAct.delDays().isPresent() && moderationAct.delDays().get() > 0) {
-            fields.add(new EmbedDTO.Field("Nachrichten löschen", "Für %d Tage".formatted(moderationAct.delDays().get()), true));
+        if (moderationAct.delDays() != null && moderationAct.delDays() > 0) {
+            fields.add(new EmbedDTO.Field("Nachrichten löschen", "Für %d Tage".formatted(moderationAct.delDays()), true));
         }
 
         var embed = embedCache.getEmbed("moderationActExecuted")
@@ -140,9 +140,9 @@ public class ModerationCommands {
         Map<String, Object> defaultInjectValues = Map.of(
                 "issuerId", moderationAct.issuerId(),
                 "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getName(),
-                "reason", moderationAct.reason().orElse("?DEL?"),
+                "reason", java.util.Optional.ofNullable(moderationAct.reason()).orElse("?DEL?"),
                 "date", System.currentTimeMillis() / 1000,
-                "paragraph", moderationAct.paragraph().map(RuleParagraph::fullDisplay).orElse("?DEL?"),
+                "paragraph", java.util.Optional.ofNullable(moderationAct.paragraph()).map(RuleParagraph::fullDisplay).orElse("?DEL?"),
                 "id", moderationAct.id()
         );
 
@@ -156,8 +156,8 @@ public class ModerationCommands {
 
         embedDTO.injectValues(defaultInjectValues);
 
-        if (moderationAct.revokeAt().isPresent()) {
-            embedDTO.injectValue("until", moderationAct.revokeAt().get().getTime() / 1000);
+        if (moderationAct.revokeAt() != null) {
+            embedDTO.injectValue("until", moderationAct.revokeAt().getTime() / 1000);
         }
 
         EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
