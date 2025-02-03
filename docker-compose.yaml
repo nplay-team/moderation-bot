@@ -3,7 +3,7 @@ version: "3"
 services:
   postgres:
     image: postgres
-    container_name: nplay-database
+    container_name: nplay-moderation-database
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

@@ -11,6 +11,11 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.backend.DurationAdapter;
+import de.nplay.moderationbot.backend.DurationMax;
+import de.nplay.moderationbot.backend.DurationMaxValidator;
+import de.nplay.moderationbot.permissions.BotPermissionsProvider;
+import de.nplay.moderationbot.tasks.AutomaticRevertTask;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -25,13 +30,18 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The main class of the bot
  */
 public class NPLAYModerationBot {
 
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
     private final JDA jda;
     private final JDACommands jdaCommands;
@@ -70,6 +80,9 @@ public class NPLAYModerationBot {
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .dependencyInjector(dependencyInjector)
                 .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
+                .permissionsProvider(new BotPermissionsProvider())
+                .adapter(Duration.class, new DurationAdapter())
+                .validator(DurationMax.class, new DurationMaxValidator()) // TODO: this is temporary, until jda-commands implements @Implementation
                 .start();
         
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
@@ -95,6 +108,8 @@ public class NPLAYModerationBot {
         } catch (SQLException | IOException e) {
             throw new RuntimeException("Failed to migrate database!", e);
         }
+
+        scheduler.scheduleAtFixedRate(new AutomaticRevertTask(guild, embedCache, jda.getSelfUser()), 0, 1, TimeUnit.MINUTES);
     }
 
     /**
@@ -125,6 +140,10 @@ public class NPLAYModerationBot {
 
     public Guild getGuild() {
         return guild;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
     }
 
     @Produces(skipIndexing = true)

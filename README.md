@@ -1,5 +1,4 @@
-[![Check and Lint Code](https://github.com/nplay-team/moderation-bot/actions/workflows/lint.yml/badge.svg)](https://github.com/nplay-team/moderation-bot/actions/workflows/lint.yml)
-[![Deploy](https://github.com/nplay-team/moderation-bot/actions/workflows/deploy.yml/badge.svg)](https://github.com/nplay-team/moderation-bot/actions/workflows/deploy.yml)
+[![Java CI](https://github.com/nplay-team/moderation-bot/actions/workflows/ci.yaml/badge.svg)](https://github.com/nplay-team/moderation-bot/actions/workflows/ci.yaml)
 ![Generic badge](https://img.shields.io/badge/Version-1.0.0-86c240".svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <a href="https://discord.gg/qcpeZQhJf5">
