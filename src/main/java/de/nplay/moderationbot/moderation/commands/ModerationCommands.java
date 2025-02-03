@@ -9,6 +9,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
+import de.nplay.moderationbot.backend.DurationAdapter;
 import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActBuilder;
@@ -19,8 +20,10 @@ import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -37,6 +40,7 @@ public class ModerationCommands {
     @Inject
     private EmbedCache embedCache;
     private ModerationActBuilder moderationActBuilder;
+    private Boolean replyEphemeral = false;
     private static final String PARAGRAPH_PARAMETER_DESC = "Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?";
 
     @AutoComplete("moderation")
@@ -58,7 +62,14 @@ public class ModerationCommands {
     public void warnMember(CommandEvent event,
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
-        this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
+        moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
+        event.replyModal("onModerate");
+    }
+
+    @ContextCommand(value = "Verwarne Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    public void warnMemberMessageContext(CommandEvent event, Message target) {
+        moderationActBuilder = ModerationActBuilder.warn(target.getMember(), event.getUser()).messageReference(target);
+        replyEphemeral = true;
         event.replyModal("onModerate");
     }
 
@@ -71,11 +82,25 @@ public class ModerationCommands {
         event.replyModal("onModerate");
     }
 
+    @ContextCommand(value = "Timeoute Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    public void timeoutMemberMessageContext(CommandEvent event, Message target) {
+        moderationActBuilder = ModerationActBuilder.timeout(target.getMember(), event.getUser()).messageReference(target);
+        replyEphemeral = true;
+        event.replyModal("onModerateTimeoutContext");
+    }
+
     @SlashCommand(value = "moderation kick", desc = "Kickt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
     public void kickMember(CommandEvent event,
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
                            @Nullable @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph);
+        event.replyModal("onModerate");
+    }
+
+    @ContextCommand(value = "Kicke Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
+    public void kickMemberMessageContext(CommandEvent event, Message target) {
+        moderationActBuilder = ModerationActBuilder.kick(target.getMember(), event.getUser()).messageReference(target);
+        replyEphemeral = true;
         event.replyModal("onModerate");
     }
 
@@ -93,6 +118,13 @@ public class ModerationCommands {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
         }
         event.replyModal("onModerate");
+    }
+
+    @ContextCommand(value = "Ban Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    public void banMemberMessageContext(CommandEvent event, Message target) {
+        moderationActBuilder = ModerationActBuilder.ban(target.getMember(), event.getUser()).messageReference(target);
+        replyEphemeral = true;
+        event.replyModal("onModerateTempbanContext");
     }
 
     @Modal(value = "Begründung angeben")
@@ -133,7 +165,38 @@ public class ModerationCommands {
         action.executor().accept(action);
         
         sendMessageToUser(moderationAct, event);
-        event.reply(embed);
+        event.with().ephemeral(replyEphemeral).reply(embed);
+    }
+
+    @Modal(value = "Begründung und Dauer angeben")
+    public void onModerateTimeoutContext(ModalEvent event,
+                                         @TextInput(value = "Begründung der Moderationshandlung") String reason,
+                                         @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT)
+                                         String until) {
+        var duration = DurationAdapter.parse(until);
+
+        if (duration.isEmpty()) {
+            event.with().ephemeral(true).reply("Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an.");
+            return;
+        }
+
+        if (duration.get().getSeconds() > 2419200) {
+            event.with().ephemeral(true).reply("Die angegebene Dauer ist zu lang. Bitte gib eine Dauer von maximal 28 Tagen an.");
+            return;
+        }
+
+        moderationActBuilder.duration(duration.get().getSeconds() * 1000);
+        onModerate(event, reason);
+    }
+
+    @Modal(value = "Begründung und Dauer angeben")
+    public void onModerateTempbanContext(ModalEvent event,
+                                         @TextInput(value = "Begründung der Moderationshandlung") String reason,
+                                         @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT)
+                                         @Optional String until) {
+        var duration = DurationAdapter.parse(until);
+        duration.ifPresent(value -> moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(value.getSeconds() * 1000));
+        onModerate(event, reason);
     }
 
     private void sendMessageToUser(ModerationAct moderationAct, ReplyableEvent<?> event) {
@@ -158,6 +221,12 @@ public class ModerationCommands {
 
         if (moderationAct.revokeAt() != null) {
             embedDTO.injectValue("until", moderationAct.revokeAt().getTime() / 1000);
+        }
+
+        if (moderationAct.referenceMessage() != null) {
+            embedDTO.injectValue("referenceMessage", "%s\n[Link](%s)".formatted(moderationAct.referenceMessage().content(), moderationAct.referenceMessage().jumpUrl(event.getGuild())));
+        } else {
+            embedDTO.injectValue("referenceMessage", "?DEL?");
         }
 
         EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();

@@ -12,6 +12,10 @@ public class DurationAdapter implements TypeAdapter<Duration> {
     @Override
     @NotNull
     public Optional<Duration> apply(@NotNull String raw, @NotNull GenericInteractionCreateEvent event) {
+        return parse(raw);
+    }
+
+    public static Optional<Duration> parse(String raw) {
         var parseString = raw.toUpperCase()
                 .replaceAll("\\s+", "")
                 .replaceAll("DAYS?", "D")
@@ -19,7 +23,6 @@ public class DurationAdapter implements TypeAdapter<Duration> {
                 .replaceAll("(?:MINUTES?)|(?:MINS?)", "M")
                 .replaceAll("(?:SECONDS?)|(?:SECS?)", "S")
                 .replaceAll("(\\d+D)", "P$1T");
-
 
         parseString = parseString.charAt(0) != 'P' ? "PT" + parseString : parseString;
         parseString = parseString.charAt(parseString.length() - 1) == 'T' ? parseString + "0S" : parseString;

@@ -95,6 +95,10 @@
         "value": "#{id}"
       },
       {
+        "name": "Referenznachricht",
+        "value": "> {referenceMessage}"
+      },
+      {
         "name": "Zuständiger Moderator",
         "value": "<@{issuerId}> ({issuerUsername})"
       }
@@ -128,6 +132,10 @@
         "value": "#{id}"
       },
       {
+        "name": "Referenznachricht",
+        "value": "> {referenceMessage}"
+      },
+      {
         "name": "Zuständiger Moderator",
         "value": "<@{issuerId}> ({issuerUsername})"
       }
@@ -155,6 +163,10 @@
       {
         "name": "ID",
         "value": "#{id}"
+      },
+      {
+        "name": "Referenznachricht",
+        "value": "> {referenceMessage}"
       },
       {
         "name": "Zuständiger Moderator",
@@ -190,6 +202,10 @@
         "value": "#{id}"
       },
       {
+        "name": "Referenznachricht",
+        "value": "> {referenceMessage}"
+      },
+      {
         "name": "Zuständiger Moderator",
         "value": "<@{issuerId}> ({issuerUsername})"
       }
@@ -217,6 +233,10 @@
       {
         "name": "ID",
         "value": "#{id}"
+      },
+      {
+        "name": "Referenznachricht",
+        "value": "> {referenceMessage}"
       },
       {
         "name": "Zuständiger Moderator",
