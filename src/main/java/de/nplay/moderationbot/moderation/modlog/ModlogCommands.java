@@ -8,12 +8,12 @@ import com.github.kaktushose.jda.commands.annotations.interactions.SlashCommand;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.permissions.BotPermissionFlags;
+import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 
 @Interaction
-@Permissions(BotPermissionFlags.MODLOG_READ)
+@Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommands {
 
     @Inject
