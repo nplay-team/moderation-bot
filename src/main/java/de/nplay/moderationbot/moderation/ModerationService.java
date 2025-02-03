@@ -1,95 +1,36 @@
 package de.nplay.moderationbot.moderation;
 
+import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
+import de.chojo.sadu.mapper.rowmapper.RowMapper;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import de.nplay.moderationbot.embeds.EmbedColors;
+import de.nplay.moderationbot.moderation.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.rules.RuleService;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
+
+import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
 
 /**
  * Utility class for managing moderation acts.
  */
 public class ModerationService {
 
-    /**
-     * Warns a member
-     *
-     * @param user the {@link UserSnowflake User or Member} to warn
-     * @return a {@link ModerationActCreateBuilder}
-     */
-    public static ModerationActCreateBuilder warn(UserSnowflake user) {
-        return new ModerationActCreateBuilder().setUser(user).setType(ModerationActType.WARN);
-    }
-
-    /**
-     * Timeouts a member
-     *
-     * @param user the {@link UserSnowflake User or Member} to timeout
-     * @return a {@link ModerationActCreateBuilder}
-     */
-    public static ModerationActCreateBuilder timeout(UserSnowflake user) {
-        return new ModerationActCreateBuilder().setUser(user).setType(ModerationActType.TIMEOUT);
-    }
-
-    /**
-     * Kicks a member
-     *
-     * @param user the {@link UserSnowflake User or Member} to kick
-     * @return a {@link ModerationActCreateBuilder}
-     */
-    public static ModerationActCreateBuilder kick(UserSnowflake user) {
-        return new ModerationActCreateBuilder().setUser(user).setType(ModerationActType.KICK);
-    }
-
-    /**
-     * Temp bans a member
-     *
-     * @param user the {@link UserSnowflake User or Member} to temp ban
-     * @return a {@link ModerationActCreateBuilder}
-     */
-    public static ModerationActCreateBuilder tempBan(UserSnowflake user) {
-        return new ModerationActCreateBuilder().setUser(user).setType(ModerationActType.TEMP_BAN);
-    }
-
-    /**
-     * Bans a member
-     *
-     * @param user the {@link UserSnowflake User or Member} to ban
-     * @return a {@link ModerationActCreateBuilder}
-     */
-    public static ModerationActCreateBuilder ban(UserSnowflake user) {
-        return new ModerationActCreateBuilder().setUser(user).setType(ModerationActType.BAN);
-    }
-
-    /**
-     * Creates a new moderation record in the database.
-     *
-     * @param act The {@link ModerationAct} to create.
-     * @return The id of the moderation act
-     */
-    public static long createModerationAct(ModerationAct act) {
-        return Query.query("""
-                INSERT INTO moderations
-                (user_id, type, reverted, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration)
-                VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?, ?)
-                """
-        ).single(Call.of()
-                .bind(act.userId)
-                .bind(act.type)
-                .bind(act.reverted)
-                .bind(act.issuerId)
-                .bind(act.reason.orElse(null))
-                .bind(act.paragraph.map(RuleService.RuleParagraph::id).orElse(null))
-                .bind(act.referenceMessage.map(MessageReferenceService.MessageReference::messageId).orElse(null))
-                .bind(act.revokeAt.orElse(null))
-                .bind(act.duration.orElse(null))
-        ).insertAndGetKeys().keys().getFirst();
-    }
+    private static final Logger log = LoggerFactory.getLogger(ModerationService.class);
 
     /**
      * Retrieves a moderation by its ID.
@@ -97,11 +38,48 @@ public class ModerationService {
      * @param moderationId The ID of the moderation to retrieve.
      * @return The {@link ModerationAct} record.
      */
-    public static ModerationAct getModerationAct(long moderationId) {
+    public static Optional<ModerationAct> getModerationAct(long moderationId) {
         return Query.query("SELECT * FROM moderations WHERE id = ?")
                 .single(Call.of().bind(moderationId))
                 .mapAs(ModerationAct.class)
-                .first().orElseThrow();
+                .first();
+    }
+
+    public static ModerationAct createModerationAct(ModerationActCreateData data) {
+        if (data.messageReference() != null) {
+            MessageReferenceService.createMessageReference(data.messageReference());
+        }
+
+        var id = Query.query("""
+                INSERT INTO moderations
+                (user_id, type, issuer_id, reason, paragraph_id, reference_message, revoke_at, duration, created_at, reverted)
+                VALUES (?, ?::reporttype, ?, ?, ?, ?, ?, ?, ?, false)
+                """
+        ).single(Call.of()
+                .bind(data.targetId())
+                .bind(data.type())
+                .bind(data.issuerId())
+                .bind(data.reason())
+                .bind(data.paragraphId())
+                .bind(data.messageReferenceId().orElse(null))
+                .bind(data.revokeAt().orElse(null))
+                .bind(data.duration())
+                .bind(new Timestamp(System.currentTimeMillis()))
+        ).insertAndGetKeys().keys().getFirst();
+
+        return getModerationAct(id).orElseThrow();
+    }
+
+    /**
+     * Retrieves all moderation's, which need to be reverted.
+     *
+     * @return a list of {@link ModerationAct} records.
+     */
+    public static Collection<ModerationAct> getModerationActsToRevert() {
+        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ?")
+                .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
+                .mapAs(ModerationAct.class)
+                .all();
     }
 
     public static List<ModerationAct> getModerationActs() {
@@ -110,7 +88,7 @@ public class ModerationService {
                 .mapAs(ModerationAct.class)
                 .all();
     }
- 
+
     /**
      * Updates an existing moderation record in the database.
      *
@@ -126,11 +104,11 @@ public class ModerationService {
                 .bind(act.type)
                 .bind(act.issuerId)
                 .bind(act.reverted)
-                .bind(act.reason.orElse(null))
-                .bind(act.paragraph.map(RuleService.RuleParagraph::id).orElse(null))
-                .bind(act.referenceMessage.map(MessageReferenceService.MessageReference::messageId).orElse(null))
-                .bind(act.revokeAt.orElse(null))
-                .bind(act.duration.orElse(null))
+                .bind(act.reason)
+                .bind(act.paragraph != null ? act.paragraph.id() : null)
+                .bind(act.referenceMessage != null ? act.referenceMessage.messageId() : null)
+                .bind(act.revokeAt)
+                .bind(act.duration)
                 .bind(act.id)
         ).update();
     }
@@ -146,37 +124,26 @@ public class ModerationService {
                 .delete();
     }
 
-    /**
-     * Record representing a moderation.
-     *
-     * @param id               The unique identifier of the moderation.
-     * @param userId           The ID of the user being moderated.
-     * @param type             The type of moderation.
-     * @param reverted         Whether the moderation has been reverted.
-     * @param reason           The reason for the moderation.
-     * @param paragraph        The rule paragraph associated with the moderation.
-     * @param referenceMessage The reference message associated with the moderation.
-     * @param revokeAt         The timestamp when the moderation will be revoked.
-     * @param duration         The duration of the moderation.
-     * @param issuerId         The ID of the user who issued the moderation.
-     * @param created_at       The date when the moderation was created.
-     */
+
     public record ModerationAct(
-            long id,
-            long userId,
+            Long id,
+            Long userId,
             ModerationActType type,
             Boolean reverted,
-            Optional<String> reason,
-            Optional<RuleService.RuleParagraph> paragraph,
-            Optional<MessageReferenceService.MessageReference> referenceMessage,
-            Optional<Timestamp> revokeAt,
-            Optional<Long> duration,
-            long issuerId,
-            Timestamp created_at
+            @Nullable Long revertedBy,
+            @Nullable Timestamp revertedAt,
+            @Nullable String revertingReason,
+            @Nullable String reason,
+            @Nullable RuleService.RuleParagraph paragraph,
+            @Nullable MessageReferenceService.MessageReference referenceMessage,
+            @Nullable Timestamp revokeAt,
+            @Nullable Long duration,
+            Long issuerId,
+            Timestamp createdAt,
+            @Nullable Integer delDays
     ) {
-
         /**
-         * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
+         * Mapping method for the {@link RowMapper RowMapper}
          *
          * @return a {@link RowMapping} of this record
          */
@@ -187,31 +154,57 @@ public class ModerationService {
                     row.getLong("user_id"),
                     ModerationActType.valueOf(row.getString("type")),
                     row.getBoolean("reverted"),
-                    Optional.ofNullable(row.getString("reason")),
-                    RuleService.getRuleParagraph(row.getInt("paragraph_id")),
-                    MessageReferenceService.getMessageReference(row.getLong("reference_message")),
-                    Optional.ofNullable(row.getTimestamp("revoke_at")),
-                    Optional.ofNullable(row.getLong("duration") == 0 ? null : row.getLong("duration")),
+                    row.getLong("reverted_by") == 0 ? null : row.getLong("reverted_by"),
+                    row.getTimestamp("reverted_at"),
+                    row.getString("revert_reason"),
+                    row.getString("reason"),
+                    RuleService.getRuleParagraph(row.getInt("paragraph_id")).orElse(null),
+                    MessageReferenceService.getMessageReference(row.getLong("reference_message")).orElse(null),
+                    row.getTimestamp("revoke_at"),
+                    row.getLong("duration") == 0 ? null : row.getLong("duration"),
                     row.getLong("issuer_id"),
-                    row.getTimestamp("created_at")
+                    row.getTimestamp("created_at"),
+                    null
             );
         }
 
-        @Override
-        public String toString() {
-            return "Moderation{" +
-                    "id=" + id +
-                    ", userId=" + userId +
-                    ", type=" + type +
-                    ", reverted=" + reverted +
-                    ", reason=" + reason +
-                    ", paragraph=" + paragraph +
-                    ", referenceMessage=" + referenceMessage +
-                    ", revokeAt=" + revokeAt +
-                    ", duration=" + duration +
-                    ", issuerId=" + issuerId +
-                    ", created_at=" + created_at +
-                    '}';
+        public void revert(Guild guild, EmbedCache embedCache, User revertedBy, @Nullable String reason) {
+            log.info("Reverting moderation action: {}", this);
+
+            Query.query("UPDATE moderations SET reverted = true, reverted_by = ?, reverted_at = ?, revert_reason = ? WHERE id = ?")
+                    .single(Call.of()
+                            .bind(revertedBy.getIdLong())
+                            .bind(new Timestamp(System.currentTimeMillis()))
+                            .bind(reason)
+                            .bind(id))
+                    .update();
+
+            switch (type) {
+                case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {}, UNKNOWN_USER_HANDLER);
+                case TIMEOUT -> {
+                    guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {}, UNKNOWN_USER_HANDLER);
+                    sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
+                }
+                case WARN -> sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
+            }
+        }
+
+        private void sendRevertMessageToUser(Guild guild, EmbedCache embedCache, User revertedBy, @Nullable String revertingReason) {
+            var embed = embedCache
+                    .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")
+                    .injectValue("date", createdAt.getTime() / 1000)
+                    .injectValue("id", id)
+                    .injectValue("reason", Objects.requireNonNullElse(revertingReason, "?DEL?"))
+                    .injectValue("revertedById", revertedBy.getIdLong())
+                    .injectValue("revertedByUsername", revertedBy.getName())
+                    .injectValue("color", EmbedColors.SUCCESS).toEmbedBuilder();
+
+            embed.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
+
+            guild.retrieveMemberById(userId).flatMap(it -> it.getUser().openPrivateChannel())
+                    .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))
+                    .queue(_ -> {
+                    }, UNKNOWN_USER_HANDLER);
         }
     }
 }
