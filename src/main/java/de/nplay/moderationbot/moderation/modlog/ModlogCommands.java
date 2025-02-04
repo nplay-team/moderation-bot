@@ -17,8 +17,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,8 +25,6 @@ import java.util.List;
 @Interaction
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommands {
-
-    private static final Logger log = LoggerFactory.getLogger(ModlogCommands.class);
 
     @Inject
     EmbedCache embedCache;
@@ -41,7 +38,7 @@ public class ModlogCommands {
 
     Member member;
     InteractionHook interactionHook;
-    
+
     @SlashCommand(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     public void modlog(CommandEvent event, @Param("Der Member, dessen Modlog abgerufen werden soll") Member member,
                        @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,
@@ -79,10 +76,9 @@ public class ModlogCommands {
         event.jdaEvent().deferEdit().complete();
     }
 
-    @StringSelectMenu(value = "Seitenauswahl")
-    @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(value = "1", label = "Seite 1")
-    @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(value = "dummy", label = "DO NOT TOUCH")
-    // TODO: Remove when jda-commands updates
+    @com.github.kaktushose.jda.commands.annotations.interactions.StringSelectMenu(value = "Seitenauswahl")
+    @SelectOption(value = "1", label = "Seite 1")
+    @SelectOption(value = "dummy", label = "DO NOT TOUCH") // TODO: Remove when jda-commands updates
     public void selectPage(ComponentEvent event, List<String> values) {
         page = Integer.parseInt(values.get(0));
         offset = (page - 1) * limit;
@@ -112,7 +108,7 @@ public class ModlogCommands {
 
     public Collection<LayoutComponent> getComponents(ReplyableEvent<?> event) {
         var backButton = event.getButton("back");
-        var pageSelect = ((net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu) event.getSelectMenu("selectPage")).createCopy();
+        var pageSelect = ((StringSelectMenu) event.getSelectMenu("selectPage")).createCopy();
         var nextButton = event.getButton("next");
 
         var backEnable = page > 1;
