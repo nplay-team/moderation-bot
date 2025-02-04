@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.Role;
 import java.time.temporal.ChronoField;
 import java.util.List;
 
-public class ModlogService {
+public class ModlogEmbeds {
 
     public static EmbedDTO getModlogEmbedHeader(EmbedCache embedCache, Member member) {
         return embedCache.getEmbed("modlogHeader")
@@ -29,7 +29,7 @@ public class ModlogService {
                 .injectValue("maxPage", maxPage)
                 .injectValue("color", EmbedColors.DEFAULT);
 
-        embed.setFields(moderationActs.stream().map(ModlogService::getField).toArray(EmbedDTO.Field[]::new));
+        embed.setFields(moderationActs.stream().map(ModlogEmbeds::getField).toArray(EmbedDTO.Field[]::new));
         return embed;
     }
 

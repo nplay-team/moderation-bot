@@ -101,8 +101,8 @@ public class ModlogCommands {
 
     public Collection<MessageEmbed> getEmbeds() {
         return List.of(
-                ModlogService.getModlogEmbedHeader(embedCache, member).toMessageEmbed(),
-                ModlogService.getModlogEmbed(embedCache, ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
+                ModlogEmbeds.getModlogEmbedHeader(embedCache, member).toMessageEmbed(),
+                ModlogEmbeds.getModlogEmbed(embedCache, ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
         );
     }
 
