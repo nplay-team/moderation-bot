@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -76,17 +76,42 @@ public class ModerationService {
      * @return a list of {@link ModerationAct} records.
      */
     public static Collection<ModerationAct> getModerationActsToRevert() {
-        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ?")
+        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ? ORDER BY created_at DESC")
                 .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
                 .mapAs(ModerationAct.class)
                 .all();
     }
 
-    public static List<ModerationAct> getModerationActs() {
-        return Query.query("SELECT * FROM moderations")
-                .single()
-                .mapAs(ModerationAct.class)
+    public static List<ModerationAct> getModerationActs(UserSnowflake user) {
+        return getModerationActs(user, null, null, false);
+    }
+
+    public static List<ModerationAct> getModerationActs(UserSnowflake user, Integer limit, Integer offset) {
+        return getModerationActs(user, limit, offset, false);
+    }
+
+    public static List<ModerationAct> getModerationActs(UserSnowflake user, @Nullable Integer limit, @Nullable Integer offset, Boolean includeReverted) {
+        return Query.query("SELECT * FROM moderations WHERE user_id = ? AND reverted = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
+                .single(Call.of()
+                        .bind(user.getIdLong())
+                        .bind(includeReverted)
+                        .bind(limit == null ? 25 : limit)
+                        .bind(offset == null ? 0 : offset)
+                ).mapAs(ModerationAct.class)
                 .all();
+    }
+
+    public static Integer getModerationActCount(UserSnowflake user) {
+        return getModerationActCount(user, false);
+    }
+
+    public static Integer getModerationActCount(UserSnowflake user, Boolean includeReverted) {
+        return Query.query("SELECT COUNT(*) FROM moderations WHERE user_id = ? AND reverted = ?")
+                .single(Call.of()
+                        .bind(user.getIdLong())
+                        .bind(includeReverted)
+                ).mapAs(Integer.class)
+                .first().orElse(0);
     }
 
     /**

@@ -295,7 +295,7 @@
   "modlogHeader": {
     "author": {
       "name": "{username}",
-      "icon_url": "{avatarUrl}"
+      "iconUrl": "{avatarUrl}"
     },
     "title": "NPLAY-Moderation - Datenauskunft",
     "fields": [
@@ -311,7 +311,7 @@
       },
       {
         "name": "Avatar",
-        "value": "[Avatar]({avatarUrl})",
+        "value": "[Link]({avatarUrl})",
         "inline": false
       },
       {
@@ -321,14 +321,22 @@
       },
       {
         "name": "Erstellt am",
-        "value": "<t:{createdAt}:F> (<t:{createdAt}:R>",
+        "value": "<t:{createdAt}:F> (<t:{createdAt}:R>)",
         "inline": false
       },
       {
         "name": "Beigetreten am",
-        "value": "<t:{joinedAt}:F> (<t:{joinedAt}:R>",
+        "value": "<t:{joinedAt}:F> (<t:{joinedAt}:R>)",
         "inline": false
       }
-    ]
+    ],
+    "color": "{color}"
+  },
+  "modlogActs": {
+    "title": "NPLAY-Moderation - Moderationshandlungen",
+    "color": "{color}",
+    "footer": {
+      "text": "Seite {page} von {maxPage}"
+    }
   }
 }
