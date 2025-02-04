@@ -291,5 +291,52 @@
     "title": "Fehler",
     "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
     "color": "{color}"
+  },
+  "modlogHeader": {
+    "author": {
+      "name": "{username}",
+      "iconUrl": "{avatarUrl}"
+    },
+    "title": "NPLAY-Moderation - Datenauskunft",
+    "fields": [
+      {
+        "name": "Name",
+        "value": "{username}",
+        "inline": false
+      },
+      {
+        "name": "Nutzer-ID",
+        "value": "{userId}",
+        "inline": false
+      },
+      {
+        "name": "Avatar",
+        "value": "[Link]({avatarUrl})",
+        "inline": false
+      },
+      {
+        "name": "Rollen",
+        "value": "{roles}",
+        "inline": false
+      },
+      {
+        "name": "Erstellt am",
+        "value": "<t:{createdAt}:F> (<t:{createdAt}:R>)",
+        "inline": false
+      },
+      {
+        "name": "Beigetreten am",
+        "value": "<t:{joinedAt}:F> (<t:{joinedAt}:R>)",
+        "inline": false
+      }
+    ],
+    "color": "{color}"
+  },
+  "modlogActs": {
+    "title": "NPLAY-Moderation - Moderationshandlungen",
+    "color": "{color}",
+    "footer": {
+      "text": "Seite {page} von {maxPage}"
+    }
   }
 }
