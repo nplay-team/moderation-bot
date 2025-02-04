@@ -58,9 +58,16 @@ public class ModlogCommands {
         actCount = ModerationService.getModerationActCount(member);
         maxPage = (int) Math.ceil(actCount / (double) limit);
 
+        if (maxPage == 0) maxPage = 1;
+
+        if (this.page > maxPage) {
+            this.page = maxPage;
+            offset = (this.page - 1) * limit;
+        }
+
         interactionHook = event.jdaEvent()
                 .replyEmbeds(getEmbeds())
-                .addComponents(getComponents(event))
+                .addComponents(maxPage > 1 ? getComponents(event) : List.of())
                 .complete();
     }
 
@@ -74,6 +81,8 @@ public class ModlogCommands {
 
     @StringSelectMenu(value = "Seitenauswahl")
     @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(value = "1", label = "Seite 1")
+    @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(value = "dummy", label = "DO NOT TOUCH")
+    // TODO: Remove when jda-commands updates
     public void selectPage(ComponentEvent event, List<String> values) {
         page = Integer.parseInt(values.get(0));
         offset = (page - 1) * limit;
@@ -110,16 +119,15 @@ public class ModlogCommands {
         var nextEnable = page < maxPage;
 
         pageSelect.getOptions().clear();
+        pageSelect.addOption("Seite 1", "1");
 
         if (maxPage > 1) {
-            for (int i = 2; i <= maxPage; i++) {
+            for (int i = 2; i <= maxPage && i < 26; i++) {
                 pageSelect.addOption("Seite " + i, Integer.toString(i));
             }
         }
 
-        pageSelect.setMaxValues(1)
-                .addOption("Seite 1", "1")
-                .setDefaultValues(page.toString());
+        pageSelect.setMaxValues(1).setDefaultValues(page.toString());
 
         return List.of(
                 ActionRow.of(pageSelect.build()),
