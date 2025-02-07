@@ -26,4 +26,20 @@ public class DurationAdapter implements TypeAdapter<Duration> {
 
         return Optional.of(Duration.parse(parseString));
     }
+
+    public static String toString(Duration duration) {
+        StringBuilder builder = new StringBuilder();
+
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+
+        if (days > 0) builder.append(days).append("d ");
+        if (hours > 0) builder.append(hours).append("h ");
+        if (minutes > 0) builder.append(minutes).append("m ");
+        if (seconds > 0) builder.append(seconds).append("s ");
+
+        return builder.toString().trim();
+    }
 }

@@ -63,7 +63,7 @@ public class ModlogCommands {
         }
 
         interactionHook = event.jdaEvent()
-                .replyEmbeds(getEmbeds())
+                .replyEmbeds(getEmbeds(event))
                 .addComponents(maxPage > 1 ? getComponents(event) : List.of())
                 .complete();
     }
@@ -95,14 +95,16 @@ public class ModlogCommands {
     }
 
     public void updateMessage(ComponentEvent event) {
-        interactionHook.editOriginalEmbeds(getEmbeds()).queue();
+        interactionHook.editOriginalEmbeds(getEmbeds(event)).queue();
         interactionHook.editOriginalComponents(getComponents(event)).queue();
     }
 
-    public Collection<MessageEmbed> getEmbeds() {
+    public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
+        Long botId = event.getJDA().getSelfUser().getIdLong();
+
         return List.of(
                 ModlogEmbeds.getModlogEmbedHeader(embedCache, member).toMessageEmbed(),
-                ModlogEmbeds.getModlogEmbed(embedCache, ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
+                ModlogEmbeds.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset, true, botId), page, maxPage).toMessageEmbed()
         );
     }
 

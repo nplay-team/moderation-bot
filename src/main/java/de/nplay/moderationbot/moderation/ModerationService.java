@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,21 +84,30 @@ public class ModerationService {
     }
 
     public static List<ModerationAct> getModerationActs(UserSnowflake user) {
-        return getModerationActs(user, null, null, false);
+        return getModerationActs(user, null, null, false, null);
     }
 
     public static List<ModerationAct> getModerationActs(UserSnowflake user, Integer limit, Integer offset) {
-        return getModerationActs(user, limit, offset, false);
+        return getModerationActs(user, limit, offset, false, null);
     }
 
-    public static List<ModerationAct> getModerationActs(UserSnowflake user, @Nullable Integer limit, @Nullable Integer offset, Boolean includeReverted) {
-        return Query.query("SELECT * FROM moderations WHERE user_id = ? AND reverted = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
-                .single(Call.of()
-                        .bind(user.getIdLong())
-                        .bind(includeReverted)
-                        .bind(limit == null ? 25 : limit)
-                        .bind(offset == null ? 0 : offset)
-                ).mapAs(ModerationAct.class)
+    public static List<ModerationAct> getModerationActs(UserSnowflake user, @Nullable Integer limit, @Nullable Integer offset, Boolean includeReverted, @Nullable Long onlyRevertedBy) {
+        @Language("sql") String query = "SELECT * FROM moderations WHERE user_id = ? " + (includeReverted ? "" : "AND reverted = ? ") + (onlyRevertedBy == null ? "" : "AND (reverted_by IS NULL OR reverted_by = ?) ") + "ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        Call call = Call.of().bind(user.getIdLong());
+
+        if (!includeReverted) {
+            call.bind(false);
+        }
+
+        if (onlyRevertedBy != null) {
+            call.bind(onlyRevertedBy);
+        }
+
+        call.bind(limit == null ? 25 : limit).bind(offset == null ? 0 : offset);
+
+        return Query.query(query)
+                .single(call)
+                .mapAs(ModerationAct.class)
                 .all();
     }
 
