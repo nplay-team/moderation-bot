@@ -192,8 +192,8 @@ public class ModerationCommands {
     @Modal(value = "Begründung und Dauer angeben")
     public void onModerateTempbanContext(ModalEvent event,
                                          @TextInput(value = "Begründung der Moderationshandlung") String reason,
-                                         @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT)
-                                         @Optional String until) {
+                                         @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT, required = false)
+                                             String until) {
         var duration = DurationAdapter.parse(until);
         duration.ifPresent(value -> moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(value.getSeconds() * 1000));
         onModerate(event, reason);
