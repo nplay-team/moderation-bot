@@ -45,5 +45,9 @@ public class MessageReferenceService {
         public String jumpUrl(@NotNull Guild guild) {
             return "https://discord.com/channels/%d/%d/%d".formatted(guild.getIdLong(), channelId, messageId);
         }
+
+        public String fullDisplay(@NotNull Guild guild) {
+            return "%s\n[Link](%s)".formatted(content, jumpUrl(guild));
+        }
     }
 }

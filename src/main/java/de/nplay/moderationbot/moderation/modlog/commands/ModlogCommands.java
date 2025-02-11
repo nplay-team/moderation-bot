@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.modlog;
+package de.nplay.moderationbot.moderation.modlog.commands;
 
 import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
@@ -9,6 +9,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.modlog.ModlogEmbeds;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
