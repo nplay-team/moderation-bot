@@ -59,7 +59,7 @@ public class ModerationCommands {
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
-        event.replyModal("onModerateWarn    ");
+        event.replyModal("onModerateWarn");
     }
 
     @SlashCommand(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
