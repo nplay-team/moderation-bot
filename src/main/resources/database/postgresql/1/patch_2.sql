@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_moderations_userId_reverted ON moderations (user_id, reverted);
