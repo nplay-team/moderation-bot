@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,43 +83,24 @@ public class ModerationService {
     }
 
     public static List<ModerationAct> getModerationActs(UserSnowflake user) {
-        return getModerationActs(user, null, null, false, null);
+        return getModerationActs(user, null, null);
     }
 
-    public static List<ModerationAct> getModerationActs(UserSnowflake user, Integer limit, Integer offset) {
-        return getModerationActs(user, limit, offset, false, null);
-    }
-
-    public static List<ModerationAct> getModerationActs(UserSnowflake user, @Nullable Integer limit, @Nullable Integer offset, Boolean includeReverted, @Nullable Long onlyRevertedBy) {
-        @Language("sql") String query = "SELECT * FROM moderations WHERE user_id = ? " + (includeReverted ? "" : "AND reverted = ? ") + (onlyRevertedBy == null ? "" : "AND (reverted_by IS NULL OR reverted_by = ?) ") + "ORDER BY created_at DESC LIMIT ? OFFSET ?";
-        Call call = Call.of().bind(user.getIdLong());
-
-        if (!includeReverted) {
-            call.bind(false);
-        }
-
-        if (onlyRevertedBy != null) {
-            call.bind(onlyRevertedBy);
-        }
-
-        call.bind(limit == null ? 25 : limit).bind(offset == null ? 0 : offset);
-
-        return Query.query(query)
-                .single(call)
+    public static List<ModerationAct> getModerationActs(UserSnowflake user, @Nullable Integer limit, @Nullable Integer offset) {
+        return Query.query("SELECT * FROM moderations WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
+                .single(Call.of()
+                        .bind(user.getIdLong())
+                        .bind(limit == null ? 25 : limit)
+                        .bind(offset == null ? 0 : offset)
+                )
                 .mapAs(ModerationAct.class)
                 .all();
     }
 
     public static Integer getModerationActCount(UserSnowflake user) {
-        return getModerationActCount(user, false);
-    }
-
-    public static Integer getModerationActCount(UserSnowflake user, Boolean includeReverted) {
-        return Query.query("SELECT COUNT(*) FROM moderations WHERE user_id = ? AND reverted = ?")
-                .single(Call.of()
-                        .bind(user.getIdLong())
-                        .bind(includeReverted)
-                ).mapAs(Integer.class)
+        return Query.query("SELECT COUNT(*) FROM moderations WHERE user_id = ?")
+                .single(Call.of().bind(user.getIdLong()))
+                .mapAs(Integer.class)
                 .first().orElse(0);
     }
 

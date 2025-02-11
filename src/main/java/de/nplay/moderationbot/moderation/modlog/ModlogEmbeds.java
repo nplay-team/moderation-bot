@@ -38,6 +38,7 @@ public class ModlogEmbeds {
     }
 
     public static EmbedDTO.Field getField(ModerationService.ModerationAct moderationAct, JDA jda) {
+        String headLine = "#%s | %s | <t:%s>".formatted(moderationAct.id(), moderationAct.type().humanReadableString, moderationAct.createdAt().getTime() / 1000);
         List<String> bodyLines = new ArrayList<>();
 
         bodyLines.add("%s".formatted(moderationAct.reason()));
@@ -52,11 +53,16 @@ public class ModlogEmbeds {
         }
 
         if (moderationAct.reverted()) {
+            if (moderationAct.revertedBy() == null || moderationAct.revertedBy() != jda.getSelfUser().getIdLong()) {
+                headLine = "~~%s~~".formatted(headLine);
+                bodyLines.forEach(it -> bodyLines.set(bodyLines.indexOf(it), "~~%s~~".formatted(it)));
+            }
+
             bodyLines.addLast("*Aufgehoben am: <t:%s:f>*".formatted(moderationAct.revertedAt().getTime() / 1000));
         }
 
         return new EmbedDTO.Field(
-                "#%s | %s | <t:%s>".formatted(moderationAct.id(), moderationAct.type().humanReadableString, moderationAct.createdAt().getTime() / 1000),
+                headLine,
                 String.join("\n", bodyLines),
                 false
         );
