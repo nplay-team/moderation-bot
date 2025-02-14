@@ -7,7 +7,7 @@ import de.chojo.sadu.mapper.rowmapper.RowMapper;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
-import de.nplay.moderationbot.backend.DurationAdapter;
+import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.rules.RuleService;
@@ -236,7 +236,7 @@ public class ModerationService {
             }
 
             if (duration != null) {
-                bodyLines.addFirst("Dauer: %s".formatted(DurationAdapter.toString(Duration.ofMillis(duration))));
+                bodyLines.addFirst("Dauer: %s".formatted(Helpers.durationToString(Duration.ofMillis(duration))));
             }
 
             if (reverted) {
@@ -264,7 +264,7 @@ public class ModerationService {
                     .injectValue("issuerUsername", jda.retrieveUserById(issuerId).complete().getName())
                     .injectValue("reason", reason == null ? "?DEL?" : reason)
                     .injectValue("paragraph", paragraph == null ? "?DEL?" : paragraph.fullDisplay())
-                    .injectValue("duration", duration == null ? "?DEL?" : DurationAdapter.toString(Duration.ofMillis(duration)))
+                    .injectValue("duration", duration == null ? "?DEL?" : Helpers.durationToString(Duration.ofMillis(duration)))
                     .injectValue("referenceMessage", referenceMessage == null ? "?DEL?" : referenceMessage.fullDisplay(guild))
                     .injectValue("until", revokeAt == null ? "?DEL?" : revokeAt.getTime() / 1000)
                     .injectValue("revertedAt", revertedAt == null ? "?DEL?" : revertedAt.getTime() / 1000)

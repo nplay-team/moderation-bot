@@ -30,15 +30,14 @@ public class ModlogCommands {
     @Inject
     EmbedCache embedCache;
 
-    Integer offset = 1;
-    Integer limit = 10;
-    Integer page = 1;
+    private Integer offset = 1;
+    private Integer limit = 10;
+    private Integer page = 1;
 
-    Integer actCount = 0;
-    Integer maxPage = 1;
+    private Integer maxPage = 1;
 
-    Member member;
-    InteractionHook interactionHook;
+    private Member member;
+    private InteractionHook interactionHook;
 
     @SlashCommand(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     public void modlog(CommandEvent event, @Param("Der Member, dessen Modlog abgerufen werden soll") Member member,
@@ -53,8 +52,7 @@ public class ModlogCommands {
 
         if (count != null) limit = count;
 
-        actCount = ModerationService.getModerationActCount(member);
-        maxPage = (int) Math.ceil(actCount / (double) limit);
+        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(member) / (double) limit);
 
         if (maxPage == 0) maxPage = 1;
 
@@ -101,8 +99,6 @@ public class ModlogCommands {
     }
 
     public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
-        Long botId = event.getJDA().getSelfUser().getIdLong();
-
         return List.of(
                 ModlogEmbeds.getModlogEmbedHeader(embedCache, member).toMessageEmbed(),
                 ModlogEmbeds.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
