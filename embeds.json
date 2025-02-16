@@ -117,7 +117,7 @@
       },
       {
         "name": "Aufhebung",
-        "value": "<t:{until}:R>"
+        "value": "<t:{until}:F> <t:{until}:R>"
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
@@ -179,7 +179,7 @@
       },
       {
         "name": "Aufhebung",
-        "value": "<t:{until}:R>"
+        "value": "<t:{until}:F> <t:{until}:R>"
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
@@ -291,5 +291,111 @@
     "title": "Fehler",
     "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
     "color": "{color}"
+  },
+  "moderationActNotFound": {
+    "title": "Fehler",
+    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
+    "color": "{color}"
+  },
+  "modlogHeader": {
+    "author": {
+      "name": "{username}",
+      "iconUrl": "{avatarUrl}"
+    },
+    "title": "NPLAY-Moderation - Datenauskunft",
+    "fields": [
+      {
+        "name": "Name",
+        "value": "{username}",
+        "inline": false
+      },
+      {
+        "name": "Nutzer-ID",
+        "value": "{userId}",
+        "inline": false
+      },
+      {
+        "name": "Avatar",
+        "value": "[Link]({avatarUrl})",
+        "inline": false
+      },
+      {
+        "name": "Rollen",
+        "value": "{roles}",
+        "inline": false
+      },
+      {
+        "name": "Erstellt am",
+        "value": "<t:{createdAt}:F> (<t:{createdAt}:R>)",
+        "inline": false
+      },
+      {
+        "name": "Beigetreten am",
+        "value": "<t:{joinedAt}:F> (<t:{joinedAt}:R>)",
+        "inline": false
+      }
+    ],
+    "color": "{color}"
+  },
+  "modlogActs": {
+    "title": "NPLAY-Moderation - Moderationshandlungen",
+    "color": "{color}",
+    "footer": {
+      "text": "Seite {page} von {maxPage}"
+    }
+  },
+  "moderationActDetail": {
+    "title": "NPLAY-Moderation - Moderationshandlung",
+    "color": "{color}",
+    "fields": [
+      {
+        "name": "ID",
+        "value": "#{id}"
+      },
+      {
+        "name": "Typ",
+        "value": "{type}"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{date}:F> (<t:{date}:R>)"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Begründung",
+        "value": "{reason}"
+      },
+      {
+        "name": "Regel",
+        "value": "{paragraph}"
+      },
+      {
+        "name": "Dauer",
+        "value": "{duration}"
+      },
+      {
+        "name": "Referenznachricht",
+        "value": "> {referenceMessage}"
+      },
+      {
+        "name": "Aufhebung",
+        "value": "<t:{until}:F> (<t:{until}:R>)"
+      },
+      {
+        "name": "Revidiert am",
+        "value": "<t:{revertedAt}:F> (<t:{revertedAt}:R>)"
+      },
+      {
+        "name": "Revidierender Moderator",
+        "value": "<@{revertedById}> ({revertedByUsername})"
+      },
+      {
+        "name": "Revidierungsgrund",
+        "value": "{reversionReason}"
+      }
+    ]
   }
 }

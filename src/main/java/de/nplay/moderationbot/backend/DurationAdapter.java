@@ -26,4 +26,5 @@ public class DurationAdapter implements TypeAdapter<Duration> {
 
         return Optional.of(Duration.parse(parseString));
     }
+
 }
