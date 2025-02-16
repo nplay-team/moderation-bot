@@ -1,8 +1,7 @@
-package de.nplay.moderationbot.moderation.modlog;
+package de.nplay.moderationbot.embeds;
 
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
-import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -11,7 +10,7 @@ import net.dv8tion.jda.api.entities.Role;
 import java.time.temporal.ChronoField;
 import java.util.List;
 
-public class ModlogEmbeds {
+public class EmbedHelpers {
 
     public static EmbedDTO getModlogEmbedHeader(EmbedCache embedCache, Member member) {
         return embedCache.getEmbed("modlogHeader")

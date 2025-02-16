@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.modlog.commands;
+package de.nplay.moderationbot.moderation.modlog;
 
 import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
@@ -8,8 +8,8 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.moderation.modlog.ModlogEmbeds;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,7 +25,7 @@ import java.util.List;
 
 @Interaction
 @Permissions(BotPermissions.MODERATION_READ)
-public class ModlogCommands {
+public class ModlogCommand {
 
     @Inject
     EmbedCache embedCache;
@@ -100,8 +100,8 @@ public class ModlogCommands {
 
     public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
         return List.of(
-                ModlogEmbeds.getModlogEmbedHeader(embedCache, member).toMessageEmbed(),
-                ModlogEmbeds.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
+                EmbedHelpers.getModlogEmbedHeader(embedCache, member).toMessageEmbed(),
+                EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
         );
     }
 
