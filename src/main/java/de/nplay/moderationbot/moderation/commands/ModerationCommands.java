@@ -62,15 +62,15 @@ public class ModerationCommands {
     public void warnMember(CommandEvent event,
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
-        moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
-        event.replyModal("onModerate");
+        this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
+        event.replyModal("onModerateWarn");
     }
 
     @ContextCommand(value = "Verwarne Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
     public void warnMemberMessageContext(CommandEvent event, Message target) {
         moderationActBuilder = ModerationActBuilder.warn(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
-        event.replyModal("onModerate");
+        event.replyModal("onModerateWarn");
     }
 
     @SlashCommand(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
@@ -79,7 +79,7 @@ public class ModerationCommands {
                               @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200) Duration until,
                               @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000).paragraph(paragraph);
-        event.replyModal("onModerate");
+        event.replyModal("onModerateTimeout");
     }
 
     @ContextCommand(value = "Timeoute Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
@@ -94,14 +94,14 @@ public class ModerationCommands {
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
                            @Nullable @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph);
-        event.replyModal("onModerate");
+        event.replyModal("onModerateKick");
     }
 
     @ContextCommand(value = "Kicke Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
     public void kickMemberMessageContext(CommandEvent event, Message target) {
         moderationActBuilder = ModerationActBuilder.kick(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
-        event.replyModal("onModerate");
+        event.replyModal("onModerateKick");
     }
 
     @SlashCommand(value = "moderation ban", desc = "Bannt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
@@ -116,8 +116,8 @@ public class ModerationCommands {
         moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
-        }
-        event.replyModal("onModerate");
+            event.replyModal("onModerateTempBan");
+        } else event.replyModal("onModerateBan");
     }
 
     @ContextCommand(value = "Ban Servermitglied", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
@@ -127,8 +127,32 @@ public class ModerationCommands {
         event.replyModal("onModerateTempbanContext");
     }
 
-    @Modal(value = "Begründung angeben")
-    public void onModerate(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+    @Modal(value = "Begründung angeben (Warn)")
+    public void onModerateWarn(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+        onModerate(event, reason);
+    }
+
+    @Modal(value = "Begründung angeben (Timeout)")
+    public void onModerateTimeout(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+        onModerate(event, reason);
+    }
+
+    @Modal(value = "Begründung angeben (Kick)")
+    public void onModerateKick(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+        onModerate(event, reason);
+    }
+
+    @Modal(value = "Begründung angeben (Temp-Ban)")
+    public void onModerateTempBan(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+        onModerate(event, reason);
+    }
+
+    @Modal(value = "Begründung angeben (Ban)")
+    public void onModerateBan(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+        onModerate(event, reason);
+    }
+
+    public void onModerate(ModalEvent event, String reason) {
         var action = moderationActBuilder.reason(reason).build();
         var moderationAct = ModerationService.createModerationAct(action);
 
@@ -163,7 +187,7 @@ public class ModerationCommands {
 
         // Executes the action (e.g. kicks the user)
         action.executor().accept(action);
-        
+
         sendMessageToUser(moderationAct, event);
         event.with().ephemeral(replyEphemeral).reply(embed);
     }

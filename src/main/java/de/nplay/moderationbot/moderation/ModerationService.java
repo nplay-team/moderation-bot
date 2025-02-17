@@ -1,14 +1,18 @@
 package de.nplay.moderationbot.moderation;
 
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapper;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.rules.RuleService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
@@ -18,9 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.Duration;
+import java.util.*;
 
 import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
 
@@ -75,10 +78,32 @@ public class ModerationService {
      * @return a list of {@link ModerationAct} records.
      */
     public static Collection<ModerationAct> getModerationActsToRevert() {
-        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ?")
+        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ? ORDER BY created_at DESC")
                 .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
                 .mapAs(ModerationAct.class)
                 .all();
+    }
+
+    public static List<ModerationAct> getModerationActs(UserSnowflake user) {
+        return getModerationActs(user, null, null);
+    }
+
+    public static List<ModerationAct> getModerationActs(UserSnowflake user, @Nullable Integer limit, @Nullable Integer offset) {
+        return Query.query("SELECT * FROM moderations WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
+                .single(Call.of()
+                        .bind(user.getIdLong())
+                        .bind(limit == null ? 25 : limit)
+                        .bind(offset == null ? 0 : offset)
+                )
+                .mapAs(ModerationAct.class)
+                .all();
+    }
+
+    public static Integer getModerationActCount(UserSnowflake user) {
+        return Query.query("SELECT COUNT(*) FROM moderations WHERE user_id = ?")
+                .single(Call.of().bind(user.getIdLong()))
+                .mapAs(Integer.class)
+                .first().orElse(0);
     }
 
     /**
@@ -197,6 +222,61 @@ public class ModerationService {
                     .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))
                     .queue(_ -> {
                     }, UNKNOWN_USER_HANDLER);
+        }
+
+        public EmbedDTO.Field getEmbedField(JDA jda) {
+            String headLine = "#%s | %s | <t:%s>".formatted(id, type.humanReadableString, createdAt.getTime() / 1000);
+            List<String> bodyLines = new ArrayList<>();
+
+            bodyLines.add("%s".formatted(reason));
+            bodyLines.add("-<@%s> (%s)".formatted(issuerId, jda.retrieveUserById(issuerId).complete().getName()));
+
+            if (revokeAt != null && !reverted) {
+                bodyLines.addFirst("Aktiv bis: <t:%s:f>".formatted(revokeAt.getTime() / 1000));
+            }
+
+            if (duration != null) {
+                bodyLines.addFirst("Dauer: %s".formatted(Helpers.durationToString(Duration.ofMillis(duration))));
+            }
+
+            if (reverted) {
+                if (revertedBy == null || revertedBy != jda.getSelfUser().getIdLong()) {
+                    headLine = "~~%s~~".formatted(headLine);
+                    bodyLines.forEach(it -> bodyLines.set(bodyLines.indexOf(it), "~~%s~~".formatted(it)));
+                }
+
+                bodyLines.addLast("*Aufgehoben am: <t:%s:f>*".formatted(revertedAt.getTime() / 1000));
+            }
+
+            return new EmbedDTO.Field(
+                    headLine,
+                    String.join("\n", bodyLines),
+                    false
+            );
+        }
+
+        public EmbedBuilder getEmbed(EmbedCache embedCache, JDA jda, Guild guild) {
+            EmbedDTO embedDTO = embedCache.getEmbed("moderationActDetail")
+                    .injectValue("id", id)
+                    .injectValue("type", type.humanReadableString)
+                    .injectValue("date", createdAt.getTime() / 1000)
+                    .injectValue("issuerId", issuerId)
+                    .injectValue("issuerUsername", jda.retrieveUserById(issuerId).complete().getName())
+                    .injectValue("reason", reason == null ? "?DEL?" : reason)
+                    .injectValue("paragraph", paragraph == null ? "?DEL?" : paragraph.fullDisplay())
+                    .injectValue("duration", duration == null ? "?DEL?" : Helpers.durationToString(Duration.ofMillis(duration)))
+                    .injectValue("referenceMessage", referenceMessage == null ? "?DEL?" : referenceMessage.fullDisplay(guild))
+                    .injectValue("until", revokeAt == null ? "?DEL?" : revokeAt.getTime() / 1000)
+                    .injectValue("revertedAt", revertedAt == null ? "?DEL?" : revertedAt.getTime() / 1000)
+                    .injectValue("revertedById", revertedBy == null ? "?DEL?" : revertedBy)
+                    .injectValue("revertedByUsername", revertedBy == null ? "?DEL?" : jda.retrieveUserById(revertedBy).complete().getName())
+                    .injectValue("reversionReason", revertingReason == null ? "?DEL?" : revertingReason)
+                    .injectValue("color", EmbedColors.DEFAULT);
+
+            EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
+            embedBuilder.getFields().removeIf(it -> it.getValue().contains("?DEL?"));
+
+            return embedBuilder;
         }
     }
 }
