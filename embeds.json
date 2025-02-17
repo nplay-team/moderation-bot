@@ -397,5 +397,47 @@
         "value": "{reversionReason}"
       }
     ]
+  },
+  "noteCreated": {
+    "title": "Notiz erstellt",
+    "description": "Die Notiz mit der ID **${id}** wurde erfolgreich erstellt!",
+    "fields": [
+      {
+        "name": "Inhalt",
+        "value": "{content}"
+      },
+      {
+        "name": "Benutzer",
+        "value": "<@{targetId}> ({targetUsername})"
+      },
+      {
+        "name": "Erstellt am",
+        "value": "<t:{createdAt}:F> (<t:{createdAt}:R>)"
+      },
+      {
+        "name": "Ersteller",
+        "value": "<@{createdById}> ({createdByUsername})"
+      }
+    ],
+    "color": "{color}"
+  },
+  "noteList": {
+    "title": "Notizen von **{target}**",
+    "color": "{color}"
+  },
+  "noteDeleted": {
+    "title": "Notiz gelöscht",
+    "description": "Die Notiz mit der ID **${id}** wurde erfolgreich gelöscht!",
+    "color": "{color}"
+  },
+  "noteLimitReached": {
+    "title": "Fehler",
+    "description": "Der Benutzer hat bereits die maximale Anzahl an Notizen (25x) erreicht!",
+    "color": "{color}"
+  },
+  "noteNotFound": {
+    "title": "Fehler",
+    "description": "Die Notiz mit der ID **${id}** existiert nicht!",
+    "color": "{color}"
   }
 }
