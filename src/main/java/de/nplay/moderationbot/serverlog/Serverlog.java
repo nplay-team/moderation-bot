@@ -20,10 +20,10 @@ public class Serverlog {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends BotEvent> void trigger(ServerlogEvents event, T jdaEvent) {
-        LoggerFactory.getLogger(this.getClass()).info("Triggered event: {}", jdaEvent.getClass().getSimpleName());
+    public <T extends BotEvent> void trigger(ServerlogEvents event, T botEvent) {
+        LoggerFactory.getLogger(this.getClass()).info("Triggered event: {}", botEvent.getClass().getSimpleName());
 
-        var embed = ((ServerlogEmbedParser<T>) event.getServerlogEvent()).getEmbed(embedCache, jdaEvent);
+        var embed = ((ServerlogEmbedParser<T>) event.getServerlogEvent()).getEmbed(embedCache, botEvent);
         var channels = ServerlogChannelService.getServerlogChannels();
 
         for (var channel : channels) {
