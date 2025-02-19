@@ -9,7 +9,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.moderation.events.ModerationDeleteEvent;
+import de.nplay.moderationbot.moderation.modlog.ModerationDeleteEvent;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.serverlog.events.ServerlogEvents;

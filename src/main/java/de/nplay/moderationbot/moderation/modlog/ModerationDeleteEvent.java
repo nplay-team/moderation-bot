@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.events;
+package de.nplay.moderationbot.moderation.modlog;
 
 import de.nplay.moderationbot.moderation.ModerationService;
 import net.dv8tion.jda.api.JDA;

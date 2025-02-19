@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.backend;
+package de.nplay.moderationbot.duration;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Constraint;
 

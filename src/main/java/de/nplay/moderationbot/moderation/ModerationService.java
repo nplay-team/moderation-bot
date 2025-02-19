@@ -9,7 +9,7 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedColors;
-import de.nplay.moderationbot.moderation.ModerationActBuilder.ModerationActCreateData;
+import de.nplay.moderationbot.moderation.create.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;

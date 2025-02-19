@@ -3,7 +3,7 @@ package de.nplay.moderationbot.serverlog.events.impl;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
-import de.nplay.moderationbot.moderation.events.GenericModerationEvent;
+import de.nplay.moderationbot.moderation.modlog.GenericModerationEvent;
 import de.nplay.moderationbot.serverlog.events.ServerlogEmbedParser;
 
 public class GenericModerationEmbedParser implements ServerlogEmbedParser<GenericModerationEvent> {

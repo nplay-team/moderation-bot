@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.events;
+package de.nplay.moderationbot.moderation.modlog;
 
 import de.nplay.moderationbot.BotEvent;
 import de.nplay.moderationbot.moderation.ModerationService;
