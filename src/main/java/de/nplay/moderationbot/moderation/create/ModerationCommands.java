@@ -15,10 +15,9 @@ import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
-import de.nplay.moderationbot.moderation.modlog.GenericModerationEvent;
+import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.serverlog.Serverlog;
-import de.nplay.moderationbot.serverlog.events.ServerlogEvents;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -220,7 +219,7 @@ public class ModerationCommands {
         // Executes the action (e.g. kicks the user)
         action.executor().accept(action);
 
-        serverlog.trigger(ServerlogEvents.MODERATION_CREATED, new GenericModerationEvent(event.getJDA(), event.getGuild(), moderationAct));
+        serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct));
 
         sendMessageToUser(moderationAct, event);
         event.with().ephemeral(replyEphemeral).reply(embed);
