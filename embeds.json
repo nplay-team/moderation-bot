@@ -460,29 +460,13 @@
     "description": "Die Notiz mit der ID **${id}** existiert nicht!",
     "color": "{color}"
   },
-  "serverlogChannelAdd": {
-    "title": "Serverlog-Kanal hinzugefügt",
-    "description": "Der Serverlog-Kanal wurde erfolgreich registriert!",
+  "serverlogManage": {
+    "title": "Serverlog-Kanäle bearbeiten",
     "color": "{color}"
   },
-  "serverlogChannelRemove": {
-    "title": "Serverlog-Kanal entfernt",
-    "description": "Der Serverlog-Kanal wurde erfolgreich entfernt!",
-    "color": "{color}"
-  },
-  "serverlogChannelNotFound": {
-    "title": "Fehler",
-    "description": "Der Kanal ist kein Serverlog-Kanal!",
-    "color": "{color}"
-  },
-  "channelIsServerlog": {
-    "title": "Serverlog-Kanal",
-    "description": "Der Kanal ist als Serverlog-Kanal registriert!",
-    "color": "{color}"
-  },
-  "channelIsNotServerlog": {
-    "title": "Kein Serverlog-Kanal",
-    "description": "Der Kanal ist nicht als Serverlog-Kanal registriert!",
+  "serverlogShow": {
+    "title": "Serverlog-Kanäle",
+    "description": "{list}",
     "color": "{color}"
   },
   "moderationCreateEvent": {

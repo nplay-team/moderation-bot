@@ -4,8 +4,10 @@ import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,10 +33,14 @@ public class ServerlogChannelService {
                 .first();
     }
 
-    public static void removeServerlogChannel(long channelId) {
-        Query.query("DELETE FROM serverlog_channels WHERE channel_id = ?")
-                .single(Call.of().bind(channelId))
-                .delete();
+    public static Collection<ServerlogChannel> updateServerlogChannels(Collection<GuildChannel> channels) {
+        Query.query("TRUNCATE serverlog_channels").single().delete();
+
+        Query.query("INSERT INTO serverlog_channels (channel_id) VALUES (?)")
+                .batch(channels.stream().map(it -> Call.of().bind(it.getIdLong())))
+                .insert();
+
+        return getServerlogChannels();
     }
 
     public record ServerlogChannel(
