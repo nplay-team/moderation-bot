@@ -6,7 +6,7 @@ import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.events.GenericModerationEvent;
 import de.nplay.moderationbot.serverlog.events.ServerlogEmbedParser;
 
-public class GenericModerationEmbedParser extends ServerlogEmbedParser<GenericModerationEvent> {
+public class GenericModerationEmbedParser implements ServerlogEmbedParser<GenericModerationEvent> {
 
     private String embedName;
 
