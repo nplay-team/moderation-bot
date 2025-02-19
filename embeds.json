@@ -459,5 +459,87 @@
     "title": "Fehler",
     "description": "Die Notiz mit der ID **${id}** existiert nicht!",
     "color": "{color}"
+  },
+  "moderationCreateEvent": {
+    "title": "{type} | #{id}",
+    "fields": [
+      {
+        "name": "Typ",
+        "value": "{type}"
+      },
+      {
+        "name": "Betroffener",
+        "value": "<@{targetId}> ({targetUsername})"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Begründung",
+        "value": "{reason}"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{color}"
+  },
+  "moderationRevertEvent": {
+    "title": "REVIDIERUNG | {type} | #{id}",
+    "fields": [
+      {
+        "name": "Typ",
+        "value": "{type}"
+      },
+      {
+        "name": "Betroffener",
+        "value": "<@{targetId}> ({targetUsername})"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Revidierender Moderator",
+        "value": "<@{revertedById}> ({revertedByUsername})"
+      },
+      {
+        "name": "Revidierungsgrund",
+        "value": "{revertingReason}"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{revertedAt}:F>"
+      }
+    ],
+    "color": "{warningColor}"
+  },
+  "moderationDeleteEvent": {
+    "title": "LÖSCHUNG | {type} | #{id}",
+    "fields": [
+      {
+        "name": "Typ",
+        "value": "{type}"
+      },
+      {
+        "name": "Betroffener",
+        "value": "<@{targetId}> ({targetUsername})"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Löschender Moderator",
+        "value": "<@{deletedById}> ({deletedByUsername})"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{deleteColor}"
   }
 }

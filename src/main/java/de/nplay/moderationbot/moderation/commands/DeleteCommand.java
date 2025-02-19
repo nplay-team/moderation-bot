@@ -9,7 +9,10 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.events.ModerationDeleteEvent;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.serverlog.Serverlog;
+import de.nplay.moderationbot.serverlog.events.ServerlogEvents;
 import net.dv8tion.jda.api.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,9 @@ public class DeleteCommand {
 
     @Inject
     private EmbedCache embedCache;
+
+    @Inject
+    private Serverlog serverlog;
 
     @SlashCommand(value = "moderation delete", desc = "Löscht eine Moderationshandlung", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissions.MODERATION_DELETE)
@@ -38,6 +44,7 @@ public class DeleteCommand {
 
         log.info("Moderation act {} has been deleted by {}", moderationId, event.getUser().getName());
         ModerationService.deleteModerationAct(moderationId);
+        serverlog.trigger(ServerlogEvents.MODERATION_DELETED, new ModerationDeleteEvent(event.getJDA(), event.getGuild(), moderation.get(), event.getUser()));
         event.reply(embedCache.getEmbed("deletionSuccessful").injectValue("id", moderationId).injectValue("color", EmbedColors.SUCCESS));
     }
 
