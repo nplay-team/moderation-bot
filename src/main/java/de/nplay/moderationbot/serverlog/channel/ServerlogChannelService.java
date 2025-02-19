@@ -7,6 +7,7 @@ import de.chojo.sadu.queries.api.query.Query;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 public class ServerlogChannelService {
 
@@ -21,6 +22,19 @@ public class ServerlogChannelService {
         Query.query("INSERT INTO serverlog_channels (channel_id, created_at) VALUES (?, ?)")
                 .single(Call.of().bind(channelId).bind(new Timestamp(System.currentTimeMillis())))
                 .insert();
+    }
+
+    public static Optional<ServerlogChannel> getServerlogChannel(long channelId) {
+        return Query.query("SELECT * FROM serverlog_channels WHERE channel_id = ?")
+                .single(Call.of().bind(channelId))
+                .mapAs(ServerlogChannel.class)
+                .first();
+    }
+
+    public static void removeServerlogChannel(long channelId) {
+        Query.query("DELETE FROM serverlog_channels WHERE channel_id = ?")
+                .single(Call.of().bind(channelId))
+                .delete();
     }
 
     public record ServerlogChannel(
