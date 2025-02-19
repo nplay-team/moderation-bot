@@ -46,13 +46,13 @@ public class ServerlogChannelCommands {
             return;
         }
 
-        var menu = (net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu) event.getSelectMenu("onMenu");
-        menu.createCopy().setDefaultValues(channels.stream()
+        var menu = ((net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu) event.getSelectMenu("onMenu")).createCopy();
+        menu.setDefaultValues(channels.stream()
                 .map(ServerlogChannel::channelId)
                 .map(DefaultValue::channel)
                 .toList()
-        );
-        event.with().builder(builder -> builder.addActionRow(menu.asEnabled()))
+        ).setRequiredRange(1, 25);
+        event.with().builder(builder -> builder.addActionRow(menu.build()))
                 .reply(embedCache.getEmbed("serverlogManage").injectValue("color", EmbedColors.DEFAULT));
     }
 
