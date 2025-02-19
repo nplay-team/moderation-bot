@@ -1,12 +1,12 @@
 package de.nplay.moderationbot.serverlog;
 
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import de.nplay.moderationbot.BotEvent;
 import de.nplay.moderationbot.serverlog.channel.ServerlogChannelService;
-import de.nplay.moderationbot.serverlog.events.ServerlogEvent;
+import de.nplay.moderationbot.serverlog.events.ServerlogEmbedParser;
 import de.nplay.moderationbot.serverlog.events.ServerlogEvents;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.events.Event;
 import org.slf4j.LoggerFactory;
 
 public class Serverlog {
@@ -20,10 +20,10 @@ public class Serverlog {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Event> void trigger(ServerlogEvents event, T jdaEvent) {
+    public <T extends BotEvent> void trigger(ServerlogEvents event, T jdaEvent) {
         LoggerFactory.getLogger(this.getClass()).info("Triggered event: {}", jdaEvent.getClass().getSimpleName());
 
-        var embed = ((ServerlogEvent<T>) event.getServerlogEvent()).getEmbed(embedCache, jdaEvent);
+        var embed = ((ServerlogEmbedParser<T>) event.getServerlogEvent()).getEmbed(embedCache, jdaEvent);
         var channels = ServerlogChannelService.getServerlogChannels();
 
         for (var channel : channels) {

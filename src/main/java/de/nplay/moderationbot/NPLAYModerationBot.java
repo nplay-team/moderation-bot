@@ -16,7 +16,6 @@ import de.nplay.moderationbot.backend.DurationMax;
 import de.nplay.moderationbot.backend.DurationMaxValidator;
 import de.nplay.moderationbot.permissions.BotPermissionsProvider;
 import de.nplay.moderationbot.serverlog.Serverlog;
-import de.nplay.moderationbot.serverlog.events.ServerlogJDAEvents;
 import de.nplay.moderationbot.tasks.AutomaticRevertTask;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -78,8 +77,6 @@ public class NPLAYModerationBot {
         embedCache = new EmbedCache("embeds.json");
 
         serverlog = new Serverlog(guild, embedCache);
-
-        jda.addEventListener(new ServerlogJDAEvents(serverlog));
 
         var dependencyInjector = new DefaultDependencyInjector();
         dependencyInjector.registerProvider(this);

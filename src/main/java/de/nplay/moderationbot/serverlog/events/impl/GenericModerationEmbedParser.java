@@ -4,13 +4,13 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.events.GenericModerationEvent;
-import de.nplay.moderationbot.serverlog.events.ServerlogEvent;
+import de.nplay.moderationbot.serverlog.events.ServerlogEmbedParser;
 
-public class GenericModeration extends ServerlogEvent<GenericModerationEvent> {
+public class GenericModerationEmbedParser extends ServerlogEmbedParser<GenericModerationEvent> {
 
     private String embedName;
 
-    public GenericModeration(String embedName) {
+    public GenericModerationEmbedParser(String embedName) {
         this.embedName = embedName;
     }
 
