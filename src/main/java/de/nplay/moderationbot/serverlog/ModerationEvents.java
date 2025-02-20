@@ -12,13 +12,13 @@ public class ModerationEvents {
 
     public static BotEvent Created(@NotNull JDA jda, @NotNull Guild guild, @NotNull ModerationService.ModerationAct moderationAct) {
         return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationCreateEvent",jda, moderationAct, null)
+                EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationCreateEvent", jda, moderationAct, null)
         );
     }
 
     public static BotEvent Reverted(@NotNull JDA jda, @NotNull Guild guild, @NotNull ModerationService.ModerationAct moderationAct) {
         return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationRevertEvent",jda, moderationAct, null)
+                EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationRevertEvent", jda, moderationAct, null)
         );
     }
 
@@ -27,4 +27,11 @@ public class ModerationEvents {
                 EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationDeleteEvent", jda, moderationAct, user)
         );
     }
+
+    public static BotEvent BulkMessageDeletion(@NotNull JDA jda, @NotNull Guild guild, @NotNull Integer amount, @NotNull User user) {
+        return new BotEvent(jda, guild, (embedCache) ->
+                EmbedHelpers.getBulkMessageDeletionEmbed(embedCache, jda, amount, user)
+        );
+    }
+
 }

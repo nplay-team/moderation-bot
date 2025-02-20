@@ -460,6 +460,11 @@
     "description": "Die Notiz mit der ID **${id}** existiert nicht!",
     "color": "{color}"
   },
+  "bulkDeleteSuccessful": {
+    "title": "Erfolgreich",
+    "description": "Die letzten **{amount}** Nachrichten wurden erfolgreich gelöscht!",
+    "color": "{color}"
+  },
   "serverlogManage": {
     "title": "Serverlog-Kanäle bearbeiten",
     "color": "{color}"
@@ -550,5 +555,23 @@
       }
     ],
     "color": "{deleteColor}"
+  },
+  "bulkMessageDeleteEvent": {
+    "title": "Massenlöschung von Nachrichten",
+    "fields": [
+      {
+        "name": "Menge",
+        "value": "{amount} Nachrichten"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{color}"
   }
 }
