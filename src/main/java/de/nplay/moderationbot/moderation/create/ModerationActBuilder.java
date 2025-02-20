@@ -1,5 +1,7 @@
-package de.nplay.moderationbot.moderation;
+package de.nplay.moderationbot.moderation.create;
 
+import de.nplay.moderationbot.moderation.ModerationActType;
+import de.nplay.moderationbot.moderation.ModerationService;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;

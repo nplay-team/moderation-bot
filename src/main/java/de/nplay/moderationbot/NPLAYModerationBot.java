@@ -11,11 +11,12 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
-import de.nplay.moderationbot.backend.DurationAdapter;
-import de.nplay.moderationbot.backend.DurationMax;
-import de.nplay.moderationbot.backend.DurationMaxValidator;
+import de.nplay.moderationbot.duration.DurationAdapter;
+import de.nplay.moderationbot.duration.DurationMax;
+import de.nplay.moderationbot.duration.DurationMaxValidator;
 import de.nplay.moderationbot.permissions.BotPermissionsProvider;
-import de.nplay.moderationbot.tasks.AutomaticRevertTask;
+import de.nplay.moderationbot.serverlog.Serverlog;
+import de.nplay.moderationbot.moderation.revert.AutomaticRevertTask;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -47,6 +48,7 @@ public class NPLAYModerationBot {
     private final JDACommands jdaCommands;
     private final Guild guild;
     private final EmbedCache embedCache;
+    private final Serverlog serverlog;
 
     /**
      * Constructor of the bot, creates a JDA instance and initiates all relevant services.
@@ -73,6 +75,8 @@ public class NPLAYModerationBot {
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
 
         embedCache = new EmbedCache("embeds.json");
+
+        serverlog = new Serverlog(guild, embedCache);
 
         var dependencyInjector = new DefaultDependencyInjector();
         dependencyInjector.registerProvider(this);
@@ -149,5 +153,10 @@ public class NPLAYModerationBot {
     @Produces(skipIndexing = true)
     public EmbedCache getEmbedCache() {
         return embedCache;
+    }
+
+    @Produces(skipIndexing = true)
+    public Serverlog getServerlog() {
+        return serverlog;
     }
 }

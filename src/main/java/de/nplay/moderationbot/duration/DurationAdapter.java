@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.backend;
+package de.nplay.moderationbot.duration;
 
 import com.github.kaktushose.jda.commands.dispatching.adapter.TypeAdapter;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;

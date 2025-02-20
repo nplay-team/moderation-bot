@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.tasks;
+package de.nplay.moderationbot.moderation.revert;
 
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.moderation.ModerationService;

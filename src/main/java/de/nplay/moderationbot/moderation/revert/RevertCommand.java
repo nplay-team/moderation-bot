@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.commands;
+package de.nplay.moderationbot.moderation.revert;
 
 import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
@@ -6,7 +6,9 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
 
 @Interaction
@@ -14,6 +16,9 @@ public class RevertCommand {
     
     @Inject
     private EmbedCache embedCache;
+
+    @Inject
+    private Serverlog serverlog;
 
     @SlashCommand(value = "moderation revert", desc = "Hebt eine Moderationshandlung auf", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
     @Permissions(BotPermissions.MODERATION_REVERT)
@@ -27,6 +32,8 @@ public class RevertCommand {
         }
 
         moderation.get().revert(event.getGuild(), embedCache, event.getUser(), reason);
+        var revertedModeration = ModerationService.getModerationAct(moderationId);
+        revertedModeration.ifPresent(it -> serverlog.onEvent(ModerationEvents.Reverted(event.getJDA(), event.getGuild(), it)));
         event.reply(embedCache.getEmbed("reversionSuccessful").injectValue("id", moderationId).injectValue("color", EmbedColors.SUCCESS));
     }
 
