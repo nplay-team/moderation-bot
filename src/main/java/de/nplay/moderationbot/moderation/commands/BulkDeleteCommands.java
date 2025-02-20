@@ -44,10 +44,12 @@ public class BulkDeleteCommands {
     }
 
     private int purgeMessages(CommandEvent event, MessageChannel channel, String pivotMessageId, @Nullable Integer amount) {
-        List<String> messageIds;
+        List<String> messageIds = new ArrayList<>();
+
+        messageIds.add(pivotMessageId);
 
         if (amount == null) {
-            messageIds = new ArrayList<>(MessageHistory.getHistoryAfter(channel, pivotMessageId)
+            messageIds.addAll(MessageHistory.getHistoryAfter(channel, pivotMessageId)
                     .complete()
                     .getRetrievedHistory()
                     .stream()
@@ -55,7 +57,7 @@ public class BulkDeleteCommands {
                     .toList()
             );
         } else {
-            messageIds = new ArrayList<>(MessageHistory.getHistoryBefore(channel, pivotMessageId)
+            messageIds.addAll(MessageHistory.getHistoryBefore(channel, pivotMessageId)
                     .limit(amount - 1)
                     .complete()
                     .getRetrievedHistory()
@@ -63,8 +65,6 @@ public class BulkDeleteCommands {
                     .map(Message::getId)
                     .toList()
             );
-
-            messageIds.add(pivotMessageId);
         }
 
         channel.purgeMessagesById(messageIds);
