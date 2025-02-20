@@ -111,7 +111,7 @@ public class ModerationService {
      *
      * @param act The {@link ModerationAct} to update.
      */
-    public static void updateModerationAct(ModerationAct act) {
+    public static ModerationAct updateModerationAct(ModerationAct act) {
         Query.query("""
                 UPDATE moderations SET user_id = ?, type = ?::reporttype, reverted = ?, issuer_id = ?, reason = ?,
                 paragraph_id = ?, reference_message = ?, revoke_at = ?, duration = ?
@@ -128,6 +128,8 @@ public class ModerationService {
                 .bind(act.duration)
                 .bind(act.id)
         ).update();
+
+        return getModerationAct(act.id).orElseThrow();
     }
 
     /**
