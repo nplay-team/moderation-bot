@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.time.temporal.ChronoField;
@@ -60,6 +61,12 @@ public class EmbedHelpers {
         return embed;
     }
 
+    public static EmbedDTO getBulkMessageDeletionSuccessfulEmbed(EmbedCache embedCache, int amount) {
+        return embedCache.getEmbed("bulkDeleteSuccessful")
+                .injectValue("amount", amount)
+                .injectValue("color", EmbedColors.SUCCESS);
+    }
+
     // EVENT EMBEDS //
 
     public static EmbedDTO getGenericModerationEventEmbed(EmbedCache embedCache, String name, JDA jda, ModerationService.ModerationAct moderationAct, @Nullable User deleter) {
@@ -86,4 +93,12 @@ public class EmbedHelpers {
                 .injectValue("deleteColor", EmbedColors.ERROR);
     }
 
+    public static EmbedDTO getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull JDA jda, @NotNull Integer amount, @NotNull User user) {
+        return embedCache.getEmbed("bulkMessageDeleteEvent")
+                .injectValue("amount", amount)
+                .injectValue("issuerId", user.getId())
+                .injectValue("issuerUsername", user.getName())
+                .injectValue("createdAt", System.currentTimeMillis() / 1000)
+                .injectValue("color", EmbedColors.DEFAULT);
+    }
 }
