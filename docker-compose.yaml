@@ -1,8 +1,8 @@
-version: "3"
+version: '3'
 
 services:
   postgres:
-    image: postgres
+    image: postgres:16.4
     container_name: nplay-moderation-database
     restart: always
     environment:
@@ -12,16 +12,24 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   bot:
+    container_name: nplay-moderation-bot
+    image: nplay-moderation
     build:
       context: .
       dockerfile: Dockerfile
-    image: nplay-moderation
-    container_name: nplay-moderation-bot
-    restart: on-failure
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - BOT_GUILD=${BOT_GUILD}
-      - DATABASE_URL=${DATABASE_URL}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    depends_on:
+      - postgres
