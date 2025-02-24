@@ -18,8 +18,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: nplay-bot
-    container_name: nplay-bot
+    image: nplay-moderation
+    container_name: nplay-moderation-bot
     restart: on-failure
     environment:
       - BOT_TOKEN=${BOT_TOKEN}

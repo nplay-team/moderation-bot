@@ -6,4 +6,5 @@ RUN gradle shadowJar --no-daemon
 FROM ibm-semeru-runtimes:open-21-jre-jammy
 RUN mkdir /app
 COPY --from=build /home/gradle/src/build/libs/moderationbot.jar /app/moderationbot.jar
+COPY --from=build /home/gradle/src/embeds.json /app/embeds.json
 ENTRYPOINT ["java","-jar","/app/moderationbot.jar"]
