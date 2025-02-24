@@ -29,7 +29,10 @@ import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Objects;
@@ -75,6 +78,7 @@ public class NPLAYModerationBot {
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
 
         embedCache = new EmbedCache("embeds.json");
+        System.out.println(new File("").getAbsolutePath());
 
         serverlog = new Serverlog(guild, embedCache);
 
