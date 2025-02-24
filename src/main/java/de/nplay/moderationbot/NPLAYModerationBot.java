@@ -74,7 +74,7 @@ public class NPLAYModerationBot {
 
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
 
-        embedCache = new EmbedCache("./embeds.json");
+        embedCache = new EmbedCache("embeds.json");
 
         serverlog = new Serverlog(guild, embedCache);
 
