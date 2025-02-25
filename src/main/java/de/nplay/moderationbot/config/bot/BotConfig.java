@@ -9,20 +9,17 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BotConfig<T> {
+public class BotConfig {
 
     private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
     private final String key;
     private final BotConfigType type;
-    private final Function<String, Boolean> validator;
 
-    BotConfig(String key, BotConfigType type, Function<String, Boolean> converter) {
+    BotConfig(String key, BotConfigType type) {
         this.key = key;
         this.type = type;
-        this.validator = converter;
     }
 
     public String key() {
@@ -33,20 +30,24 @@ public class BotConfig<T> {
         return ConfigService.get(key);
     }
 
+    public Optional<String> formattedValue() {
+        return value().map(type.formatter());
+    }
+
     public BotConfigType type() {
         return type;
     }
 
     public Boolean validate(String value) {
-        return validator.apply(value);
+        return type.validator().apply(value);
     }
 
-    public static Collection<BotConfig<?>> getConfigs(JDA jda) {
+    public static Collection<BotConfig> getConfigs(JDA jda) {
         return Arrays.stream(BotConfigs.class.getMethods())
                 .filter(method -> method.getReturnType().equals(BotConfig.class))
                 .map(method -> {
                     try {
-                        return (BotConfig<?>) method.invoke(null, jda);
+                        return (BotConfig) method.invoke(null, jda);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -54,7 +55,7 @@ public class BotConfig<T> {
                 .collect(Collectors.toList());
     }
 
-    public static Optional<BotConfig<?>> getConfig(String name, JDA jda) {
+    public static Optional<BotConfig> getConfig(String name, JDA jda) {
         return getConfigs(jda).stream()
                 .filter(config -> config.key().equalsIgnoreCase(name))
                 .findAny();

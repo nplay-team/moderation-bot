@@ -38,14 +38,14 @@ public class ConfigCommands {
             return;
         }
 
-        var value = botConfig.get().value();
+        var value = botConfig.get().formattedValue();
 
         if (value.isEmpty()) {
             event.reply("Konfigurations-Variable nicht gesetzt");
             return;
         }
 
-        event.reply(botConfig.get().type().formatter().apply(value.get()));
+        event.reply(value.get());
     }
 
     @SlashCommand(value = "config list", desc = "Listet alle Konfigurations-Variablen auf", isGuildOnly = true, enabledFor = Permission.ADMINISTRATOR)
@@ -58,7 +58,7 @@ public class ConfigCommands {
         }
 
         var response = configs.stream()
-                .map(config -> config.key() + " (" + config.type().displayName() + ") " + ": " + (config.value().isPresent() ? config.type().formatter().apply(config.value().get()) : "Nicht gesetzt"))
+                .map(config -> config.key() + " (" + config.type().displayName() + ") " + ": " + config.formattedValue().orElse("Nicht gesetzt"))
                 .collect(Collectors.joining("\n"));
 
         event.reply(response);
