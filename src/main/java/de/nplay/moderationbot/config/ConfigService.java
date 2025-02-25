@@ -5,8 +5,6 @@ import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class ConfigService {
@@ -16,16 +14,6 @@ public class ConfigService {
                 .single(Call.of().bind(name))
                 .mapAs(java.lang.String.class)
                 .first();
-    }
-
-    public static Map<String, String> getAll() {
-        Map<String, String> map = new HashMap<>();
-        Query.query("SELECT name, value FROM configs")
-                .single()
-                .mapAs(Config.class)
-                .all()
-                .forEach(config -> map.put(config.name(), config.value()));
-        return map;
     }
 
     public static void set(String name, String value) {
