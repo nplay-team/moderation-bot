@@ -19,7 +19,7 @@ public class BotConfig<T> {
     private final BotConfigType type;
     private final Function<String, Boolean> validator;
 
-    BotConfig(java.lang.String key, BotConfigType type, Function<String, Boolean> converter) {
+    BotConfig(String key, BotConfigType type, Function<String, Boolean> converter) {
         this.key = key;
         this.type = type;
         this.validator = converter;

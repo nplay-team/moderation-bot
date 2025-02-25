@@ -28,7 +28,7 @@ public class ConfigService {
         return map;
     }
 
-    public static void set(String name, java.lang.String value) {
+    public static void set(String name, String value) {
         Query.query("INSERT INTO configs (name, value) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value")
                 .single(Call.of()
                         .bind(name)
@@ -37,7 +37,7 @@ public class ConfigService {
                 .insert();
     }
 
-    public record Config(java.lang.String name, java.lang.String value) {
+    public record Config(String name, String value) {
 
         @MappingProvider("")
         public static RowMapping<Config> map() {
