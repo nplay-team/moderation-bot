@@ -465,13 +465,28 @@
     "description": "Die letzten **{amount}** Nachrichten wurden erfolgreich gelöscht!",
     "color": "{color}"
   },
-  "serverlogManage": {
-    "title": "Serverlog-Kanäle bearbeiten",
+  "configSet": {
+    "title": "Einstellung {key} gesetzt",
+    "description": "{value}**",
     "color": "{color}"
   },
-  "serverlogShow": {
-    "title": "Serverlog-Kanäle",
-    "description": "{list}",
+  "configGet": {
+    "title": "Einstellung {key}",
+    "description": "{value}",
+    "color": "{color}"
+  },
+  "configNotFound": {
+    "title": "Fehler",
+    "description": "Die Einstellung **{key}** existiert nicht!",
+    "color": "{color}"
+  },
+  "configInvalidSnowflake": {
+    "title": "Fehler beim Setzten von {key}",
+    "description": "Die Eingabe **{value}** ist keine gültige Discord-ID!",
+    "color": "{color}"
+  },
+  "configList": {
+    "title": "Einstellungen",
     "color": "{color}"
   },
   "moderationCreateEvent": {

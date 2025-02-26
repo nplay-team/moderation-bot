@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 public class BotConfigs {
 
     public static BotConfig SpielersucheAusschlussRolle(@NotNull JDA jda) {
-        return new BotConfig("spielersucheAusschlussRolle", BotConfigTypes.ROLE(jda));
+        return new BotConfig("spielersucheAusschlussRolle", "Spielersuche-Ausschluss Rolle", BotConfigTypes.ROLE(jda));
     }
 
     public static BotConfig ServerlogKanal(@NotNull JDA jda) {
-        return new BotConfig("serverlogKanal", BotConfigTypes.TEXT_CHANNEL(jda));
+        return new BotConfig("serverlogKanal", "Serverlog-Kanal", BotConfigTypes.TEXT_CHANNEL(jda));
     }
 
 }

@@ -15,15 +15,21 @@ public class BotConfig {
 
     private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
     private final String key;
+    private final String displayName;
     private final BotConfigType type;
 
-    BotConfig(String key, BotConfigType type) {
+    BotConfig(String key, String displayName, BotConfigType type) {
         this.key = key;
+        this.displayName = displayName;
         this.type = type;
     }
 
     public String key() {
         return key;
+    }
+
+    public String displayName() {
+        return displayName;
     }
 
     public Optional<String> value() {
