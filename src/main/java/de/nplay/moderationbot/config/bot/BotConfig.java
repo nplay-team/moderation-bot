@@ -3,8 +3,6 @@ package de.nplay.moderationbot.config.bot;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.bot.type.BotConfigType;
 import net.dv8tion.jda.api.JDA;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,7 +11,6 @@ import java.util.stream.Collectors;
 
 public class BotConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(BotConfig.class);
     private final String key;
     private final String displayName;
     private final BotConfigType type;
