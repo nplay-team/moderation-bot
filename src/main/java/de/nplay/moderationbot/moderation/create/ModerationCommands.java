@@ -15,8 +15,9 @@ import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
+import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -36,6 +37,7 @@ import java.util.Objects;
 import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
 
 @Interaction
+@Permissions(BotPermissions.MODERATION_CREATE)
 public class ModerationCommands {
 
     @Inject
