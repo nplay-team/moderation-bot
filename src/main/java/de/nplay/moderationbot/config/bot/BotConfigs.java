@@ -10,4 +10,8 @@ public class BotConfigs {
         return new BotConfig("spielersucheAusschlussRolle", BotConfigTypes.ROLE(jda));
     }
 
+    public static BotConfig ServerlogKanal(@NotNull JDA jda) {
+        return new BotConfig("serverlogKanal", BotConfigTypes.TEXT_CHANNEL(jda));
+    }
+
 }
