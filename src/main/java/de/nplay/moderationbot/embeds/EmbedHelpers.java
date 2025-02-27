@@ -2,11 +2,12 @@ package de.nplay.moderationbot.embeds;
 
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
+import de.nplay.moderationbot.config.bot.BotConfigs;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jetbrains.annotations.NotNull;
@@ -25,15 +26,27 @@ public class EmbedHelpers {
                 .injectValue("color", color);
     }
 
-    public static EmbedDTO getModlogEmbedHeader(EmbedCache embedCache, Member member) {
-        return embedCache.getEmbed("modlogHeader")
+    public static MessageEmbed getModlogEmbedHeader(EmbedCache embedCache, Member member) {
+        var spielersucheAusschlussRolle = BotConfigs.SpielersucheAusschlussRolle(member.getJDA()).value();
+
+        var roles = member.getRoles().stream()
+                .filter(it -> it.getId().equals(spielersucheAusschlussRolle.orElse("-1")))
+                .map(it -> "<@&%s>".formatted(it.getId()))
+                .reduce((a, b) -> a + " " + b)
+                .orElse("?DEL?");
+
+        var embed = embedCache.getEmbed("modlogHeader")
                 .injectValue("username", member.getUser().getEffectiveName())
                 .injectValue("userId", member.getIdLong())
                 .injectValue("avatarUrl", member.getUser().getEffectiveAvatarUrl())
-                .injectValue("roles", member.getRoles().stream().map(Role::getName).reduce((a, b) -> a + ", " + b).orElse("Keine Rollen"))
+                .injectValue("roles", roles)
                 .injectValue("createdAt", member.getTimeCreated().getLong(ChronoField.INSTANT_SECONDS))
                 .injectValue("joinedAt", member.getTimeJoined().getLong(ChronoField.INSTANT_SECONDS))
-                .injectValue("color", EmbedColors.DEFAULT);
+                .injectValue("color", EmbedColors.DEFAULT)
+                .toEmbedBuilder();
+
+        embed.getFields().removeIf(it -> Objects.requireNonNullElse(it.getValue(), "").contains("?DEL?"));
+        return embed.build();
     }
 
     public static EmbedDTO getModlogEmbed(EmbedCache embedCache, JDA jda, List<ModerationService.ModerationAct> moderationActs, Integer page, Integer maxPage) {

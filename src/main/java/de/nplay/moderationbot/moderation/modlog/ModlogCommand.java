@@ -100,7 +100,7 @@ public class ModlogCommand {
 
     public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
         return List.of(
-                EmbedHelpers.getModlogEmbedHeader(embedCache, member).toMessageEmbed(),
+                EmbedHelpers.getModlogEmbedHeader(embedCache, member),
                 EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
         );
     }
