@@ -121,11 +121,21 @@ public class EmbedHelpers {
                 .injectValue("deleteColor", EmbedColors.ERROR);
     }
 
-    public static EmbedDTO getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull JDA jda, @NotNull Integer amount, @NotNull User user) {
+    public static EmbedDTO getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull Integer amount, @NotNull User user) {
         return embedCache.getEmbed("bulkMessageDeleteEvent")
                 .injectValue("amount", amount)
                 .injectValue("issuerId", user.getId())
                 .injectValue("issuerUsername", user.getName())
+                .injectValue("createdAt", System.currentTimeMillis() / 1000)
+                .injectValue("color", EmbedColors.DEFAULT);
+    }
+
+    public static EmbedDTO getSpielersucheAusschlussEmbed(EmbedCache embedCache, @NotNull User target, @NotNull User issuer, Boolean reverted) {
+        return embedCache.getEmbed("spielersucheAusschluss" + (reverted ? "Revert" : "") + "Event")
+                .injectValue("targetId", target.getId())
+                .injectValue("targetUsername", target.getName())
+                .injectValue("issuerId", issuer.getId())
+                .injectValue("issuerUsername", issuer.getName())
                 .injectValue("createdAt", System.currentTimeMillis() / 1000)
                 .injectValue("color", EmbedColors.DEFAULT);
     }

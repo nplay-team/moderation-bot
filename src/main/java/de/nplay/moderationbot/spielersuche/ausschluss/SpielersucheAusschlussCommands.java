@@ -13,6 +13,8 @@ import de.nplay.moderationbot.moderation.ModerationUtils;
 import de.nplay.moderationbot.moderation.create.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.create.ModerationCommands;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.serverlog.ModerationEvents;
+import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -21,10 +23,13 @@ import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
 
 
 @Interaction
-public class SpielersucheAusschlussCommand {
+public class SpielersucheAusschlussCommands {
 
     @Inject
     private EmbedCache embedCache;
+
+    @Inject
+    private Serverlog serverlog;
 
     @AutoComplete("spielersuche ausschluss")
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
@@ -55,6 +60,8 @@ public class SpielersucheAusschlussCommand {
         var moderationAct = ModerationService.createModerationAct(moderationActBuilder.build());
         ModerationUtils.sendMessageToTarget(moderationAct, event.getJDA(), target.getGuild(), embedCache);
 
+        serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()));
+
         event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheBlockSuccess", embedCache, target, EmbedColors.SUCCESS));
     }
 
@@ -79,6 +86,8 @@ public class SpielersucheAusschlussCommand {
                 .flatMap(it -> it.sendMessageEmbeds(EmbedHelpers.getSpielersucheUnblockForTargetEmbed(embedCache, event.getUser()).toMessageEmbed()))
                 .queue(_ -> {
                 }, UNKNOWN_USER_HANDLER);
+
+        serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()));
 
         event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheUnblockSuccess", embedCache, target, EmbedColors.SUCCESS));
     }

@@ -628,5 +628,41 @@
       }
     ],
     "color": "{color}"
+  },
+  "spielersucheAusschlussEvent": {
+    "title": "Spielersuche-Ausschluss",
+    "fields": [
+      {
+        "name": "Betroffener",
+        "value": "<@{targetId}> ({targetUsername})"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{color}"
+  },
+  "spielersucheAusschlussRevertEvent": {
+    "title": "Spielersuche-Ausschluss-Aufhebung",
+    "fields": [
+      {
+        "name": "Betroffener",
+        "value": "<@{targetId}> ({targetUsername})"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{color}"
   }
 }
