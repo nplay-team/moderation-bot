@@ -3,7 +3,6 @@ package de.nplay.moderationbot.moderation.create;
 import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
@@ -14,11 +13,10 @@ import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
+import de.nplay.moderationbot.moderation.ModerationUtils;
 import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -30,10 +28,7 @@ import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-
-import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
 
 @Interaction
 public class ModerationCommands {
@@ -221,7 +216,7 @@ public class ModerationCommands {
 
         serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct));
 
-        sendMessageToUser(moderationAct, event);
+        ModerationUtils.sendMessageToTarget(moderationAct, event.getJDA(), event.getGuild(), embedCache);
         event.with().ephemeral(replyEphemeral).reply(embed);
     }
 
@@ -256,41 +251,4 @@ public class ModerationCommands {
         onModerate(event, reason);
     }
 
-    private void sendMessageToUser(ModerationAct moderationAct, ReplyableEvent<?> event) {
-        Map<String, Object> defaultInjectValues = Map.of(
-                "issuerId", moderationAct.issuerId(),
-                "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getName(),
-                "reason", Objects.requireNonNullElse(moderationAct.reason(), "?DEL?"),
-                "date", System.currentTimeMillis() / 1000,
-                "paragraph", moderationAct.paragraph() != null ? moderationAct.paragraph().fullDisplay() : "?DEL?",
-                "id", moderationAct.id()
-        );
-
-        EmbedDTO embedDTO = switch (moderationAct.type()) {
-            case WARN -> embedCache.getEmbed("warnEmbed").injectValue("color", EmbedColors.WARNING);
-            case TIMEOUT -> embedCache.getEmbed("timeoutEmbed").injectValue("color", EmbedColors.WARNING);
-            case KICK -> embedCache.getEmbed("kickEmbed").injectValue("color", EmbedColors.ERROR);
-            case TEMP_BAN -> embedCache.getEmbed("tempBanEmbed").injectValue("color", EmbedColors.ERROR);
-            case BAN -> embedCache.getEmbed("banEmbed").injectValue("color", EmbedColors.ERROR);
-        };
-
-        embedDTO.injectValues(defaultInjectValues);
-
-        if (moderationAct.revokeAt() != null) {
-            embedDTO.injectValue("until", moderationAct.revokeAt().getTime() / 1000);
-        }
-
-        if (moderationAct.referenceMessage() != null) {
-            embedDTO.injectValue("referenceMessage", "%s\n[Link](%s)".formatted(moderationAct.referenceMessage().content(), moderationAct.referenceMessage().jumpUrl(event.getGuild())));
-        } else {
-            embedDTO.injectValue("referenceMessage", "?DEL?");
-        }
-
-        EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
-        embedBuilder.getFields().removeIf(it -> Objects.requireNonNullElse(it.getValue(), "").contains("?DEL?"));
-        event.getJDA().retrieveUserById(moderationAct.userId())
-                .flatMap(User::openPrivateChannel)
-                .flatMap(channel -> channel.sendMessageEmbeds(embedBuilder.build()))
-                .queue(_ -> {}, UNKNOWN_USER_HANDLER);
-    }
 }

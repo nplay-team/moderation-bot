@@ -18,6 +18,13 @@ import java.util.Objects;
 
 public class EmbedHelpers {
 
+    public static EmbedDTO getEmbedWithTarget(String embedName, EmbedCache embedCache, Member target, EmbedColors color) {
+        return embedCache.getEmbed(embedName)
+                .injectValue("targetId", target.getId())
+                .injectValue("targetUsername", target.getUser().getName())
+                .injectValue("color", color);
+    }
+
     public static EmbedDTO getModlogEmbedHeader(EmbedCache embedCache, Member member) {
         return embedCache.getEmbed("modlogHeader")
                 .injectValue("username", member.getUser().getEffectiveName())
@@ -65,6 +72,14 @@ public class EmbedHelpers {
         return embedCache.getEmbed("bulkDeleteSuccessful")
                 .injectValue("amount", amount)
                 .injectValue("color", EmbedColors.SUCCESS);
+    }
+
+    public static EmbedDTO getSpielersucheUnblockForTargetEmbed(EmbedCache embedCache, User issuer) {
+        return embedCache.getEmbed("spielersucheUnblockForTarget")
+                .injectValue("issuerId", issuer.getId())
+                .injectValue("issuerUsername", issuer.getName())
+                .injectValue("createdAt", System.currentTimeMillis() / 1000)
+                .injectValue("color", EmbedColors.DEFAULT);
     }
 
     // EVENT EMBEDS //
