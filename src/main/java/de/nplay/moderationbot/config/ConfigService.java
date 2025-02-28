@@ -1,7 +1,5 @@
 package de.nplay.moderationbot.config;
 
-import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 
@@ -23,15 +21,6 @@ public class ConfigService {
                         .bind(value)
                 )
                 .insert();
-    }
-
-    public record Config(String name, String value) {
-
-        @MappingProvider("")
-        public static RowMapping<Config> map() {
-            return row -> new Config(row.getString("name"), row.getString("value"));
-        }
-
     }
 
 }
