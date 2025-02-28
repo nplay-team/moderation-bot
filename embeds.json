@@ -475,14 +475,9 @@
     "description": "{value}",
     "color": "{color}"
   },
-  "configNotFound": {
+  "configNotSet": {
     "title": "Fehler",
-    "description": "Die Einstellung **{key}** existiert nicht!",
-    "color": "{color}"
-  },
-  "configInvalidSnowflake": {
-    "title": "Fehler beim Setzten von {key}",
-    "description": "Die Eingabe **{value}** ist keine gültige Discord-ID!",
+    "description": "Die Einstellung **{key}** wurde noch nicht konfiguriert!",
     "color": "{color}"
   },
   "configList": {
