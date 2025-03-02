@@ -4,21 +4,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public enum BotConfig {
-    SPIELERSUCHE_AUSSCHLUSS_ROLLE("spielersucheAusschlussRolle"),
-    SERVERLOG_KANAL("serverlogKanal");
+    SPIELERSUCHE_AUSSCHLUSS_ROLLE(),
+    SERVERLOG_KANAL();
 
-    private final String key;
-
-    BotConfig(String key) {
-        this.key = key;
-    }
-
-    @Override
-    public String toString() {
-        return key;
-    }
-
-    public static Collection<String> getConfigs() {
-        return Arrays.stream(BotConfig.values()).map(BotConfig::toString).toList();
+    public static Collection<BotConfig> getConfigs() {
+        return Arrays.stream(BotConfig.values()).toList();
     }
 }
