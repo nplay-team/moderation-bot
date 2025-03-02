@@ -11,7 +11,7 @@ public class ConfigService {
     public static Optional<String> get(BotConfig config) {
         return Query.query("SELECT value FROM configs WHERE name = ?")
                 .single(Call.of().bind(config))
-                .mapAs(java.lang.String.class)
+                .mapAs(String.class)
                 .first();
     }
 
