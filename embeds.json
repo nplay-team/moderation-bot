@@ -465,13 +465,23 @@
     "description": "Die letzten **{amount}** Nachrichten wurden erfolgreich gelöscht!",
     "color": "{color}"
   },
-  "serverlogManage": {
-    "title": "Serverlog-Kanäle bearbeiten",
+  "configSet": {
+    "title": "Einstellung {key} gesetzt",
+    "description": "{value}**",
     "color": "{color}"
   },
-  "serverlogShow": {
-    "title": "Serverlog-Kanäle",
-    "description": "{list}",
+  "configGet": {
+    "title": "Einstellung {key}",
+    "description": "{value}",
+    "color": "{color}"
+  },
+  "configNotSet": {
+    "title": "Fehler",
+    "description": "Die Einstellung **{key}** wurde noch nicht konfiguriert!",
+    "color": "{color}"
+  },
+  "configList": {
+    "title": "Einstellungen",
     "color": "{color}"
   },
   "moderationCreateEvent": {
