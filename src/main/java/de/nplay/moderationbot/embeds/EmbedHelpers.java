@@ -2,7 +2,8 @@ package de.nplay.moderationbot.embeds;
 
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
-import de.nplay.moderationbot.config.bot.BotConfigs;
+import de.nplay.moderationbot.config.ConfigService;
+import de.nplay.moderationbot.config.bot.BotConfig;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
@@ -27,7 +28,7 @@ public class EmbedHelpers {
     }
 
     public static MessageEmbed getModlogEmbedHeader(EmbedCache embedCache, Member member) {
-        var spielersucheAusschlussRolle = BotConfigs.SpielersucheAusschlussRolle(member.getJDA()).value();
+        var spielersucheAusschlussRolle = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
 
         var roles = member.getRoles().stream()
                 .filter(it -> it.getId().equals(spielersucheAusschlussRolle.orElse("-1")))

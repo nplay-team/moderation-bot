@@ -5,7 +5,8 @@ import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
-import de.nplay.moderationbot.config.bot.BotConfigs;
+import de.nplay.moderationbot.config.ConfigService;
+import de.nplay.moderationbot.config.bot.BotConfig;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
@@ -93,7 +94,7 @@ public class SpielersucheAusschlussCommands {
     }
 
     private Role getSpielersucheAusschlussRolle(CommandEvent event) {
-        var spielersucheAusschlussRolleId = BotConfigs.SpielersucheAusschlussRolle(event.getJDA()).value();
+        var spielersucheAusschlussRolleId = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
         return spielersucheAusschlussRolleId.map(s -> event.getGuild().getRoleById(s)).orElse(null);
     }
 
