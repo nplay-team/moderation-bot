@@ -33,7 +33,7 @@ public class BulkDeleteCommands {
 
     @SlashCommand(value = "moderation purge messages", desc = "Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig", isGuildOnly = true, enabledFor = Permission.MESSAGE_MANAGE)
     public void purgeMessagesByAmount(CommandEvent event, @Param("Anzahl der Nachrichten die gelöscht werden sollen") @Min(1) @Max(100) int amount) {
-        var deletedMessages = purgeMessages(event, event.getMessageChannel(), event.getMessageChannel().getLatestMessageId(), amount);
+        var deletedMessages = purgeMessages(event, event.getMessageChannel(), event.getMessageChannel().getLatestMessageId(), amount) - 1;
         replyEvent(event, deletedMessages);
     }
 
@@ -58,7 +58,7 @@ public class BulkDeleteCommands {
             );
         } else {
             messageIds.addAll(MessageHistory.getHistoryBefore(channel, pivotMessageId)
-                    .limit(amount - 1)
+                    .limit(amount)
                     .complete()
                     .getRetrievedHistory()
                     .stream()
