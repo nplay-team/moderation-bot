@@ -2,11 +2,13 @@ package de.nplay.moderationbot.embeds;
 
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
+import de.nplay.moderationbot.config.ConfigService;
+import de.nplay.moderationbot.config.bot.BotConfig;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jetbrains.annotations.NotNull;
@@ -18,15 +20,34 @@ import java.util.Objects;
 
 public class EmbedHelpers {
 
-    public static EmbedDTO getModlogEmbedHeader(EmbedCache embedCache, Member member) {
-        return embedCache.getEmbed("modlogHeader")
+    public static EmbedDTO getEmbedWithTarget(String embedName, EmbedCache embedCache, Member target, EmbedColors color) {
+        return embedCache.getEmbed(embedName)
+                .injectValue("targetId", target.getId())
+                .injectValue("targetUsername", target.getUser().getName())
+                .injectValue("color", color);
+    }
+
+    public static MessageEmbed getModlogEmbedHeader(EmbedCache embedCache, Member member) {
+        var spielersucheAusschlussRolle = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
+
+        var roles = member.getRoles().stream()
+                .filter(it -> it.getId().equals(spielersucheAusschlussRolle.orElse("-1")))
+                .map(it -> "<@&%s>".formatted(it.getId()))
+                .reduce((a, b) -> a + " " + b)
+                .orElse("?DEL?");
+
+        var embed = embedCache.getEmbed("modlogHeader")
                 .injectValue("username", member.getUser().getEffectiveName())
                 .injectValue("userId", member.getIdLong())
                 .injectValue("avatarUrl", member.getUser().getEffectiveAvatarUrl())
-                .injectValue("roles", member.getRoles().stream().map(Role::getName).reduce((a, b) -> a + ", " + b).orElse("Keine Rollen"))
+                .injectValue("roles", roles)
                 .injectValue("createdAt", member.getTimeCreated().getLong(ChronoField.INSTANT_SECONDS))
                 .injectValue("joinedAt", member.getTimeJoined().getLong(ChronoField.INSTANT_SECONDS))
-                .injectValue("color", EmbedColors.DEFAULT);
+                .injectValue("color", EmbedColors.DEFAULT)
+                .toEmbedBuilder();
+
+        embed.getFields().removeIf(it -> Objects.requireNonNullElse(it.getValue(), "").contains("?DEL?"));
+        return embed.build();
     }
 
     public static EmbedDTO getModlogEmbed(EmbedCache embedCache, JDA jda, List<ModerationService.ModerationAct> moderationActs, Integer page, Integer maxPage) {
@@ -67,6 +88,14 @@ public class EmbedHelpers {
                 .injectValue("color", EmbedColors.SUCCESS);
     }
 
+    public static EmbedDTO getSpielersucheUnblockForTargetEmbed(EmbedCache embedCache, User issuer) {
+        return embedCache.getEmbed("spielersucheUnblockForTarget")
+                .injectValue("issuerId", issuer.getId())
+                .injectValue("issuerUsername", issuer.getName())
+                .injectValue("createdAt", System.currentTimeMillis() / 1000)
+                .injectValue("color", EmbedColors.DEFAULT);
+    }
+
     // EVENT EMBEDS //
 
     public static EmbedDTO getGenericModerationEventEmbed(EmbedCache embedCache, String name, JDA jda, ModerationService.ModerationAct moderationAct, @Nullable User deleter) {
@@ -93,11 +122,21 @@ public class EmbedHelpers {
                 .injectValue("deleteColor", EmbedColors.ERROR);
     }
 
-    public static EmbedDTO getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull JDA jda, @NotNull Integer amount, @NotNull User user) {
+    public static EmbedDTO getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull Integer amount, @NotNull User user) {
         return embedCache.getEmbed("bulkMessageDeleteEvent")
                 .injectValue("amount", amount)
                 .injectValue("issuerId", user.getId())
                 .injectValue("issuerUsername", user.getName())
+                .injectValue("createdAt", System.currentTimeMillis() / 1000)
+                .injectValue("color", EmbedColors.DEFAULT);
+    }
+
+    public static EmbedDTO getSpielersucheAusschlussEmbed(EmbedCache embedCache, @NotNull User target, @NotNull User issuer, Boolean reverted) {
+        return embedCache.getEmbed("spielersucheAusschluss" + (reverted ? "Revert" : "") + "Event")
+                .injectValue("targetId", target.getId())
+                .injectValue("targetUsername", target.getName())
+                .injectValue("issuerId", issuer.getId())
+                .injectValue("issuerUsername", issuer.getName())
                 .injectValue("createdAt", System.currentTimeMillis() / 1000)
                 .injectValue("color", EmbedColors.DEFAULT);
     }

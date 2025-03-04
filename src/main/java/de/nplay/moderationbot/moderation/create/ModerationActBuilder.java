@@ -33,7 +33,7 @@ public class ModerationActBuilder {
     public static ModerationActBuilder warn(Member target, User issuer) {
         return new ModerationActBuilder().issuer(issuer)
                 .type(ModerationActType.WARN)
-                .target(issuer)
+                .target(target)
                 .executor(_ -> log.info("User {} has been warned by {}", target, issuer));
     }
 
