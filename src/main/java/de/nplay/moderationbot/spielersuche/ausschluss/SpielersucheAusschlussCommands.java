@@ -58,7 +58,9 @@ public class SpielersucheAusschlussCommands {
         var moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).reason("Du hast erneut gegen die Spielersucheregeln verstoßen **und wurdest von der Spielersuche ausgeschlossen!**");
         moderationActBuilder.paragraph(paragraph);
 
-        var moderationAct = ModerationService.createModerationAct(moderationActBuilder.build());
+        var action = moderationActBuilder.build();
+        var moderationAct = ModerationService.createModerationAct(action);
+        action.executor().accept(action);
         ModerationUtils.sendMessageToTarget(moderationAct, event.getJDA(), target.getGuild(), embedCache);
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()));
