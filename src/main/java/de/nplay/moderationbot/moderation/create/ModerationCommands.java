@@ -14,6 +14,7 @@ import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationUtils;
+import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Interaction
+@Permissions(BotPermissions.MODERATION_CREATE)
 public class ModerationCommands {
 
     @Inject
