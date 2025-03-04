@@ -43,20 +43,20 @@ public class SpielersucheAusschlussCommands {
                                        @Optional @Param("Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?") String paragraph) {
         var spielersucheAusschlussRolle = getSpielersucheAusschlussRolle(event);
 
-        if (spielersucheAusschlussRolle == null) {
+        if (spielersucheAusschlussRolle.isEmpty()) {
             event.reply(embedCache.getEmbed("spielersucheRoleError").injectValue("color", EmbedColors.ERROR));
             return;
         }
 
-        if (target.getRoles().contains(spielersucheAusschlussRolle)) {
+        if (target.getRoles().contains(spielersucheAusschlussRolle.get())) {
             event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheAlreadyBlocked", embedCache, target, EmbedColors.ERROR));
             return;
         }
 
-        event.getGuild().addRoleToMember(target, spielersucheAusschlussRolle).queue();
+        event.getGuild().addRoleToMember(target, spielersucheAusschlussRolle.get()).queue();
 
         var moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).reason("Du hast erneut gegen die Spielersucheregeln verstoßen **und wurdest von der Spielersuche ausgeschlossen!**");
-        if (paragraph != null) moderationActBuilder.paragraph(paragraph);
+        moderationActBuilder.paragraph(paragraph);
 
         var moderationAct = ModerationService.createModerationAct(moderationActBuilder.build());
         ModerationUtils.sendMessageToTarget(moderationAct, event.getJDA(), target.getGuild(), embedCache);
@@ -71,17 +71,17 @@ public class SpielersucheAusschlussCommands {
     public void spielersucheFreigeben(CommandEvent event, @Param("Der User, dessen Ausschluss aufgehoben werden soll") Member target) {
         var spielersucheAusschlussRolle = getSpielersucheAusschlussRolle(event);
 
-        if (spielersucheAusschlussRolle == null) {
+        if (spielersucheAusschlussRolle.isEmpty()) {
             event.reply(embedCache.getEmbed("spielersucheRoleError").injectValue("color", EmbedColors.ERROR));
             return;
         }
 
-        if (!target.getRoles().contains(spielersucheAusschlussRolle)) {
+        if (!target.getRoles().contains(spielersucheAusschlussRolle.get())) {
             event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheNotBlocked", embedCache, target, EmbedColors.ERROR));
             return;
         }
 
-        event.getGuild().removeRoleFromMember(target, spielersucheAusschlussRolle).queue();
+        event.getGuild().removeRoleFromMember(target, spielersucheAusschlussRolle.get()).queue();
         target.getUser()
                 .openPrivateChannel()
                 .flatMap(it -> it.sendMessageEmbeds(EmbedHelpers.getSpielersucheUnblockForTargetEmbed(embedCache, event.getUser()).toMessageEmbed()))
@@ -93,9 +93,9 @@ public class SpielersucheAusschlussCommands {
         event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheUnblockSuccess", embedCache, target, EmbedColors.SUCCESS));
     }
 
-    private Role getSpielersucheAusschlussRolle(CommandEvent event) {
+    private java.util.Optional<Role> getSpielersucheAusschlussRolle(CommandEvent event) {
         var spielersucheAusschlussRolleId = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
-        return spielersucheAusschlussRolleId.map(s -> event.getGuild().getRoleById(s)).orElse(null);
+        return spielersucheAusschlussRolleId.map(s -> event.getGuild().getRoleById(s));
     }
 
 }
