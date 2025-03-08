@@ -30,7 +30,19 @@ public class ModerationEvents {
 
     public static BotEvent BulkMessageDeletion(@NotNull JDA jda, @NotNull Guild guild, @NotNull Integer amount, @NotNull User user) {
         return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getBulkMessageDeletionEmbed(embedCache, jda, amount, user)
+                EmbedHelpers.getBulkMessageDeletionEmbed(embedCache, amount, user)
+        );
+    }
+
+    public static BotEvent SpielersucheAusschluss(@NotNull JDA jda, @NotNull Guild guild, @NotNull User target, @NotNull User issuer) {
+        return new BotEvent(jda, guild, (embedCache) ->
+                EmbedHelpers.getSpielersucheAusschlussEmbed(embedCache, target, issuer, false)
+        );
+    }
+
+    public static BotEvent SpielersucheAusschlussRevert(@NotNull JDA jda, @NotNull Guild guild, @NotNull User target, @NotNull User issuer) {
+        return new BotEvent(jda, guild, (embedCache) ->
+                EmbedHelpers.getSpielersucheAusschlussEmbed(embedCache, target, issuer, true)
         );
     }
 

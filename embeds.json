@@ -467,7 +467,7 @@
   },
   "configSet": {
     "title": "Einstellung {key} gesetzt",
-    "description": "{value}**",
+    "description": "{value}",
     "color": "{color}"
   },
   "configGet": {
@@ -482,6 +482,46 @@
   },
   "configList": {
     "title": "Einstellungen",
+    "color": "{color}"
+  },
+  "spielersucheAlreadyBlocked": {
+    "title": "Fehler",
+    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** ist bereits blockiert!",
+    "color": "{color}"
+  },
+  "spielersucheBlockSuccess": {
+    "title": "Erfolgreich",
+    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** wurde erfolgreich von der Spielersuche blockiert!",
+    "color": "{color}"
+  },
+  "spielersucheUnblockSuccess": {
+    "title": "Erfolgreich",
+    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** wurde erfolgreich für die Spielersuche wieder freigegeben!",
+    "color": "{color}"
+  },
+  "spielersucheNotBlocked": {
+    "title": "Fehler",
+    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** ist nicht blockiert!",
+    "color": "{color}"
+  },
+  "spielersucheUnblockForTarget": {
+    "title": "Spielersuche-Freigabe",
+    "description": "Du wurdest soeben für die Spielersuche wieder freigegeben! Bitte achte in Zukunft verstärkt auf die kanalspezifischen Regeln!",
+    "fields": [
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{color}"
+  },
+  "spielersucheRoleError": {
+    "title": "Fehler",
+    "description": "Die Spielersuche-Ausschluss-Rolle existiert nicht mehr oder wurde noch nicht konfiguriert!",
     "color": "{color}"
   },
   "moderationCreateEvent": {
@@ -572,6 +612,42 @@
       {
         "name": "Menge",
         "value": "{amount} Nachrichten"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{color}"
+  },
+  "spielersucheAusschlussEvent": {
+    "title": "Spielersuche-Ausschluss",
+    "fields": [
+      {
+        "name": "Betroffener",
+        "value": "<@{targetId}> ({targetUsername})"
+      },
+      {
+        "name": "Moderator",
+        "value": "<@{issuerId}> ({issuerUsername})"
+      },
+      {
+        "name": "Datum",
+        "value": "<t:{createdAt}:F>"
+      }
+    ],
+    "color": "{color}"
+  },
+  "spielersucheAusschlussRevertEvent": {
+    "title": "Spielersuche-Ausschluss-Aufhebung",
+    "fields": [
+      {
+        "name": "Betroffener",
+        "value": "<@{targetId}> ({targetUsername})"
       },
       {
         "name": "Moderator",
