@@ -24,7 +24,7 @@ dependencies {
         exclude(module = "opus-java")
     }
 
-    implementation("com.github.kaktushose:jda-commands:main-SNAPSHOT")
+    implementation("com.github.kaktushose.jda-commands:jda-commands:main-SNAPSHOT")
     implementation("ch.qos.logback:logback-core:1.5.13")
     implementation("ch.qos.logback:logback-classic:1.5.13")
     implementation("org.slf4j:slf4j-api:2.0.9")
