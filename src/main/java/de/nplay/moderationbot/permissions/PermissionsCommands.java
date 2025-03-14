@@ -1,11 +1,11 @@
 package de.nplay.moderationbot.permissions;
 
-import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
 import net.dv8tion.jda.api.Permission;

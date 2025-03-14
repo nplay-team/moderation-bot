@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.User;
 import java.util.Map;
 import java.util.Objects;
 
-import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
+import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 public class ModerationUtils {
 
@@ -52,7 +52,7 @@ public class ModerationUtils {
                 .flatMap(User::openPrivateChannel)
                 .flatMap(channel -> channel.sendMessageEmbeds(embedBuilder.build()))
                 .queue(_ -> {
-                }, UNKNOWN_USER_HANDLER);
+                }, USER_HANDLER);
     }
 
 }

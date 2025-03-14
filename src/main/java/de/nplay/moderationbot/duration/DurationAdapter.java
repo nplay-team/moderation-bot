@@ -1,12 +1,14 @@
 package de.nplay.moderationbot.duration;
 
 import com.github.kaktushose.jda.commands.dispatching.adapter.TypeAdapter;
+import com.github.kaktushose.jda.commands.guice.Implementation;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.Optional;
 
+@Implementation(clazz = Duration.class)
 public class DurationAdapter implements TypeAdapter<Duration> {
 
     @Override

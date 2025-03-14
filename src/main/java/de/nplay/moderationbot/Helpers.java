@@ -7,7 +7,7 @@ import java.time.Duration;
 
 public class Helpers {
 
-    public static final ErrorHandler UNKNOWN_USER_HANDLER = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_USER);
+    public static final ErrorHandler USER_HANDLER = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_USER, ErrorResponse.CANNOT_SEND_TO_USER);
 
     public static String durationToString(Duration duration) {
         StringBuilder builder = new StringBuilder();

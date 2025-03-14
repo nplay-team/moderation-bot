@@ -25,7 +25,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
 
-import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
+import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 /**
  * Utility class for managing moderation acts.
@@ -199,9 +199,9 @@ public class ModerationService {
                     .update();
 
             switch (type) {
-                case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {}, UNKNOWN_USER_HANDLER);
+                case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {}, USER_HANDLER);
                 case TIMEOUT -> {
-                    guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {}, UNKNOWN_USER_HANDLER);
+                    guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {}, USER_HANDLER);
                     sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
                 }
                 case WARN -> sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
@@ -223,7 +223,7 @@ public class ModerationService {
             guild.retrieveMemberById(userId).flatMap(it -> it.getUser().openPrivateChannel())
                     .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))
                     .queue(_ -> {
-                    }, UNKNOWN_USER_HANDLER);
+                    }, USER_HANDLER);
         }
 
         public EmbedDTO.Field getEmbedField(JDA jda) {

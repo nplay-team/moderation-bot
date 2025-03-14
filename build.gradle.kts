@@ -11,6 +11,7 @@ version = "1.0.0"
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 val saduVersion = "2.3.0"
@@ -19,11 +20,11 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    implementation("net.dv8tion:JDA:5.2.2") {
+    implementation("net.dv8tion:JDA:5.3.0") {
         exclude(module = "opus-java")
     }
 
-    implementation("io.github.kaktushose:jda-commands:4.0.0-beta.4")
+    implementation("com.github.kaktushose:jda-commands:main-SNAPSHOT")
     implementation("ch.qos.logback:logback-core:1.5.13")
     implementation("ch.qos.logback:logback-classic:1.5.13")
     implementation("org.slf4j:slf4j-api:2.0.9")

@@ -1,22 +1,21 @@
 package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.JDACommands;
-import com.github.kaktushose.jda.commands.annotations.Produces;
-import com.github.kaktushose.jda.commands.dependency.DefaultDependencyInjector;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.error.JsonErrorMessageFactory;
+import com.github.kaktushose.jda.commands.guice.GuiceExtension;
+import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Provides;
 import de.chojo.sadu.datasource.DataSourceCreator;
 import de.chojo.sadu.mapper.RowMapperRegistry;
 import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
-import de.nplay.moderationbot.duration.DurationAdapter;
-import de.nplay.moderationbot.duration.DurationMax;
-import de.nplay.moderationbot.duration.DurationMaxValidator;
-import de.nplay.moderationbot.permissions.BotPermissionsProvider;
-import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.moderation.revert.AutomaticRevertTask;
+import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -29,12 +28,8 @@ import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * The main class of the bot
  */
-public class NPLAYModerationBot {
+public class NPLAYModerationBot extends AbstractModule {
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
@@ -81,17 +76,11 @@ public class NPLAYModerationBot {
 
         serverlog = new Serverlog(guild, embedCache);
 
-        var dependencyInjector = new DefaultDependencyInjector();
-        dependencyInjector.registerProvider(this);
-
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
-                .dependencyInjector(dependencyInjector)
                 .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
-                .permissionsProvider(new BotPermissionsProvider())
-                .adapter(Duration.class, new DurationAdapter())
-                .validator(DurationMax.class, new DurationMaxValidator()) // TODO: this is temporary, until jda-commands implements @Implementation
+                .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
-        
+
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
 
         var dataSource = DataSourceCreator.create(PostgreSql.get())
@@ -153,12 +142,12 @@ public class NPLAYModerationBot {
         return scheduler;
     }
 
-    @Produces(skipIndexing = true)
+    @Provides
     public EmbedCache getEmbedCache() {
         return embedCache;
     }
 
-    @Produces(skipIndexing = true)
+    @Provides
     public Serverlog getServerlog() {
         return serverlog;
     }

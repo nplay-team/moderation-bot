@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.spielersuche.ausschluss;
 
-import com.github.kaktushose.jda.commands.annotations.Inject;
+import com.google.inject.Inject;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
-import static de.nplay.moderationbot.Helpers.UNKNOWN_USER_HANDLER;
+import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 
 @Interaction
@@ -88,7 +88,7 @@ public class SpielersucheAusschlussCommands {
                 .openPrivateChannel()
                 .flatMap(it -> it.sendMessageEmbeds(EmbedHelpers.getSpielersucheUnblockForTargetEmbed(embedCache, event.getUser()).toMessageEmbed()))
                 .queue(_ -> {
-                }, UNKNOWN_USER_HANDLER);
+                }, USER_HANDLER);
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()));
 

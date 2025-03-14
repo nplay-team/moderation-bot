@@ -1,6 +1,5 @@
 package de.nplay.moderationbot.moderation.create;
 
-import com.github.kaktushose.jda.commands.annotations.Inject;
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
@@ -8,6 +7,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.duration.DurationAdapter;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
@@ -45,17 +45,34 @@ public class ModerationCommands {
 
     @AutoComplete("moderation")
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
-        if (!event.getName().equals("paragraph"))
-            return; // TODO: this is temporary, until jda-commands supports selecting options
-
-        var rules = RuleService.getParagraphIdMapping();
-        rules.values().removeIf(it -> !it.shortDisplay().toLowerCase().contains(event.getValue().toLowerCase()));
-        event.replyChoices(rules.entrySet().stream()
-                .map(it -> new Command.Choice(
-                        it.getValue().shortDisplay(),
-                        Integer.toString(it.getKey()))
-                ).toList()
-        );
+        switch (event.getName()) {
+            case "paragraph" -> {
+                var rules = RuleService.getParagraphIdMapping();
+                rules.values().removeIf(it -> !it.shortDisplay().toLowerCase().contains(event.getValue().toLowerCase()));
+                event.replyChoices(rules.entrySet().stream()
+                        .map(it -> new Command.Choice(
+                                it.getValue().shortDisplay(),
+                                Integer.toString(it.getKey()))
+                        ).toList()
+                );
+            }
+            case "until" -> event.replyChoices(
+                    new Command.Choice("Eine Stunde", "1h"),
+                    new Command.Choice("12 Stunden", "12h"),
+                    new Command.Choice("Ein Tag", "1d"),
+                    new Command.Choice("2 Tage", "2d"),
+                    new Command.Choice("7 Tage", "7d"),
+                    new Command.Choice("14 Tage", "14d"),
+                    new Command.Choice("28 Tage", "28d")
+                    );
+            case "del_days" -> event.replyChoices(
+                    new Command.Choice("Ein Tag", "1"),
+                    new Command.Choice("2 Tage", "2"),
+                    new Command.Choice("7 Tage", "7")
+            );
+            default -> {
+            }
+        }
     }
 
     @SlashCommand(value = "moderation warn", desc = "Verwarnt einen Benutzer", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
@@ -83,7 +100,8 @@ public class ModerationCommands {
     @SlashCommand(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
     public void timeoutMember(CommandEvent event,
                               @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target,
-                              @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200) Duration until,
+                              @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
+                              Duration until,
                               @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000).paragraph(paragraph);
         event.replyModal("onModerateTimeout");
@@ -131,7 +149,8 @@ public class ModerationCommands {
             @Param("Der Benutzer, der gekickt werden soll.") Member target,
             @Optional @Param("Für wie lange der Ban andauern soll") Duration until,
             @Optional @Max(7)
-            @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") Integer delDays,
+            @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
+            int delDays,
             @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
     ) {
         moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
@@ -156,27 +175,32 @@ public class ModerationCommands {
     }
 
     @Modal(value = "Begründung angeben (Warn)")
-    public void onModerateWarn(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+    public void onModerateWarn(ModalEvent event,
+                               @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         onModerate(event, reason);
     }
 
     @Modal(value = "Begründung angeben (Timeout)")
-    public void onModerateTimeout(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+    public void onModerateTimeout(ModalEvent event,
+                                  @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         onModerate(event, reason);
     }
 
     @Modal(value = "Begründung angeben (Kick)")
-    public void onModerateKick(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+    public void onModerateKick(ModalEvent event,
+                               @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         onModerate(event, reason);
     }
 
     @Modal(value = "Begründung angeben (Temp-Ban)")
-    public void onModerateTempBan(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+    public void onModerateTempBan(ModalEvent event,
+                                  @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         onModerate(event, reason);
     }
 
     @Modal(value = "Begründung angeben (Ban)")
-    public void onModerateBan(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
+    public void onModerateBan(ModalEvent event,
+                              @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         onModerate(event, reason);
     }
 
@@ -247,7 +271,7 @@ public class ModerationCommands {
     public void onModerateTempbanContext(ModalEvent event,
                                          @TextInput(value = "Begründung der Moderationshandlung") String reason,
                                          @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT, required = false)
-                                             String until) {
+                                         String until) {
         var duration = DurationAdapter.parse(until);
         duration.ifPresent(value -> moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(value.getSeconds() * 1000));
         onModerate(event, reason);
