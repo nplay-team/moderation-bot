@@ -14,11 +14,16 @@ import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,14 +41,27 @@ public class ModlogCommand {
 
     private Integer maxPage = 1;
 
-    private Member member;
+    private ModlogContext context;
     private InteractionHook interactionHook;
 
+    public record ModlogContext(@NotNull User user, @Nullable Member member) {}
+
     @SlashCommand(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
-    public void modlog(CommandEvent event, @Param("Der Member, dessen Modlog abgerufen werden soll") Member member,
+    public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
+                       User user,
                        @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,
                        @Optional @Param("Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)") @Min(1) @Max(25) Integer count) {
-        this.member = member;
+        Member member;
+        try {
+             member = event.getGuild().retrieveMember(user).complete();
+        } catch (ErrorResponseException exception) {
+            if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+                member = null;
+            } else {
+                throw new IllegalStateException(exception);
+            }
+        }
+        this.context = new ModlogContext(user, member);
 
         if (page != null) {
             offset = (page - 1) * count;
@@ -52,7 +70,7 @@ public class ModlogCommand {
 
         if (count != null) limit = count;
 
-        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(member) / (double) limit);
+        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(user) / (double) limit);
 
         if (maxPage == 0) maxPage = 1;
 
@@ -100,8 +118,8 @@ public class ModlogCommand {
 
     public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
         return List.of(
-                EmbedHelpers.getModlogEmbedHeader(embedCache, member),
-                EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
+                EmbedHelpers.getModlogEmbedHeader(embedCache, context),
+                EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(context.user, limit, offset), page, maxPage).toMessageEmbed()
         );
     }
 
