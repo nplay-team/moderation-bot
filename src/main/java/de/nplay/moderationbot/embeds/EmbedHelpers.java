@@ -127,6 +127,7 @@ public class EmbedHelpers {
                 .injectValue("revertingReason", Objects.requireNonNullElse(moderationAct.revertingReason(), "Kein Grund angegeben"))
                 .injectValue("reason", Objects.requireNonNullElse(moderationAct.reason(), "Kein Grund angegeben"))
                 .injectValue("createdAt", moderationAct.createdAt().getTime() / 1000)
+                .injectValue("until", moderationAct.duration() == null ? "Keine temporäre Handlung" : "<t:%d:F>".formatted((moderationAct.createdAt().getTime() + moderationAct.duration()) / 1000))
                 .injectValue("color", EmbedColors.DEFAULT)
                 .injectValue("warningColor", EmbedColors.WARNING)
                 .injectValue("deleteColor", EmbedColors.ERROR);

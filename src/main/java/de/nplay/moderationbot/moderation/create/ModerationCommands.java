@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
-import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -206,6 +205,12 @@ public class ModerationCommands {
 
     public void onModerate(ModalEvent event, String reason) {
         var action = moderationActBuilder.reason(reason).build();
+
+        if (ModerationService.isTimeOuted(action.targetId())) {
+            event.reply(embedCache.getEmbed("userAlreadyTimeOuted").injectValue("color", EmbedColors.ERROR));
+            return;
+        }
+
         var moderationAct = ModerationService.createModerationAct(action);
 
         List<EmbedDTO.Field> fields = new ArrayList<>();
