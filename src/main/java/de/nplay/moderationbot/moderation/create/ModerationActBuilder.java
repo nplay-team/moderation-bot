@@ -56,7 +56,12 @@ public class ModerationActBuilder {
                 .target(target)
                 .executor(data -> {
                     log.info("User {} has been kicked by {}", target, issuer);
-                    target.kick().reason(data.reason()).queue();
+                    if (data.deletionDays > 0) {
+                        target.ban(data.deletionDays(), TimeUnit.DAYS).reason(data.reason)
+                                .map(_ -> target.getGuild().unban(target)).queue();
+                    } else {
+                        target.kick().reason(data.reason()).queue();
+                    }
                 });
     }
 
@@ -118,7 +123,7 @@ public class ModerationActBuilder {
     }
 
     public ModerationActBuilder deletionDays(int days) {
-        if (type == ModerationActType.BAN || type == ModerationActType.TEMP_BAN) {
+        if (type == ModerationActType.BAN || type == ModerationActType.TEMP_BAN || type == ModerationActType.KICK) {
             deletionDays = days;
             return this;
         }

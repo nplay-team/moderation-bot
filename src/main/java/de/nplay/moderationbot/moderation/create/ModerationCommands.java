@@ -1,6 +1,7 @@
 package de.nplay.moderationbot.moderation.create;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
+import com.github.kaktushose.jda.commands.annotations.constraints.Min;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
@@ -124,8 +125,9 @@ public class ModerationCommands {
     @SlashCommand(value = "moderation kick", desc = "Kickt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
     public void kickMember(CommandEvent event,
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
-                           @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
-        moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph);
+                           @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
+                           @Optional @Max(7) @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") int delDays) {
+        moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).deletionDays(delDays);
         event.replyModal("onModerateKick");
     }
 
