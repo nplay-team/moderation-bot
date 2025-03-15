@@ -46,3 +46,4 @@ bin/
 ### Project ###
 .env
 /data
+/logs
