@@ -1,6 +1,5 @@
 package de.nplay.moderationbot.moderation.modlog;
 
-import com.google.inject.Inject;
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.constraints.Min;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
@@ -8,8 +7,10 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -99,10 +101,18 @@ public class ModlogCommand {
     }
 
     public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
-        return List.of(
-                EmbedHelpers.getModlogEmbedHeader(embedCache, member),
-                EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed()
-        );
+        List<MessageEmbed> list = new ArrayList<>();
+
+        list.add(EmbedHelpers.getModlogEmbedHeader(embedCache, member));
+        list.add(EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed());
+
+        var notes = NotesService.getNotesFromUser(member.getIdLong());
+
+        if (!notes.isEmpty()) {
+            list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), member, notes).toMessageEmbed());
+        }
+
+        return list;
     }
 
     public Collection<LayoutComponent> getComponents(ReplyableEvent<?> event) {
