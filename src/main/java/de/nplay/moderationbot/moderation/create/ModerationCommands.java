@@ -124,7 +124,7 @@ public class ModerationCommands {
     @SlashCommand(value = "moderation kick", desc = "Kickt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
     public void kickMember(CommandEvent event,
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
-                           @Nullable @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
+                           @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph);
         event.replyModal("onModerateKick");
     }
