@@ -121,12 +121,12 @@ public class ModlogCommand {
         List<MessageEmbed> list = new ArrayList<>();
 
         list.add(EmbedHelpers.getModlogEmbedHeader(embedCache, context));
-        list.add(EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed());
+        list.add(EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(context.user, limit, offset), page, maxPage).toMessageEmbed());
 
-        var notes = NotesService.getNotesFromUser(member.getIdLong());
+        var notes = NotesService.getNotesFromUser(context.user.getIdLong());
 
         if (!notes.isEmpty()) {
-            list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), member, notes).toMessageEmbed());
+            list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), context.user, notes).toMessageEmbed());
         }
 
         return list;
