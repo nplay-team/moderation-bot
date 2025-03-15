@@ -1,6 +1,5 @@
 package de.nplay.moderationbot.moderation.modlog;
 
-import com.google.inject.Inject;
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.constraints.Min;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
@@ -8,6 +7,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -35,8 +35,8 @@ public class ModlogCommand {
     @Inject
     EmbedCache embedCache;
 
-    private Integer offset = 1;
-    private Integer limit = 10;
+    private Integer offset = 0;
+    private Integer limit = 5;
     private Integer page = 1;
 
     private Integer maxPage = 1;
@@ -51,6 +51,7 @@ public class ModlogCommand {
                        User user,
                        @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,
                        @Optional @Param("Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)") @Min(1) @Max(25) Integer count) {
+        interactionHook = event.jdaEvent().deferReply().complete();
         Member member;
         try {
              member = event.getGuild().retrieveMember(user).complete();
@@ -79,10 +80,8 @@ public class ModlogCommand {
             offset = (this.page - 1) * limit;
         }
 
-        interactionHook = event.jdaEvent()
-                .replyEmbeds(getEmbeds(event))
-                .addComponents(maxPage > 1 ? getComponents(event) : List.of())
-                .complete();
+        interactionHook.editOriginalEmbeds(getEmbeds(event)).queue();
+        interactionHook.editOriginalComponents(maxPage > 1 ? getComponents(event) : List.of()).queue();
     }
 
     @Button(value = "Zurück", emoji = "⬅️", style = ButtonStyle.PRIMARY)
