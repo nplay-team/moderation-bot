@@ -13,7 +13,7 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>./logs/nplaybot.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>./logs/moderationbot.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
