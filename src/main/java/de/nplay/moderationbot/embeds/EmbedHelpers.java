@@ -107,12 +107,12 @@ public class EmbedHelpers {
 
     // EVENT EMBEDS //
 
-    public static EmbedDTO getGenericModerationEventEmbed(EmbedCache embedCache, String name, JDA jda, ModerationService.ModerationAct moderationAct,
+    public static MessageEmbed getGenericModerationEventEmbed(EmbedCache embedCache, String name, JDA jda, ModerationService.ModerationAct moderationAct,
                                                           @Nullable User deleter) {
         var targetUsername = jda.retrieveUserById(moderationAct.userId()).complete().getName();
         var issuerUsername = jda.retrieveUserById(moderationAct.issuerId()).complete().getName();
         var revertedUsername = moderationAct.revertedBy() != null ? jda.retrieveUserById(moderationAct.revertedBy()).complete().getName() : null;
-        return embedCache.getEmbed(name)
+        var embed = embedCache.getEmbed(name)
                 .injectValue("type", moderationAct.type().humanReadableString)
                 .injectValue("id", moderationAct.id())
                 .injectValue("targetId", moderationAct.userId())
@@ -127,27 +127,33 @@ public class EmbedHelpers {
                 .injectValue("revertingReason", Objects.requireNonNullElse(moderationAct.revertingReason(), "Kein Grund angegeben"))
                 .injectValue("reason", Objects.requireNonNullElse(moderationAct.reason(), "Kein Grund angegeben"))
                 .injectValue("createdAt", moderationAct.createdAt().getTime() / 1000)
+                .injectValue("until", moderationAct.duration() == null ? "?DEL?" : "<t:%d:F>".formatted((moderationAct.createdAt().getTime() + moderationAct.duration()) / 1000))
                 .injectValue("color", EmbedColors.DEFAULT)
                 .injectValue("warningColor", EmbedColors.WARNING)
-                .injectValue("deleteColor", EmbedColors.ERROR);
+                .injectValue("deleteColor", EmbedColors.ERROR)
+                .toEmbedBuilder();
+        embed.getFields().removeIf(field -> "?DEL?".equals(field.getValue()));
+        return embed.build();
     }
 
-    public static EmbedDTO getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull Integer amount, @NotNull User user) {
+    public static MessageEmbed getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull Integer amount, @NotNull User user) {
         return embedCache.getEmbed("bulkMessageDeleteEvent")
                 .injectValue("amount", amount)
                 .injectValue("issuerId", user.getId())
                 .injectValue("issuerUsername", user.getName())
                 .injectValue("createdAt", System.currentTimeMillis() / 1000)
-                .injectValue("color", EmbedColors.DEFAULT);
+                .injectValue("color", EmbedColors.DEFAULT)
+                .toMessageEmbed();
     }
 
-    public static EmbedDTO getSpielersucheAusschlussEmbed(EmbedCache embedCache, @NotNull User target, @NotNull User issuer, Boolean reverted) {
+    public static MessageEmbed getSpielersucheAusschlussEmbed(EmbedCache embedCache, @NotNull User target, @NotNull User issuer, Boolean reverted) {
         return embedCache.getEmbed("spielersucheAusschluss" + (reverted ? "Revert" : "") + "Event")
                 .injectValue("targetId", target.getId())
                 .injectValue("targetUsername", target.getName())
                 .injectValue("issuerId", issuer.getId())
                 .injectValue("issuerUsername", issuer.getName())
                 .injectValue("createdAt", System.currentTimeMillis() / 1000)
-                .injectValue("color", EmbedColors.DEFAULT);
+                .injectValue("color", EmbedColors.DEFAULT)
+                .toMessageEmbed();
     }
 }

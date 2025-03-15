@@ -546,6 +546,10 @@
       {
         "name": "Datum",
         "value": "<t:{createdAt}:F>"
+      },
+      {
+        "name": "Aktiv bis",
+        "value": "{until}"
       }
     ],
     "color": "{color}"
@@ -658,6 +662,11 @@
         "value": "<t:{createdAt}:F>"
       }
     ],
+    "color": "{color}"
+  },
+  "userAlreadyTimeOuted": {
+    "title": "Fehler",
+    "description": "Der angegebene Nutzer hat bereits ein aktives Timeout!",
     "color": "{color}"
   }
 }

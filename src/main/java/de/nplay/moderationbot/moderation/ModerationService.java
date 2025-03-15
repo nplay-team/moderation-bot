@@ -143,6 +143,13 @@ public class ModerationService {
                 .delete();
     }
 
+    public static boolean isTimeOuted(long userId) {
+        return Query.query("SELECT EXISTS(SELECT 1 FROM moderations WHERE user_id = ? AND TYPE = 'TIMEOUT' AND reverted = FALSE)")
+                .single(Call.of().bind(userId))
+                .map(row -> row.getBoolean(1))
+                .first().orElseThrow();
+    }
+
 
     public record ModerationAct(
             Long id,

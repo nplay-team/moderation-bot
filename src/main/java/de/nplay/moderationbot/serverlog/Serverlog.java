@@ -13,7 +13,7 @@ public record Serverlog(Guild guild, EmbedCache embedCache) {
         var serverlogChannel = event.jda().getTextChannelById(ConfigService.get(BotConfig.SERVERLOG_KANAL).orElse("0"));
 
         if (serverlogChannel != null) {
-            serverlogChannel.sendMessageEmbeds(embed.toMessageEmbed()).queue();
+            serverlogChannel.sendMessageEmbeds(embed).queue();
         }
     }
 
