@@ -10,6 +10,7 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -116,10 +118,18 @@ public class ModlogCommand {
     }
 
     public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
-        return List.of(
-                EmbedHelpers.getModlogEmbedHeader(embedCache, context),
-                EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(context.user, limit, offset), page, maxPage).toMessageEmbed()
-        );
+        List<MessageEmbed> list = new ArrayList<>();
+
+        list.add(EmbedHelpers.getModlogEmbedHeader(embedCache, context));
+        list.add(EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed());
+
+        var notes = NotesService.getNotesFromUser(member.getIdLong());
+
+        if (!notes.isEmpty()) {
+            list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), member, notes).toMessageEmbed());
+        }
+
+        return list;
     }
 
     public Collection<LayoutComponent> getComponents(ReplyableEvent<?> event) {
