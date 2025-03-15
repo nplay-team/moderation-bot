@@ -18,6 +18,8 @@ import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Objects;
 
+import static de.nplay.moderationbot.moderation.modlog.ModlogCommand.ModlogContext;
+
 public class EmbedHelpers {
 
     public static EmbedDTO getEmbedWithTarget(String embedName, EmbedCache embedCache, Member target, EmbedColors color) {
@@ -27,27 +29,34 @@ public class EmbedHelpers {
                 .injectValue("color", color);
     }
 
-    public static MessageEmbed getModlogEmbedHeader(EmbedCache embedCache, Member member) {
+    public static MessageEmbed getModlogEmbedHeader(EmbedCache embedCache, ModlogContext context) {
         var spielersucheAusschlussRolle = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
 
-        var roles = member.getRoles().stream()
-                .filter(it -> it.getId().equals(spielersucheAusschlussRolle.orElse("-1")))
-                .map(it -> "<@&%s>".formatted(it.getId()))
-                .reduce((a, b) -> a + " " + b)
-                .orElse("?DEL?");
-
         var embed = embedCache.getEmbed("modlogHeader")
-                .injectValue("username", member.getUser().getEffectiveName())
-                .injectValue("userId", member.getIdLong())
-                .injectValue("avatarUrl", member.getUser().getEffectiveAvatarUrl())
-                .injectValue("roles", roles)
-                .injectValue("createdAt", member.getTimeCreated().getLong(ChronoField.INSTANT_SECONDS))
-                .injectValue("joinedAt", member.getTimeJoined().getLong(ChronoField.INSTANT_SECONDS))
-                .injectValue("color", EmbedColors.DEFAULT)
-                .toEmbedBuilder();
+                .injectValue("username", context.user().getEffectiveName())
+                .injectValue("userId", context.user().getIdLong())
+                .injectValue("avatarUrl", context.user().getEffectiveAvatarUrl())
+                .injectValue("createdAt", context.user().getTimeCreated().getLong(ChronoField.INSTANT_SECONDS))
+                .injectValue("color", EmbedColors.DEFAULT);
 
-        embed.getFields().removeIf(it -> Objects.requireNonNullElse(it.getValue(), "").contains("?DEL?"));
-        return embed.build();
+        if (context.member() == null) {
+            embed.injectValue("roles", "?DEL?")
+                    .injectValue("joinedAt", "?DEL?");
+        } else {
+            var roles = context.member().getRoles().stream()
+                    .filter(it -> it.getId().equals(spielersucheAusschlussRolle.orElse("-1")))
+                    .map(it -> "<@&%s>".formatted(it.getId()))
+                    .reduce((a, b) -> a + " " + b)
+                    .orElse("?DEL?");
+
+            embed.injectValue("roles", roles)
+                    .injectValue("joinedAt", context.member().getTimeJoined().getLong(ChronoField.INSTANT_SECONDS));
+
+        }
+        var builder = embed.toEmbedBuilder();
+
+        builder.getFields().removeIf(it -> Objects.requireNonNullElse(it.getValue(), "").contains("?DEL?"));
+        return builder.build();
     }
 
     public static EmbedDTO getModlogEmbed(EmbedCache embedCache, JDA jda, List<ModerationService.ModerationAct> moderationActs, Integer page, Integer maxPage) {
@@ -98,7 +107,8 @@ public class EmbedHelpers {
 
     // EVENT EMBEDS //
 
-    public static EmbedDTO getGenericModerationEventEmbed(EmbedCache embedCache, String name, JDA jda, ModerationService.ModerationAct moderationAct, @Nullable User deleter) {
+    public static EmbedDTO getGenericModerationEventEmbed(EmbedCache embedCache, String name, JDA jda, ModerationService.ModerationAct moderationAct,
+                                                          @Nullable User deleter) {
         var targetUsername = jda.retrieveUserById(moderationAct.userId()).complete().getName();
         var issuerUsername = jda.retrieveUserById(moderationAct.issuerId()).complete().getName();
         var revertedUsername = moderationAct.revertedBy() != null ? jda.retrieveUserById(moderationAct.revertedBy()).complete().getName() : null;

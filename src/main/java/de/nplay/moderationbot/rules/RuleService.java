@@ -6,15 +6,15 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Utility class for reading rule paragraphs from the database
  */
 public class RuleService {
+
+    private static final Set<RuleParagraph> cache = new HashSet<>();
 
     /**
      * Gets a {@link List<RuleParagraph>} of all rule paragraphs
@@ -35,10 +35,19 @@ public class RuleService {
      * @return an Optional holding the {@link RuleParagraph}
      */
     public static Optional<RuleParagraph> getRuleParagraph(int id) {
-        return Query.query("SELECT * FROM rule_paragraphs WHERE id = ?")
-                .single(Call.of().bind(id))
-                .mapAs(RuleParagraph.class)
-                .first();
+        var cacheEntry = cache.stream().filter(it -> it.id == id).findFirst();
+
+        if (cacheEntry.isPresent()) {
+            return cacheEntry;
+        } else {
+            var paragraph = Query.query("SELECT * FROM rule_paragraphs WHERE id = ?")
+                    .single(Call.of().bind(id))
+                    .mapAs(RuleParagraph.class)
+                    .first();
+
+            paragraph.ifPresent(cache::add);
+            return paragraph;
+        }
     }
 
     /**

@@ -15,11 +15,16 @@ import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,20 +37,34 @@ public class ModlogCommand {
     @Inject
     EmbedCache embedCache;
 
-    private Integer offset = 1;
-    private Integer limit = 10;
+    private Integer offset = 0;
+    private Integer limit = 5;
     private Integer page = 1;
 
     private Integer maxPage = 1;
 
-    private Member member;
+    private ModlogContext context;
     private InteractionHook interactionHook;
 
+    public record ModlogContext(@NotNull User user, @Nullable Member member) {}
+
     @SlashCommand(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
-    public void modlog(CommandEvent event, @Param("Der Member, dessen Modlog abgerufen werden soll") Member member,
+    public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
+                       User user,
                        @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,
                        @Optional @Param("Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)") @Min(1) @Max(25) Integer count) {
-        this.member = member;
+        interactionHook = event.jdaEvent().deferReply().complete();
+        Member member;
+        try {
+             member = event.getGuild().retrieveMember(user).complete();
+        } catch (ErrorResponseException exception) {
+            if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+                member = null;
+            } else {
+                throw new IllegalStateException(exception);
+            }
+        }
+        this.context = new ModlogContext(user, member);
 
         if (page != null) {
             offset = (page - 1) * count;
@@ -54,7 +73,7 @@ public class ModlogCommand {
 
         if (count != null) limit = count;
 
-        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(member) / (double) limit);
+        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(user) / (double) limit);
 
         if (maxPage == 0) maxPage = 1;
 
@@ -63,10 +82,8 @@ public class ModlogCommand {
             offset = (this.page - 1) * limit;
         }
 
-        interactionHook = event.jdaEvent()
-                .replyEmbeds(getEmbeds(event))
-                .addComponents(maxPage > 1 ? getComponents(event) : List.of())
-                .complete();
+        interactionHook.editOriginalEmbeds(getEmbeds(event)).queue();
+        interactionHook.editOriginalComponents(maxPage > 1 ? getComponents(event) : List.of()).queue();
     }
 
     @Button(value = "Zurück", emoji = "⬅️", style = ButtonStyle.PRIMARY)
@@ -103,13 +120,13 @@ public class ModlogCommand {
     public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
         List<MessageEmbed> list = new ArrayList<>();
 
-        list.add(EmbedHelpers.getModlogEmbedHeader(embedCache, member));
-        list.add(EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(member, limit, offset), page, maxPage).toMessageEmbed());
+        list.add(EmbedHelpers.getModlogEmbedHeader(embedCache, context));
+        list.add(EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(context.user, limit, offset), page, maxPage).toMessageEmbed());
 
-        var notes = NotesService.getNotesFromUser(member.getIdLong());
+        var notes = NotesService.getNotesFromUser(context.user.getIdLong());
 
         if (!notes.isEmpty()) {
-            list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), member, notes).toMessageEmbed());
+            list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), context.user, notes).toMessageEmbed());
         }
 
         return list;
