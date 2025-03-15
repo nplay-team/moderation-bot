@@ -39,12 +39,11 @@ public class EmbedHelpers {
                 .injectValue("createdAt", context.user().getTimeCreated().getLong(ChronoField.INSTANT_SECONDS))
                 .injectValue("color", EmbedColors.DEFAULT);
 
-        String roles;
         if (context.member() == null) {
             embed.injectValue("roles", "?DEL?")
                     .injectValue("joinedAt", "?DEL?");
         } else {
-            roles = context.member().getRoles().stream()
+            var roles = context.member().getRoles().stream()
                     .filter(it -> it.getId().equals(spielersucheAusschlussRolle.orElse("-1")))
                     .map(it -> "<@&%s>".formatted(it.getId()))
                     .reduce((a, b) -> a + " " + b)
