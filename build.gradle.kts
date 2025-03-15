@@ -24,6 +24,7 @@ dependencies {
         exclude(module = "opus-java")
     }
 
+    implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("com.github.kaktushose.jda-commands:jda-commands:main-SNAPSHOT")
     implementation("ch.qos.logback:logback-core:1.5.13")
     implementation("ch.qos.logback:logback-classic:1.5.13")
