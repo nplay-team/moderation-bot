@@ -548,7 +548,7 @@
         "value": "<t:{createdAt}:F>"
       },
       {
-        "name": "Timeout Ende",
+        "name": "Aktiv bis",
         "value": "{until}"
       }
     ],
