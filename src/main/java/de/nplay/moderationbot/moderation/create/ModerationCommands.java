@@ -278,7 +278,7 @@ public class ModerationCommands {
                                          @TextInput(value = "Begründung der Moderationshandlung") String reason,
                                          @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT, required = false)
                                          String until) {
-        if (!Objects.equals(until, "")) {
+        if (!"".equals(until)) {
             var duration = DurationAdapter.parse(until);
 
             if (duration.isEmpty()) {
