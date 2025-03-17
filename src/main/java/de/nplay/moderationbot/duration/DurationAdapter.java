@@ -4,12 +4,17 @@ import com.github.kaktushose.jda.commands.dispatching.adapter.TypeAdapter;
 import com.github.kaktushose.jda.commands.guice.Implementation;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 @Implementation(clazz = Duration.class)
 public class DurationAdapter implements TypeAdapter<Duration> {
+
+    private static final Logger log = LoggerFactory.getLogger(DurationAdapter.class);
 
     @Override
     @NotNull
@@ -29,7 +34,12 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         parseString = parseString.charAt(0) != 'P' ? "PT" + parseString : parseString;
         parseString = parseString.charAt(parseString.length() - 1) == 'T' ? parseString + "0S" : parseString;
 
-        return Optional.of(Duration.parse(parseString));
+        try {
+            return Optional.of(Duration.parse(parseString));
+        } catch (DateTimeParseException e) {
+            log.warn("User provided invalid duration: {}", raw);
+            return Optional.empty();
+        }
     }
 
 }
