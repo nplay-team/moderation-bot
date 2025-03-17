@@ -1,7 +1,6 @@
 package de.nplay.moderationbot.moderation.create;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
-import com.github.kaktushose.jda.commands.annotations.constraints.Min;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
@@ -178,37 +177,37 @@ public class ModerationCommands {
     @Modal(value = "Begründung angeben (Warn)")
     public void onModerateWarn(ModalEvent event,
                                @TextInput(value = "Begründung der Moderationshandlung") String reason) {
-        onModerate(event, reason);
+        onModerate(event, ModerationActType.WARN, reason);
     }
 
     @Modal(value = "Begründung angeben (Timeout)")
     public void onModerateTimeout(ModalEvent event,
                                   @TextInput(value = "Begründung der Moderationshandlung") String reason) {
-        onModerate(event, reason);
+        onModerate(event, ModerationActType.TIMEOUT, reason);
     }
 
     @Modal(value = "Begründung angeben (Kick)")
     public void onModerateKick(ModalEvent event,
                                @TextInput(value = "Begründung der Moderationshandlung") String reason) {
-        onModerate(event, reason);
+        onModerate(event, ModerationActType.KICK, reason);
     }
 
     @Modal(value = "Begründung angeben (Temp-Ban)")
     public void onModerateTempBan(ModalEvent event,
                                   @TextInput(value = "Begründung der Moderationshandlung") String reason) {
-        onModerate(event, reason);
+        onModerate(event, ModerationActType.TEMP_BAN, reason);
     }
 
     @Modal(value = "Begründung angeben (Ban)")
     public void onModerateBan(ModalEvent event,
                               @TextInput(value = "Begründung der Moderationshandlung") String reason) {
-        onModerate(event, reason);
+        onModerate(event, ModerationActType.BAN, reason);
     }
 
-    public void onModerate(ModalEvent event, String reason) {
+    public void onModerate(ModalEvent event, ModerationActType type, String reason) {
         var action = moderationActBuilder.reason(reason).build();
 
-        if (ModerationService.isTimeOuted(action.targetId())) {
+        if (type == ModerationActType.TIMEOUT && ModerationService.isTimeOuted(action.targetId())) {
             event.reply(embedCache.getEmbed("userAlreadyTimeOuted").injectValue("color", EmbedColors.ERROR));
             return;
         }
@@ -271,7 +270,7 @@ public class ModerationCommands {
         }
 
         moderationActBuilder.duration(duration.get().getSeconds() * 1000);
-        onModerate(event, reason);
+        onModerate(event, ModerationActType.TIMEOUT, reason);
     }
 
     @Modal(value = "Begründung und Dauer angeben")
@@ -279,9 +278,18 @@ public class ModerationCommands {
                                          @TextInput(value = "Begründung der Moderationshandlung") String reason,
                                          @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT, required = false)
                                          String until) {
-        var duration = DurationAdapter.parse(until);
-        duration.ifPresent(value -> moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(value.getSeconds() * 1000));
-        onModerate(event, reason);
+        if (!"".equals(until)) {
+            var duration = DurationAdapter.parse(until);
+
+            if (duration.isEmpty()) {
+                event.reply(embedCache.getEmbed("durationParsingFailed").injectValue("duration", until).injectValue("color", EmbedColors.ERROR));
+            }
+
+            duration.map(value -> moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(value.getSeconds() * 1000));
+            onModerate(event, ModerationActType.TEMP_BAN, reason);
+        }
+
+        onModerate(event, ModerationActType.BAN, reason);
     }
 
 }
