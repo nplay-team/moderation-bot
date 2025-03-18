@@ -42,36 +42,16 @@ public class ModerationCommands {
     private Boolean replyEphemeral = false;
     private static final String PARAGRAPH_PARAMETER_DESC = "Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?";
 
-    @AutoComplete("moderation")
+    @AutoComplete(value = {"moderation", "spielersuche ausschluss"}, options = "paragraph")
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
-        switch (event.getName()) {
-            case "paragraph" -> {
-                var rules = RuleService.getParagraphIdMapping();
-                rules.values().removeIf(it -> !it.shortDisplay().toLowerCase().contains(event.getValue().toLowerCase()));
-                event.replyChoices(rules.entrySet().stream()
-                        .map(it -> new Command.Choice(
-                                it.getValue().shortDisplay(),
-                                Integer.toString(it.getKey()))
-                        ).toList()
-                );
-            }
-            case "until" -> event.replyChoices(
-                    new Command.Choice("Eine Stunde", "1h"),
-                    new Command.Choice("12 Stunden", "12h"),
-                    new Command.Choice("Ein Tag", "1d"),
-                    new Command.Choice("2 Tage", "2d"),
-                    new Command.Choice("7 Tage", "7d"),
-                    new Command.Choice("14 Tage", "14d"),
-                    new Command.Choice("28 Tage", "28d")
-                    );
-            case "del_days" -> event.replyChoices(
-                    new Command.Choice("Ein Tag", "1"),
-                    new Command.Choice("2 Tage", "2"),
-                    new Command.Choice("7 Tage", "7")
-            );
-            default -> {
-            }
-        }
+        var rules = RuleService.getParagraphIdMapping();
+        rules.values().removeIf(it -> !it.shortDisplay().toLowerCase().contains(event.getValue().toLowerCase()));
+        event.replyChoices(rules.entrySet().stream()
+                .map(it -> new Command.Choice(
+                        it.getValue().shortDisplay(),
+                        Integer.toString(it.getKey()))
+                ).toList()
+        );
     }
 
     @SlashCommand(value = "moderation warn", desc = "Verwarnt einen Benutzer", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
@@ -124,7 +104,9 @@ public class ModerationCommands {
     public void kickMember(CommandEvent event,
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
-                           @Optional @Max(7) @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") int delDays) {
+                           @Optional @Max(7)
+                           @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
+                           int delDays) {
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).deletionDays(delDays);
         event.replyModal("onModerateKick");
     }
