@@ -25,7 +25,7 @@ dependencies {
     }
 
     implementation("club.minnced:discord-webhooks:0.8.4")
-    implementation("com.github.kaktushose.jda-commands:jda-commands:main-SNAPSHOT")
+    implementation("com.github.kaktushose.jda-commands:jda-commands:3c32058d62")
     implementation("ch.qos.logback:logback-core:1.5.13")
     implementation("ch.qos.logback:logback-classic:1.5.13")
     implementation("org.slf4j:slf4j-api:2.0.9")

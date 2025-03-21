@@ -22,7 +22,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.Command.Choice;
+import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 import java.time.Duration;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Interaction
+@CommandConfig(enabledFor = Permission.MODERATE_MEMBERS)
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class ModerationCommands {
 
@@ -47,14 +49,14 @@ public class ModerationCommands {
         var rules = RuleService.getParagraphIdMapping();
         rules.values().removeIf(it -> !it.shortDisplay().toLowerCase().contains(event.getValue().toLowerCase()));
         event.replyChoices(rules.entrySet().stream()
-                .map(it -> new Command.Choice(
+                .map(it -> new Choice(
                         it.getValue().shortDisplay(),
                         Integer.toString(it.getKey()))
                 ).toList()
         );
     }
 
-    @SlashCommand(value = "moderation warn", desc = "Verwarnt einen Benutzer", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    @Command(value = "moderation warn", desc = "Verwarnt einen Benutzer")
     public void warnMember(CommandEvent event,
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
@@ -62,21 +64,21 @@ public class ModerationCommands {
         event.replyModal("onModerateWarn");
     }
 
-    @ContextCommand(value = "Verwarne Mitglied", type = Command.Type.USER, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    @Command(value = "Verwarne Mitglied", type = Type.USER)
     public void warnMemberContext(CommandEvent event, User target) {
         moderationActBuilder = ModerationActBuilder.warn(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         event.replyModal("onModerateWarn");
     }
 
-    @ContextCommand(value = "Verwarne Mitglied (💬)", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    @Command(value = "Verwarne Mitglied (💬)", type = Type.MESSAGE)
     public void warnMemberMessageContext(CommandEvent event, Message target) {
         moderationActBuilder = ModerationActBuilder.warn(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         event.replyModal("onModerateWarn");
     }
 
-    @SlashCommand(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout", isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    @Command(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout")
     public void timeoutMember(CommandEvent event,
                               @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target,
                               @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
@@ -86,21 +88,22 @@ public class ModerationCommands {
         event.replyModal("onModerateTimeout");
     }
 
-    @ContextCommand(value = "Timeoute Mitglied", type = Command.Type.USER, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    @Command(value = "Timeoute Mitglied", type = Type.USER)
     public void timeoutMemberContext(CommandEvent event, User target) {
         moderationActBuilder = ModerationActBuilder.timeout(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         event.replyModal("onModerateTimeoutContext");
     }
 
-    @ContextCommand(value = "Timeoute Mitglied (💬)", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.MODERATE_MEMBERS)
+    @Command(value = "Timeoute Mitglied (💬)", type = Type.MESSAGE)
     public void timeoutMemberMessageContext(CommandEvent event, Message target) {
         moderationActBuilder = ModerationActBuilder.timeout(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         event.replyModal("onModerateTimeoutContext");
     }
 
-    @SlashCommand(value = "moderation kick", desc = "Kickt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
+    @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
+    @Command(value = "moderation kick", desc = "Kickt einen Benutzer vom Server")
     public void kickMember(CommandEvent event,
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
@@ -111,21 +114,24 @@ public class ModerationCommands {
         event.replyModal("onModerateKick");
     }
 
-    @ContextCommand(value = "Kicke Mitglied", type = Command.Type.USER, isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
+    @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
+    @Command(value = "Kicke Mitglied", type = Type.USER)
     public void kickMemberContext(CommandEvent event, User target) {
         moderationActBuilder = ModerationActBuilder.kick(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         event.replyModal("onModerateKick");
     }
 
-    @ContextCommand(value = "Kicke Mitglied (💬)", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.KICK_MEMBERS)
+    @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
+    @Command(value = "Kicke Mitglied (💬)", type = Type.MESSAGE)
     public void kickMemberMessageContext(CommandEvent event, Message target) {
         moderationActBuilder = ModerationActBuilder.kick(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         event.replyModal("onModerateKick");
     }
 
-    @SlashCommand(value = "moderation ban", desc = "Bannt einen Benutzer vom Server", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
+    @Command(value = "moderation ban", desc = "Bannt einen Benutzer vom Server")
     public void banMember(
             CommandEvent event,
             @Param("Der Benutzer, der gekickt werden soll.") Member target,
@@ -142,14 +148,16 @@ public class ModerationCommands {
         } else event.replyModal("onModerateBan");
     }
 
-    @ContextCommand(value = "(Temp-)Ban Mitglied", type = Command.Type.USER, isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
+    @Command(value = "(Temp-)Ban Mitglied", type = Type.USER)
     public void banMemberContext(CommandEvent event, User target) {
         moderationActBuilder = ModerationActBuilder.ban(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         event.replyModal("onModerateTempbanContext");
     }
 
-    @ContextCommand(value = "(Temp-)Ban Mitglied (💬)", type = Command.Type.MESSAGE, isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
+    @Command(value = "(Temp-)Ban Mitglied (💬)", type = Type.MESSAGE)
     public void banMemberMessageContext(CommandEvent event, Message target) {
         moderationActBuilder = ModerationActBuilder.ban(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;

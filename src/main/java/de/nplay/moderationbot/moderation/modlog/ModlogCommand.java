@@ -48,7 +48,8 @@ public class ModlogCommand {
 
     public record ModlogContext(@NotNull User user, @Nullable Member member) {}
 
-    @SlashCommand(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
+    @Command(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an")
     public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
                        User user,
                        @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,
@@ -95,8 +96,8 @@ public class ModlogCommand {
     }
 
     @com.github.kaktushose.jda.commands.annotations.interactions.StringSelectMenu(value = "Seitenauswahl")
-    @SelectOption(value = "1", label = "Seite 1")
-    @SelectOption(value = "dummy", label = "DO NOT TOUCH") // TODO: Remove when jda-commands updates
+    @MenuOption(value = "1", label = "Seite 1")
+    @MenuOption(value = "dummy", label = "DO NOT TOUCH") // TODO: Remove when jda-commands updates
     public void selectPage(ComponentEvent event, List<String> values) {
         page = Integer.parseInt(values.get(0));
         offset = (page - 1) * limit;

@@ -1,9 +1,9 @@
 package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.JDACommands;
+import com.github.kaktushose.jda.commands.definitions.interactions.command.CommandDefinition;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.error.JsonErrorMessageFactory;
-import com.github.kaktushose.jda.commands.guice.GuiceExtension;
 import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;

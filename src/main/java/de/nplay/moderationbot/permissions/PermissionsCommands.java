@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Interaction
+@CommandConfig(enabledFor = Permission.BAN_MEMBERS)
 @SuppressWarnings("ConstantConditions")
 public class PermissionsCommands {
 
@@ -29,7 +30,7 @@ public class PermissionsCommands {
     private ISnowflake target;
 
     @Permissions(BotPermissions.PERMISSION_READ)
-    @SlashCommand(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @Command(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an")
     public void onPermissionsList(CommandEvent event,
                                   @Optional @Param("Der Benutzer, dessen Berechtigungen abgerufen werden sollen.")
                                   Member member) {
@@ -43,7 +44,7 @@ public class PermissionsCommands {
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
-    @SlashCommand(value = "permissions manage member", desc = "Verwaltet die Berechtigungen eines Benutzers.", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @Command(value = "permissions manage member", desc = "Verwaltet die Berechtigungen eines Benutzers.")
     public void onManageMemberPermissions(CommandEvent event,
                                           @Param("Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.")
                                           Member member) {
@@ -53,7 +54,7 @@ public class PermissionsCommands {
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
-    @SlashCommand(value = "permissions manage role", desc = "Verwaltet die Berechtigungen einer Rolle.", isGuildOnly = true, enabledFor = Permission.BAN_MEMBERS)
+    @Command(value = "permissions manage role", desc = "Verwaltet die Berechtigungen einer Rolle.")
     public void onManageRolePermissions(CommandEvent event,
                                         @Param("Die Rolle, dessen Berechtigungen bearbeitet werden sollen.")
                                         Role role) {
@@ -81,8 +82,8 @@ public class PermissionsCommands {
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @com.github.kaktushose.jda.commands.annotations.interactions.StringSelectMenu(value = "Wähle eine oder mehrere Berechtigungen aus")
-    @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(label = "dummy option", value = "dummy value")
-    @com.github.kaktushose.jda.commands.annotations.interactions.SelectOption(label = "dummy option 2", value = "dummy value 2")
+    @MenuOption(label = "dummy option", value = "dummy value")
+    @MenuOption(label = "dummy option 2", value = "dummy value 2")
     public void onPermissionsSelect(ComponentEvent event, List<String> selection) {
         int permissions = selection.contains("NONE") ? 0 : BotPermissions.combine(
                 selection.stream().map(it -> BotPermissions.BitFields.valueOf(it).value).toList()
