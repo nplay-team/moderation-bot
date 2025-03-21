@@ -9,7 +9,6 @@ import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
-import net.dv8tion.jda.api.Permission;
 
 @Interaction
 public class RevertCommand {
@@ -20,7 +19,6 @@ public class RevertCommand {
     @Inject
     private Serverlog serverlog;
 
-    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "moderation revert", desc = "Hebt eine Moderationshandlung auf")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void revertModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die aufgehoben werden soll") long moderationId,

@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Interaction
-@CommandConfig(enabledFor = Permission.MODERATE_MEMBERS)
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class ModerationCommands {
 

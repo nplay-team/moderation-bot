@@ -12,7 +12,6 @@ import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -48,7 +47,6 @@ public class ModlogCommand {
 
     public record ModlogContext(@NotNull User user, @Nullable Member member) {}
 
-    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an")
     public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
                        User user,

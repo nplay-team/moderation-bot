@@ -1,7 +1,7 @@
 package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.JDACommands;
-import com.github.kaktushose.jda.commands.definitions.interactions.command.CommandDefinition;
+import com.github.kaktushose.jda.commands.definitions.interactions.command.CommandDefinition.CommandConfig;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.error.JsonErrorMessageFactory;
 import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
@@ -19,6 +19,7 @@ import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -78,6 +79,7 @@ public class NPLAYModerationBot extends AbstractModule {
 
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
+                .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
 

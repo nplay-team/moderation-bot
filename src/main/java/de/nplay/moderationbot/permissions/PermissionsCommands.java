@@ -8,7 +8,6 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -20,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Interaction
-@CommandConfig(enabledFor = Permission.BAN_MEMBERS)
 @SuppressWarnings("ConstantConditions")
 public class PermissionsCommands {
 

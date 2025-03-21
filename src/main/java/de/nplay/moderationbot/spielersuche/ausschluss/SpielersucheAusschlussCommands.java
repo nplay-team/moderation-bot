@@ -14,7 +14,6 @@ import de.nplay.moderationbot.moderation.create.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
@@ -22,7 +21,6 @@ import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 
 @Interaction
-@CommandConfig(enabledFor = Permission.MODERATE_MEMBERS)
 public class SpielersucheAusschlussCommands {
 
     @Inject

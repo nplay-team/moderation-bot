@@ -7,7 +7,6 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import net.dv8tion.jda.api.Permission;
 
 @Interaction
 public class DetailCommand {
@@ -15,7 +14,6 @@ public class DetailCommand {
     @Inject
     private EmbedCache embedCache;
 
-    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "moderation detail", desc = "Zeigt mehr Informationen zu einer Moderationshandlung an")
     @Permissions(BotPermissions.MODERATION_READ)
     public void detail(CommandEvent event, @Param("Die ID der Moderationshandlung") Long moderationId) {

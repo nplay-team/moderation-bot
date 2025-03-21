@@ -8,14 +8,12 @@ import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 @Interaction
-@CommandConfig(enabledFor = Permission.MODERATE_MEMBERS)
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class NotesCommands {
 
