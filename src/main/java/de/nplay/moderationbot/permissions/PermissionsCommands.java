@@ -4,6 +4,7 @@ import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
+import com.github.kaktushose.jda.commands.dispatching.reply.Component;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedColors;
@@ -11,9 +12,7 @@ import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermission
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.Arrays;
 import java.util.List;
@@ -61,27 +60,23 @@ public class PermissionsCommands {
     }
 
     private void replyMenu(ReplyableEvent<?> event, EntityPermissions holder, String target) {
-        var selectMenu = ((StringSelectMenu) event.getSelectMenu("onPermissionsSelect")).createCopy();
-        selectMenu.getOptions().clear();
-        Arrays.stream(BotPermissions.BitFields.values()).forEach(it -> selectMenu.addOption(it.displayName, it.name()));
-        selectMenu.setMaxValues(SelectMenu.OPTIONS_MAX_AMOUNT)
-                .addOptions(NONE_OPTION)
-                .setDefaultValues(BotPermissions.decode(holder.permissions())
-                        .stream().map(Enum::name)
-                        .toList()
-                );
-
-        event.with().builder(it -> it.addActionRow(selectMenu.build()))
-                .reply(embedCache.getEmbed("permissionsEdit")
+        event.with()
+                .components(Component.stringSelect("onPermissionsSelect")
+                        .selectOptions(NONE_OPTION)
+                        .selectOptions(
+                                Arrays.stream(BotPermissions.BitFields.values())
+                                        .map(it -> SelectOption.of(it.displayName, it.name()))
+                                        .toList()
+                        )
+                        .defaultValues(BotPermissions.decode(holder.permissions()).stream().map(Enum::name).toList())
+                ).reply(embedCache.getEmbed("permissionsEdit")
                         .injectValue("target", target)
                         .injectValue("color", EmbedColors.DEFAULT.hexColor)
                 );
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
-    @com.github.kaktushose.jda.commands.annotations.interactions.StringSelectMenu(value = "Wähle eine oder mehrere Berechtigungen aus")
-    @MenuOption(label = "dummy option", value = "dummy value")
-    @MenuOption(label = "dummy option 2", value = "dummy value 2")
+    @StringSelectMenu(value = "Wähle eine oder mehrere Berechtigungen aus")
     public void onPermissionsSelect(ComponentEvent event, List<String> selection) {
         int permissions = selection.contains("NONE") ? 0 : BotPermissions.combine(
                 selection.stream().map(it -> BotPermissions.BitFields.valueOf(it).value).toList()

@@ -6,6 +6,7 @@ import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
+import com.github.kaktushose.jda.commands.dispatching.reply.Component;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
@@ -17,16 +18,15 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Interaction
@@ -34,7 +34,7 @@ import java.util.List;
 public class ModlogCommand {
 
     @Inject
-    EmbedCache embedCache;
+    private EmbedCache embedCache;
 
     private Integer offset = 0;
     private Integer limit = 5;
@@ -51,7 +51,8 @@ public class ModlogCommand {
     public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
                        User user,
                        @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,
-                       @Optional @Param("Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)") @Min(1) @Max(25) Integer count) {
+                       @Optional @Param("Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)")
+                       @Min(1) @Max(25) Integer count) {
         interactionHook = event.jdaEvent().deferReply().complete();
         Member member;
         try {
@@ -81,42 +82,48 @@ public class ModlogCommand {
             offset = (this.page - 1) * limit;
         }
 
-        interactionHook.editOriginalEmbeds(getEmbeds(event)).queue();
-        interactionHook.editOriginalComponents(maxPage > 1 ? getComponents(event) : List.of()).queue();
+        reply(event);
     }
 
     @Button(value = "Zurück", emoji = "⬅️", style = ButtonStyle.PRIMARY)
     public void back(ComponentEvent event) {
         page--;
         offset -= limit;
-        updateMessage(event);
+        reply(event);
         event.jdaEvent().deferEdit().complete();
     }
 
-    @com.github.kaktushose.jda.commands.annotations.interactions.StringSelectMenu(value = "Seitenauswahl")
+    @StringSelectMenu(value = "Seitenauswahl")
     @MenuOption(value = "1", label = "Seite 1")
-    @MenuOption(value = "dummy", label = "DO NOT TOUCH") // TODO: Remove when jda-commands updates
     public void selectPage(ComponentEvent event, List<String> values) {
         page = Integer.parseInt(values.get(0));
         offset = (page - 1) * limit;
         event.jdaEvent().deferEdit().complete();
-        updateMessage(event);
+        reply(event);
     }
 
     @Button(value = "Weiter", emoji = "➡️", style = ButtonStyle.PRIMARY)
     public void next(ComponentEvent event) {
         page++;
         offset += limit;
-        updateMessage(event);
+        reply(event);
         event.jdaEvent().deferEdit().complete();
     }
 
-    public void updateMessage(ComponentEvent event) {
-        interactionHook.editOriginalEmbeds(getEmbeds(event)).queue();
-        interactionHook.editOriginalComponents(getComponents(event)).queue();
+    public void reply(ReplyableEvent<?> event) {
+        var pages = new ArrayList<SelectOption>();
+        if (maxPage > 1) {
+            for (int i = 2; i <= maxPage && i < 26; i++) {
+                pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
+            }
+        }
+        event.with()
+                .components(Component.stringSelect("selectPage").selectOptions(pages))
+                .components(Component.button("back").enabled(page > 1), Component.button("next").enabled(page < maxPage))
+                .reply(getEmbeds(event));
     }
 
-    public Collection<MessageEmbed> getEmbeds(ReplyableEvent<?> event) {
+    public MessageCreateData getEmbeds(ReplyableEvent<?> event) {
         List<MessageEmbed> list = new ArrayList<>();
 
         list.add(EmbedHelpers.getModlogEmbedHeader(embedCache, context));
@@ -128,32 +135,6 @@ public class ModlogCommand {
             list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), context.user, notes).toMessageEmbed());
         }
 
-        return list;
+        return new MessageCreateBuilder().setEmbeds(list).build();
     }
-
-    public Collection<LayoutComponent> getComponents(ReplyableEvent<?> event) {
-        var backButton = event.getButton("back");
-        var pageSelect = ((StringSelectMenu) event.getSelectMenu("selectPage")).createCopy();
-        var nextButton = event.getButton("next");
-
-        var backEnable = page > 1;
-        var nextEnable = page < maxPage;
-
-        pageSelect.getOptions().clear();
-        pageSelect.addOption("Seite 1", "1");
-
-        if (maxPage > 1) {
-            for (int i = 2; i <= maxPage && i < 26; i++) {
-                pageSelect.addOption("Seite " + i, Integer.toString(i));
-            }
-        }
-
-        pageSelect.setMaxValues(1).setDefaultValues(page.toString());
-
-        return List.of(
-                ActionRow.of(pageSelect.build()),
-                ActionRow.of(backButton.withDisabled(!backEnable), nextButton.withDisabled(!nextEnable))
-        );
-    }
-
 }
