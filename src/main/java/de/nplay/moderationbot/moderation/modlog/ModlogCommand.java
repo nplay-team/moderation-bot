@@ -89,8 +89,8 @@ public class ModlogCommand {
     public void back(ComponentEvent event) {
         page--;
         offset -= limit;
-        reply(event);
         event.jdaEvent().deferEdit().complete();
+        reply(event);
     }
 
     @StringSelectMenu(value = "Seitenauswahl")
@@ -106,21 +106,25 @@ public class ModlogCommand {
     public void next(ComponentEvent event) {
         page++;
         offset += limit;
-        reply(event);
         event.jdaEvent().deferEdit().complete();
+        reply(event);
     }
 
     public void reply(ReplyableEvent<?> event) {
+        if (maxPage < 2) {
+            event.reply(getEmbeds(event));
+            return;
+        }
         var pages = new ArrayList<SelectOption>();
-        if (maxPage > 1) {
-            for (int i = 2; i <= maxPage && i < 26; i++) {
-                pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
-            }
+        for (int i = 2; i <= maxPage && i < 26; i++) {
+            pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
         }
         event.with()
+                .keepComponents(false)
+                .builder(builder -> builder.setEmbeds(getEmbeds(event).getEmbeds()))
                 .components(Component.stringSelect("selectPage").selectOptions(pages))
                 .components(Component.button("back").enabled(page > 1), Component.button("next").enabled(page < maxPage))
-                .reply(getEmbeds(event));
+                .reply();
     }
 
     public MessageCreateData getEmbeds(ReplyableEvent<?> event) {
