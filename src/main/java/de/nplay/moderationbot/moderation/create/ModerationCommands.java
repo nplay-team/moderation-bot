@@ -97,7 +97,7 @@ public class ModerationCommands {
         moderationActBuilder = ModerationActBuilder.timeout(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.TIMEOUT;
-        event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Timeout)"));
+        event.replyModal("onModerateDurationRequired", modal -> modal.title("Begründung und Dauer angeben (Timeout)"));
     }
 
     @Command(value = "Timeoute Mitglied (💬)", type = Type.MESSAGE)
@@ -105,7 +105,7 @@ public class ModerationCommands {
         moderationActBuilder = ModerationActBuilder.timeout(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.TIMEOUT;
-        event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Timeout)"));
+        event.replyModal("onModerateDurationRequired", modal -> modal.title("Begründung und Dauer angeben (Timeout)"));
     }
 
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
@@ -179,16 +179,19 @@ public class ModerationCommands {
         event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Temp-Ban)"));
     }
 
-    @Modal(value = "Begründung angeben")
-    public void onModerateWarn(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
-        onModerate(event, reason);
+    @Modal(value = "Begründung und Dauer angeben")
+    public void onModerateDurationRequired(ModalEvent event,
+                                   @TextInput(value = "Begründung der Moderationshandlung") String reason,
+                                   @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT)
+                                   String until) {
+        onModerateDuration(event, reason, until);
     }
 
     @Modal(value = "Begründung und Dauer angeben")
     public void onModerateDuration(ModalEvent event,
-                                         @TextInput(value = "Begründung der Moderationshandlung") String reason,
-                                         @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT)
-                                         String until) {
+                                   @TextInput(value = "Begründung der Moderationshandlung") String reason,
+                                   @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT, required = false)
+                                   String until) {
         var duration = DurationAdapter.parse(until);
 
         if (duration.isEmpty()) {
@@ -196,7 +199,7 @@ public class ModerationCommands {
             return;
         }
 
-        if (duration.get().getSeconds() > 2419200) {
+        if (type == ModerationActType.TIMEOUT && duration.get().getSeconds() > 2419200) {
             event.with().ephemeral(true).reply("Die angegebene Dauer ist zu lang. Bitte gib eine Dauer von maximal 28 Tagen an.");
             return;
         }
