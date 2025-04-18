@@ -208,7 +208,8 @@ public class ModerationCommands {
         onModerate(event, reason);
     }
 
-    public void onModerate(ModalEvent event, String reason) {
+    @Modal(value = "Begründung angeben")
+    public void onModerate(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         var action = moderationActBuilder.reason(reason).build();
 
         if (type == ModerationActType.TIMEOUT && ModerationService.isTimeOuted(action.targetId())) {
