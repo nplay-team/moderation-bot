@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.Command.Type;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Interaction
+@CommandConfig(enabledFor = Permission.MESSAGE_MANAGE)
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class BulkDeleteCommands {
 
@@ -31,13 +32,13 @@ public class BulkDeleteCommands {
     @Inject
     private Serverlog serverlog;
 
-    @SlashCommand(value = "moderation purge messages", desc = "Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig", isGuildOnly = true, enabledFor = Permission.MESSAGE_MANAGE)
+    @Command(value = "moderation purge messages", desc = "Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig")
     public void purgeMessagesByAmount(CommandEvent event, @Param("Anzahl der Nachrichten die gelöscht werden sollen") @Min(1) @Max(100) int amount) {
         var deletedMessages = purgeMessages(event, event.getMessageChannel(), event.getMessageChannel().getLatestMessageId(), amount) - 1;
         replyEvent(event, deletedMessages);
     }
 
-    @ContextCommand(value = "Nachrichten bis hier löschen", enabledFor = Permission.MESSAGE_MANAGE, isGuildOnly = true, type = Command.Type.MESSAGE)
+    @Command(value = "Nachrichten bis hier löschen", type = Type.MESSAGE)
     public void purgeMessagesUntilHere(CommandEvent event, Message pivot) {
         var deletedMessages = purgeMessages(event, event.getMessageChannel(), pivot.getId(), null);
         replyEvent(event, deletedMessages);

@@ -4,6 +4,7 @@ import com.github.kaktushose.jda.commands.dispatching.adapter.TypeAdapter;
 import com.github.kaktushose.jda.commands.guice.Implementation;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,10 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         return parse(raw);
     }
 
-    public static Optional<Duration> parse(String raw) {
+    public static Optional<Duration> parse(@Nullable String raw) {
+        if (raw == null || raw.isBlank()) {
+            return Optional.empty();
+        }
         var parseString = raw.toUpperCase()
                 .replaceAll("\\s+", "")
                 .replaceAll("DAYS?", "D")
