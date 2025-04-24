@@ -12,8 +12,8 @@ import com.google.inject.Inject;
 import de.nplay.moderationbot.duration.DurationAdapter;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
+import de.nplay.moderationbot.moderation.ModerationActLock;
 import de.nplay.moderationbot.moderation.ModerationActType;
-import de.nplay.moderationbot.moderation.ModerationManager;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationUtils;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -43,7 +43,7 @@ public class ModerationCommands {
     @Inject
     private Serverlog serverlog;
     @Inject
-    private ModerationManager moderationManager;
+    private ModerationActLock moderationActLock;
     private ModerationActBuilder moderationActBuilder;
     private Boolean replyEphemeral = false;
     private static final String PARAGRAPH_PARAMETER_DESC = "Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?";
@@ -65,7 +65,7 @@ public class ModerationCommands {
     public void warnMember(CommandEvent event,
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
         type = ModerationActType.WARN;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Warn)"));
@@ -73,7 +73,7 @@ public class ModerationCommands {
 
     @Command(value = "Verwarne Mitglied", type = Type.USER)
     public void warnMemberContext(CommandEvent event, User target) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.warn(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.WARN;
@@ -82,7 +82,7 @@ public class ModerationCommands {
 
     @Command(value = "Verwarne Mitglied (💬)", type = Type.MESSAGE)
     public void warnMemberMessageContext(CommandEvent event, Message target) {
-        if (blockUser(event, target.getAuthor(), event.getUser())) return;
+        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.warn(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.WARN;
@@ -95,7 +95,7 @@ public class ModerationCommands {
                               @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
                               Duration until,
                               @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000).paragraph(paragraph);
         type = ModerationActType.TIMEOUT;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Timeout)"));
@@ -103,7 +103,7 @@ public class ModerationCommands {
 
     @Command(value = "Timeoute Mitglied", type = Type.USER)
     public void timeoutMemberContext(CommandEvent event, User target) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.timeout(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.TIMEOUT;
@@ -112,7 +112,7 @@ public class ModerationCommands {
 
     @Command(value = "Timeoute Mitglied (💬)", type = Type.MESSAGE)
     public void timeoutMemberMessageContext(CommandEvent event, Message target) {
-        if (blockUser(event, target.getAuthor(), event.getUser())) return;
+        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.timeout(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.TIMEOUT;
@@ -127,7 +127,7 @@ public class ModerationCommands {
                            @Optional @Max(7)
                            @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
                            int delDays) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).deletionDays(delDays);
         type = ModerationActType.KICK;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Kick)"));
@@ -136,7 +136,7 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command(value = "Kicke Mitglied", type = Type.USER)
     public void kickMemberContext(CommandEvent event, User target) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.kick(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.KICK;
@@ -146,7 +146,7 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command(value = "Kicke Mitglied (💬)", type = Type.MESSAGE)
     public void kickMemberMessageContext(CommandEvent event, Message target) {
-        if (blockUser(event, target.getAuthor(), event.getUser())) return;
+        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.kick(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.KICK;
@@ -164,7 +164,7 @@ public class ModerationCommands {
             int delDays,
             @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
     ) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
@@ -179,7 +179,7 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "(Temp-)Ban Mitglied", type = Type.USER)
     public void banMemberContext(CommandEvent event, User target) {
-        if (blockUser(event, target, event.getUser())) return;
+        if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.ban(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.TEMP_BAN;
@@ -189,7 +189,7 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "(Temp-)Ban Mitglied (💬)", type = Type.MESSAGE)
     public void banMemberMessageContext(CommandEvent event, Message target) {
-        if (blockUser(event, target.getAuthor(), event.getUser())) return;
+        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.ban(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.TEMP_BAN;
@@ -198,9 +198,9 @@ public class ModerationCommands {
 
     @Modal(value = "Begründung und Dauer angeben")
     public void onModerateDurationRequired(ModalEvent event,
-                                   @TextInput(value = "Begründung der Moderationshandlung") String reason,
-                                   @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT)
-                                   String until) {
+                                           @TextInput(value = "Begründung der Moderationshandlung") String reason,
+                                           @TextInput(value = "Dauer der Moderationshandlung", style = TextInputStyle.SHORT)
+                                           String until) {
         onModerateDuration(event, reason, until);
     }
 
@@ -272,15 +272,15 @@ public class ModerationCommands {
 
         ModerationUtils.sendMessageToTarget(moderationAct, event.getJDA(), event.getGuild(), embedCache);
         event.with().ephemeral(replyEphemeral).reply(embed);
-        moderationManager.release(moderationAct.userId().toString());
+        moderationActLock.unlock(moderationAct.userId().toString());
     }
 
-    private boolean blockUser(ReplyableEvent event, UserSnowflake target, UserSnowflake moderator) {
-        if (!moderationManager.block(target.getId(), moderator.getId())) {
+    private boolean checkLocked(ReplyableEvent<?> event, UserSnowflake target, UserSnowflake moderator) {
+        if (!moderationActLock.lock(target.getId(), moderator.getId())) {
             event.with().ephemeral(true).reply(
                     embedCache.getEmbed("moderationTargetBlocked")
                             .injectValue("targetId", target.getId())
-                            .injectValue("moderatorId", moderationManager.get(target.getId()))
+                            .injectValue("moderatorId", moderationActLock.get(target.getId()))
                             .injectValue("color", EmbedColors.ERROR)
             );
             return true;
