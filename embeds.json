@@ -693,5 +693,16 @@
     "title": "Slowmode entfernt",
     "description": "Der Slowmode für diesen Kanal wurde entfernt!",
     "color": "{color}"
+  },
+  "slowmodeMessageRemoved": {
+    "title": "Slowmode - Nachricht entfernt",
+    "description": "Deine Nachricht im Kanal <#{channelId}> wurde gelöscht, weil dieser Kanal im Slowmode sich befindet! Zwischen den Nachrichten muss eine Wartezeit von **{duration}** liegen.",
+    "fields": [
+      {
+        "name": "Letzte Nachricht",
+        "value": "<t:{timestampLastMessage}:R>"
+      }
+    ],
+    "color": "{color}"
   }
 }

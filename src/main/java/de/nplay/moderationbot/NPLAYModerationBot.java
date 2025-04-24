@@ -60,6 +60,8 @@ public class NPLAYModerationBot extends AbstractModule {
      */
     @SuppressWarnings("UnstableApiUsage")
     private NPLAYModerationBot(String guildId, String token) throws InterruptedException {
+        embedCache = new EmbedCache(System.getenv("EMBED_PATH"));
+
         jda = JDABuilder.createDefault(token)
                 .enableIntents(
                         GatewayIntent.GUILD_MEMBERS,
@@ -68,14 +70,12 @@ public class NPLAYModerationBot extends AbstractModule {
                 )
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
-                .addEventListeners(new SlowmodeEventHandler())
+                .addEventListeners(new SlowmodeEventHandler(embedCache))
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build().awaitReady();
 
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
-
-        embedCache = new EmbedCache(System.getenv("EMBED_PATH"));
 
         serverlog = new Serverlog(guild, embedCache);
 
