@@ -675,22 +675,22 @@
     "color": "{color}"
   },
   "slowmodeInfo": {
-    "title": "Slowmode Info",
+    "title": "Slowmode Info <#{channelId}>",
     "description": "Der Slowmode für diesen Kanal beträgt **{duration}**!",
     "color": "{color}"
   },
   "slowmodeSet": {
-    "title": "Slowmode gesetzt",
+    "title": "Slowmode gesetzt <#{channelId}>",
     "description": "Der Slowmode für diesen Kanal wurde auf **{duration}** gesetzt!",
     "color": "{color}"
   },
   "slowmodeNotSet": {
     "title": "Fehler",
-    "description": "Für diesen Kanal wurde kein Slowmode gesetzt!",
+    "description": "Für den Kanal <#{channelId}> wurde kein Slowmode gesetzt!",
     "color": "{color}"
   },
   "slowmodeRemove": {
-    "title": "Slowmode entfernt",
+    "title": "Slowmode entfernt <#{channelId}>",
     "description": "Der Slowmode für diesen Kanal wurde entfernt!",
     "color": "{color}"
   },
