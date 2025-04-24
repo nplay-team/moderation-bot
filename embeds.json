@@ -673,5 +673,25 @@
     "title": "Fehler",
     "description": "Die Dauer konnte nicht korrekt eingelesen werden. Bitte verwende das Format **Xd Yh Zm**!\nEingabe: `{duration}`",
     "color": "{color}"
+  },
+  "slowmodeInfo": {
+    "title": "Slowmode Info",
+    "description": "Der Slowmode für diesen Kanal beträgt **{duration}**!",
+    "color": "{color}"
+  },
+  "slowmodeSet": {
+    "title": "Slowmode gesetzt",
+    "description": "Der Slowmode für diesen Kanal wurde auf **{duration}** gesetzt!",
+    "color": "{color}"
+  },
+  "slowmodeNotSet": {
+    "title": "Fehler",
+    "description": "Für diesen Kanal wurde kein Slowmode gesetzt!",
+    "color": "{color}"
+  },
+  "slowmodeRemove": {
+    "title": "Slowmode entfernt",
+    "description": "Der Slowmode für diesen Kanal wurde entfernt!",
+    "color": "{color}"
   }
 }

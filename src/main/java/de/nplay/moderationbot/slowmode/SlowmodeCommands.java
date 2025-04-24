@@ -2,39 +2,54 @@ package de.nplay.moderationbot.slowmode;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.Command;
 import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
-import com.github.kaktushose.jda.commands.annotations.interactions.Optional;
 import com.github.kaktushose.jda.commands.annotations.interactions.Param;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
+import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.google.inject.Inject;
+import de.nplay.moderationbot.Helpers;
+import de.nplay.moderationbot.embeds.EmbedColors;
 
 import java.time.Duration;
 
 @Interaction
 public class SlowmodeCommands {
 
-    @Command(value = "slowmode", desc = "Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.")
-    public void slowmodeCommand(
-            CommandEvent event,
-            @Optional @Param("Wie lang soll der Slowmode sein?") Duration duration
+    @Inject
+    private EmbedCache embedCache;
+
+    @Command(value = "slowmode info", desc = "Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.")
+    public void slowmodeInfoCommand(
+            CommandEvent event
     ) {
-        if (duration == null) {
-            var slowmode = SlowmodeService.getSlowmode(event.getGuildChannel());
-            if (slowmode.isPresent()) {
-                event.reply("Der aktuelle Slowmode für diesen Channel beträgt " + slowmode.get().duration() + " Sekunden.");
-            } else {
-                event.reply("Es ist kein Slowmode für diesen Channel gesetzt.");
-            }
+        var slowmode = SlowmodeService.getSlowmode(event.getGuildChannel());
+        if (slowmode.isPresent()) {
+            event.reply(
+                    embedCache.getEmbed("slowmodeInfo")
+                            .injectValue("color", EmbedColors.DEFAULT)
+                            .injectValue("duration", Helpers.durationToString(Duration.ofSeconds(slowmode.get().duration()), true))
+            );
         } else {
-            SlowmodeService.setSlowmode(event.getGuildChannel(), (int) duration.toSeconds());
-            event.reply("Der Slowmode für diesen Channel wurde auf " + duration.toSeconds() + " Sekunden gesetzt.");
+            event.reply(embedCache.getEmbed("slowmodeNotSet").injectValue("color", EmbedColors.DEFAULT));
         }
     }
 
-    @Command(value = "slowmode remove", desc = "Entfernt den Slowmode für diesen Channel.")
-    public void slowmodeRemoveCommand(
-            CommandEvent event
+    @Command(value = "slowmode set", desc = "Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.")
+    public void slowmodeSetCommand(
+            CommandEvent event,
+            @Param("Wie lang soll der Slowmode sein?") Duration duration
     ) {
+        SlowmodeService.setSlowmode(event.getGuildChannel(), (int) duration.toSeconds());
+        event.reply(
+                embedCache.getEmbed("slowmodeSet")
+                        .injectValue("color", EmbedColors.SUCCESS)
+                        .injectValue("duration", Helpers.durationToString(duration))
+        );
+    }
+
+    @Command(value = "slowmode remove", desc = "Entfernt den Slowmode für diesen Channel.")
+    public void slowmodeRemoveCommand(CommandEvent event) {
         SlowmodeService.removeSlowmode(event.getGuildChannel());
-        event.reply("Der Slowmode für diesen Channel wurde entfernt.");
+        event.reply(embedCache.getEmbed("slowmodeRemove").injectValue("color", EmbedColors.SUCCESS));
     }
 
 }
