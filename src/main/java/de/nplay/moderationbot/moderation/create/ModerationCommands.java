@@ -211,17 +211,6 @@ public class ModerationCommands {
     @Modal(value = "Begründung angeben")
     public void onModerate(ModalEvent event, @TextInput(value = "Begründung der Moderationshandlung") String reason) {
         var action = moderationActBuilder.reason(reason).build();
-        var isMember = event.getGuild().isMember(User.fromId(action.targetId()));
-
-        if (!isMember && ModerationService.isBanned(action.targetId())) {
-            event.reply("User ist nicht auf dem Server und kann daher nicht moderiert werden!");
-            return;
-        }
-
-        if (!isMember && !type.isBan()) {
-            event.reply("User ist nicht auf dem Server und kann daher nicht moderiert werden!");
-            return;
-        }
 
         if (type == ModerationActType.TIMEOUT && ModerationService.isTimeOuted(action.targetId())) {
             event.reply(embedCache.getEmbed("userAlreadyTimeOuted").injectValue("color", EmbedColors.ERROR));

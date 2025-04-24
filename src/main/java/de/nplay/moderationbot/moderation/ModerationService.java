@@ -147,15 +147,9 @@ public class ModerationService {
         return Query.query("SELECT EXISTS(SELECT 1 FROM moderations WHERE user_id = ? AND TYPE = 'TIMEOUT' AND reverted = FALSE)")
                 .single(Call.of().bind(userId))
                 .map(row -> row.getBoolean(1))
-                .first().orElse(false);
+                .first().orElseThrow();
     }
 
-    public static boolean isBanned(long userId) {
-        return Query.query("SELECT EXISTS(SELECT 1 FROM moderations WHERE user_id = ? AND (TYPE = 'BAN' OR TYPE = 'TEMP_BAN') AND reverted = FALSE)")
-                .single(Call.of().bind(userId))
-                .map(row -> row.getBoolean(1))
-                .first().orElse(false);
-    }
 
     public record ModerationAct(
             Long id,
