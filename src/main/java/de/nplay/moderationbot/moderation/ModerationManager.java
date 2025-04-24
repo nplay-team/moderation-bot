@@ -14,7 +14,7 @@ public class ModerationManager {
     private final ConcurrentHashMap<String, String> activeModerationUsers = new ConcurrentHashMap<>();
 
     public boolean block(String targetId, String moderatorId) {
-        if (check(targetId)) return false;
+        if (activeModerationUsers.putIfAbsent(targetId, moderatorId) != null) return false;
 
         log.info("Blocking user {}", targetId);
 
@@ -23,7 +23,6 @@ public class ModerationManager {
             release(targetId);
         });
 
-        activeModerationUsers.put(targetId, moderatorId);
         return true;
     }
 
