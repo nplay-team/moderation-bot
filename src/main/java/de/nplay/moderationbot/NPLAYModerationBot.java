@@ -14,6 +14,7 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.moderation.ModerationManager;
 import de.nplay.moderationbot.moderation.revert.AutomaticRevertTask;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.JDA;
@@ -48,6 +49,7 @@ public class NPLAYModerationBot extends AbstractModule {
     private final Guild guild;
     private final EmbedCache embedCache;
     private final Serverlog serverlog;
+    private final ModerationManager moderationManager = new ModerationManager();
 
     /**
      * Constructor of the bot, creates a JDA instance and initiates all relevant services.
@@ -152,5 +154,10 @@ public class NPLAYModerationBot extends AbstractModule {
     @Provides
     public Serverlog getServerlog() {
         return serverlog;
+    }
+
+    @Provides
+    public ModerationManager getModerationManager() {
+        return moderationManager;
     }
 }
