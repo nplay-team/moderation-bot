@@ -1,13 +1,13 @@
 package de.nplay.moderationbot.moderation.revert;
 
-import com.google.inject.Inject;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 
 @Interaction
@@ -19,7 +19,7 @@ public class RevertCommand {
     @Inject
     private Serverlog serverlog;
 
-    @Command(value = "moderation revert", desc = "Hebt eine Moderationshandlung auf")
+    @Command(value = "mod revert", desc = "Hebt eine Moderationshandlung auf")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void revertModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die aufgehoben werden soll") long moderationId,
                                  @Optional @Param(value = "Der Grund für die Aufhebung") String reason) {

@@ -1,13 +1,13 @@
 package de.nplay.moderationbot.moderation.commands;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.google.inject.Inject;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class DeleteCommand {
     private Serverlog serverlog;
 
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
-    @Command(value = "moderation delete", desc = "Löscht eine Moderationshandlung")
+    @Command(value = "mod delete", desc = "Löscht eine Moderationshandlung")
     @Permissions(BotPermissions.MODERATION_DELETE)
     public void deleteModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die gelöscht werden soll") long moderationId) {
         var moderation = ModerationService.getModerationAct(moderationId);
