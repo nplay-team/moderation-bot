@@ -106,6 +106,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                     embedCache.getEmbed("slowmodeMessageRemoved")
                             .injectValue("channelId", channelId)
                             .injectValue("duration", Helpers.durationToString(Duration.ofSeconds(duration), true))
+                            .injectValue("timestampNextMessage", lastMessageTimestamp + duration)
                             .injectValue("timestampLastMessage", lastMessageTimestamp)
                             .injectValue("color", EmbedColors.ERROR)
                             .toMessageEmbed()

@@ -699,6 +699,10 @@
     "description": "Deine Nachricht im Kanal <#{channelId}> wurde gelöscht, weil dieser Kanal sich im Slowmode befindet! Zwischen den Nachrichten muss eine Wartezeit von **{duration}** liegen.",
     "fields": [
       {
+        "name": "Nächste Nachricht möglich",
+        "value": "<t:{timestampNextMessage}:R>"
+      },
+      {
         "name": "Letzte Nachricht",
         "value": "<t:{timestampLastMessage}:R>"
       }

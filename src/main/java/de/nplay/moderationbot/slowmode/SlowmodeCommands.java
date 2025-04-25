@@ -42,7 +42,7 @@ public class SlowmodeCommands {
         }
     }
 
-    @Command(value = "slowmode set", desc = "Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.")
+    @Command(value = "slowmode set", desc = "Setzt den Slowmode für diesen oder einen anderen Kanal.")
     public void slowmodeSetCommand(
             CommandEvent event,
             @Param("Wie lang soll der Slowmode sein?") Duration duration,
