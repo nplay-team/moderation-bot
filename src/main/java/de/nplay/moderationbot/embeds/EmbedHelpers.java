@@ -33,7 +33,8 @@ public class EmbedHelpers {
         var spielersucheAusschlussRolle = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
 
         var embed = embedCache.getEmbed("modlogHeader")
-                .injectValue("username", context.user().getEffectiveName())
+                .injectValue("username", context.user().getName())
+                .injectValue("effectiveName", context.user().getEffectiveName())
                 .injectValue("userId", context.user().getIdLong())
                 .injectValue("avatarUrl", context.user().getEffectiveAvatarUrl())
                 .injectValue("createdAt", context.user().getTimeCreated().getLong(ChronoField.INSTANT_SECONDS))

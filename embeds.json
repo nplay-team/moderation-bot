@@ -326,7 +326,7 @@
     "fields": [
       {
         "name": "Name",
-        "value": "{username}",
+        "value": "{effectiveName}",
         "inline": false
       },
       {
