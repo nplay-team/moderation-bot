@@ -18,7 +18,10 @@ public class ModerationActLock {
 
         log.debug("Locking user {}", targetId);
 
-        CompletableFuture.delayedExecutor(1L, TimeUnit.MINUTES).execute(() -> unlock(targetId));
+        CompletableFuture.delayedExecutor(1L, TimeUnit.MINUTES).execute(() -> {
+            log.warn("Automatically unlocking user: {}", targetId);
+            activeModerationUsers.remove(targetId);
+        });
 
         return true;
     }
