@@ -47,7 +47,7 @@ public class ModlogCommand {
 
     public record ModlogContext(@NotNull User user, @Nullable Member member) {}
 
-    @Command(value = "moderation modlog", desc = "Zeigt den Modlog eines Mitglieds an")
+    @Command(value = "mod log", desc = "Zeigt den Modlog eines Mitglieds an")
     public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
                        User user,
                        @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,

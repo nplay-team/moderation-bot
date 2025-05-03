@@ -49,7 +49,7 @@ public class ModerationCommands {
     private static final String PARAGRAPH_PARAMETER_DESC = "Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?";
     private ModerationActType type;
 
-    @AutoComplete(value = {"moderation", "spielersuche ausschluss"}, options = "paragraph")
+    @AutoComplete(value = {"mod", "spielersuche ausschluss"}, options = "paragraph")
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
         var rules = RuleService.getParagraphIdMapping();
         rules.values().removeIf(it -> !it.shortDisplay().toLowerCase().contains(event.getValue().toLowerCase()));
@@ -61,7 +61,7 @@ public class ModerationCommands {
         );
     }
 
-    @Command(value = "moderation warn", desc = "Verwarnt einen Benutzer")
+    @Command(value = "mod warn", desc = "Verwarnt einen Benutzer")
     public void warnMember(CommandEvent event,
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
@@ -89,7 +89,7 @@ public class ModerationCommands {
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Warn)"));
     }
 
-    @Command(value = "moderation timeout", desc = "Versetzt einen Benutzer in den Timeout")
+    @Command(value = "mod timeout", desc = "Versetzt einen Benutzer in den Timeout")
     public void timeoutMember(CommandEvent event,
                               @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target,
                               @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
@@ -120,7 +120,7 @@ public class ModerationCommands {
     }
 
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
-    @Command(value = "moderation kick", desc = "Kickt einen Benutzer vom Server")
+    @Command(value = "mod kick", desc = "Kickt einen Benutzer vom Server")
     public void kickMember(CommandEvent event,
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
@@ -154,7 +154,7 @@ public class ModerationCommands {
     }
 
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
-    @Command(value = "moderation ban", desc = "Bannt einen Benutzer vom Server")
+    @Command(value = "mod ban", desc = "Bannt einen Benutzer vom Server")
     public void banMember(
             CommandEvent event,
             @Param("Der Benutzer, der gekickt werden soll.") Member target,
