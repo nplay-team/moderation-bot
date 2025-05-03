@@ -70,6 +70,11 @@
     "title": "{type} erfolgreich ausgeführt!",
     "color": "{color}"
   },
+  "moderationTargetBlocked": {
+    "title": "Fehler",
+    "description": "Der angegebene Nutzer <@{targetId}> wird bereits durch <@{moderatorId}> moderiert!",
+    "color": "{color}"
+  },
   "warnEmbed": {
     "title": "Verwarnung",
     "description": "Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!",

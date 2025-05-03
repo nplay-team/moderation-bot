@@ -18,9 +18,10 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 public class NotesCommands {
 
     @Inject
-    EmbedCache embedCache;
+    private EmbedCache embedCache;
 
     private Member target;
+    private boolean ephemeral = false;
 
     @Command(value = "notes create", desc = "Erstellt eine Notiz über einen Benutzer")
     public void createNote(CommandEvent event, @Param("Zu welchem Benutzer soll eine Notiz erstellt werden?") Member target) {
@@ -38,6 +39,7 @@ public class NotesCommands {
     @Command(value = "Notiz erstellen", type = Type.USER)
     public void createNoteContext(CommandEvent event, User target) {
         this.target = event.getGuild().retrieveMember(target).complete();
+        ephemeral = true;
         event.replyModal("createNoteModal");
     }
 
@@ -63,7 +65,7 @@ public class NotesCommands {
     @Modal("Notiz erstellen")
     public void createNoteModal(ModalEvent event, @TextInput(value = "Inhalt der Notiz", style = TextInputStyle.PARAGRAPH) String content) {
         var note = NotesService.createNote(target.getIdLong(), event.getMember().getIdLong(), content);
-        event.reply(EmbedHelpers.getNotesCreatedEmbed(embedCache, event.getJDA(), note));
+        event.with().ephemeral(ephemeral).reply(EmbedHelpers.getNotesCreatedEmbed(embedCache, event.getJDA(), note));
     }
 
 }

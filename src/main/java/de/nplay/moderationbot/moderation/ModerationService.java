@@ -147,9 +147,8 @@ public class ModerationService {
         return Query.query("SELECT EXISTS(SELECT 1 FROM moderations WHERE user_id = ? AND TYPE = 'TIMEOUT' AND reverted = FALSE)")
                 .single(Call.of().bind(userId))
                 .map(row -> row.getBoolean(1))
-                .first().orElseThrow();
+                .first().orElse(false);
     }
-
 
     public record ModerationAct(
             Long id,
