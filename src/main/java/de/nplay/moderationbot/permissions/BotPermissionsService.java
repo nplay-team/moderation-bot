@@ -29,6 +29,10 @@ public class BotPermissionsService {
                     .noneMatch(it -> (permissions() & it.value) == 0);
         }
 
+        public boolean hasPermission(@NotNull String permission) {
+            return (permissions() & BotPermissions.BitFields.valueOf(permission).value) != 0;
+        }
+
         /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
         @NotNull
         public String readableList() {

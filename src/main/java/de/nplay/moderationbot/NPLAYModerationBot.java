@@ -17,6 +17,7 @@ import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.moderation.ModerationActLock;
 import de.nplay.moderationbot.moderation.revert.AutomaticRevertTask;
 import de.nplay.moderationbot.serverlog.Serverlog;
+import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -61,6 +62,8 @@ public class NPLAYModerationBot extends AbstractModule {
      */
     @SuppressWarnings("UnstableApiUsage")
     private NPLAYModerationBot(String guildId, String token) throws InterruptedException {
+        embedCache = new EmbedCache(System.getenv("EMBED_PATH"));
+
         jda = JDABuilder.createDefault(token)
                 .enableIntents(
                         GatewayIntent.GUILD_MEMBERS,
@@ -69,13 +72,12 @@ public class NPLAYModerationBot extends AbstractModule {
                 )
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
+                .addEventListeners(new SlowmodeEventHandler(embedCache))
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build().awaitReady();
 
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
-
-        embedCache = new EmbedCache(System.getenv("EMBED_PATH"));
 
         serverlog = new Serverlog(guild, embedCache);
 

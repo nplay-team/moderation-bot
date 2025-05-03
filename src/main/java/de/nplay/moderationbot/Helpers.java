@@ -25,4 +25,16 @@ public class Helpers {
         return builder.toString().trim();
     }
 
+    public static String durationToString(Duration duration, boolean detailed) {
+        if (detailed) {
+            return durationToString(duration)
+                    .replaceAll("d", " Tag(e)")
+                    .replaceAll("h", " Stunde(n)")
+                    .replaceAll("m", " Minute(n)")
+                    .replaceAll("s", " Sekunde(n)");
+        } else {
+            return durationToString(duration);
+        }
+    }
+
 }
