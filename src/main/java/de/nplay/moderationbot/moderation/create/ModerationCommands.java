@@ -25,9 +25,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
@@ -168,8 +170,16 @@ public class ModerationCommands {
     ) {
         if (checkLocked(event, target, event.getUser())) return;
 
-        var member = event.getGuild().isMember(target) ? event.getGuild().retrieveMember(target).complete() :
-                new MemberImpl((GuildImpl) event.getGuild(), target);
+        Member member;
+        try {
+            member = event.getGuild().retrieveMember(target).complete();
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+                member = new MemberImpl((GuildImpl) event.getGuild(), target);
+            } else {
+                throw new IllegalStateException(e);
+            }
+        }
 
         moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays).paragraph(paragraph);
         if (until != null) {
