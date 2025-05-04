@@ -28,6 +28,8 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -157,7 +159,7 @@ public class ModerationCommands {
     @Command(value = "mod ban", desc = "Bannt einen Benutzer vom Server")
     public void banMember(
             CommandEvent event,
-            @Param("Der Benutzer, der gekickt werden soll.") Member target,
+            @Param("Der Benutzer, der gekickt werden soll.") User target,
             @Optional @Param("Für wie lange der Ban andauern soll") Duration until,
             @Optional @Max(7)
             @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
@@ -165,7 +167,11 @@ public class ModerationCommands {
             @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
     ) {
         if (checkLocked(event, target, event.getUser())) return;
-        moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
+
+        var member = event.getGuild().isMember(target) ? event.getGuild().retrieveMember(target).complete() :
+                new MemberImpl((GuildImpl) event.getGuild(), target);
+
+        moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays).paragraph(paragraph);
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
             type = ModerationActType.TEMP_BAN;
