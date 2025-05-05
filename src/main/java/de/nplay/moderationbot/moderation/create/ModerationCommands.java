@@ -277,6 +277,8 @@ public class ModerationCommands {
 
     private boolean checkLocked(ReplyableEvent<?> event, UserSnowflake target, UserSnowflake moderator) {
         if (!moderationActLock.lock(target.getId(), moderator.getId())) {
+            if (Objects.equals(moderationActLock.get(target.getId()), moderator.getId())) return false;
+
             event.with().ephemeral(true).reply(
                     embedCache.getEmbed("moderationTargetBlocked")
                             .injectValue("targetId", target.getId())
