@@ -20,7 +20,7 @@ public class MessageLink {
      * @return A {@link MessageLink} object containing the messageId, channelId and guildId
      * @throws IllegalArgumentException if the link is not valid
      */
-    public static MessageLink fromLink(String link) {
+    public static MessageLink ofString(String link) {
         if (!validateLink(link)) {
             throw new IllegalArgumentException("Invalid message link: " + link);
         }

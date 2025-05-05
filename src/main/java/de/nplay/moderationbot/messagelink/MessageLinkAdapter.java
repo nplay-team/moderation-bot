@@ -14,7 +14,7 @@ public class MessageLinkAdapter implements TypeAdapter<MessageLink> {
     @NotNull
     public Optional<MessageLink> apply(@NotNull String raw, @NotNull GenericInteractionCreateEvent event) {
         try {
-            return Optional.of(MessageLink.fromLink(raw));
+            return Optional.of(MessageLink.ofString(raw));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
