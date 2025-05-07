@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import de.nplay.moderationbot.duration.DurationAdapter;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.embeds.EmbedColors;
+import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.ModerationActLock;
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
@@ -49,6 +51,7 @@ public class ModerationCommands {
     private ModerationActBuilder moderationActBuilder;
     private Boolean replyEphemeral = false;
     private static final String PARAGRAPH_PARAMETER_DESC = "Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?";
+    private static final String MESSAGELINK_PARAMETER_DESC = "Link zu einer Nachricht, die referenziert werden soll.";
     private ModerationActType type;
 
     @AutoComplete(value = {"mod", "spielersuche ausschluss"}, options = "paragraph")
@@ -66,9 +69,11 @@ public class ModerationCommands {
     @Command(value = "mod warn", desc = "Verwarnt einen Benutzer")
     public void warnMember(CommandEvent event,
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
-                           @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
+                           @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
+                           @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink) {
         if (checkLocked(event, target, event.getUser())) return;
         this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
+        setMessageReference(event, messageLink);
         type = ModerationActType.WARN;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Warn)"));
     }
@@ -96,9 +101,11 @@ public class ModerationCommands {
                               @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target,
                               @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
                               Duration until,
-                              @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph) {
+                              @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
+                              @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink) {
         if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000).paragraph(paragraph);
+        setMessageReference(event, messageLink);
         type = ModerationActType.TIMEOUT;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Timeout)"));
     }
@@ -127,10 +134,11 @@ public class ModerationCommands {
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
                            @Optional @Max(7)
-                           @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
-                           int delDays) {
+                           @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") int delDays,
+                           @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink) {
         if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).deletionDays(delDays);
+        setMessageReference(event, messageLink);
         type = ModerationActType.KICK;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Kick)"));
     }
@@ -164,7 +172,8 @@ public class ModerationCommands {
             @Optional @Max(7)
             @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
             int delDays,
-            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
+            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
+            @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink
     ) {
         if (checkLocked(event, target, event.getUser())) return;
 
@@ -179,6 +188,8 @@ public class ModerationCommands {
                 throw new IllegalStateException(e);
             }
         }
+
+        setMessageReference(event, messageLink);
 
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
@@ -303,5 +314,19 @@ public class ModerationCommands {
         }
 
         return false;
+    }
+
+    private void setMessageReference(ReplyableEvent<?> event, MessageLink messageLink) {
+        if (messageLink == null) return;
+
+        var guildChannel = event.getGuild().getGuildChannelById(messageLink.channelId());
+        if (guildChannel == null) return;
+
+        if (!(guildChannel instanceof MessageChannel messageChannel)) return;
+
+        var message = messageChannel.retrieveMessageById(messageLink.messageId()).complete();
+        if (message == null) return;
+
+        moderationActBuilder.messageReference(message);
     }
 }
