@@ -30,8 +30,6 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -173,15 +171,15 @@ public class ModerationCommands {
         Member member;
         try {
             member = event.getGuild().retrieveMember(target).complete();
+            moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays).paragraph(paragraph);
         } catch (ErrorResponseException e) {
             if (e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
-                member = new MemberImpl((GuildImpl) event.getGuild(), target);
+                moderationActBuilder = ModerationActBuilder.ban(target, event.getGuild(), event.getUser()).deletionDays(delDays).paragraph(paragraph);
             } else {
                 throw new IllegalStateException(e);
             }
         }
 
-        moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays).paragraph(paragraph);
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
             type = ModerationActType.TEMP_BAN;
