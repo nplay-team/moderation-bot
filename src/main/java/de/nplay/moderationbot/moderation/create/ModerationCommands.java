@@ -303,12 +303,12 @@ public class ModerationCommands {
     private void setMessageReference(ReplyableEvent<?> event, MessageLink messageLink) {
         if (messageLink == null) return;
 
-        var guildChannel = event.getGuild().getGuildChannelById(messageLink.getChannelId());
+        var guildChannel = event.getGuild().getGuildChannelById(messageLink.channelId());
         if (guildChannel == null) return;
 
         if (!(guildChannel instanceof MessageChannel messageChannel)) return;
 
-        var message = messageChannel.retrieveMessageById(messageLink.getMessageId()).complete();
+        var message = messageChannel.retrieveMessageById(messageLink.messageId()).complete();
         if (message == null) return;
 
         moderationActBuilder.messageReference(message);
