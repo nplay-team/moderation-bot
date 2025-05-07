@@ -75,6 +75,16 @@ public class ModerationActBuilder {
                 });
     }
 
+    public static ModerationActBuilder ban(User target, Guild guild, User issuer) {
+        return new ModerationActBuilder().issuer(issuer)
+                .type(ModerationActType.BAN)
+                .target(target)
+                .executor(data -> {
+                    log.info("User {} has been{} banned by {}", target, data.revokeAt().isPresent() ? " temp" : "", issuer);
+                    guild.ban(target, data.deletionDays(), TimeUnit.DAYS).reason(data.reason()).queue();
+                });
+    }
+
     public ModerationActBuilder issuer(@NotNull UserSnowflake issuer) {
         this.issuerId = issuer.getIdLong();
         return this;

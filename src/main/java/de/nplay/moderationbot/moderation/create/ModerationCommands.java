@@ -25,9 +25,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -157,7 +159,7 @@ public class ModerationCommands {
     @Command(value = "mod ban", desc = "Bannt einen Benutzer vom Server")
     public void banMember(
             CommandEvent event,
-            @Param("Der Benutzer, der gekickt werden soll.") Member target,
+            @Param("Der Benutzer, der gekickt werden soll.") User target,
             @Optional @Param("Für wie lange der Ban andauern soll") Duration until,
             @Optional @Max(7)
             @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
@@ -165,7 +167,19 @@ public class ModerationCommands {
             @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph
     ) {
         if (checkLocked(event, target, event.getUser())) return;
-        moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
+
+        Member member;
+        try {
+            member = event.getGuild().retrieveMember(target).complete();
+            moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays).paragraph(paragraph);
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+                moderationActBuilder = ModerationActBuilder.ban(target, event.getGuild(), event.getUser()).deletionDays(delDays).paragraph(paragraph);
+            } else {
+                throw new IllegalStateException(e);
+            }
+        }
+
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
             type = ModerationActType.TEMP_BAN;
