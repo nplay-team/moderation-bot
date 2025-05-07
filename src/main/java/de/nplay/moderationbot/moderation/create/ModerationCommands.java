@@ -27,9 +27,11 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -166,7 +168,7 @@ public class ModerationCommands {
     @Command(value = "mod ban", desc = "Bannt einen Benutzer vom Server")
     public void banMember(
             CommandEvent event,
-            @Param("Der Benutzer, der gekickt werden soll.") Member target,
+            @Param("Der Benutzer, der gekickt werden soll.") User target,
             @Optional @Param("Für wie lange der Ban andauern soll") Duration until,
             @Optional @Max(7)
             @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
@@ -175,8 +177,21 @@ public class ModerationCommands {
             @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink
     ) {
         if (checkLocked(event, target, event.getUser())) return;
-        moderationActBuilder = ModerationActBuilder.ban(target, event.getUser()).deletionDays(delDays).paragraph(paragraph);
+
+        Member member;
+        try {
+            member = event.getGuild().retrieveMember(target).complete();
+            moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays).paragraph(paragraph);
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+                moderationActBuilder = ModerationActBuilder.ban(target, event.getGuild(), event.getUser()).deletionDays(delDays).paragraph(paragraph);
+            } else {
+                throw new IllegalStateException(e);
+            }
+        }
+
         setMessageReference(event, messageLink);
+
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
             type = ModerationActType.TEMP_BAN;
@@ -288,6 +303,8 @@ public class ModerationCommands {
 
     private boolean checkLocked(ReplyableEvent<?> event, UserSnowflake target, UserSnowflake moderator) {
         if (!moderationActLock.lock(target.getId(), moderator.getId())) {
+            if (moderator.getId().equals(moderationActLock.get(target.getId()))) return false;
+
             event.with().ephemeral(true).reply(
                     embedCache.getEmbed("moderationTargetBlocked")
                             .injectValue("targetId", target.getId())
