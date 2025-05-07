@@ -5,7 +5,7 @@
 <img src="https://discordapp.com/api/guilds/367353132772098048/embed.png" alt="discord">
 </a>
 
-<img align="right" src="https://avatars.githubusercontent.com/u/170041565?s=400&u=c3ca1781422297c0f4f4b236e634b4864d431943&v=4" height=200 width=200>
+<img align="right" src="https://github.com/user-attachments/assets/31d3691b-c79d-42bb-8bca-437aa1e030f0?s=400&u=c3ca1781422297c0f4f4b236e634b4864d431943&v=4" height=200 width=200>
 
 # NPLAY-Moderation
 
