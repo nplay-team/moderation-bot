@@ -134,8 +134,7 @@ public class ModerationCommands {
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
                            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
                            @Optional @Max(7)
-                           @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
-                               int delDays,
+                           @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") int delDays,
                            @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink) {
         if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).deletionDays(delDays);
