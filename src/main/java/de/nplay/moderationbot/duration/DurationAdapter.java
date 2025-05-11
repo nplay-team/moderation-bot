@@ -27,16 +27,23 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         if (raw == null || raw.isBlank()) {
             return Optional.empty();
         }
-        var parseString = raw.toUpperCase()
-                .replaceAll("\\s+", "")
-                .replaceAll("DAYS?", "D")
-                .replaceAll("(?:HOURS?)|(?:HRS?)", "H")
-                .replaceAll("(?:MINUTES?)|(?:MINS?)", "M")
-                .replaceAll("(?:SECONDS?)|(?:SECS?)", "S")
-                .replaceAll("(\\d+D)", "P$1T");
 
-        parseString = parseString.charAt(0) != 'P' ? "PT" + parseString : parseString;
-        parseString = parseString.charAt(parseString.length() - 1) == 'T' ? parseString + "0S" : parseString;
+        var normalizedRaw = raw.toUpperCase().replaceAll("\\s+", "");
+
+        var years = extractValue(normalizedRaw, "Y");
+        var days = extractValue(normalizedRaw, "D");
+        var hours = extractValue(normalizedRaw, "H");
+        var minutes = extractValue(normalizedRaw, "M");
+        var seconds = extractValue(normalizedRaw, "S");
+
+        if (years != null) days = (days != null ? days : 0) + years * 365;
+
+        var parseString = "P" +
+                (days != null ? days + "D" : "") +
+                (hours != null || minutes != null || seconds != null ? "T" : "") +
+                (hours != null ? hours + "H" : "") +
+                (minutes != null ? minutes + "M" : "") +
+                (seconds != null ? seconds + "S" : "");
 
         try {
             return Optional.of(Duration.parse(parseString));
@@ -44,6 +51,11 @@ public class DurationAdapter implements TypeAdapter<Duration> {
             log.warn("User provided invalid duration: {}", raw);
             return Optional.empty();
         }
+    }
+
+    private static Integer extractValue(String input, String unit) {
+        var value = input.replaceAll(".*?(\\d+)" + unit + ".*", "$1");
+        return value.matches("\\d+") ? Integer.parseInt(value) : null;
     }
 
 }
