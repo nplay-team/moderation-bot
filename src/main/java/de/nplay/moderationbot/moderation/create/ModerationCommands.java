@@ -236,7 +236,7 @@ public class ModerationCommands {
                                    String until) {
         var duration = DurationAdapter.parse(until);
 
-        if (duration.isEmpty()) {
+        if (!"".equals(until) && duration.isEmpty()) {
             event.with().ephemeral(true).reply("Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an.");
             return;
         }
