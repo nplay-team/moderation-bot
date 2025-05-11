@@ -194,7 +194,7 @@ public class ModerationCommands {
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
             type = ModerationActType.TEMP_BAN;
-            event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Temp-Ban)"));
+            event.replyModal("onModerate", modal -> modal.title("Begründung und Dauer angeben (Temp-Ban)"));
         } else {
             type = ModerationActType.BAN;
             event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Ban)"));
