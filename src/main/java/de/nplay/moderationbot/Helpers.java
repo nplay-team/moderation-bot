@@ -12,11 +12,13 @@ public class Helpers {
     public static String durationToString(Duration duration) {
         StringBuilder builder = new StringBuilder();
 
-        long days = duration.toDays();
+        long years = duration.toDays() >= 365 ? Math.floorDiv(duration.toDays(), 365) : 0;
+        long days = duration.toDays() - (years * 365);
         long hours = duration.toHours() % 24;
         long minutes = duration.toMinutes() % 60;
         long seconds = duration.getSeconds() % 60;
 
+        if (years > 0) builder.append(years).append("y ");
         if (days > 0) builder.append(days).append("d ");
         if (hours > 0) builder.append(hours).append("h ");
         if (minutes > 0) builder.append(minutes).append("m ");
@@ -28,6 +30,7 @@ public class Helpers {
     public static String durationToString(Duration duration, boolean detailed) {
         if (detailed) {
             return durationToString(duration)
+                    .replaceAll("y", " Jahr(e)")
                     .replaceAll("d", " Tag(e)")
                     .replaceAll("h", " Stunde(n)")
                     .replaceAll("m", " Minute(n)")
