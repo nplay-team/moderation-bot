@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-@Implementation(clazz = MessageLink.class)
+@Implementation.TypeAdapter(clazz = MessageLink.class)
 public class MessageLinkAdapter implements TypeAdapter<MessageLink> {
 
     @Override

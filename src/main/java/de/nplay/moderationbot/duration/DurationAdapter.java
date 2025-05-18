@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
-@Implementation(clazz = Duration.class)
+@Implementation.TypeAdapter(clazz = Duration.class)
 public class DurationAdapter implements TypeAdapter<Duration> {
 
     private static final Logger log = LoggerFactory.getLogger(DurationAdapter.class);

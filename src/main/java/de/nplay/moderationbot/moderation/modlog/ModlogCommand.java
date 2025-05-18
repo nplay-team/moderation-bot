@@ -50,8 +50,8 @@ public class ModlogCommand {
     @Command(value = "mod log", desc = "Zeigt den Modlog eines Mitglieds an")
     public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
                        User user,
-                       @Optional @Param("Die Seite, die angezeigt werden soll") @Min(1) Integer page,
-                       @Optional @Param("Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)")
+                       @Param(value = "Die Seite, die angezeigt werden soll", optional = true) @Min(1) Integer page,
+                       @Param(value = "Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)", optional = true)
                        @Min(1) @Max(25) Integer count) {
         interactionHook = event.jdaEvent().deferReply().complete();
         Member member;

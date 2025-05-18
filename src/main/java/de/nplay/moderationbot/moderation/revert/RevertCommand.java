@@ -1,6 +1,9 @@
 package de.nplay.moderationbot.moderation.revert;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
+import com.github.kaktushose.jda.commands.annotations.interactions.Command;
+import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
+import com.github.kaktushose.jda.commands.annotations.interactions.Param;
+import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
@@ -22,7 +25,7 @@ public class RevertCommand {
     @Command(value = "mod revert", desc = "Hebt eine Moderationshandlung auf")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void revertModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die aufgehoben werden soll") long moderationId,
-                                 @Optional @Param(value = "Der Grund für die Aufhebung") String reason) {
+                                 @Param(value = "Der Grund für die Aufhebung", optional = true) String reason) {
         var moderation = ModerationService.getModerationAct(moderationId);
 
         if (moderation.isEmpty() || moderation.get().reverted()) {

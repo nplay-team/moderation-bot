@@ -2,7 +2,6 @@ package de.nplay.moderationbot.slowmode;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.Command;
 import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
-import com.github.kaktushose.jda.commands.annotations.interactions.Optional;
 import com.github.kaktushose.jda.commands.annotations.interactions.Param;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
@@ -22,7 +21,7 @@ public class SlowmodeCommands {
     @Command(value = "slowmode info", desc = "Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.")
     public void slowmodeInfoCommand(
             CommandEvent event,
-            @Optional @Param("Der Channel, für den die Informationen angezeigt werden sollen.") GuildChannel channel
+            @Param(value = "Der Channel, für den die Informationen angezeigt werden sollen.", optional = true) GuildChannel channel
     ) {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         var slowmode = SlowmodeService.getSlowmode(guildChannel);
@@ -46,7 +45,7 @@ public class SlowmodeCommands {
     public void slowmodeSetCommand(
             CommandEvent event,
             @Param("Wie lang soll der Slowmode sein?") Duration duration,
-            @Optional @Param("Der Channel, für den der Slowmode gesetzt werden soll.") GuildChannel channel
+            @Param(value = "Der Channel, für den der Slowmode gesetzt werden soll.", optional = true) GuildChannel channel
     ) {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
@@ -61,7 +60,7 @@ public class SlowmodeCommands {
     @Command(value = "slowmode remove", desc = "Entfernt den Slowmode für diesen Channel.")
     public void slowmodeRemoveCommand(
             CommandEvent event,
-            @Optional @Param("Der Channel, für den der Slowmode entfernt werden soll.") GuildChannel channel
+            @Param(value = "Der Channel, für den der Slowmode entfernt werden soll.", optional = true) GuildChannel channel
     ) {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         SlowmodeService.removeSlowmode(guildChannel);
