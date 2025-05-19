@@ -29,7 +29,7 @@ public class PermissionsCommands {
     @Permissions(BotPermissions.PERMISSION_READ)
     @Command(value = "permissions list", desc = "Zeigt die Berechtigungen eines Benutzers an")
     public void onPermissionsList(CommandEvent event,
-                                  @Optional @Param("Der Benutzer, dessen Berechtigungen abgerufen werden sollen.")
+                                  @Param(value = "Der Benutzer, dessen Berechtigungen abgerufen werden sollen.", optional = true)
                                   Member member) {
         Member target = member == null ? event.getMember() : member;
 

@@ -1,9 +1,12 @@
 package de.nplay.moderationbot.spielersuche.ausschluss;
 
-import com.google.inject.Inject;
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
+import com.github.kaktushose.jda.commands.annotations.interactions.Command;
+import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
+import com.github.kaktushose.jda.commands.annotations.interactions.Param;
+import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.bot.BotConfig;
 import de.nplay.moderationbot.embeds.EmbedColors;
@@ -32,7 +35,7 @@ public class SpielersucheAusschlussCommands {
     @Command(value = "spielersuche ausschluss", desc = "Schließt einen User von der Spielersuche aus und verwarnt ihn")
     @Permissions(BotPermissions.MODERATION_CREATE)
     public void spielersucheAusschluss(CommandEvent event, @Param("Der User, der ausgeschlossen werden soll") Member target,
-                                       @Optional @Param("Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?") String paragraph) {
+                                       @Param(value = "Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?", optional = true) String paragraph) {
         var spielersucheAusschlussRolle = getSpielersucheAusschlussRolle(event);
 
         if (spielersucheAusschlussRolle.isEmpty()) {

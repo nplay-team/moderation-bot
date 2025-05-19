@@ -69,8 +69,8 @@ public class ModerationCommands {
     @Command(value = "mod warn", desc = "Verwarnt einen Benutzer")
     public void warnMember(CommandEvent event,
                            @Param("Der Benutzer, der verwarnt werden soll.") Member target,
-                           @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
-                           @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink) {
+                           @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
+                           @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink) {
         if (checkLocked(event, target, event.getUser())) return;
         this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
         setMessageReference(event, messageLink);
@@ -101,8 +101,8 @@ public class ModerationCommands {
                               @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target,
                               @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
                               Duration until,
-                              @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
-                              @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink) {
+                              @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
+                              @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink) {
         if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000).paragraph(paragraph);
         setMessageReference(event, messageLink);
@@ -132,10 +132,10 @@ public class ModerationCommands {
     @Command(value = "mod kick", desc = "Kickt einen Benutzer vom Server")
     public void kickMember(CommandEvent event,
                            @Param("Der Benutzer, der gekickt werden soll.") Member target,
-                           @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
-                           @Optional @Max(7)
-                           @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?") int delDays,
-                           @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink) {
+                           @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
+                           @Max(7)
+                               @Param(value = "Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?", optional = true) int delDays,
+                           @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink) {
         if (checkLocked(event, target, event.getUser())) return;
         moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).deletionDays(delDays);
         setMessageReference(event, messageLink);
@@ -168,12 +168,12 @@ public class ModerationCommands {
     public void banMember(
             CommandEvent event,
             @Param("Der Benutzer, der gekickt werden soll.") User target,
-            @Optional @Param("Für wie lange der Ban andauern soll") Duration until,
-            @Optional @Max(7)
-            @Param("Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?")
+            @Param(value = "Für wie lange der Ban andauern soll", optional = true) Duration until,
+            @Max(7)
+            @Param(value = "Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?", optional = true)
             int delDays,
-            @Optional @Param(PARAGRAPH_PARAMETER_DESC) String paragraph,
-            @Optional @Param(MESSAGELINK_PARAMETER_DESC) MessageLink messageLink
+            @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
+            @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink
     ) {
         if (checkLocked(event, target, event.getUser())) return;
 

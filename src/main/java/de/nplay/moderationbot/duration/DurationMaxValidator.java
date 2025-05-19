@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
-@Implementation(annotation = DurationMax.class)
+@Implementation.Validator(annotation = DurationMax.class)
 public class DurationMaxValidator implements Validator {
 
     @Override
