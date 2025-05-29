@@ -51,6 +51,19 @@ public class RuleService {
     }
 
     /**
+     * Gets a {@link RuleParagraph} based on its short display name
+     *
+     * @param displayName the short display name of the paragraph
+     * @return an Optional holding the {@link RuleParagraph}
+     */
+    public static Optional<RuleParagraph> getRuleParagraphByDisplayName(@NotNull String displayName) {
+        return getRuleParagraphs()
+                .stream()
+                .filter(r -> r.shortDisplay().equalsIgnoreCase(displayName))
+                .findFirst();
+    }
+
+    /**
      * Gets a mapping of the internal ids and the paragraph number
      *
      * @return a Map containing all internal ids and their corresponding paragraph number
