@@ -2,6 +2,7 @@ package de.nplay.moderationbot.moderation.create;
 
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -114,7 +115,12 @@ public class ModerationActBuilder {
         if (paragraphId == null) {
             return this;
         }
-        this.paragraphId = Integer.parseInt(paragraphId);
+        try {
+            this.paragraphId = Integer.parseInt(paragraphId);
+        } catch (NumberFormatException e) {
+            this.paragraphId = RuleService.getRuleParagraphByDisplayName(paragraphId).map(RuleService.RuleParagraph::id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid paragraph ID or name: " + paragraphId));
+        }
         return this;
     }
 
