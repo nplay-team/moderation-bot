@@ -34,7 +34,6 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         var months = extractValue(normalizedRaw, "M");
         var days = extractValue(normalizedRaw, "D");
         var hours = extractValue(normalizedRaw, "H");
-        var minutes = extractValue(normalizedRaw, "MIN");
         var seconds = extractValue(normalizedRaw, "S");
 
         if (years != null) days = (days != null ? days : 0) + years * 365;
@@ -42,9 +41,8 @@ public class DurationAdapter implements TypeAdapter<Duration> {
 
         var parseString = "P" +
                 (days != null ? days + "D" : "") +
-                (hours != null || minutes != null || seconds != null ? "T" : "") +
+                (hours != null || seconds != null ? "T" : "") +
                 (hours != null ? hours + "H" : "") +
-                (minutes != null ? minutes + "M" : "") +
                 (seconds != null ? seconds + "S" : "");
 
         try {
