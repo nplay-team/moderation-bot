@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Implementation.TypeAdapter(clazz = Duration.class)
 public class DurationAdapter implements TypeAdapter<Duration> {
@@ -34,6 +35,7 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         var months = extractValue(normalizedRaw, "M");
         var days = extractValue(normalizedRaw, "D");
         var hours = extractValue(normalizedRaw, "H");
+        var minutes = extractValue(normalizedRaw, "MIN");
         var seconds = extractValue(normalizedRaw, "S");
 
         if (years != null) days = (days != null ? days : 0) + years * 365;
@@ -41,8 +43,9 @@ public class DurationAdapter implements TypeAdapter<Duration> {
 
         var parseString = "P" +
                 (days != null ? days + "D" : "") +
-                (hours != null || seconds != null ? "T" : "") +
+                (hours != null || minutes != null || seconds != null ? "T" : "") +
                 (hours != null ? hours + "H" : "") +
+                (minutes != null ? minutes + "M" : "") +
                 (seconds != null ? seconds + "S" : "");
 
         try {
@@ -54,8 +57,9 @@ public class DurationAdapter implements TypeAdapter<Duration> {
     }
 
     private static Integer extractValue(String input, String unit) {
-        var value = input.replaceAll(".*?(\\d+)" + unit + ".*", "$1");
-        return value.matches("\\d+") ? Integer.parseInt(value) : null;
+        var pattern = "(?i)(\\d+)" + (unit.equals("MIN") ? "MIN" : unit + "(?!IN)");
+        var matcher = Pattern.compile(pattern).matcher(input);
+        return matcher.find() ? Integer.parseInt(matcher.group(1)) : null;
     }
 
 }
