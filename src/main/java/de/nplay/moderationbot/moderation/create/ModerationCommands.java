@@ -259,6 +259,11 @@ public class ModerationCommands {
             return;
         }
 
+        if (action.type().isBan() && ModerationService.isBanned(action.targetId())) {
+            event.reply(embedCache.getEmbed("userAlreadyBanned").injectValue("color", EmbedColors.ERROR));
+            return;
+        }
+
         var moderationAct = ModerationService.createModerationAct(action);
 
         List<EmbedDTO.Field> fields = new ArrayList<>();

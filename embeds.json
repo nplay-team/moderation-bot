@@ -674,6 +674,11 @@
     "description": "Der angegebene Nutzer hat bereits ein aktives Timeout!",
     "color": "{color}"
   },
+  "userAlreadyBanned": {
+    "title": "Fehler",
+    "description": "Der angegebene Nutzer ist bereits gebannt!",
+    "color": "{color}"
+  },
   "durationParsingFailed": {
     "title": "Fehler",
     "description": "Die Dauer konnte nicht korrekt eingelesen werden. Bitte verwende das Format **Xd Yh Zm**!\nEingabe: `{duration}`",
