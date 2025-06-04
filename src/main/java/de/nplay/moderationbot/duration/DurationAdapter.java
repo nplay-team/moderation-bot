@@ -31,12 +31,14 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         var normalizedRaw = raw.toUpperCase().replaceAll("\\s+", "");
 
         var years = extractValue(normalizedRaw, "Y");
+        var months = extractValue(normalizedRaw, "M");
         var days = extractValue(normalizedRaw, "D");
         var hours = extractValue(normalizedRaw, "H");
-        var minutes = extractValue(normalizedRaw, "M");
+        var minutes = extractValue(normalizedRaw, "MIN");
         var seconds = extractValue(normalizedRaw, "S");
 
         if (years != null) days = (days != null ? days : 0) + years * 365;
+        if (months != null) days = (days != null ? days : 0) + months * 30; // Approximation, as months vary in length
 
         var parseString = "P" +
                 (days != null ? days + "D" : "") +
