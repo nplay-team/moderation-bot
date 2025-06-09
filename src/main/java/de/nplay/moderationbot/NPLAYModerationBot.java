@@ -16,7 +16,6 @@ import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.moderation.ModerationActLock;
 import de.nplay.moderationbot.moderation.revert.AutomaticRevertTask;
-import de.nplay.moderationbot.others.SpecialEventListener;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import net.dv8tion.jda.api.JDA;
@@ -73,7 +72,7 @@ public class NPLAYModerationBot extends AbstractModule {
                 )
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
-                .addEventListeners(new SlowmodeEventHandler(embedCache), new SpecialEventListener())
+                .addEventListeners(new SlowmodeEventHandler(embedCache))
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build().awaitReady();
