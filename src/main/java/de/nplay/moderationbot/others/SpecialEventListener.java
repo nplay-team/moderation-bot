@@ -7,9 +7,7 @@ public class SpecialEventListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberUpdateNickname(GuildMemberUpdateNicknameEvent event) {
-        if (!event.getUser().getId().equals("1239225720895438894")) return;
-        if ("Erich \uD83C\uDF08".equals(event.getNewNickname())) return;
-        event.getGuild().modifyNickname(event.getMember(), "Erich \uD83C\uDF08").queue();
+        event.getGuild().modifyNickname(event.getMember(), "Erich").queue();
     }
 
 }
