@@ -94,8 +94,10 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         );
     }
 
+
+    // true - affected by slowmode
+    // false - not affected by slowmode
     private boolean isValidUser(Member member) {
-        if (member != null) return false;
         if (member.getUser().isBot()) return false;
         if (member.hasPermission(Permission.MANAGE_CHANNEL)) return false;
         return !BotPermissionsService.getUserPermissions(member).hasPermission(BotPermissions.MODERATION_CREATE);
