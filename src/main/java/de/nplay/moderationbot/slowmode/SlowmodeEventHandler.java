@@ -3,6 +3,8 @@ package de.nplay.moderationbot.slowmode;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedColors;
+import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.permissions.BotPermissionsService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -93,7 +95,10 @@ public class SlowmodeEventHandler extends ListenerAdapter {
     }
 
     private boolean isValidUser(Member member) {
-        return member != null && !member.getUser().isBot() && !member.hasPermission(Permission.MANAGE_CHANNEL);
+        if (member != null) return false;
+        if (member.getUser().isBot()) return false;
+        if (member.hasPermission(Permission.MANAGE_CHANNEL)) return false;
+        return !BotPermissionsService.getUserPermissions(member).hasPermission(BotPermissions.MODERATION_CREATE);
     }
 
     private boolean isWithinSlowmode(Instant current, Instant last, long slowmodeSeconds) {
