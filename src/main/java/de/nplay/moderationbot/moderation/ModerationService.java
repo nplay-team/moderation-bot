@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
+import java.util.regex.Matcher;
 
 import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
@@ -280,7 +281,7 @@ public class ModerationService {
                     .injectValue("reason", reason == null ? "?DEL?" : reason)
                     .injectValue("paragraph", paragraph == null ? "?DEL?" : paragraph.fullDisplay())
                     .injectValue("duration", duration == null ? "?DEL?" : Helpers.durationToString(Duration.ofMillis(duration)))
-                    .injectValue("referenceMessage", referenceMessage == null ? "?DEL?" : referenceMessage.fullDisplay(guild))
+                    .injectValue("referenceMessage", referenceMessage == null ? "?DEL?" : Matcher.quoteReplacement(referenceMessage.fullDisplay(guild)))
                     .injectValue("until", revokeAt == null ? "?DEL?" : revokeAt.getTime() / 1000)
                     .injectValue("revertedAt", revertedAt == null ? "?DEL?" : revertedAt.getTime() / 1000)
                     .injectValue("revertedById", revertedBy == null ? "?DEL?" : revertedBy)
