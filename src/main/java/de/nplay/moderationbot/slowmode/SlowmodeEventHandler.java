@@ -31,6 +31,10 @@ public class SlowmodeEventHandler extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
+        if (event.isWebhookMessage() || !event.isFromGuild()) {
+            return;
+        }
+
         if (!isValidUser(event.getMember())) return;
 
         var channel = event.getGuildChannel();
