@@ -58,8 +58,9 @@ public class ModerationActBuilder {
                 .executor(data -> {
                     log.info("User {} has been kicked by {}", target, issuer);
                     if (data.deletionDays > 0) {
-                        target.ban(data.deletionDays(), TimeUnit.DAYS).reason(data.reason)
-                                .map(_ -> target.getGuild().unban(target)).queue();
+                        target.ban(data.deletionDays(), TimeUnit.DAYS).queue(_ -> {
+                            target.getGuild().unban(target.getUser()).queue();
+                        });
                     } else {
                         target.kick().reason(data.reason()).queue();
                     }
