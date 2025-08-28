@@ -13,7 +13,5 @@ import java.time.Duration;
 @Constraint(Duration.class)
 public @interface DurationMax {
     long value();
-
-    String message() default "Die angegebene Dauer ist zu lang!";
 }
 
