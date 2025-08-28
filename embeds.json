@@ -1,38 +1,38 @@
 {
   "insufficientPermissions": {
     "title": "Fehlende Berechtigungen",
-    "description": "`{name}` benötigt bestimmte Berechtigungen, um ausgeführt zu werden",
+    "description": "`{ $name }` benötigt bestimmte Berechtigungen, um ausgeführt zu werden",
     "color": "#ff0000",
     "fields": [
       {
         "name": "Berechtigungen:",
-        "value": "`{permissions}`"
+        "value": "`{ $permissions }`"
       }
     ]
   },
   "typeAdaptingFailed": {
     "title": "Syntax Error",
-    "description": "`{usage}`",
+    "description": "`{ $usage }`",
     "color": "#ffc800",
     "fields": [
       {
         "name": "Erwartete Eingabe:",
-        "value": "`{expected}`"
+        "value": "`{ $expected }`"
       },
       {
         "name": "Tatsächliche Eingabe:",
-        "value": "`{actual}`"
+        "value": "`{ $actual }`"
       }
     ]
   },
   "constraintFailed": {
     "title": "Parameter Validation fehlgeschlagen",
-    "description": "```{message}```",
+    "description": "```{ $message }```",
     "color": "#ffc800"
   },
   "cooldown": {
     "title": "Cooldown",
-    "description": "Du kannst diesen Command nicht für weitere {cooldown}! nutzen",
+    "description": "Du kannst diesen Command nicht für weitere { $cooldown }! nutzen",
     "color": "#ffc800"
   },
   "wrongChannel": {
@@ -46,7 +46,7 @@
     "fields": [
       {
         "name": "Fehlermeldung",
-        "value": "{error}"
+        "value": "{ $error }"
       }
     ],
     "color": "#ff0000"
@@ -57,195 +57,195 @@
     "color": "#ff0000"
   },
   "permissionsEdit": {
-    "title": "Berechtigungen von **{target}**",
+    "title": "Berechtigungen von **{ $target }**",
     "description": "Bitte wähle die Berechtigungen in dem Select-Menu aus:",
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "permissionsList": {
-    "title": "Berechtigungen von **{target}**",
-    "description": "{permissions}",
-    "color": "{color}"
+    "title": "Berechtigungen von **{ $target }**",
+    "description": "{ $permissions }",
+    "color": "{ $color }"
   },
   "moderationActExecuted": {
-    "title": "{type} erfolgreich ausgeführt!",
-    "color": "{color}"
+    "title": "{ $type } erfolgreich ausgeführt!",
+    "color": "{ $color }"
   },
   "moderationTargetBlocked": {
     "title": "Fehler",
-    "description": "Der angegebene Nutzer <@{targetId}> wird bereits durch <@{moderatorId}> moderiert!",
-    "color": "{color}"
+    "description": "Der angegebene Nutzer <@{ $targetId }> wird bereits durch <@{ $moderatorId }> moderiert!",
+    "color": "{ $color }"
   },
   "warnEmbed": {
     "title": "Verwarnung",
     "description": "Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!",
-    "color": "{color}",
+    "color": "{ $color }",
     "fields": [
       {
         "name": "Begründung",
-        "value": "{reason}",
+        "value": "{ $reason }",
         "inline": true
       },
       {
         "name": "Datum",
-        "value": "<t:{date}>",
+        "value": "<t:{ $date }>",
         "inline": true
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
-        "value": "{paragraph}",
+        "value": "{ $paragraph }",
         "inline": false
       },
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Referenznachricht",
-        "value": "> {referenceMessage}"
+        "value": "> { $referenceMessage }"
       },
       {
         "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       }
     ]
   },
   "timeoutEmbed": {
     "title": "Timeout",
     "description": "Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!",
-    "color": "{color}",
+    "color": "{ $color }",
     "fields": [
       {
         "name": "Begründung",
-        "value": "{reason}",
+        "value": "{ $reason }",
         "inline": true
       },
       {
         "name": "Datum",
-        "value": "<t:{date}>",
+        "value": "<t:{ $date }>",
         "inline": true
       },
       {
         "name": "Aufhebung",
-        "value": "<t:{until}:F> <t:{until}:R>"
+        "value": "<t:{ $until }:F> <t:{ $until }:R>"
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
-        "value": "{paragraph}"
+        "value": "{ $paragraph }"
       },
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Referenznachricht",
-        "value": "> {referenceMessage}"
+        "value": "> { $referenceMessage }"
       },
       {
         "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       }
     ]
   },
   "kickEmbed": {
     "title": "Kick",
     "description": "Du wurdest vom **NPLAY** Discord Server gekickt!",
-    "color": "{color}",
+    "color": "{ $color }",
     "fields": [
       {
         "name": "Begründung",
-        "value": "{reason}",
+        "value": "{ $reason }",
         "inline": true
       },
       {
         "name": "Datum",
-        "value": "<t:{date}>",
+        "value": "<t:{ $date }>",
         "inline": true
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
-        "value": "{paragraph}"
+        "value": "{ $paragraph }"
       },
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Referenznachricht",
-        "value": "> {referenceMessage}"
+        "value": "> { $referenceMessage }"
       },
       {
         "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       }
     ]
   },
   "tempBanEmbed": {
     "title": "Temporärer Bann",
     "description": "Du wurdest temporär vom **NPLAY** Discord Server gebannt!",
-    "color": "{color}",
+    "color": "{ $color }",
     "fields": [
       {
         "name": "Begründung",
-        "value": "{reason}",
+        "value": "{ $reason }",
         "inline": true
       },
       {
         "name": "Datum",
-        "value": "<t:{date}>",
+        "value": "<t:{ $date }>",
         "inline": true
       },
       {
         "name": "Aufhebung",
-        "value": "<t:{until}:F> <t:{until}:R>"
+        "value": "<t:{ $until }:F> <t:{ $until }:R>"
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
-        "value": "{paragraph}"
+        "value": "{ $paragraph }"
       },
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Referenznachricht",
-        "value": "> {referenceMessage}"
+        "value": "> { $referenceMessage }"
       },
       {
         "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       }
     ]
   },
   "banEmbed": {
     "title": "Ban",
     "description": "Du wurdest vom **NPLAY** Discord Server gebannt!",
-    "color": "{color}",
+    "color": "{ $color }",
     "fields": [
       {
         "name": "Begründung",
-        "value": "{reason}",
+        "value": "{ $reason }",
         "inline": true
       },
       {
         "name": "Datum",
-        "value": "<t:{date}>",
+        "value": "<t:{ $date }>",
         "inline": true
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
-        "value": "{paragraph}"
+        "value": "{ $paragraph }"
       },
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Referenznachricht",
-        "value": "> {referenceMessage}"
+        "value": "> { $referenceMessage }"
       },
       {
         "name": "Zuständiger Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       }
     ]
   },
@@ -255,23 +255,23 @@
     "fields": [
       {
         "name": "Warn vom",
-        "value": "<t:{date}>",
+        "value": "<t:{ $date }>",
         "inline": true
       },
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Begründung",
-        "value": "{reason}"
+        "value": "{ $reason }"
       },
       {
         "name": "Revidierender Moderator",
-        "value": "<@{revertedById}> ({revertedByUsername})"
+        "value": "<@{ $revertedById }> ({ $revertedByUsername })"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "timeoutReverted": {
     "title": "Timeout aufgehoben",
@@ -279,235 +279,235 @@
     "fields": [
       {
         "name": "Timeout vom",
-        "value": "<t:{date}>",
+        "value": "<t:{ $date }>",
         "inline": true
       },
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Begründung",
-        "value": "{reason}"
+        "value": "{ $reason }"
       },
       {
         "name": "Zuständiger Moderator",
-        "value": "<@{revertedById}> ({revertedByUsername})"
+        "value": "<@{ $revertedById }> ({ $revertedByUsername })"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "reversionSuccessful": {
     "title": "Erfolgreich",
-    "description": "Die Moderationshandlung mit der ID **#{id}** wurde erfolgreich rückgängig gemacht!",
-    "color": "{color}"
+    "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich rückgängig gemacht!",
+    "color": "{ $color }"
   },
   "reversionFailed": {
     "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht oder wurde bereits rückgängig gemacht!",
-    "color": "{color}"
+    "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht oder wurde bereits rückgängig gemacht!",
+    "color": "{ $color }"
   },
   "deletionSuccessful": {
     "title": "Erfolgreich",
-    "description": "Die Moderationshandlung mit der ID **#{id}** wurde erfolgreich gelöscht!",
-    "color": "{color}"
+    "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich gelöscht!",
+    "color": "{ $color }"
   },
   "deletionFailed": {
     "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
-    "color": "{color}"
+    "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!",
+    "color": "{ $color }"
   },
   "moderationActNotFound": {
     "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{id}** existiert nicht!",
-    "color": "{color}"
+    "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!",
+    "color": "{ $color }"
   },
   "modlogHeader": {
     "author": {
-      "name": "{username}",
-      "iconUrl": "{avatarUrl}"
+      "name": "{ $username }",
+      "iconUrl": "{ $avatarUrl }"
     },
     "title": "NPLAY-Moderation - Datenauskunft",
     "fields": [
       {
         "name": "Name",
-        "value": "{effectiveName} <@{userId}>",
+        "value": "{ $effectiveName } <@{ $userId }>",
         "inline": false
       },
       {
         "name": "Nutzer-ID",
-        "value": "{userId}",
+        "value": "{ $userId }",
         "inline": false
       },
       {
         "name": "Avatar",
-        "value": "[Link]({avatarUrl})",
+        "value": "[Link]({ $avatarUrl })",
         "inline": false
       },
       {
         "name": "Rollen",
-        "value": "{roles}",
+        "value": "{ $roles }",
         "inline": false
       },
       {
         "name": "Erstellt am",
-        "value": "<t:{createdAt}:F> (<t:{createdAt}:R>)",
+        "value": "<t:{ $createdAt }:F> (<t:{ $createdAt }:R>)",
         "inline": false
       },
       {
         "name": "Beigetreten am",
-        "value": "<t:{joinedAt}:F> (<t:{joinedAt}:R>)",
+        "value": "<t:{ $joinedAt }:F> (<t:{ $joinedAt }:R>)",
         "inline": false
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "modlogActs": {
     "title": "NPLAY-Moderation - Moderationshandlungen",
-    "color": "{color}",
+    "color": "{ $color }",
     "footer": {
-      "text": "Seite {page} von {maxPage}"
+      "text": "Seite { $page } von { $maxPage }"
     }
   },
   "moderationActDetail": {
     "title": "NPLAY-Moderation - Moderationshandlung",
-    "color": "{color}",
+    "color": "{ $color }",
     "fields": [
       {
         "name": "ID",
-        "value": "#{id}"
+        "value": "#{ $id }"
       },
       {
         "name": "Typ",
-        "value": "{type}"
+        "value": "{ $type }"
       },
       {
         "name": "Datum",
-        "value": "<t:{date}:F> (<t:{date}:R>)"
+        "value": "<t:{ $date }:F> (<t:{ $date }:R>)"
       },
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Begründung",
-        "value": "{reason}"
+        "value": "{ $reason }"
       },
       {
         "name": "Regel",
-        "value": "{paragraph}"
+        "value": "{ $paragraph }"
       },
       {
         "name": "Dauer",
-        "value": "{duration}"
+        "value": "{ $duration }"
       },
       {
         "name": "Referenznachricht",
-        "value": "> {referenceMessage}"
+        "value": "> { $referenceMessage }"
       },
       {
         "name": "Aufhebung",
-        "value": "<t:{until}:F> (<t:{until}:R>)"
+        "value": "<t:{ $until }:F> (<t:{ $until }:R>)"
       },
       {
         "name": "Revidiert am",
-        "value": "<t:{revertedAt}:F> (<t:{revertedAt}:R>)"
+        "value": "<t:{ $revertedAt }:F> (<t:{ $revertedAt }:R>)"
       },
       {
         "name": "Revidierender Moderator",
-        "value": "<@{revertedById}> ({revertedByUsername})"
+        "value": "<@{ $revertedById }> ({ $revertedByUsername })"
       },
       {
         "name": "Revidierungsgrund",
-        "value": "{reversionReason}"
+        "value": "{ $reversionReason }"
       }
     ]
   },
   "noteCreated": {
     "title": "Notiz erstellt",
-    "description": "Die Notiz mit der ID **${id}** wurde erfolgreich erstellt!",
+    "description": "Die Notiz mit der ID **${ $id }** wurde erfolgreich erstellt!",
     "fields": [
       {
         "name": "Inhalt",
-        "value": "{content}"
+        "value": "{ $content }"
       },
       {
         "name": "Benutzer",
-        "value": "<@{targetId}> ({targetUsername})"
+        "value": "<@{ $targetId }> ({ $targetUsername })"
       },
       {
         "name": "Erstellt am",
-        "value": "<t:{createdAt}:F> (<t:{createdAt}:R>)"
+        "value": "<t:{ $createdAt }:F> (<t:{ $createdAt }:R>)"
       },
       {
         "name": "Ersteller",
-        "value": "<@{createdById}> ({createdByUsername})"
+        "value": "<@{ $createdById }> ({ $createdByUsername })"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "noteList": {
-    "title": "Notizen von **{target}**",
-    "color": "{color}"
+    "title": "Notizen von **{ $target }**",
+    "color": "{ $color }"
   },
   "noteDeleted": {
     "title": "Notiz gelöscht",
-    "description": "Die Notiz mit der ID **${id}** wurde erfolgreich gelöscht!",
-    "color": "{color}"
+    "description": "Die Notiz mit der ID **${ $id }** wurde erfolgreich gelöscht!",
+    "color": "{ $color }"
   },
   "noteLimitReached": {
     "title": "Fehler",
     "description": "Der Benutzer hat bereits die maximale Anzahl an Notizen (25x) erreicht!",
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "noteNotFound": {
     "title": "Fehler",
-    "description": "Die Notiz mit der ID **${id}** existiert nicht!",
-    "color": "{color}"
+    "description": "Die Notiz mit der ID **${ $id }** existiert nicht!",
+    "color": "{ $color }"
   },
   "bulkDeleteSuccessful": {
     "title": "Erfolgreich",
-    "description": "Die letzten **{amount}** Nachrichten wurden erfolgreich gelöscht!",
-    "color": "{color}"
+    "description": "Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!",
+    "color": "{ $color }"
   },
   "configSet": {
-    "title": "Einstellung {key} gesetzt",
-    "description": "{value}",
-    "color": "{color}"
+    "title": "Einstellung { $key } gesetzt",
+    "description": "{ $value }",
+    "color": "{ $colorSuccess }"
   },
   "configGet": {
-    "title": "Einstellung {key}",
-    "description": "{value}",
-    "color": "{color}"
+    "title": "Einstellung { $key }",
+    "description": "{ $value }",
+    "color": "{ $color }"
   },
   "configNotSet": {
     "title": "Fehler",
-    "description": "Die Einstellung **{key}** wurde noch nicht konfiguriert!",
-    "color": "{color}"
+    "description": "Die Einstellung **{ $key }** wurde noch nicht konfiguriert!",
+    "color": "{ $color }"
   },
   "configList": {
     "title": "Einstellungen",
-    "color": "{color}"
+    "color": "{ $colorDefault }"
   },
   "spielersucheAlreadyBlocked": {
     "title": "Fehler",
-    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** ist bereits blockiert!",
-    "color": "{color}"
+    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** ist bereits blockiert!",
+    "color": "{ $color }"
   },
   "spielersucheBlockSuccess": {
     "title": "Erfolgreich",
-    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** wurde erfolgreich von der Spielersuche blockiert!",
-    "color": "{color}"
+    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** wurde erfolgreich von der Spielersuche blockiert!",
+    "color": "{ $color }"
   },
   "spielersucheUnblockSuccess": {
     "title": "Erfolgreich",
-    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** wurde erfolgreich für die Spielersuche wieder freigegeben!",
-    "color": "{color}"
+    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** wurde erfolgreich für die Spielersuche wieder freigegeben!",
+    "color": "{ $color }"
   },
   "spielersucheNotBlocked": {
     "title": "Fehler",
-    "description": "Der Benutzer **<@{targetId}> ({targetUsername})** ist nicht blockiert!",
-    "color": "{color}"
+    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** ist nicht blockiert!",
+    "color": "{ $color }"
   },
   "spielersucheUnblockForTarget": {
     "title": "Spielersuche-Freigabe",
@@ -515,208 +515,208 @@
     "fields": [
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Datum",
-        "value": "<t:{createdAt}:F>"
+        "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "spielersucheRoleError": {
     "title": "Fehler",
     "description": "Die Spielersuche-Ausschluss-Rolle existiert nicht mehr oder wurde noch nicht konfiguriert!",
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "moderationCreateEvent": {
-    "title": "{type} | #{id}",
+    "title": "{ $type } | #{ $id }",
     "fields": [
       {
         "name": "Typ",
-        "value": "{type}"
+        "value": "{ $type }"
       },
       {
         "name": "Betroffener",
-        "value": "<@{targetId}> ({targetUsername})"
+        "value": "<@{ $targetId }> ({ $targetUsername })"
       },
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Begründung",
-        "value": "{reason}"
+        "value": "{ $reason }"
       },
       {
         "name": "Datum",
-        "value": "<t:{createdAt}:F>"
+        "value": "<t:{ $createdAt }:F>"
       },
       {
         "name": "Aktiv bis",
-        "value": "{until}"
+        "value": "{ $until }"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "moderationRevertEvent": {
-    "title": "REVIDIERUNG | {type} | #{id}",
+    "title": "REVIDIERUNG | { $type } | #{ $id }",
     "fields": [
       {
         "name": "Typ",
-        "value": "{type}"
+        "value": "{ $type }"
       },
       {
         "name": "Betroffener",
-        "value": "<@{targetId}> ({targetUsername})"
+        "value": "<@{ $targetId }> ({ $targetUsername })"
       },
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Revidierender Moderator",
-        "value": "<@{revertedById}> ({revertedByUsername})"
+        "value": "<@{ $revertedById }> ({ $revertedByUsername })"
       },
       {
         "name": "Revidierungsgrund",
-        "value": "{revertingReason}"
+        "value": "{ $revertingReason }"
       },
       {
         "name": "Datum",
-        "value": "<t:{revertedAt}:F>"
+        "value": "<t:{ $revertedAt }:F>"
       }
     ],
-    "color": "{warningColor}"
+    "color": "{ $warningColor }"
   },
   "moderationDeleteEvent": {
-    "title": "LÖSCHUNG | {type} | #{id}",
+    "title": "LÖSCHUNG | { $type } | #{ $id }",
     "fields": [
       {
         "name": "Typ",
-        "value": "{type}"
+        "value": "{ $type }"
       },
       {
         "name": "Betroffener",
-        "value": "<@{targetId}> ({targetUsername})"
+        "value": "<@{ $targetId }> ({ $targetUsername })"
       },
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Löschender Moderator",
-        "value": "<@{deletedById}> ({deletedByUsername})"
+        "value": "<@{ $deletedById }> ({ $deletedByUsername })"
       },
       {
         "name": "Datum",
-        "value": "<t:{createdAt}:F>"
+        "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{deleteColor}"
+    "color": "{ $deleteColor }"
   },
   "bulkMessageDeleteEvent": {
     "title": "Massenlöschung von Nachrichten",
     "fields": [
       {
         "name": "Menge",
-        "value": "{amount} Nachrichten"
+        "value": "{ $amount } Nachrichten"
       },
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Datum",
-        "value": "<t:{createdAt}:F>"
+        "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "spielersucheAusschlussEvent": {
     "title": "Spielersuche-Ausschluss",
     "fields": [
       {
         "name": "Betroffener",
-        "value": "<@{targetId}> ({targetUsername})"
+        "value": "<@{ $targetId }> ({ $targetUsername })"
       },
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Datum",
-        "value": "<t:{createdAt}:F>"
+        "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "spielersucheAusschlussRevertEvent": {
     "title": "Spielersuche-Ausschluss-Aufhebung",
     "fields": [
       {
         "name": "Betroffener",
-        "value": "<@{targetId}> ({targetUsername})"
+        "value": "<@{ $targetId }> ({ $targetUsername })"
       },
       {
         "name": "Moderator",
-        "value": "<@{issuerId}> ({issuerUsername})"
+        "value": "<@{ $issuerId }> ({ $issuerUsername })"
       },
       {
         "name": "Datum",
-        "value": "<t:{createdAt}:F>"
+        "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "userAlreadyTimeOuted": {
     "title": "Fehler",
     "description": "Der angegebene Nutzer hat bereits ein aktives Timeout!",
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "userAlreadyBanned": {
     "title": "Fehler",
     "description": "Der angegebene Nutzer ist bereits gebannt!",
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "durationParsingFailed": {
     "title": "Fehler",
-    "description": "Die Dauer konnte nicht korrekt eingelesen werden. Bitte verwende das Format **Xd Yh Zm**!\nEingabe: `{duration}`",
-    "color": "{color}"
+    "description": "Die Dauer konnte nicht korrekt eingelesen werden. Bitte verwende das Format **Xd Yh Zm**!\nEingabe: `{ $duration }`",
+    "color": "{ $color }"
   },
   "slowmodeInfo": {
-    "title": "Slowmode Info <#{channelId}>",
-    "description": "Der Slowmode für diesen Kanal beträgt **{duration}**!",
-    "color": "{color}"
+    "title": "Slowmode Info <#{ $channelId }>",
+    "description": "Der Slowmode für diesen Kanal beträgt **{ $duration }**!",
+    "color": "{ $color }"
   },
   "slowmodeSet": {
-    "title": "Slowmode gesetzt <#{channelId}>",
-    "description": "Der Slowmode für diesen Kanal wurde auf **{duration}** gesetzt!",
-    "color": "{color}"
+    "title": "Slowmode gesetzt <#{ $channelId }>",
+    "description": "Der Slowmode für diesen Kanal wurde auf **{ $duration }** gesetzt!",
+    "color": "{ $color }"
   },
   "slowmodeNotSet": {
     "title": "Fehler",
-    "description": "Für den Kanal <#{channelId}> wurde kein Slowmode gesetzt!",
-    "color": "{color}"
+    "description": "Für den Kanal <#{ $channelId }> wurde kein Slowmode gesetzt!",
+    "color": "{ $color }"
   },
   "slowmodeRemove": {
-    "title": "Slowmode entfernt <#{channelId}>",
+    "title": "Slowmode entfernt <#{ $channelId }>",
     "description": "Der Slowmode für diesen Kanal wurde entfernt!",
-    "color": "{color}"
+    "color": "{ $color }"
   },
   "slowmodeMessageRemoved": {
     "title": "Slowmode - Nachricht entfernt",
-    "description": "Deine Nachricht im Kanal <#{channelId}> wurde gelöscht, weil dieser Kanal sich im Slowmode befindet! Zwischen den Nachrichten muss eine Wartezeit von **{duration}** liegen.",
+    "description": "Deine Nachricht im Kanal <#{ $channelId }> wurde gelöscht, weil dieser Kanal sich im Slowmode befindet! Zwischen den Nachrichten muss eine Wartezeit von **{ $duration }** liegen.",
     "fields": [
       {
         "name": "Nächste Nachricht möglich",
-        "value": "<t:{timestampNextMessage}:R>"
+        "value": "<t:{ $timestampNextMessage }:R>"
       },
       {
         "name": "Letzte Nachricht",
-        "value": "<t:{timestampLastMessage}:R>"
+        "value": "<t:{ $timestampLastMessage }:R>"
       }
     ],
-    "color": "{color}"
+    "color": "{ $color }"
   }
 }
