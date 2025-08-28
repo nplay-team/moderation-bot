@@ -8,7 +8,7 @@ import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
 
 public class DiscordAppender extends AppenderBase<ILoggingEvent> {

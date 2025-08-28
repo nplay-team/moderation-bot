@@ -68,16 +68,16 @@
   },
   "moderationActExecuted": {
     "title": "{ $type } erfolgreich ausgeführt!",
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "moderationTargetBlocked": {
     "title": "Fehler",
     "description": "Der angegebene Nutzer <@{ $targetId }> wird bereits durch <@{ $moderatorId }> moderiert!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
-  "warnEmbed": {
-    "title": "Verwarnung",
-    "description": "Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!",
+  "moderationActTargetInfo": {
+    "title": "{ $title }",
+    "description": "{ $description }",
     "color": "{ $color }",
     "fields": [
       {
@@ -89,151 +89,15 @@
         "name": "Datum",
         "value": "<t:{ $date }>",
         "inline": true
+      },
+      {
+        "name": "Aufhebung",
+        "value": "<t:{ $until }:F> <t:{ $until }:R>"
       },
       {
         "name": "Regel, gegen die du verstoßen hast",
         "value": "{ $paragraph }",
         "inline": false
-      },
-      {
-        "name": "ID",
-        "value": "#{ $id }"
-      },
-      {
-        "name": "Referenznachricht",
-        "value": "> { $referenceMessage }"
-      },
-      {
-        "name": "Zuständiger Moderator",
-        "value": "<@{ $issuerId }> ({ $issuerUsername })"
-      }
-    ]
-  },
-  "timeoutEmbed": {
-    "title": "Timeout",
-    "description": "Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!",
-    "color": "{ $color }",
-    "fields": [
-      {
-        "name": "Begründung",
-        "value": "{ $reason }",
-        "inline": true
-      },
-      {
-        "name": "Datum",
-        "value": "<t:{ $date }>",
-        "inline": true
-      },
-      {
-        "name": "Aufhebung",
-        "value": "<t:{ $until }:F> <t:{ $until }:R>"
-      },
-      {
-        "name": "Regel, gegen die du verstoßen hast",
-        "value": "{ $paragraph }"
-      },
-      {
-        "name": "ID",
-        "value": "#{ $id }"
-      },
-      {
-        "name": "Referenznachricht",
-        "value": "> { $referenceMessage }"
-      },
-      {
-        "name": "Zuständiger Moderator",
-        "value": "<@{ $issuerId }> ({ $issuerUsername })"
-      }
-    ]
-  },
-  "kickEmbed": {
-    "title": "Kick",
-    "description": "Du wurdest vom **NPLAY** Discord Server gekickt!",
-    "color": "{ $color }",
-    "fields": [
-      {
-        "name": "Begründung",
-        "value": "{ $reason }",
-        "inline": true
-      },
-      {
-        "name": "Datum",
-        "value": "<t:{ $date }>",
-        "inline": true
-      },
-      {
-        "name": "Regel, gegen die du verstoßen hast",
-        "value": "{ $paragraph }"
-      },
-      {
-        "name": "ID",
-        "value": "#{ $id }"
-      },
-      {
-        "name": "Referenznachricht",
-        "value": "> { $referenceMessage }"
-      },
-      {
-        "name": "Zuständiger Moderator",
-        "value": "<@{ $issuerId }> ({ $issuerUsername })"
-      }
-    ]
-  },
-  "tempBanEmbed": {
-    "title": "Temporärer Bann",
-    "description": "Du wurdest temporär vom **NPLAY** Discord Server gebannt!",
-    "color": "{ $color }",
-    "fields": [
-      {
-        "name": "Begründung",
-        "value": "{ $reason }",
-        "inline": true
-      },
-      {
-        "name": "Datum",
-        "value": "<t:{ $date }>",
-        "inline": true
-      },
-      {
-        "name": "Aufhebung",
-        "value": "<t:{ $until }:F> <t:{ $until }:R>"
-      },
-      {
-        "name": "Regel, gegen die du verstoßen hast",
-        "value": "{ $paragraph }"
-      },
-      {
-        "name": "ID",
-        "value": "#{ $id }"
-      },
-      {
-        "name": "Referenznachricht",
-        "value": "> { $referenceMessage }"
-      },
-      {
-        "name": "Zuständiger Moderator",
-        "value": "<@{ $issuerId }> ({ $issuerUsername })"
-      }
-    ]
-  },
-  "banEmbed": {
-    "title": "Ban",
-    "description": "Du wurdest vom **NPLAY** Discord Server gebannt!",
-    "color": "{ $color }",
-    "fields": [
-      {
-        "name": "Begründung",
-        "value": "{ $reason }",
-        "inline": true
-      },
-      {
-        "name": "Datum",
-        "value": "<t:{ $date }>",
-        "inline": true
-      },
-      {
-        "name": "Regel, gegen die du verstoßen hast",
-        "value": "{ $paragraph }"
       },
       {
         "name": "ID",
@@ -271,7 +135,7 @@
         "value": "<@{ $revertedById }> ({ $revertedByUsername })"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "timeoutReverted": {
     "title": "Timeout aufgehoben",
@@ -295,7 +159,7 @@
         "value": "<@{ $revertedById }> ({ $revertedByUsername })"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "reversionSuccessful": {
     "title": "Erfolgreich",
@@ -310,17 +174,17 @@
   "deletionSuccessful": {
     "title": "Erfolgreich",
     "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich gelöscht!",
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "deletionFailed": {
     "title": "Fehler",
     "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "moderationActNotFound": {
     "title": "Fehler",
     "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "modlogHeader": {
     "author": {
@@ -360,11 +224,11 @@
         "inline": false
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "modlogActs": {
     "title": "NPLAY-Moderation - Moderationshandlungen",
-    "color": "{ $color }",
+    "color": "{ $colorDefault }",
     "footer": {
       "text": "Seite { $page } von { $maxPage }"
     }
@@ -444,11 +308,11 @@
         "value": "<@{ $createdById }> ({ $createdByUsername })"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "noteList": {
     "title": "Notizen von **{ $target }**",
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "noteDeleted": {
     "title": "Notiz gelöscht",
@@ -468,7 +332,7 @@
   "bulkDeleteSuccessful": {
     "title": "Erfolgreich",
     "description": "Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!",
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "configSet": {
     "title": "Einstellung { $key } gesetzt",
@@ -522,7 +386,7 @@
         "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "spielersucheRoleError": {
     "title": "Fehler",
@@ -631,7 +495,7 @@
         "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "spielersucheAusschlussEvent": {
     "title": "Spielersuche-Ausschluss",
@@ -649,7 +513,7 @@
         "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "spielersucheAusschlussRevertEvent": {
     "title": "Spielersuche-Ausschluss-Aufhebung",
@@ -667,17 +531,17 @@
         "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "userAlreadyTimeOuted": {
     "title": "Fehler",
     "description": "Der angegebene Nutzer hat bereits ein aktives Timeout!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "userAlreadyBanned": {
     "title": "Fehler",
     "description": "Der angegebene Nutzer ist bereits gebannt!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "durationParsingFailed": {
     "title": "Fehler",

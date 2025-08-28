@@ -7,23 +7,18 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.dispatching.reply.Component;
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
-import com.google.inject.Inject;
+import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -32,9 +27,6 @@ import java.util.List;
 @Interaction
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommand {
-
-    @Inject
-    private EmbedCache embedCache;
 
     private Integer offset = 0;
     private Integer limit = 5;
@@ -112,7 +104,7 @@ public class ModlogCommand {
 
     public void reply(ReplyableEvent<?> event) {
         if (maxPage < 2) {
-            event.reply(getEmbeds(event));
+            event.with().embeds(getEmbeds(event)).reply();
             return;
         }
         var pages = new ArrayList<SelectOption>();
@@ -121,24 +113,24 @@ public class ModlogCommand {
         }
         event.with()
                 .keepComponents(false)
-                .builder(builder -> builder.setEmbeds(getEmbeds(event).getEmbeds()))
+                .embeds(getEmbeds(event))
                 .components(Component.stringSelect("selectPage").selectOptions(pages))
                 .components(Component.button("back").enabled(page > 1), Component.button("next").enabled(page < maxPage))
                 .reply();
     }
 
-    public MessageCreateData getEmbeds(ReplyableEvent<?> event) {
-        List<MessageEmbed> list = new ArrayList<>();
+    public Embed[] getEmbeds(ReplyableEvent<?> event) {
+        List<Embed> list = new ArrayList<>();
 
-        list.add(EmbedHelpers.getModlogEmbedHeader(embedCache, context));
-        list.add(EmbedHelpers.getModlogEmbed(embedCache, event.getJDA(), ModerationService.getModerationActs(context.user, limit, offset), page, maxPage).toMessageEmbed());
+        list.add(EmbedHelpers.getModlogEmbedHeader(event, context));
+        list.add(EmbedHelpers.getModlogEmbed(event, event.getJDA(), ModerationService.getModerationActs(context.user, limit, offset), page, maxPage));
 
         var notes = NotesService.getNotesFromUser(context.user.getIdLong());
 
         if (!notes.isEmpty()) {
-            list.add(1, EmbedHelpers.getNotesEmbed(embedCache, event.getJDA(), context.user, notes).toMessageEmbed());
+            list.add(1, EmbedHelpers.getNotesEmbed(event, event.getJDA(), context.user, notes));
         }
 
-        return new MessageCreateBuilder().setEmbeds(list).build();
+        return list.toArray(new Embed[0]);
     }
 }

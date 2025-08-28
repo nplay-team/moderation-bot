@@ -17,7 +17,6 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
 
     private static final Logger log = LoggerFactory.getLogger(DurationAdapter.class);
 
-    // TODO refactor
     @Override
     public MappingResult<Duration> from(String source, MappingContext<String, Duration> context) {
         if (source.isBlank()) {
@@ -51,6 +50,7 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
         }
     }
 
+    // TODO refactor
     public static Optional<Duration> parse(@Nullable String raw) {
         if (raw == null || raw.isBlank()) {
             return Optional.empty();

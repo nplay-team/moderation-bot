@@ -2,31 +2,24 @@ package de.nplay.moderationbot.moderation.create;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
-import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import com.google.inject.Inject;
+import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.duration.DurationAdapter;
 import de.nplay.moderationbot.duration.DurationMax;
-import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.ModerationActLock;
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.moderation.ModerationUtils;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command.Choice;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
@@ -38,20 +31,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+
 @Interaction
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class ModerationCommands {
 
-    @Inject
-    private EmbedCache embedCache;
     @Inject
     private Serverlog serverlog;
     @Inject
     private ModerationActLock moderationActLock;
     private ModerationActBuilder moderationActBuilder;
     private Boolean replyEphemeral = false;
-    private static final String PARAGRAPH_PARAMETER_DESC = "Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?";
-    private static final String MESSAGELINK_PARAMETER_DESC = "Link zu einer Nachricht, die referenziert werden soll.";
+    private static final String PARAGRAPH_PARAMETER_DESC = "paragraph-reference";
+    private static final String MESSAGELINK_PARAMETER_DESC = "message-link";
     private ModerationActType type;
 
     @AutoComplete(value = {"mod", "spielersuche ausschluss"}, options = "paragraph")
@@ -68,19 +61,24 @@ public class ModerationCommands {
 
     @Command(value = "mod warn", desc = "Verwarnt einen Benutzer")
     public void warnMember(CommandEvent event,
-                           @Param("Der Benutzer, der verwarnt werden soll.") Member target,
-                           @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
-                           @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink) {
-        if (checkLocked(event, target, event.getUser())) return;
-        this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser()).paragraph(paragraph);
-        setMessageReference(event, messageLink);
+                           @Param("warn-target") Member target,
+                           @Param(value = "paragraph-reference", optional = true) String paragraph,
+                           @Param(value = "message-link", optional = true) MessageLink messageLink) {
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
+        this.moderationActBuilder = ModerationActBuilder.warn(target, event.getUser())
+                .paragraph(paragraph)
+                .messageReference(Helpers.retrieveMessage(event, messageLink));
         type = ModerationActType.WARN;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Warn)"));
     }
 
     @Command(value = "Verwarne Mitglied", type = Type.USER)
     public void warnMemberContext(CommandEvent event, User target) {
-        if (checkLocked(event, target, event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.warn(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.WARN;
@@ -89,7 +87,9 @@ public class ModerationCommands {
 
     @Command(value = "Verwarne Mitglied (💬)", type = Type.MESSAGE)
     public void warnMemberMessageContext(CommandEvent event, Message target) {
-        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target.getAuthor(), event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.warn(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.WARN;
@@ -98,21 +98,25 @@ public class ModerationCommands {
 
     @Command(value = "mod timeout", desc = "Versetzt einen Benutzer in den Timeout")
     public void timeoutMember(CommandEvent event,
-                              @Param("Der Benutzer, den in den Timeout versetzt werden soll.") Member target,
-                              @Param("Für wie lange der Timeout andauern soll (max. 28 Tage)") @DurationMax(2419200)
-                              Duration until,
-                              @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
-                              @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink) {
-        if (checkLocked(event, target, event.getUser())) return;
-        moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000).paragraph(paragraph);
-        setMessageReference(event, messageLink);
+                              @Param("timeout-target") Member target,
+                              @Param("timeout-length") @DurationMax(2419200) Duration until,
+                              @Param(value = "paragraph-reference", optional = true) String paragraph,
+                              @Param(value = "message-link", optional = true) MessageLink messageLink) {
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
+        moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser()).duration(until.getSeconds() * 1000)
+                .paragraph(paragraph)
+                .messageReference(Helpers.retrieveMessage(event, messageLink));
         type = ModerationActType.TIMEOUT;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Timeout)"));
     }
 
     @Command(value = "Timeoute Mitglied", type = Type.USER)
     public void timeoutMemberContext(CommandEvent event, User target) {
-        if (checkLocked(event, target, event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.timeout(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.TIMEOUT;
@@ -121,7 +125,9 @@ public class ModerationCommands {
 
     @Command(value = "Timeoute Mitglied (💬)", type = Type.MESSAGE)
     public void timeoutMemberMessageContext(CommandEvent event, Message target) {
-        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target.getAuthor(), event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.timeout(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.TIMEOUT;
@@ -131,14 +137,17 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command(value = "mod kick", desc = "Kickt einen Benutzer vom Server")
     public void kickMember(CommandEvent event,
-                           @Param("Der Benutzer, der gekickt werden soll.") Member target,
-                           @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
-                           @Max(7)
-                               @Param(value = "Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?", optional = true) int delDays,
-                           @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink) {
-        if (checkLocked(event, target, event.getUser())) return;
-        moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).deletionDays(delDays);
-        setMessageReference(event, messageLink);
+                           @Param("kick-target") Member target,
+                           @Param(value = "paragraph-reference", optional = true) String paragraph,
+                           @Param(value = "prune-duration", optional = true) @Max(7) int delDays,
+                           @Param(value = "message-link", optional = true) MessageLink messageLink) {
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
+        moderationActBuilder = ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).
+                deletionDays(delDays)
+                .messageReference(Helpers.retrieveMessage(event, messageLink));
+
         type = ModerationActType.KICK;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Kick)"));
     }
@@ -146,7 +155,9 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command(value = "Kicke Mitglied", type = Type.USER)
     public void kickMemberContext(CommandEvent event, User target) {
-        if (checkLocked(event, target, event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.kick(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.KICK;
@@ -156,7 +167,9 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command(value = "Kicke Mitglied (💬)", type = Type.MESSAGE)
     public void kickMemberMessageContext(CommandEvent event, Message target) {
-        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target.getAuthor(), event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.kick(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.KICK;
@@ -167,29 +180,29 @@ public class ModerationCommands {
     @Command(value = "mod ban", desc = "Bannt einen Benutzer vom Server")
     public void banMember(
             CommandEvent event,
-            @Param("Der Benutzer, der gekickt werden soll.") User target,
-            @Param(value = "Für wie lange der Ban andauern soll", optional = true) Duration until,
-            @Max(7)
-            @Param(value = "Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?", optional = true)
-            int delDays,
-            @Param(value = PARAGRAPH_PARAMETER_DESC, optional = true) String paragraph,
-            @Param(value = MESSAGELINK_PARAMETER_DESC, optional = true) MessageLink messageLink
+            @Param("ban-target") User target,
+            @Param(value = "ban-duration", optional = true) Duration until,
+            @Param(value = "prune-duration", optional = true) @Max(7) int delDays,
+            @Param(value = "paragraph-reference", optional = true) String paragraph,
+            @Param(value = "message-link", optional = true) MessageLink messageLink
     ) {
-        if (checkLocked(event, target, event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
 
         Member member;
         try {
             member = event.getGuild().retrieveMember(target).complete();
-            moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays).paragraph(paragraph);
+            moderationActBuilder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays);
         } catch (ErrorResponseException e) {
             if (e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
-                moderationActBuilder = ModerationActBuilder.ban(target, event.getGuild(), event.getUser()).deletionDays(delDays).paragraph(paragraph);
+                moderationActBuilder = ModerationActBuilder.ban(target, event.getGuild(), event.getUser()).deletionDays(delDays);
             } else {
                 throw new IllegalStateException(e);
             }
         }
 
-        setMessageReference(event, messageLink);
+        moderationActBuilder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
         if (until != null) {
             moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
@@ -204,7 +217,9 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "(Temp-)Ban Mitglied", type = Type.USER)
     public void banMemberContext(CommandEvent event, User target) {
-        if (checkLocked(event, target, event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target, event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.ban(event.getGuild().retrieveMember(target).complete(), event.getUser());
         replyEphemeral = true;
         type = ModerationActType.TEMP_BAN;
@@ -214,7 +229,9 @@ public class ModerationCommands {
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "(Temp-)Ban Mitglied (💬)", type = Type.MESSAGE)
     public void banMemberMessageContext(CommandEvent event, Message target) {
-        if (checkLocked(event, target.getAuthor(), event.getUser())) return;
+        if (moderationActLock.checkLocked(event, target.getAuthor(), event.getUser())) {
+            return;
+        }
         moderationActBuilder = ModerationActBuilder.ban(target.getMember(), event.getUser()).messageReference(target);
         replyEphemeral = true;
         type = ModerationActType.TEMP_BAN;
@@ -255,83 +272,50 @@ public class ModerationCommands {
         var action = moderationActBuilder.reason(reason).build();
 
         if (type == ModerationActType.TIMEOUT && ModerationService.isTimeOuted(action.targetId())) {
-            event.reply(embedCache.getEmbed("userAlreadyTimeOuted").injectValue("color", EmbedColors.ERROR));
+            event.with().embeds("userAlreadyTimeOuted").reply();
             return;
         }
 
         if (action.type().isBan() && ModerationService.isBanned(action.targetId())) {
-            event.reply(embedCache.getEmbed("userAlreadyBanned").injectValue("color", EmbedColors.ERROR));
+            event.with().embeds("userAlreadyBanned").reply();
             return;
         }
 
         var moderationAct = ModerationService.createModerationAct(action);
 
-        List<EmbedDTO.Field> fields = new ArrayList<>();
+        List<Field> fields = new ArrayList<>();
 
-        fields.add(new EmbedDTO.Field("ID", Long.toString(moderationAct.id()), true));
-        fields.add(new EmbedDTO.Field("Betroffener Nutzer", "<@%s>".formatted(moderationAct.userId()), true));
-        fields.add(new EmbedDTO.Field("Begründung", Objects.requireNonNullElse(moderationAct.reason(), "Keine Begründung angegeben."), false));
+        fields.add(new Field("ID", Long.toString(moderationAct.id()), true));
+        fields.add(new Field("Betroffener Nutzer", "<@%s>".formatted(moderationAct.userId()), true));
+        fields.add(new Field("Begründung", Objects.requireNonNullElse(moderationAct.reason(), "Keine Begründung angegeben."), false));
 
         if (moderationAct.type().isTemp() && moderationAct.revokeAt() != null) {
-            fields.add(new EmbedDTO.Field("Aktiv bis", "<t:%s:f>".formatted(moderationAct.revokeAt().getTime() / 1000), true));
+            fields.add(new Field("Aktiv bis", "<t:%s:f>".formatted(moderationAct.revokeAt().getTime() / 1000), true));
         }
 
         if (moderationAct.paragraph() != null) {
-            fields.add(new EmbedDTO.Field("Regel", moderationAct.paragraph().shortDisplay(), true));
+            fields.add(new Field("Regel", moderationAct.paragraph().shortDisplay(), true));
         }
 
         if (moderationAct.referenceMessage() != null) {
-            fields.add(new EmbedDTO.Field("Referenznachricht", moderationAct.referenceMessage().content(), false));
+            fields.add(new Field("Referenznachricht", moderationAct.referenceMessage().content(), false));
         }
 
         if (moderationAct.delDays() != null && moderationAct.delDays() > 0) {
-            fields.add(new EmbedDTO.Field("Nachrichten löschen", "Für %d Tage".formatted(moderationAct.delDays()), true));
+            fields.add(new Field("Nachrichten löschen", "Für %d Tage".formatted(moderationAct.delDays()), true));
         }
 
-        var embed = embedCache.getEmbed("moderationActExecuted")
-                .injectValue("type", moderationAct.type().humanReadableString)
-                .injectValue("color", EmbedColors.SUCCESS);
-
-        embed.setFields(fields.toArray(new EmbedDTO.Field[0]));
-        embed.setFooter(new EmbedDTO.Footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName()));
+        var embed = event.embed("moderationActExecuted");
+        embed.placeholders(entry("type", moderationAct.type().humanReadableString)).getFields().addAll(fields);
+        embed.footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName());
 
         // Executes the action (e.g. kicks the user)
         action.executor().accept(action);
 
         serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct));
 
-        ModerationUtils.sendMessageToTarget(moderationAct, event.getJDA(), event.getGuild(), embedCache);
-        event.with().ephemeral(replyEphemeral).reply(embed);
+        Helpers.sendMessageToTarget(moderationAct, event);
+        event.with().ephemeral(replyEphemeral).embeds(embed).reply();
         moderationActLock.unlock(moderationAct.userId().toString());
-    }
-
-    private boolean checkLocked(ReplyableEvent<?> event, UserSnowflake target, UserSnowflake moderator) {
-        if (!moderationActLock.lock(target.getId(), moderator.getId())) {
-            if (moderator.getId().equals(moderationActLock.get(target.getId()))) return false;
-
-            event.with().ephemeral(true).reply(
-                    embedCache.getEmbed("moderationTargetBlocked")
-                            .injectValue("targetId", target.getId())
-                            .injectValue("moderatorId", moderationActLock.get(target.getId()))
-                            .injectValue("color", EmbedColors.ERROR)
-            );
-            return true;
-        }
-
-        return false;
-    }
-
-    private void setMessageReference(ReplyableEvent<?> event, MessageLink messageLink) {
-        if (messageLink == null) return;
-
-        var guildChannel = event.getGuild().getGuildChannelById(messageLink.channelId());
-        if (guildChannel == null) return;
-
-        if (!(guildChannel instanceof MessageChannel messageChannel)) return;
-
-        var message = messageChannel.retrieveMessageById(messageLink.messageId()).complete();
-        if (message == null) return;
-
-        moderationActBuilder.messageReference(message);
     }
 }

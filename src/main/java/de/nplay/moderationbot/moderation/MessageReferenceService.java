@@ -6,7 +6,6 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 

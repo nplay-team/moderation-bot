@@ -5,17 +5,13 @@ import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
 import com.github.kaktushose.jda.commands.annotations.interactions.Param;
 import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
-import com.google.inject.Inject;
-import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.permissions.BotPermissions;
 
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+
 @Interaction
 public class DetailCommand {
-
-    @Inject
-    private EmbedCache embedCache;
 
     @Command(value = "mod detail", desc = "Zeigt mehr Informationen zu einer Moderationshandlung an")
     @Permissions(BotPermissions.MODERATION_READ)
@@ -23,14 +19,10 @@ public class DetailCommand {
         var moderationAct = ModerationService.getModerationAct(moderationId);
 
         if (moderationAct.isEmpty()) {
-            event.reply(
-                    embedCache.getEmbed("moderationActNotFound")
-                            .injectValue("id", moderationId)
-                            .injectValue("color", EmbedColors.ERROR)
-            );
+            event.with().embeds("moderationActNotFound", entry("id", moderationId));
             return;
         }
 
-        event.reply(moderationAct.get().getEmbed(embedCache, event.getJDA(), event.getGuild()));
+        event.reply(moderationAct.get().getEmbed(event, event.getJDA(), event.getGuild()).build());
     }
 }

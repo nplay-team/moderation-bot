@@ -6,6 +6,7 @@ import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDataSource;
 import com.github.kaktushose.jda.commands.embeds.error.JsonErrorMessageFactory;
 import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
+import com.github.kaktushose.jda.commands.i18n.FluavaLocalizer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
@@ -15,10 +16,12 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActLock;
 import de.nplay.moderationbot.moderation.revert.AutomaticRevertTask;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
+import dev.goldmensch.fluava.Fluava;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -34,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -89,12 +93,13 @@ public class NPLAYModerationBot extends AbstractModule {
                         .sources(EmbedDataSource.resource("embeds.json"))
                         .errorSource(EmbedDataSource.resource("embeds.json"))
                         .placeholders(
-                                entry("colorDefault", "#020c24"),
-                                entry("colorError", "#ff0000"),
-                                entry("colorSuccess", "#00ff00"),
-                                entry("colorWarning", "#ffff00")
+                                entry("colorDefault", EmbedColors.DEFAULT),
+                                entry("colorSuccess", EmbedColors.SUCCESS),
+                                entry("colorWarning", EmbedColors.WARNING),
+                                entry("colorError", EmbedColors.ERROR)
                         )
                 )
+                .localizer(new FluavaLocalizer(new Fluava(Locale.GERMAN)))
                 .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();

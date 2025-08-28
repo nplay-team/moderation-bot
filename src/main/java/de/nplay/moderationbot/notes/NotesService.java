@@ -6,12 +6,15 @@ import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+
+import static net.dv8tion.jda.api.entities.MessageEmbed.*;
 
 public class NotesService {
 
@@ -85,11 +88,11 @@ public class NotesService {
             );
         }
 
-        public EmbedDTO.Field getEmbedField(JDA jda) {
+        public Field getEmbedField(JDA jda) {
             var creatorUsername = jda.retrieveUserById(creatorId()).complete().getName();
             var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
             var body = "Moderator: <@%s> (%s)\n%s".formatted(creatorId(), creatorUsername, content());
-            return new EmbedDTO.Field(title, body, false);
+            return new Field(title, body, false);
         }
     }
 }

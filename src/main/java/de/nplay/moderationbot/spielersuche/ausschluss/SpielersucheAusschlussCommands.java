@@ -7,6 +7,7 @@ import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
+import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.bot.BotConfig;
 import de.nplay.moderationbot.embeds.EmbedColors;
@@ -25,9 +26,6 @@ import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 @Interaction
 public class SpielersucheAusschlussCommands {
-
-    @Inject
-    private EmbedCache embedCache;
 
     @Inject
     private Serverlog serverlog;
@@ -56,7 +54,7 @@ public class SpielersucheAusschlussCommands {
         var action = moderationActBuilder.build();
         var moderationAct = ModerationService.createModerationAct(action);
         action.executor().accept(action);
-        ModerationUtils.sendMessageToTarget(moderationAct, event.getJDA(), target.getGuild(), embedCache);
+        Helpers.sendMessageToTarget(moderationAct, event);
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()));
 

@@ -4,9 +4,7 @@ import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.constraints.Min;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
-import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
@@ -21,19 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+
 @Interaction
 @CommandConfig(enabledFor = Permission.MESSAGE_MANAGE)
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class BulkDeleteCommands {
 
     @Inject
-    private EmbedCache embedCache;
-
-    @Inject
     private Serverlog serverlog;
 
     @Command(value = "mod purge messages", desc = "Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig")
-    public void purgeMessagesByAmount(CommandEvent event, @Param("Anzahl der Nachrichten die gelöscht werden sollen") @Min(1) @Max(100) int amount) {
+    public void purgeMessagesByAmount(CommandEvent event,
+                                      @Param("Anzahl der Nachrichten die gelöscht werden sollen") @Min(1) @Max(100)
+                                      int amount) {
         var deletedMessages = purgeMessages(event, event.getMessageChannel(), event.getMessageChannel().getLatestMessageId(), amount) - 1;
         replyEvent(event, deletedMessages);
     }
@@ -74,7 +73,7 @@ public class BulkDeleteCommands {
     }
 
     private void replyEvent(CommandEvent event, int amount) {
-        var message = event.reply(EmbedHelpers.getBulkMessageDeletionSuccessfulEmbed(embedCache, amount));
+        var message = event.with().embeds("bulkDeleteSuccessful", entry("amount", amount)).reply();
         message.delete().queueAfter(5, TimeUnit.SECONDS);
     }
 

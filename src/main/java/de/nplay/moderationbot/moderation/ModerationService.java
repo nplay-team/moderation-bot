@@ -1,7 +1,6 @@
 package de.nplay.moderationbot.moderation;
 
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
-import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
+import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapper;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
@@ -13,10 +12,8 @@ import de.nplay.moderationbot.moderation.create.ModerationActBuilder.ModerationA
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +23,7 @@ import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
 
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 /**
@@ -89,7 +87,8 @@ public class ModerationService {
         return getModerationActs(user, null, null);
     }
 
-    public static List<ModerationAct> getModerationActs(UserSnowflake user, @Nullable Integer limit, @Nullable Integer offset) {
+    public static List<ModerationAct> getModerationActs(UserSnowflake user,
+                                                        @Nullable Integer limit, @Nullable Integer offset) {
         return Query.query("SELECT * FROM moderations WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
                 .single(Call.of()
                         .bind(user.getIdLong())
@@ -201,7 +200,7 @@ public class ModerationService {
             );
         }
 
-        public void revert(Guild guild, EmbedCache embedCache, User revertedBy, @Nullable String reason) {
+        public void revert(Guild guild, ReplyableEvent<?> event, User revertedBy, @Nullable String reason) {
             log.info("Reverting moderation action: {}", this);
 
             Query.query("UPDATE moderations SET reverted = true, reverted_by = ?, reverted_at = ?, revert_reason = ? WHERE id = ?")
@@ -213,24 +212,24 @@ public class ModerationService {
                     .update();
 
             switch (type) {
-                case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {}, USER_HANDLER);
+                case BAN, TEMP_BAN -> guild.unban(UserSnowflake.fromId(String.valueOf(userId))).queue(_ -> {
+                }, USER_HANDLER);
                 case TIMEOUT -> {
-                    guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {}, USER_HANDLER);
-                    sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
+                    guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {
+                    }, USER_HANDLER);
+                    sendRevertMessageToUser(guild, event, revertedBy, reason);
                 }
-                case WARN -> sendRevertMessageToUser(guild, embedCache, revertedBy, reason);
+                case WARN -> sendRevertMessageToUser(guild, event, revertedBy, reason);
             }
         }
 
-        private void sendRevertMessageToUser(Guild guild, EmbedCache embedCache, User revertedBy, @Nullable String revertingReason) {
-            var embed = embedCache
-                    .getEmbed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted")
-                    .injectValue("date", createdAt.getTime() / 1000)
-                    .injectValue("id", id)
-                    .injectValue("reason", Objects.requireNonNullElse(revertingReason, "?DEL?"))
-                    .injectValue("revertedById", revertedBy.getIdLong())
-                    .injectValue("revertedByUsername", revertedBy.getName())
-                    .injectValue("color", EmbedColors.SUCCESS).toEmbedBuilder();
+        private void sendRevertMessageToUser(Guild guild, ReplyableEvent<?> event, User revertedBy, @Nullable String revertingReason) {
+            var embed = event.embed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted").placeholders(
+                    entry("date", createdAt.getTime() / 1000),
+                    entry("id", id),
+                    entry("reason", Objects.requireNonNullElse(revertingReason, "?DEL?")),
+                    entry("revertedById", revertedBy.getIdLong()),
+                    entry("revertedByUsername", revertedBy.getName()));
 
             embed.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
 
@@ -240,7 +239,7 @@ public class ModerationService {
                     }, USER_HANDLER);
         }
 
-        public EmbedDTO.Field getEmbedField(JDA jda) {
+        public Field getEmbedField(JDA jda) {
             String headLine = "#%s | %s | <t:%s>".formatted(id, type.humanReadableString, createdAt.getTime() / 1000);
             List<String> bodyLines = new ArrayList<>();
 
@@ -264,35 +263,34 @@ public class ModerationService {
                 bodyLines.addLast("*Aufgehoben am: <t:%s:f>*".formatted(revertedAt.getTime() / 1000));
             }
 
-            return new EmbedDTO.Field(
+            return new Field(
                     headLine,
                     String.join("\n", bodyLines),
                     false
             );
         }
 
-        public EmbedBuilder getEmbed(EmbedCache embedCache, JDA jda, Guild guild) {
-            EmbedDTO embedDTO = embedCache.getEmbed("moderationActDetail")
-                    .injectValue("id", id)
-                    .injectValue("type", type.humanReadableString)
-                    .injectValue("date", createdAt.getTime() / 1000)
-                    .injectValue("issuerId", issuerId)
-                    .injectValue("issuerUsername", jda.retrieveUserById(issuerId).complete().getName())
-                    .injectValue("reason", reason == null ? "?DEL?" : reason)
-                    .injectValue("paragraph", paragraph == null ? "?DEL?" : paragraph.fullDisplay())
-                    .injectValue("duration", duration == null ? "?DEL?" : Helpers.durationToString(Duration.ofMillis(duration)))
-                    .injectValue("referenceMessage", referenceMessage == null ? "?DEL?" : Matcher.quoteReplacement(referenceMessage.fullDisplay(guild)))
-                    .injectValue("until", revokeAt == null ? "?DEL?" : revokeAt.getTime() / 1000)
-                    .injectValue("revertedAt", revertedAt == null ? "?DEL?" : revertedAt.getTime() / 1000)
-                    .injectValue("revertedById", revertedBy == null ? "?DEL?" : revertedBy)
-                    .injectValue("revertedByUsername", revertedBy == null ? "?DEL?" : jda.retrieveUserById(revertedBy).complete().getName())
-                    .injectValue("reversionReason", revertingReason == null ? "?DEL?" : revertingReason)
-                    .injectValue("color", EmbedColors.DEFAULT);
-
-            EmbedBuilder embedBuilder = embedDTO.toEmbedBuilder();
-            embedBuilder.getFields().removeIf(it -> it.getValue().contains("?DEL?"));
-
-            return embedBuilder;
+        public EmbedBuilder getEmbed(ReplyableEvent<?> event, JDA jda, Guild guild) {
+            var embed = event.embed("moderationActDetail");
+            embed.placeholders(
+                    entry("id", id),
+                    entry("type", type.humanReadableString),
+                    entry("date", createdAt.getTime() / 1000),
+                    entry("issuerId", issuerId),
+                    entry("issuerUsername", jda.retrieveUserById(issuerId).complete().getName()),
+                    entry("reason", reason == null ? "?DEL?" : reason),
+                    entry("paragraph", paragraph == null ? "?DEL?" : paragraph.fullDisplay()),
+                    entry("duration", duration == null ? "?DEL?" : Helpers.durationToString(Duration.ofMillis(duration))),
+                    entry("referenceMessage", referenceMessage == null ? "?DEL?" : Matcher.quoteReplacement(referenceMessage.fullDisplay(guild))),
+                    entry("until", revokeAt == null ? "?DEL?" : revokeAt.getTime() / 1000),
+                    entry("revertedAt", revertedAt == null ? "?DEL?" : revertedAt.getTime() / 1000),
+                    entry("revertedById", revertedBy == null ? "?DEL?" : revertedBy),
+                    entry("revertedByUsername", revertedBy == null ? "?DEL?" : jda.retrieveUserById(revertedBy).complete().getName()),
+                    entry("reversionReason", revertingReason == null ? "?DEL?" : revertingReason),
+                    entry("color", EmbedColors.DEFAULT)
+            );
+            embed.fields().removeIf(it -> it.getValue().contains("?DEL?"));
+            return embed;
         }
     }
 }
