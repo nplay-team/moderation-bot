@@ -6,7 +6,7 @@ import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,27 +87,27 @@ public class ModerationActBuilder {
                 });
     }
 
-    public ModerationActBuilder issuer(@NotNull UserSnowflake issuer) {
+    public ModerationActBuilder issuer(UserSnowflake issuer) {
         this.issuerId = issuer.getIdLong();
         return this;
     }
 
-    public ModerationActBuilder type(@NotNull ModerationActType type) {
+    public ModerationActBuilder type(ModerationActType type) {
         this.type = type;
         return this;
     }
 
-    public ModerationActBuilder target(@NotNull UserSnowflake user) {
+    public ModerationActBuilder target(UserSnowflake user) {
         this.targetId = user.getIdLong();
         return this;
     }
 
-    public ModerationActBuilder executor(@NotNull Consumer<ModerationActCreateData> consumer) {
+    public ModerationActBuilder executor(Consumer<ModerationActCreateData> consumer) {
         this.executor = consumer;
         return this;
     }
 
-    public ModerationActBuilder reason(@NotNull String reason) {
+    public ModerationActBuilder reason(String reason) {
         this.reason = reason;
         return this;
     }
@@ -153,14 +153,14 @@ public class ModerationActBuilder {
 
     public record ModerationActCreateData(
             long targetId,
-            @NotNull ModerationActType type,
+            ModerationActType type,
             long issuerId,
             @Nullable String reason,
             @Nullable Message messageReference,
             @Nullable Integer paragraphId,
             long duration,
             int deletionDays,
-            @NotNull Consumer<ModerationActCreateData> executor
+            Consumer<ModerationActCreateData> executor
     ) {
 
         public ModerationActCreateData {

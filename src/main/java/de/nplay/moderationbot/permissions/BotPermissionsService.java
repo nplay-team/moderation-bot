@@ -20,7 +20,7 @@ public class BotPermissionsService {
             return row -> new EntityPermissions(row.getInt(("permissions")));
         }
 
-        public boolean hasPermissions(@NotNull InvocationContext<?> context) {
+        public boolean hasPermissions(InvocationContext<?> context) {
             if ((permissions() & de.nplay.moderationbot.permissions.BotPermissions.BitFields.ADMINISTRATOR.value) != 0) {
                 return true;
             }
@@ -29,7 +29,7 @@ public class BotPermissionsService {
                     .noneMatch(it -> (permissions() & it.value) == 0);
         }
 
-        public boolean hasPermission(@NotNull String permission) {
+        public boolean hasPermission(String permission) {
             return (permissions() & BotPermissions.BitFields.valueOf(permission).value) != 0;
         }
 
@@ -45,7 +45,7 @@ public class BotPermissionsService {
     /// @implNote Returns empty permissions if no user entry exists. If the provided [UserSnowflake] is a [Member] will
     /// combine the [Role] permissions.
     @NotNull
-    public static BotPermissionsService.EntityPermissions getUserPermissions(@NotNull UserSnowflake user) {
+    public static BotPermissionsService.EntityPermissions getUserPermissions(UserSnowflake user) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
                 .mapAs(EntityPermissions.class)
@@ -66,7 +66,7 @@ public class BotPermissionsService {
     ///
     /// @return the updated [EntityPermissions]
     @NotNull
-    public static BotPermissionsService.EntityPermissions updateUserPermissions(@NotNull UserSnowflake user, int permissions) {
+    public static BotPermissionsService.EntityPermissions updateUserPermissions(UserSnowflake user, int permissions) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
                 .mapAs(EntityPermissions.class)
@@ -87,7 +87,7 @@ public class BotPermissionsService {
 
     /// Gets the permissions of a role. Returns empty permissions if no role entry exists
     @NotNull
-    public static BotPermissionsService.EntityPermissions getRolePermissions(@NotNull Role role) {
+    public static BotPermissionsService.EntityPermissions getRolePermissions(Role role) {
         return Query.query("SELECT * FROM roles WHERE id = ?")
                 .single(Call.of().bind(role.getIdLong()))
                 .mapAs(EntityPermissions.class)
@@ -99,7 +99,7 @@ public class BotPermissionsService {
     ///
     /// @return the updated [EntityPermissions]
     @NotNull
-    public static BotPermissionsService.EntityPermissions updateRolePermissions(@NotNull Role role, int permissions) {
+    public static BotPermissionsService.EntityPermissions updateRolePermissions(Role role, int permissions) {
         var id = role.getIdLong();
         var rolePermissions = Query.query("SELECT * FROM roles WHERE id = ?")
                 .single(Call.of().bind(id))

@@ -137,7 +137,7 @@ public class EmbedHelpers {
         return embed.build();
     }
 
-    public static MessageEmbed getBulkMessageDeletionEmbed(EmbedCache embedCache, @NotNull Integer amount, @NotNull User user) {
+    public static MessageEmbed getBulkMessageDeletionEmbed(EmbedCache embedCache, Integer amount, User user) {
         return embedCache.getEmbed("bulkMessageDeleteEvent")
                 .injectValue("amount", amount)
                 .injectValue("issuerId", user.getId())
@@ -147,7 +147,7 @@ public class EmbedHelpers {
                 .toMessageEmbed();
     }
 
-    public static MessageEmbed getSpielersucheAusschlussEmbed(EmbedCache embedCache, @NotNull User target, @NotNull User issuer, Boolean reverted) {
+    public static MessageEmbed getSpielersucheAusschlussEmbed(EmbedCache embedCache, User target, User issuer, Boolean reverted) {
         return embedCache.getEmbed("spielersucheAusschluss" + (reverted ? "Revert" : "") + "Event")
                 .injectValue("targetId", target.getId())
                 .injectValue("targetUsername", target.getName())

@@ -24,6 +24,7 @@ dependencies {
         exclude(module = "opus-java")
     }
 
+    implementation("org.jspecify:jspecify:1.0.0")
     implementation("club.minnced:discord-webhooks:0.8.4")
     implementation("io.github.kaktushose:jda-commands:4.0.0-beta.8")
     implementation("ch.qos.logback:logback-core:1.5.13")

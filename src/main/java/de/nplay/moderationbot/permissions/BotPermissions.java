@@ -16,7 +16,7 @@ public class BotPermissions {
     public static final String PERMISSION_MANAGE = "PERMISSION_MANAGE";
 
     /// Combines multiple permissions into one integer.
-    public static int combine(@NotNull Collection<Integer> permissions) {
+    public static int combine(Collection<Integer> permissions) {
         int combined = 0;
         for (int permission : permissions) {
             combined |= permission;

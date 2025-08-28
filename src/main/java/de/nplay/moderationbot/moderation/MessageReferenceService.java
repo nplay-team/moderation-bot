@@ -19,7 +19,7 @@ public class MessageReferenceService {
                 .first();
     }
 
-    public static void createMessageReference(@NotNull Message message) {
+    public static void createMessageReference(Message message) {
         Query.query("INSERT INTO message_references VALUES(?, ?, ?) ON CONFLICT DO NOTHING")
                 .single(Call.of().bind(message.getIdLong()).bind(message.getChannelIdLong()).bind(message.getContentRaw()))
                 .insert();
@@ -42,11 +42,11 @@ public class MessageReferenceService {
             );
         }
 
-        public String jumpUrl(@NotNull Guild guild) {
+        public String jumpUrl(Guild guild) {
             return "https://discord.com/channels/%d/%d/%d".formatted(guild.getIdLong(), channelId, messageId);
         }
 
-        public String fullDisplay(@NotNull Guild guild) {
+        public String fullDisplay(Guild guild) {
             return "%s\n[Link](%s)".formatted(content, jumpUrl(guild));
         }
     }

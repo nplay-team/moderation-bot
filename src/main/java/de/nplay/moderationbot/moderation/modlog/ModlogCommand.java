@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public class ModlogCommand {
     private ModlogContext context;
     private InteractionHook interactionHook;
 
-    public record ModlogContext(@NotNull User user, @Nullable Member member) {}
+    public record ModlogContext(User user, @Nullable Member member) {}
 
     @Command(value = "mod log", desc = "Zeigt den Modlog eines Mitglieds an")
     public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")

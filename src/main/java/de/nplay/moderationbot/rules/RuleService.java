@@ -56,7 +56,7 @@ public class RuleService {
      * @param displayName the short display name of the paragraph
      * @return an Optional holding the {@link RuleParagraph}
      */
-    public static Optional<RuleParagraph> getRuleParagraphByDisplayName(@NotNull String displayName) {
+    public static Optional<RuleParagraph> getRuleParagraphByDisplayName(String displayName) {
         return getRuleParagraphs()
                 .stream()
                 .filter(r -> r.shortDisplay().equalsIgnoreCase(displayName))
@@ -82,7 +82,7 @@ public class RuleService {
      * @param title   the title of the paragraph
      * @param content the content of the paragraph
      */
-    public record RuleParagraph(int id, @NotNull String number, @NotNull String title, Optional<String> content) {
+    public record RuleParagraph(int id, String number, String title, Optional<String> content) {
         /**
          * Mapping method for the {@link de.chojo.sadu.mapper.rowmapper.RowMapper RowMapper}
          *

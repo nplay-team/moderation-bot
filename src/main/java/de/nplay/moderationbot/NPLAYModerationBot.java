@@ -3,6 +3,7 @@ package de.nplay.moderationbot;
 import com.github.kaktushose.jda.commands.JDACommands;
 import com.github.kaktushose.jda.commands.definitions.interactions.command.CommandDefinition.CommandConfig;
 import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.github.kaktushose.jda.commands.embeds.EmbedDataSource;
 import com.github.kaktushose.jda.commands.embeds.error.JsonErrorMessageFactory;
 import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
 import com.google.inject.AbstractModule;
@@ -37,6 +38,8 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
 /**
  * The main class of the bot
@@ -82,7 +85,16 @@ public class NPLAYModerationBot extends AbstractModule {
         serverlog = new Serverlog(guild, embedCache);
 
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
-                .errorMessageFactory(new JsonErrorMessageFactory(embedCache))
+                .embeds(config -> config
+                        .sources(EmbedDataSource.resource("embeds.json"))
+                        .errorSource(EmbedDataSource.resource("embeds.json"))
+                        .placeholders(
+                                entry("colorDefault", "#020c24"),
+                                entry("colorError", "#ff0000"),
+                                entry("colorSuccess", "#00ff00"),
+                                entry("colorWarning", "#ffff00")
+                        )
+                )
                 .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
