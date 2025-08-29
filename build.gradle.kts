@@ -14,7 +14,7 @@ repositories {
     maven { url = uri("https://jitpack.io") }
 }
 
-val saduVersion = "2.3.0"
+val saduVersion = "2.3.3"
 
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
