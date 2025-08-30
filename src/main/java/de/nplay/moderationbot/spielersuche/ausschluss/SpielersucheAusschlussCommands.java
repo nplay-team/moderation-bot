@@ -5,7 +5,6 @@ import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
 import com.github.kaktushose.jda.commands.annotations.interactions.Param;
 import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.config.ConfigService;
@@ -13,7 +12,6 @@ import de.nplay.moderationbot.config.bot.BotConfig;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.moderation.ModerationUtils;
 import de.nplay.moderationbot.moderation.create.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
@@ -37,12 +35,12 @@ public class SpielersucheAusschlussCommands {
         var spielersucheAusschlussRolle = getSpielersucheAusschlussRolle(event);
 
         if (spielersucheAusschlussRolle.isEmpty()) {
-            event.reply(embedCache.getEmbed("spielersucheRoleError").injectValue("color", EmbedColors.ERROR));
+            event.reply(event.embed("spielersucheRoleError").build());
             return;
         }
 
         if (target.getRoles().contains(spielersucheAusschlussRolle.get())) {
-            event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheAlreadyBlocked", embedCache, target, EmbedColors.ERROR));
+            event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheAlreadyBlocked", event, target).build());
             return;
         }
 
@@ -56,9 +54,9 @@ public class SpielersucheAusschlussCommands {
         action.executor().accept(action);
         Helpers.sendMessageToTarget(moderationAct, event);
 
-        serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()));
+        serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
 
-        event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheBlockSuccess", embedCache, target, EmbedColors.SUCCESS));
+        event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheBlockSuccess", event, target).build());
     }
 
     @Command(value = "spielersuche freigeben", desc = "Hebt den Ausschluss eines Users von der Spielersuche auf")
@@ -67,25 +65,25 @@ public class SpielersucheAusschlussCommands {
         var spielersucheAusschlussRolle = getSpielersucheAusschlussRolle(event);
 
         if (spielersucheAusschlussRolle.isEmpty()) {
-            event.reply(embedCache.getEmbed("spielersucheRoleError").injectValue("color", EmbedColors.ERROR));
+            event.reply(event.embed("spielersucheRoleError").build());
             return;
         }
 
         if (!target.getRoles().contains(spielersucheAusschlussRolle.get())) {
-            event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheNotBlocked", embedCache, target, EmbedColors.ERROR));
+            event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheNotBlocked", event, target).build());
             return;
         }
 
         event.getGuild().removeRoleFromMember(target, spielersucheAusschlussRolle.get()).queue();
         target.getUser()
                 .openPrivateChannel()
-                .flatMap(it -> it.sendMessageEmbeds(EmbedHelpers.getSpielersucheUnblockForTargetEmbed(embedCache, event.getUser()).toMessageEmbed()))
+                .flatMap(it -> it.sendMessageEmbeds(EmbedHelpers.getSpielersucheUnblockForTargetEmbed(event, event.getUser()).build()))
                 .queue(_ -> {
                 }, USER_HANDLER);
 
-        serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()));
+        serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
 
-        event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheUnblockSuccess", embedCache, target, EmbedColors.SUCCESS));
+        event.reply(EmbedHelpers.getEmbedWithTarget("spielersucheUnblockSuccess", event, target).build());
     }
 
     private java.util.Optional<Role> getSpielersucheAusschlussRolle(CommandEvent event) {

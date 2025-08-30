@@ -312,7 +312,7 @@ public class ModerationCommands {
         // Executes the action (e.g. kicks the user)
         action.executor().accept(action);
 
-        serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct));
+        serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct), event);
 
         Helpers.sendMessageToTarget(moderationAct, event);
         event.with().ephemeral(replyEphemeral).embeds(embed).reply();

@@ -34,12 +34,12 @@ public class DeleteCommand {
         }
 
         if (!moderation.get().reverted()) {
-            moderation.get().revert(event.getGuild(), event, event.getUser(), null);
+            moderation.get().revert(event.getGuild(), event::embed, event.getUser(), null);
         }
 
         log.info("Moderation act {} has been deleted by {}", moderationId, event.getUser().getName());
         ModerationService.deleteModerationAct(moderationId);
-        serverlog.onEvent(ModerationEvents.Deleted(event.getJDA(), event.getGuild(), moderation.get(), event.getUser()));
+        serverlog.onEvent(ModerationEvents.Deleted(event.getJDA(), event.getGuild(), moderation.get(), event.getUser()), event);
         event.with().embeds("deletionSuccessful", entry("id", moderationId)).reply();
     }
 

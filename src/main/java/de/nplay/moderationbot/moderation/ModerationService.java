@@ -1,6 +1,7 @@
 package de.nplay.moderationbot.moderation;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
+import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapper;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
@@ -21,6 +22,7 @@ import javax.annotation.Nullable;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
@@ -200,7 +202,7 @@ public class ModerationService {
             );
         }
 
-        public void revert(Guild guild, ReplyableEvent<?> event, User revertedBy, @Nullable String reason) {
+        public void revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy, @Nullable String reason) {
             log.info("Reverting moderation action: {}", this);
 
             Query.query("UPDATE moderations SET reverted = true, reverted_by = ?, reverted_at = ?, revert_reason = ? WHERE id = ?")
@@ -217,14 +219,14 @@ public class ModerationService {
                 case TIMEOUT -> {
                     guild.retrieveMemberById(userId).flatMap(Member::removeTimeout).queue(_ -> {
                     }, USER_HANDLER);
-                    sendRevertMessageToUser(guild, event, revertedBy, reason);
+                    sendRevertMessageToUser(guild, embedFunction, revertedBy, reason);
                 }
-                case WARN -> sendRevertMessageToUser(guild, event, revertedBy, reason);
+                case WARN -> sendRevertMessageToUser(guild, embedFunction, revertedBy, reason);
             }
         }
 
-        private void sendRevertMessageToUser(Guild guild, ReplyableEvent<?> event, User revertedBy, @Nullable String revertingReason) {
-            var embed = event.embed(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted").placeholders(
+        private void sendRevertMessageToUser(Guild guild, Function<String, Embed> embedFunction, User revertedBy, @Nullable String revertingReason) {
+            var embed = embedFunction.apply(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted").placeholders(
                     entry("date", createdAt.getTime() / 1000),
                     entry("id", id),
                     entry("reason", Objects.requireNonNullElse(revertingReason, "?DEL?")),

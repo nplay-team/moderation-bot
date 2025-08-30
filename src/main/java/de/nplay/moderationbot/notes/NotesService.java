@@ -1,12 +1,10 @@
 package de.nplay.moderationbot.notes;
 
-import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +12,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-import static net.dv8tion.jda.api.entities.MessageEmbed.*;
+import static net.dv8tion.jda.api.entities.MessageEmbed.Field;
 
 public class NotesService {
 

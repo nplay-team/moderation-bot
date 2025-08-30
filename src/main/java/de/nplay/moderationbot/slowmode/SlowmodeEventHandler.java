@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.slowmode;
 
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
+import com.github.kaktushose.jda.commands.JDACommands;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -21,12 +21,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
 
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+
 public class SlowmodeEventHandler extends ListenerAdapter {
     private static final Logger log = LoggerFactory.getLogger(SlowmodeEventHandler.class);
-    private final EmbedCache embedCache;
+    private final JDACommands jdaCommands;
 
-    public SlowmodeEventHandler(EmbedCache embedCache) {
-        this.embedCache = embedCache;
+    public SlowmodeEventHandler(JDACommands jdaCommands) {
+        this.jdaCommands = jdaCommands;
     }
 
     @Override
@@ -114,13 +116,14 @@ public class SlowmodeEventHandler extends ListenerAdapter {
     private void notifyUser(User user, String channelId, long duration, long lastMessageTimestamp) {
         user.openPrivateChannel().queue(privateChannel -> {
             privateChannel.sendMessageEmbeds(
-                    embedCache.getEmbed("slowmodeMessageRemoved")
-                            .injectValue("channelId", channelId)
-                            .injectValue("duration", Helpers.durationToString(Duration.ofSeconds(duration), true))
-                            .injectValue("timestampNextMessage", lastMessageTimestamp + duration)
-                            .injectValue("timestampLastMessage", lastMessageTimestamp)
-                            .injectValue("color", EmbedColors.ERROR)
-                            .toMessageEmbed()
+                    jdaCommands.embed("slowmodeMessageRemoved")
+                            .placeholders(
+                                    entry("channelId", channelId),
+                                    entry("duration", Helpers.durationToString(Duration.ofSeconds(duration), true)),
+                                    entry("timestampNextMessage", lastMessageTimestamp + duration),
+                                    entry("timestampLastMessage", lastMessageTimestamp)
+                            )
+                            .build()
             ).queue();
         });
     }

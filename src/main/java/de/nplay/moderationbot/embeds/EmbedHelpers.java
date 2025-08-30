@@ -21,11 +21,10 @@ import static de.nplay.moderationbot.moderation.modlog.ModlogCommand.ModlogConte
 
 public class EmbedHelpers {
 
-    public static Embed getEmbedWithTarget(String embedName, ReplyableEvent<?> event, Member target, EmbedColors color) {
+    public static Embed getEmbedWithTarget(String embedName, ReplyableEvent<?> event, Member target) {
         return event.embed(embedName).placeholders(
                 entry("targetId", target.getId()),
-                entry("targetUsername", target.getUser().getName()),
-                entry("color", color));
+                entry("targetUsername", target.getUser().getName()));
     }
 
     public static Embed getModlogEmbedHeader(ReplyableEvent<?> event, ModlogContext context) {

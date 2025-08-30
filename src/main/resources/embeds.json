@@ -59,12 +59,12 @@
   "permissionsEdit": {
     "title": "Berechtigungen von **{ $target }**",
     "description": "Bitte wähle die Berechtigungen in dem Select-Menu aus:",
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "permissionsList": {
     "title": "Berechtigungen von **{ $target }**",
     "description": "{ $permissions }",
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "moderationActExecuted": {
     "title": "{ $type } erfolgreich ausgeführt!",
@@ -78,7 +78,7 @@
   "moderationActTargetInfo": {
     "title": "{ $title }",
     "description": "{ $description }",
-    "color": "{ $color }",
+    "color": "{ $colorDefault }",
     "fields": [
       {
         "name": "Begründung",
@@ -164,12 +164,12 @@
   "reversionSuccessful": {
     "title": "Erfolgreich",
     "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich rückgängig gemacht!",
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "reversionFailed": {
     "title": "Fehler",
     "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht oder wurde bereits rückgängig gemacht!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "deletionSuccessful": {
     "title": "Erfolgreich",
@@ -235,7 +235,7 @@
   },
   "moderationActDetail": {
     "title": "NPLAY-Moderation - Moderationshandlung",
-    "color": "{ $color }",
+    "color": "{ $colorDefault }",
     "fields": [
       {
         "name": "ID",
@@ -317,17 +317,17 @@
   "noteDeleted": {
     "title": "Notiz gelöscht",
     "description": "Die Notiz mit der ID **${ $id }** wurde erfolgreich gelöscht!",
-    "color": "{ $color }"
+    "color": "{ $colorWarning }"
   },
   "noteLimitReached": {
     "title": "Fehler",
     "description": "Der Benutzer hat bereits die maximale Anzahl an Notizen (25x) erreicht!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "noteNotFound": {
     "title": "Fehler",
     "description": "Die Notiz mit der ID **${ $id }** existiert nicht!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "bulkDeleteSuccessful": {
     "title": "Erfolgreich",
@@ -342,12 +342,12 @@
   "configGet": {
     "title": "Einstellung { $key }",
     "description": "{ $value }",
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "configNotSet": {
     "title": "Fehler",
     "description": "Die Einstellung **{ $key }** wurde noch nicht konfiguriert!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "configList": {
     "title": "Einstellungen",
@@ -356,22 +356,22 @@
   "spielersucheAlreadyBlocked": {
     "title": "Fehler",
     "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** ist bereits blockiert!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "spielersucheBlockSuccess": {
     "title": "Erfolgreich",
     "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** wurde erfolgreich von der Spielersuche blockiert!",
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "spielersucheUnblockSuccess": {
     "title": "Erfolgreich",
     "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** wurde erfolgreich für die Spielersuche wieder freigegeben!",
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "spielersucheNotBlocked": {
     "title": "Fehler",
     "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** ist nicht blockiert!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "spielersucheUnblockForTarget": {
     "title": "Spielersuche-Freigabe",
@@ -391,7 +391,7 @@
   "spielersucheRoleError": {
     "title": "Fehler",
     "description": "Die Spielersuche-Ausschluss-Rolle existiert nicht mehr oder wurde noch nicht konfiguriert!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "moderationCreateEvent": {
     "title": "{ $type } | #{ $id }",
@@ -421,7 +421,7 @@
         "value": "{ $until }"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "moderationRevertEvent": {
     "title": "REVIDIERUNG | { $type } | #{ $id }",
@@ -451,7 +451,7 @@
         "value": "<t:{ $revertedAt }:F>"
       }
     ],
-    "color": "{ $warningColor }"
+    "color": "{ $colorWarning }"
   },
   "moderationDeleteEvent": {
     "title": "LÖSCHUNG | { $type } | #{ $id }",
@@ -477,7 +477,7 @@
         "value": "<t:{ $createdAt }:F>"
       }
     ],
-    "color": "{ $deleteColor }"
+    "color": "{ $colorError }"
   },
   "bulkMessageDeleteEvent": {
     "title": "Massenlöschung von Nachrichten",
@@ -546,27 +546,27 @@
   "durationParsingFailed": {
     "title": "Fehler",
     "description": "Die Dauer konnte nicht korrekt eingelesen werden. Bitte verwende das Format **Xd Yh Zm**!\nEingabe: `{ $duration }`",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "slowmodeInfo": {
     "title": "Slowmode Info <#{ $channelId }>",
     "description": "Der Slowmode für diesen Kanal beträgt **{ $duration }**!",
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "slowmodeSet": {
     "title": "Slowmode gesetzt <#{ $channelId }>",
     "description": "Der Slowmode für diesen Kanal wurde auf **{ $duration }** gesetzt!",
-    "color": "{ $color }"
+    "color": "{ $colorSuccess }"
   },
   "slowmodeNotSet": {
     "title": "Fehler",
     "description": "Für den Kanal <#{ $channelId }> wurde kein Slowmode gesetzt!",
-    "color": "{ $color }"
+    "color": "{ $colorError }"
   },
   "slowmodeRemove": {
     "title": "Slowmode entfernt <#{ $channelId }>",
     "description": "Der Slowmode für diesen Kanal wurde entfernt!",
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   },
   "slowmodeMessageRemoved": {
     "title": "Slowmode - Nachricht entfernt",
@@ -581,6 +581,6 @@
         "value": "<t:{ $timestampLastMessage }:R>"
       }
     ],
-    "color": "{ $color }"
+    "color": "{ $colorDefault }"
   }
 }

@@ -11,38 +11,38 @@ import org.jetbrains.annotations.NotNull;
 public class ModerationEvents {
 
     public static BotEvent Created(JDA jda, Guild guild, ModerationService.ModerationAct moderationAct) {
-        return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationCreateEvent", jda, moderationAct, null)
+        return new BotEvent(jda, guild, (event) ->
+                EmbedHelpers.getGenericModerationEventEmbed(event, "moderationCreateEvent", jda, moderationAct, null)
         );
     }
 
     public static BotEvent Reverted(JDA jda, Guild guild, ModerationService.ModerationAct moderationAct) {
-        return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationRevertEvent", jda, moderationAct, null)
+        return new BotEvent(jda, guild, (event) ->
+                EmbedHelpers.getGenericModerationEventEmbed(event, "moderationRevertEvent", jda, moderationAct, null)
         );
     }
 
     public static BotEvent Deleted(JDA jda, Guild guild, ModerationService.ModerationAct moderationAct, User user) {
-        return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getGenericModerationEventEmbed(embedCache, "moderationDeleteEvent", jda, moderationAct, user)
+        return new BotEvent(jda, guild, (event) ->
+                EmbedHelpers.getGenericModerationEventEmbed(event, "moderationDeleteEvent", jda, moderationAct, user)
         );
     }
 
     public static BotEvent BulkMessageDeletion(JDA jda, Guild guild, Integer amount, User user) {
-        return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getBulkMessageDeletionEmbed(embedCache, amount, user)
+        return new BotEvent(jda, guild, (event) ->
+                EmbedHelpers.getBulkMessageDeletionEmbed(event, amount, user)
         );
     }
 
     public static BotEvent SpielersucheAusschluss(JDA jda, Guild guild, User target, User issuer) {
-        return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getSpielersucheAusschlussEmbed(embedCache, target, issuer, false)
+        return new BotEvent(jda, guild, (event) ->
+                EmbedHelpers.getSpielersucheAusschlussEmbed(event, target, issuer, false)
         );
     }
 
     public static BotEvent SpielersucheAusschlussRevert(JDA jda, Guild guild, User target, User issuer) {
-        return new BotEvent(jda, guild, (embedCache) ->
-                EmbedHelpers.getSpielersucheAusschlussEmbed(embedCache, target, issuer, true)
+        return new BotEvent(jda, guild, (event) ->
+                EmbedHelpers.getSpielersucheAusschlussEmbed(event, target, issuer, true)
         );
     }
 

@@ -4,7 +4,6 @@ import com.github.kaktushose.jda.commands.annotations.interactions.Command;
 import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
 import com.github.kaktushose.jda.commands.annotations.interactions.Param;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedColors;
@@ -12,11 +11,10 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.time.Duration;
 
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+
 @Interaction
 public class SlowmodeCommands {
-
-    @Inject
-    private EmbedCache embedCache;
 
     @Command(value = "slowmode info", desc = "Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.")
     public void slowmodeInfoCommand(
@@ -27,16 +25,16 @@ public class SlowmodeCommands {
         var slowmode = SlowmodeService.getSlowmode(guildChannel);
         if (slowmode.isPresent()) {
             event.reply(
-                    embedCache.getEmbed("slowmodeInfo")
-                            .injectValue("channelId", guildChannel.getId())
-                            .injectValue("color", EmbedColors.DEFAULT)
-                            .injectValue("duration", Helpers.durationToString(Duration.ofSeconds(slowmode.get().duration()), true))
+                    event.embed("slowmodeInfo")
+                            .placeholders(
+                                    entry("channelId", guildChannel.getId()),
+                                    entry("duration", Helpers.durationToString(Duration.ofSeconds(slowmode.get().duration()), true))
+                            )
+                            .build()
             );
         } else {
             event.reply(
-                    embedCache.getEmbed("slowmodeNotSet")
-                            .injectValue("channelId", guildChannel.getId())
-                            .injectValue("color", EmbedColors.DEFAULT)
+                    event.embed("slowmodeNotSet").placeholders(entry("channelId", guildChannel.getId())).build()
             );
         }
     }
@@ -50,10 +48,12 @@ public class SlowmodeCommands {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
         event.reply(
-                embedCache.getEmbed("slowmodeSet")
-                        .injectValue("channelId", guildChannel.getId())
-                        .injectValue("color", EmbedColors.SUCCESS)
-                        .injectValue("duration", Helpers.durationToString(duration))
+                event.embed("slowmodeSet")
+                        .placeholders(
+                                entry("channelId", guildChannel.getId()),
+                                entry("duration", Helpers.durationToString(duration))
+                        )
+                        .build()
         );
     }
 
@@ -65,9 +65,7 @@ public class SlowmodeCommands {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         SlowmodeService.removeSlowmode(guildChannel);
         event.reply(
-                embedCache.getEmbed("slowmodeRemove")
-                        .injectValue("channelId", guildChannel.getId())
-                        .injectValue("color", EmbedColors.SUCCESS)
+                event.embed("slowmodeRemove").placeholders(entry("channelId", guildChannel.getId())).build()
         );
     }
 

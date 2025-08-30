@@ -68,7 +68,7 @@ public class BulkDeleteCommands {
         }
 
         channel.purgeMessagesById(messageIds);
-        serverlog.onEvent(ModerationEvents.BulkMessageDeletion(channel.getJDA(), event.getGuild(), messageIds.size(), event.getUser()));
+        serverlog.onEvent(ModerationEvents.BulkMessageDeletion(channel.getJDA(), event.getGuild(), messageIds.size(), event.getUser()), event);
         return messageIds.size();
     }
 

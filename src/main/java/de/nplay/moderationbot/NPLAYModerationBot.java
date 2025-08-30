@@ -2,9 +2,7 @@ package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.JDACommands;
 import com.github.kaktushose.jda.commands.definitions.interactions.command.CommandDefinition.CommandConfig;
-import com.github.kaktushose.jda.commands.embeds.EmbedCache;
 import com.github.kaktushose.jda.commands.embeds.EmbedDataSource;
-import com.github.kaktushose.jda.commands.embeds.error.JsonErrorMessageFactory;
 import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
 import com.github.kaktushose.jda.commands.i18n.FluavaLocalizer;
 import com.google.inject.AbstractModule;
@@ -55,7 +53,6 @@ public class NPLAYModerationBot extends AbstractModule {
     private final JDA jda;
     private final JDACommands jdaCommands;
     private final Guild guild;
-    private final EmbedCache embedCache;
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
@@ -69,8 +66,6 @@ public class NPLAYModerationBot extends AbstractModule {
      */
     @SuppressWarnings("UnstableApiUsage")
     private NPLAYModerationBot(String guildId, String token) throws InterruptedException {
-        embedCache = new EmbedCache(System.getenv("EMBED_PATH"));
-
         jda = JDABuilder.createDefault(token)
                 .enableIntents(
                         GatewayIntent.GUILD_MEMBERS,
@@ -79,14 +74,13 @@ public class NPLAYModerationBot extends AbstractModule {
                 )
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
-                .addEventListeners(new SlowmodeEventHandler(embedCache))
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .build().awaitReady();
 
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
 
-        serverlog = new Serverlog(guild, embedCache);
+        serverlog = new Serverlog(guild);
 
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .embeds(config -> config
@@ -103,6 +97,8 @@ public class NPLAYModerationBot extends AbstractModule {
                 .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
+
+        jda.addEventListener(new SlowmodeEventHandler(jdaCommands));
 
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
 
@@ -128,7 +124,7 @@ public class NPLAYModerationBot extends AbstractModule {
             throw new RuntimeException("Failed to migrate database!", e);
         }
 
-        scheduler.scheduleAtFixedRate(new AutomaticRevertTask(guild, embedCache, jda.getSelfUser()), 0, 1, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(new AutomaticRevertTask(guild, jdaCommands, jda.getSelfUser()), 0, 1, TimeUnit.MINUTES);
     }
 
     /**
@@ -163,11 +159,6 @@ public class NPLAYModerationBot extends AbstractModule {
 
     public ScheduledExecutorService getScheduler() {
         return scheduler;
-    }
-
-    @Provides
-    public EmbedCache getEmbedCache() {
-        return embedCache;
     }
 
     @Provides
