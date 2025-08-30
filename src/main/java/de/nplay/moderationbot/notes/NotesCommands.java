@@ -62,7 +62,7 @@ public class NotesCommands {
     @Modal("Notiz erstellen")
     public void createNoteModal(ModalEvent event, @TextInput(value = "Inhalt der Notiz", style = TextInputStyle.PARAGRAPH) String content) {
         var note = NotesService.createNote(target.getIdLong(), event.getMember().getIdLong(), content);
-        event.with().ephemeral(ephemeral).reply(EmbedHelpers.getNotesCreatedEmbed(event, event.getJDA(), note).build());
+        event.with().ephemeral(ephemeral).embeds(EmbedHelpers.getNotesCreatedEmbed(event, event.getJDA(), note)).reply();
     }
 
 }

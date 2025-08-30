@@ -71,7 +71,9 @@ public class PermissionsCommands {
                                         .toList()
                         )
                         .defaultValues(BotPermissions.decode(holder.permissions()).stream().map(Enum::name).toList())
-                ).reply(event.embed("permissionsEdit").placeholders(entry("target", target)).build());
+                )
+                .embeds(event.embed("permissionsEdit").placeholders(entry("target", target)))
+                .reply();
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
@@ -95,9 +97,8 @@ public class PermissionsCommands {
             default -> throw new IllegalStateException("Unexpected value: " + target);
         }
 
-        event.with().keepComponents(false).reply(event.embed("permissionsList")
+        event.with().keepComponents(false).embeds(event.embed("permissionsList")
                 .placeholders(entry("target", targetName), entry("permissions", list))
-                .build()
-        );
+        ).reply();
     }
 }
