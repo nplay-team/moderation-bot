@@ -26,14 +26,14 @@ public class RevertCommand {
         var moderation = ModerationService.getModerationAct(moderationId);
 
         if (moderation.isEmpty() || moderation.get().reverted()) {
-            event.reply(event.embed("reversionFailed").placeholders(entry("id", moderationId)).build());
+            event.with().embeds("reversionFailed", entry("id", moderationId)).reply();
             return;
         }
 
         moderation.get().revert(event.getGuild(), event::embed, event.getUser(), reason);
         var revertedModeration = ModerationService.getModerationAct(moderationId);
         revertedModeration.ifPresent(it -> serverlog.onEvent(ModerationEvents.Reverted(event.getJDA(), event.getGuild(), it), event));
-        event.reply(event.embed("reversionSuccessful").placeholders(entry("id", moderationId)).build());
+        event.with().embeds("reversionSuccessful", entry("id", moderationId)).reply();
     }
 
 }

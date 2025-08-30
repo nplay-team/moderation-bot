@@ -25,7 +25,7 @@ public class NotesCommands {
         var noteCount = NotesService.getNoteCountFromUser(target.getIdLong());
 
         if (noteCount >= 25) {
-            event.reply(event.embed("noteLimitReached").build());
+            event.with().embeds(event.embed("noteLimitReached")).reply();
             return;
         }
 
@@ -43,7 +43,7 @@ public class NotesCommands {
     @Command(value = "notes list", desc = "Listet alle Notizen eines Benutzers auf")
     public void listNotes(CommandEvent event, @Param("Welcher Benutzer soll aufgelistet werden?") Member target) {
         var notes = NotesService.getNotesFromUser(target.getIdLong());
-        event.reply(EmbedHelpers.getNotesEmbed(event, event.getJDA(), target, notes).build());
+        event.with().embeds(EmbedHelpers.getNotesEmbed(event, event.getJDA(), target, notes)).reply();
     }
 
     @Command(value = "notes delete", desc = "Löscht eine Notiz")
@@ -51,12 +51,12 @@ public class NotesCommands {
         var note = NotesService.getNote(noteId);
 
         if (note.isEmpty()) {
-            event.reply(event.embed("noteNotFound").placeholders(entry("id", noteId)).build());
+            event.with().embeds("noteNotFound", entry("id", noteId)).reply();
             return;
         }
 
         NotesService.deleteNote(note.get().id());
-        event.reply(event.embed("noteDeleted").placeholders(entry("id", noteId)).build());
+        event.with().embeds("noteDeleted", entry("id", noteId)).reply();
     }
 
     @Modal("Notiz erstellen")

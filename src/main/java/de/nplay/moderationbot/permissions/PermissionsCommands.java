@@ -5,8 +5,6 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.dispatching.reply.Component;
-import com.google.inject.Inject;
-import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
@@ -33,13 +31,10 @@ public class PermissionsCommands {
                                   Member member) {
         Member target = member == null ? event.getMember() : member;
 
-        event.reply(event.embed("permissionsList")
-                .placeholders(
-                        entry("target", target.getEffectiveName()),
-                        entry("permissions", BotPermissionsService.getUserPermissions(target).readableList())
-                )
-                .build()
-        );
+        event.with().embeds("permissionsList",
+                entry("target", target.getEffectiveName()),
+                entry("permissions", BotPermissionsService.getUserPermissions(target).readableList())
+        ).reply();
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
@@ -72,7 +67,7 @@ public class PermissionsCommands {
                         )
                         .defaultValues(BotPermissions.decode(holder.permissions()).stream().map(Enum::name).toList())
                 )
-                .embeds(event.embed("permissionsEdit").placeholders(entry("target", target)))
+                .embeds("permissionsEdit", entry("target", target))
                 .reply();
     }
 
@@ -97,8 +92,8 @@ public class PermissionsCommands {
             default -> throw new IllegalStateException("Unexpected value: " + target);
         }
 
-        event.with().keepComponents(false).embeds(event.embed("permissionsList")
-                .placeholders(entry("target", targetName), entry("permissions", list))
-        ).reply();
+        event.with().keepComponents(false)
+                .embeds("permissionsList", entry("target", targetName), entry("permissions", list))
+                .reply();
     }
 }

@@ -24,18 +24,15 @@ public class SlowmodeCommands {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         var slowmode = SlowmodeService.getSlowmode(guildChannel);
         if (slowmode.isPresent()) {
-            event.reply(
-                    event.embed("slowmodeInfo")
-                            .placeholders(
-                                    entry("channelId", guildChannel.getId()),
-                                    entry("duration", Helpers.durationToString(Duration.ofSeconds(slowmode.get().duration()), true))
-                            )
-                            .build()
-            );
+
+        event.with()
+                .embeds("slowmodeInfo",
+                        entry("channelId", guildChannel.getId()),
+                        entry("duration", Helpers.durationToString(Duration.ofSeconds(slowmode.get().duration()), true))
+                )
+                .reply();
         } else {
-            event.reply(
-                    event.embed("slowmodeNotSet").placeholders(entry("channelId", guildChannel.getId())).build()
-            );
+            event.with().embeds("slowmodeNotSet", entry("channelId", guildChannel.getId())).reply();
         }
     }
 
@@ -47,14 +44,12 @@ public class SlowmodeCommands {
     ) {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
-        event.reply(
-                event.embed("slowmodeSet")
-                        .placeholders(
-                                entry("channelId", guildChannel.getId()),
-                                entry("duration", Helpers.durationToString(duration))
-                        )
-                        .build()
-        );
+        event.with()
+                .embeds("slowmodeSet",
+                        entry("channelId", guildChannel.getId()),
+                        entry("duration", Helpers.durationToString(duration))
+                )
+                .reply();
     }
 
     @Command(value = "slowmode remove", desc = "Entfernt den Slowmode für diesen Channel.")
@@ -64,9 +59,7 @@ public class SlowmodeCommands {
     ) {
         var guildChannel = channel == null ? event.getGuildChannel() : channel;
         SlowmodeService.removeSlowmode(guildChannel);
-        event.reply(
-                event.embed("slowmodeRemove").placeholders(entry("channelId", guildChannel.getId())).build()
-        );
+        event.with().embeds("slowmodeRemove", entry("channelId", guildChannel.getId())).reply();
     }
 
 }
