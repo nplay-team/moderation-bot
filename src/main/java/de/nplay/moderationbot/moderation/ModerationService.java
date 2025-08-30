@@ -272,7 +272,7 @@ public class ModerationService {
             );
         }
 
-        public EmbedBuilder getEmbed(ReplyableEvent<?> event, JDA jda, Guild guild) {
+        public Embed getEmbed(ReplyableEvent<?> event, JDA jda, Guild guild) {
             var embed = event.embed("moderationActDetail");
             embed.placeholders(
                     entry("id", id),

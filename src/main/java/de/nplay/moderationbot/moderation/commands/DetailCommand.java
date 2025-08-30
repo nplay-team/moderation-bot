@@ -23,6 +23,6 @@ public class DetailCommand {
             return;
         }
 
-        event.reply(moderationAct.get().getEmbed(event, event.getJDA(), event.getGuild()).build());
+        event.with().embeds(moderationAct.get().getEmbed(event, event.getJDA(), event.getGuild())).reply();
     }
 }
