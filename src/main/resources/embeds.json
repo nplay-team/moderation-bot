@@ -166,25 +166,10 @@
     "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich rückgängig gemacht!",
     "color": "{ $colorSuccess }"
   },
-  "reversionFailed": {
-    "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht oder wurde bereits rückgängig gemacht!",
-    "color": "{ $colorError }"
-  },
   "deletionSuccessful": {
     "title": "Erfolgreich",
     "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich gelöscht!",
     "color": "{ $colorSuccess }"
-  },
-  "deletionFailed": {
-    "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!",
-    "color": "{ $colorError }"
-  },
-  "moderationActNotFound": {
-    "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!",
-    "color": "{ $colorError }"
   },
   "modlogHeader": {
     "author": {

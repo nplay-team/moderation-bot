@@ -9,11 +9,21 @@ warn-target = Der Benutzer, der verwarnt werden soll.
 
 ## Timeout
 timeout-target = Der Benutzer, den in den Timeout versetzt werden soll.
-timeout-length = Für wie lange der Timeout andauern soll (max. 28 Tage)
+timeout-length = Für wie lange der Timeout andauern soll (max. 28 Tage).
 
 ## Kick
 kick-target = Der Benutzer, der gekickt werden soll.
 
 ## Ban
 ban-target = Der Benutzer, der gebannt werden soll.
-ban-duration = Für wie lange der Ban andauern soll
+ban-duration = Für wie lange der Ban andauern soll.
+
+## Revert
+revert-act = Die ID der Moderationshandlung, die aufgehoben werden soll.
+revert-reason = Der Grund für die Aufhebung.
+
+## Detail
+detail-act = Die ID der Moderationshandlung.
+
+## Delete
+delete-act = Die ID der Moderationshandlung, die gelöscht werden soll.

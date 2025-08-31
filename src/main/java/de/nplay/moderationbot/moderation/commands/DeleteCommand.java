@@ -5,6 +5,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.google.inject.Inject;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
@@ -25,22 +26,12 @@ public class DeleteCommand {
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "mod delete", desc = "Löscht eine Moderationshandlung")
     @Permissions(BotPermissions.MODERATION_DELETE)
-    public void deleteModeration(CommandEvent event, @Param("Die ID der Moderationshandlung, die gelöscht werden soll") long moderationId) {
-        var moderation = ModerationService.getModerationAct(moderationId);
-
-        if (moderation.isEmpty()) {
-            event.with().embeds("deletionFailed", entry("id", moderationId)).reply();
-            return;
-        }
-
-        if (!moderation.get().reverted()) {
-            moderation.get().revert(event.getGuild(), event::embed, event.getUser(), null);
-        }
-
-        log.info("Moderation act {} has been deleted by {}", moderationId, event.getUser().getName());
-        ModerationService.deleteModerationAct(moderationId);
-        serverlog.onEvent(ModerationEvents.Deleted(event.getJDA(), event.getGuild(), moderation.get(), event.getUser()), event);
-        event.with().embeds("deletionSuccessful", entry("id", moderationId)).reply();
+    public void deleteModeration(CommandEvent event, @Param("delete-act") ModerationAct moderationAct) {
+        moderationAct.revert(event.getGuild(), event::embed, event.getUser(), null);
+        log.info("Moderation act {} has been deleted by {}", moderationAct.id(), event.getUser().getName());
+        ModerationService.deleteModerationAct(moderationAct.id());
+        serverlog.onEvent(ModerationEvents.Deleted(event.getJDA(), event.getGuild(), moderationAct, event.getUser()), event);
+        event.with().embeds("deletionSuccessful", entry("id", moderationAct.id())).reply();
     }
 
 }

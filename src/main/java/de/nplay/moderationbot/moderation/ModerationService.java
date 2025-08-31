@@ -11,7 +11,6 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.create.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.rules.RuleService;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
@@ -202,7 +201,10 @@ public class ModerationService {
             );
         }
 
-        public void revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy, @Nullable String reason) {
+        public ModerationAct revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy, @Nullable String reason) {
+            if (reverted) {
+                return this;
+            }
             log.info("Reverting moderation action: {}", this);
 
             Query.query("UPDATE moderations SET reverted = true, reverted_by = ?, reverted_at = ?, revert_reason = ? WHERE id = ?")
@@ -223,6 +225,8 @@ public class ModerationService {
                 }
                 case WARN -> sendRevertMessageToUser(guild, embedFunction, revertedBy, reason);
             }
+
+            return getModerationAct(id).orElseThrow();
         }
 
         private void sendRevertMessageToUser(Guild guild, Function<String, Embed> embedFunction, User revertedBy, @Nullable String revertingReason) {
