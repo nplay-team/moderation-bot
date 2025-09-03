@@ -18,23 +18,18 @@ config-set-serverlog-kanal-options-channel-description = Der Text-Kanal in denen
 config-list-description = Listet alle Konfigurationen auf
 
 # Permissions
-permissions-name
-permissions-description
-permissions-description
-permissions-manage-name
-permissions-manage-description
-permissions-manage-role-name
-permissions-manage-role-description
-permissions-manage-role-options-role-name
-permissions-manage-role-options-role-description
-permissions-manage-member-name
-permissions-manage-member-description
-permissions-manage-member-options-member-name
-permissions-manage-member-options-member-description
-permissions-list-name
-permissions-list-description
-permissions-list-options-member-name
-permissions-list-options-member-description
+## List
+permissions-list-description = Zeigt die Berechtigungen eines Benutzers an
+permissions-list-options-member-name = { -target }
+permissions-list-options-member-description = Der Benutzer, dessen Berechtigungen abgerufen werden sollen.
+## Member
+permissions-manage-member-description = Verwaltet die Berechtigungen eines Benutzers.
+permissions-manage-member-options-member-name = { -target }
+permissions-manage-member-options-member-description = Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.
+## Role
+permissions-manage-role-description = Verwaltet die Berechtigungen einer Rolle.
+permissions-manage-role-options-role-name = rolle
+permissions-manage-role-options-role-description = Die Rolle, dessen Berechtigungen bearbeitet werden sollen.
 
 # Moderation
 ## General
