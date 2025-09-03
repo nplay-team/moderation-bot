@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
-
 public class Helpers {
 
     public static final ErrorHandler USER_HANDLER = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_USER, ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.CANNOT_SEND_TO_USER);
@@ -70,7 +68,7 @@ public class Helpers {
         return null;
     }
 
-    public static void sendMessageToTarget(ModerationAct moderationAct, ReplyableEvent<?> event) {
+    public static void sendModerationToTarget(ModerationAct moderationAct, ReplyableEvent<?> event) {
         Map<String, Object> placeholders = new HashMap<>(Map.of(
                 "issuerId", moderationAct.issuerId(),
                 "issuerUsername", event.getJDA().retrieveUserById(moderationAct.issuerId()).complete().getName(),

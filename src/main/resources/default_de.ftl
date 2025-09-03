@@ -1,6 +1,9 @@
 # Terms
 -channel = kanal
 -duration = dauer
+-target = user
+-paragraph = paragraph
+-paragraph-description = Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?
 
 # Slowmode
 ## Info
@@ -21,18 +24,17 @@ slowmode-remove-options-channel-name = { -channel }
 slowmode-remove-options-channel-description = Der Channel, für den der Slowmode entfernt werden soll.
 
 # Spielersuche
-spielersuche-name
-spielersuche-description
-spielersuche-ausschluss-name
-spielersuche-ausschluss-description
-spielersuche-ausschluss-options-target-name
-spielersuche-ausschluss-options-target-description
-spielersuche-ausschluss-options-paragraph-name
-spielersuche-ausschluss-options-paragraph-description
-spielersuche-freigeben-name
-spielersuche-freigeben-description
-spielersuche-freigeben-options-target-name
-spielersuche-freigeben-options-target-description
+## Ausschluss
+spielersuche-ausschluss-description = Schließt einen User von der Spielersuche aus und verwarnt ihn
+spielersuche-ausschluss-options-target-name = { -target }
+spielersuche-ausschluss-options-target-description = Der User, der ausgeschlossen werden soll
+spielersuche-ausschluss-options-paragraph-name = { -paragraph }
+spielersuche-ausschluss-options-paragraph-description = { -paragraph-description }
+spielersuche-ausschluss-reason = Du hast erneut gegen die Spielersucheregeln verstoßen **und wurdest von der Spielersuche ausgeschlossen!**
+## Freigeben
+spielersuche-freigeben-description = Hebt den Ausschluss eines Users von der Spielersuche auf
+spielersuche-freigeben-options-target-name = { -target }
+spielersuche-freigeben-options-target-description = Der User, dessen Ausschluss aufgehoben werden soll
 
 # Config
 config-name

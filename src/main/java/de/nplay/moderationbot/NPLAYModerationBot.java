@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -76,6 +77,7 @@ public class NPLAYModerationBot extends AbstractModule {
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
                 .build().awaitReady();
 
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");

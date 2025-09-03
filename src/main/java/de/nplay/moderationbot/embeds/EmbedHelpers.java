@@ -21,12 +21,6 @@ import static de.nplay.moderationbot.moderation.modlog.ModlogCommand.ModlogConte
 
 public class EmbedHelpers {
 
-    public static Embed getEmbedWithTarget(String embedName, ReplyableEvent<?> event, Member target) {
-        return event.embed(embedName).placeholders(
-                entry("targetId", target.getId()),
-                entry("targetUsername", target.getUser().getName()));
-    }
-
     public static Embed getModlogEmbedHeader(ReplyableEvent<?> event, ModlogContext context) {
         var spielersucheAusschlussRolle = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
 
@@ -83,13 +77,6 @@ public class EmbedHelpers {
         var embed = event.embed("noteList").placeholders(entry("target", targetUsername));
         embed.getFields().addAll(notes.stream().map(it -> it.getEmbedField(jda)).toList());
         return embed;
-    }
-
-    public static Embed getSpielersucheUnblockForTargetEmbed(ReplyableEvent<?> event, User issuer) {
-        return event.embed("spielersucheUnblockForTarget").placeholders(
-                entry("issuerId", issuer.getId()),
-                entry("issuerUsername", issuer.getName()),
-                entry("createdAt", System.currentTimeMillis() / 1000));
     }
 
     // EVENT EMBEDS //

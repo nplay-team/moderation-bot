@@ -314,7 +314,7 @@ public class ModerationCommands {
 
         serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct), event);
 
-        Helpers.sendMessageToTarget(moderationAct, event);
+        Helpers.sendModerationToTarget(moderationAct, event);
         event.with().ephemeral(replyEphemeral).embeds(embed).reply();
         moderationActLock.unlock(moderationAct.userId().toString());
     }

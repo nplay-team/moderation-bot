@@ -1,7 +1,10 @@
 package de.nplay.moderationbot.moderation.create;
 
+import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
+import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.moderation.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -16,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
- * Builder class for creating instances of {@link ModerationService.ModerationAct} used for creating a new moderation action.
+ * Builder class for creating instances of {@link ModerationAct} used for creating a new moderation action.
  */
 public class ModerationActBuilder {
 
@@ -178,5 +181,10 @@ public class ModerationActBuilder {
             return Optional.ofNullable(messageReference).map(ISnowflake::getIdLong);
         }
 
+        public void execute(ReplyableEvent<?> event) {
+            ModerationAct act = ModerationService.createModerationAct(this);
+            executor().accept(this);
+            Helpers.sendModerationToTarget(act, event);
+        }
     }
 }
