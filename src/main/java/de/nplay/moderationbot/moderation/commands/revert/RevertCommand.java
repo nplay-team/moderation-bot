@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.revert;
+package de.nplay.moderationbot.moderation.commands.revert;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.Command;
 import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
@@ -20,11 +20,11 @@ public class RevertCommand {
     @Inject
     private Serverlog serverlog;
 
-    @Command(value = "mod revert", desc = "Hebt eine Moderationshandlung auf")
+    @Command("mod revert")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void revertModeration(CommandEvent event,
-                                 @Param(value = "revert-act", type = OptionType.NUMBER) ModerationAct moderationAct,
-                                 @Param(value = "revert-reason", optional = true) String reason) {
+                                 @Param(type = OptionType.NUMBER) ModerationAct moderationAct,
+                                 @Param(optional = true) String reason) {
 
         ModerationAct reverted = moderationAct.revert(event.getGuild(), event::embed, event.getUser(), reason);
         serverlog.onEvent(ModerationEvents.Reverted(event.getJDA(), event.getGuild(), reverted), event);

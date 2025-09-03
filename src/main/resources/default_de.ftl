@@ -17,6 +17,7 @@ config-set-serverlog-kanal-options-channel-description = Der Text-Kanal in denen
 ## List
 config-list-description = Listet alle Konfigurationen auf
 
+
 # Permissions
 permissions-none = Keine Berechtigungen (löscht automatisch alle)
 permissions-select = Wähle eine oder mehrere Berechtigungen aus
@@ -32,6 +33,7 @@ permissions-manage-member-options-member-description = Der Benutzer, dessen Bere
 permissions-manage-role-description = Verwaltet die Berechtigungen einer Rolle.
 permissions-manage-role-options-role-name = rolle
 permissions-manage-role-options-role-description = Die Rolle, dessen Berechtigungen bearbeitet werden sollen.
+
 
 # Moderation
 ## General
@@ -92,66 +94,54 @@ mod-ban-options-paragraph-description = { -paragraph-description }
 mod-ban-options-message_link-name = { -link }
 mod-ban-options-message_link-description = { -link-description }
 
-## Revert
-revert-act = Die ID der Moderationshandlung, die aufgehoben werden soll.
-revert-reason = Der Grund für die Aufhebung.
-
-mod-revert-name
-mod-revert-description
-mod-revert-options-moderation_act-name
-mod-revert-options-moderation_act-description
-mod-revert-options-reason-name
-mod-revert-options-reason-description
-
-## Detail
-detail-act = Die ID der Moderationshandlung.
-
-mod-detail-name
-mod-detail-description
-mod-detail-options-moderation_act-name
-mod-detail-options-moderation_act-description
+## BulkDelete
+mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig
+mod-purge-messages-options-amount-name = anzahl
+mod-purge-messages-options-amount-description = Anzahl der Nachrichten die gelöscht werden sollen
 
 ## Delete
-delete-act = Die ID der Moderationshandlung, die gelöscht werden soll.
+mod-delete-description = Löscht eine Moderationshandlung
+mod-delete-options-moderation_act-name = id
+mod-delete-options-moderation_act-description = Die ID der Moderationshandlung, die gelöscht werden soll.
 
-mod-delete-name
-mod-delete-description
-mod-delete-options-moderation_act-name
-mod-delete-options-moderation_act-description
+## Detail
+mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung an
+mod-detail-options-moderation_act-name = id
+mod-detail-options-moderation_act-description = Die ID der Moderationshandlung.
 
-## Notes
-notes-name
-notes-description
-notes-list-name
-notes-list-description
-notes-list-options-target-name
-notes-list-options-target-description
-notes-delete-name
-notes-delete-description
-notes-delete-options-note_id-name
-notes-delete-options-note_id-description
-notes-create-name
-notes-create-description
-notes-create-options-target-name
-notes-create-options-target-description
+## Modlog
+mod-log-description = Zeigt den Modlog eines Mitglieds an.
+mod-log-options-target-name = { -target }
+mod-log-options-target-description = Der User, dessen Modlog abgerufen werden soll.
+mod-log-options-page-name = seite
+mod-log-options-page-description = Die Seite, die angezeigt werden soll
+mod-log-options-count-name = seiten
+mod-log-options-count-description = Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)
 
-## Purge
-mod-purge-name
-mod-purge-description
-mod-purge-messages-name
-mod-purge-messages-description
-mod-purge-messages-options-amount-name
-mod-purge-messages-options-amount-description
+## Revert
+mod-revert-description = Hebt eine Moderationshandlung auf
+mod-revert-options-moderation_act-name = id
+mod-revert-options-moderation_act-description = Die ID der Moderationshandlung, die aufgehoben werden soll.
+mod-revert-options-reason-name = grund
+mod-revert-options-reason-description = Der Grund für die Aufhebung.
 
-## Log
-mod-log-name
-mod-log-description
-mod-log-options-user-name
-mod-log-options-user-description
-mod-log-options-page-name
-mod-log-options-page-description
-mod-log-options-count-name
-mod-log-options-count-description
+
+# Notes
+## Create
+notes-create-description = Erstellt eine Notiz über einen Benutzer
+notes-create-options-target-name = { -target }
+notes-create-options-target-description = Zu welchem Benutzer soll eine Notiz erstellt werden?
+
+## List
+notes-list-description = Listet alle Notizen eines Benutzers auf
+notes-list-options-target-name = { -target }
+notes-list-options-target-description = Welcher Benutzer soll aufgelistet werden?
+
+## Delete
+notes-delete-description = Löscht eine Notiz
+notes-delete-options-note_id-name = id
+notes-delete-options-note_id-description = Welche Notiz soll gelöscht werden?
+
 
 # Slowmode
 ## Info

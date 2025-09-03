@@ -1,14 +1,13 @@
-package de.nplay.moderationbot.moderation.create;
+package de.nplay.moderationbot.moderation.commands.create;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.moderation.ModerationActType;
+import de.nplay.moderationbot.moderation.act.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

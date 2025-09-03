@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
-import static de.nplay.moderationbot.moderation.modlog.ModlogCommand.ModlogContext;
+import static de.nplay.moderationbot.moderation.commands.modlog.ModlogCommand.ModlogContext;
 
 public class EmbedHelpers {
 

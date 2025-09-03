@@ -1,9 +1,9 @@
-package de.nplay.moderationbot.moderation.create;
+package de.nplay.moderationbot.moderation.commands.create;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.duration.DurationAdapter;
-import de.nplay.moderationbot.moderation.ModerationActLock;
+import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;

@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.create;
+package de.nplay.moderationbot.moderation.commands.create;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;

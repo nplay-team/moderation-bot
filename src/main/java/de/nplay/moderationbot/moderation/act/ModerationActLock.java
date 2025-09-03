@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation;
+package de.nplay.moderationbot.moderation.act;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.entities.UserSnowflake;

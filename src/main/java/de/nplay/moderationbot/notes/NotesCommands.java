@@ -19,8 +19,8 @@ public class NotesCommands {
     private Member target;
     private boolean ephemeral = false;
 
-    @Command(value = "notes create", desc = "Erstellt eine Notiz über einen Benutzer")
-    public void createNote(CommandEvent event, @Param("Zu welchem Benutzer soll eine Notiz erstellt werden?") Member target) {
+    @Command("notes create")
+    public void createNote(CommandEvent event, Member target) {
         var noteCount = NotesService.getNoteCountFromUser(target.getIdLong());
 
         if (noteCount >= 25) {
@@ -39,14 +39,14 @@ public class NotesCommands {
         event.replyModal("createNoteModal");
     }
 
-    @Command(value = "notes list", desc = "Listet alle Notizen eines Benutzers auf")
-    public void listNotes(CommandEvent event, @Param("Welcher Benutzer soll aufgelistet werden?") Member target) {
+    @Command("notes list")
+    public void listNotes(CommandEvent event, Member target) {
         var notes = NotesService.getNotesFromUser(target.getIdLong());
         event.with().embeds(EmbedHelpers.getNotesEmbed(event, event.getJDA(), target, notes)).reply();
     }
 
-    @Command(value = "notes delete", desc = "Löscht eine Notiz")
-    public void deleteNote(CommandEvent event, @Param("Welche Notiz soll gelöscht werden?") Long noteId) {
+    @Command("notes delete")
+    public void deleteNote(CommandEvent event, long noteId) {
         var note = NotesService.getNote(noteId);
 
         if (note.isEmpty()) {

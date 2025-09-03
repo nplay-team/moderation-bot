@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.modlog;
+package de.nplay.moderationbot.moderation.commands.modlog;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.constraints.Min;
@@ -39,16 +39,12 @@ public class ModlogCommand {
 
     public record ModlogContext(User user, @Nullable Member member) {}
 
-    @Command(value = "mod log", desc = "Zeigt den Modlog eines Mitglieds an")
-    public void modlog(CommandEvent event, @Param("Der User, dessen Modlog abgerufen werden soll")
-                       User user,
-                       @Param(value = "Die Seite, die angezeigt werden soll", optional = true) @Min(1) Integer page,
-                       @Param(value = "Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)", optional = true)
-                       @Min(1) @Max(25) Integer count) {
+    @Command(value = "mod log")
+    public void modlog(CommandEvent event, User target, @Param(optional = true) @Min(1) Integer page, @Param(optional = true) @Min(1) @Max(25) Integer count) {
         interactionHook = event.jdaEvent().deferReply().complete();
         Member member;
         try {
-             member = event.getGuild().retrieveMember(user).complete();
+             member = event.getGuild().retrieveMember(target).complete();
         } catch (ErrorResponseException exception) {
             if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
                 member = null;
@@ -56,7 +52,7 @@ public class ModlogCommand {
                 throw new IllegalStateException(exception);
             }
         }
-        this.context = new ModlogContext(user, member);
+        this.context = new ModlogContext(target, member);
 
         if (page != null) {
             offset = (page - 1) * count;
@@ -65,7 +61,7 @@ public class ModlogCommand {
 
         if (count != null) limit = count;
 
-        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(user) / (double) limit);
+        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(target) / (double) limit);
 
         if (maxPage == 0) maxPage = 1;
 

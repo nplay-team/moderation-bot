@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.commands;
+package de.nplay.moderationbot.moderation.commands.modlog;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
@@ -24,9 +24,9 @@ public class DeleteCommand {
     private Serverlog serverlog;
 
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
-    @Command(value = "mod delete", desc = "Löscht eine Moderationshandlung")
+    @Command(value = "mod delete")
     @Permissions(BotPermissions.MODERATION_DELETE)
-    public void deleteModeration(CommandEvent event, @Param(value = "delete-act", type = OptionType.NUMBER) ModerationAct moderationAct) {
+    public void deleteModeration(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct) {
         moderationAct.revert(event.getGuild(), event::embed, event.getUser(), null);
         log.info("Moderation act {} has been deleted by {}", moderationAct.id(), event.getUser().getName());
         ModerationService.deleteModerationAct(moderationAct.id());

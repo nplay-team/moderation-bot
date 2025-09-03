@@ -1,7 +1,8 @@
-package de.nplay.moderationbot.moderation;
+package de.nplay.moderationbot.moderation.act;
 
 import com.github.kaktushose.jda.commands.dispatching.adapter.TypeAdapter;
 import com.github.kaktushose.jda.commands.guice.Implementation;
+import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import io.github.kaktushose.proteus.mapping.MappingResult;
 

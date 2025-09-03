@@ -10,7 +10,7 @@ import com.github.kaktushose.jda.commands.embeds.Embed;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.bot.BotConfig;
-import de.nplay.moderationbot.moderation.create.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.commands.create.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;

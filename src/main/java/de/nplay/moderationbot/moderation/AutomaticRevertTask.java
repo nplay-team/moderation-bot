@@ -1,7 +1,6 @@
-package de.nplay.moderationbot.moderation.revert;
+package de.nplay.moderationbot.moderation;
 
 import com.github.kaktushose.jda.commands.JDACommands;
-import de.nplay.moderationbot.moderation.ModerationService;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import org.slf4j.Logger;

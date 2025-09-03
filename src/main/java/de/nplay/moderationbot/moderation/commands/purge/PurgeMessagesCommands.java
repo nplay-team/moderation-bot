@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.commands;
+package de.nplay.moderationbot.moderation.commands.purge;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.constraints.Min;
@@ -24,15 +24,13 @@ import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 @Interaction
 @CommandConfig(enabledFor = Permission.MESSAGE_MANAGE)
 @Permissions(BotPermissions.MODERATION_CREATE)
-public class BulkDeleteCommands {
+public class PurgeMessagesCommands {
 
     @Inject
     private Serverlog serverlog;
 
-    @Command(value = "mod purge messages", desc = "Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig")
-    public void purgeMessagesByAmount(CommandEvent event,
-                                      @Param("Anzahl der Nachrichten die gelöscht werden sollen") @Min(1) @Max(100)
-                                      int amount) {
+    @Command("mod purge messages")
+    public void purgeMessagesByAmount(CommandEvent event, @Min(1) @Max(100) int amount) {
         var deletedMessages = purgeMessages(event, event.getMessageChannel(), event.getMessageChannel().getLatestMessageId(), amount) - 1;
         replyEvent(event, deletedMessages);
     }

@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation;
+package de.nplay.moderationbot.moderation.act;
 
 public enum ModerationActType {
     WARN("Verwarnung"),
