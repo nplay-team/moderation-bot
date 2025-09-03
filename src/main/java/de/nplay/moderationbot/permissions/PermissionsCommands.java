@@ -24,7 +24,7 @@ import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 @SuppressWarnings("ConstantConditions")
 public class PermissionsCommands {
 
-    private static final SelectOption NONE_OPTION = SelectOption.of("Keine Berechtigungen (löscht automatisch alle)", "NONE");
+    private static final String NONE_OPTION = "NONE";
     private ISnowflake target;
 
     @Permissions(BotPermissions.PERMISSION_READ)
@@ -55,8 +55,10 @@ public class PermissionsCommands {
 
     private void replyMenu(ReplyableEvent<?> event, EntityPermissions holder, String target) {
         event.with().components(Component.stringSelect("onPermissionsSelect")
-                        .selectOptions(NONE_OPTION)
-                        .selectOptions(Arrays.stream(BotPermissions.BitFields.values())
+                        .selectOptions(SelectOption.of(
+                                event.i18n().localize(event.getUserLocale().toLocale(), "permissions-none"),
+                                NONE_OPTION)
+                        ).selectOptions(Arrays.stream(BotPermissions.BitFields.values())
                                 .map(it -> SelectOption.of(it.displayName, it.name()))
                                 .toList()
                         ).maxValues(BotPermissions.BitFields.values().length)
@@ -66,9 +68,9 @@ public class PermissionsCommands {
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
-    @StringSelectMenu(value = "Wähle eine oder mehrere Berechtigungen aus")
+    @StringSelectMenu(value = "permissions-select")
     public void onPermissionsSelect(ComponentEvent event, List<String> selection) {
-        int permissions = selection.contains("NONE") ? 0 : BotPermissions.combine(
+        int permissions = selection.contains(NONE_OPTION) ? 0 : BotPermissions.combine(
                 selection.stream().map(it -> BotPermissions.BitFields.valueOf(it).value).toList()
         );
 

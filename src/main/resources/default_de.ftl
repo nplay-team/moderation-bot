@@ -18,6 +18,8 @@ config-set-serverlog-kanal-options-channel-description = Der Text-Kanal in denen
 config-list-description = Listet alle Konfigurationen auf
 
 # Permissions
+permissions-none = Keine Berechtigungen (löscht automatisch alle)
+permissions-select = Wähle eine oder mehrere Berechtigungen aus
 ## List
 permissions-list-description = Zeigt die Berechtigungen eines Benutzers an
 permissions-list-options-member-name = { -target }
