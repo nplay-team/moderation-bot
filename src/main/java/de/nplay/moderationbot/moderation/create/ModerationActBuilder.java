@@ -181,10 +181,11 @@ public class ModerationActBuilder {
             return Optional.ofNullable(messageReference).map(ISnowflake::getIdLong);
         }
 
-        public void execute(ReplyableEvent<?> event) {
+        public ModerationAct execute(ReplyableEvent<?> event) {
             ModerationAct act = ModerationService.createModerationAct(this);
             executor().accept(this);
             Helpers.sendModerationToTarget(act, event);
+            return act;
         }
     }
 }

@@ -6,6 +6,8 @@ import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
@@ -13,9 +15,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Helpers {
 
@@ -119,5 +119,6 @@ public class Helpers {
                 .queue(_ -> {
                 }, USER_HANDLER);
     }
+
 
 }
