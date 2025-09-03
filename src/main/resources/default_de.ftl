@@ -5,52 +5,17 @@
 -paragraph = paragraph
 -paragraph-description = Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?
 
-# Slowmode
-## Info
-slowmode-info-description = Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.
-slowmode-info-options-channel-name = { -channel }
-slowmode-info-options-channel-description = Der Channel, für den die Informationen angezeigt werden sollen.
-
-## Set
-slowmode-set-description = Setzt den Slowmode für diesen oder einen anderen Kanal.
-slowmode-set-options-duration-name = { -duration }
-slowmode-set-options-duration-description = = Wie lang soll der Slowmode sein?
-slowmode-set-options-channel-name = { -channel }
-slowmode-set-options-channel-description = Der Channel, für den der Slowmode gesetzt werden soll.
-
-## Remove
-slowmode-remove-description = Entfernt den Slowmode für diesen Channel.
-slowmode-remove-options-channel-name = { -channel }
-slowmode-remove-options-channel-description = Der Channel, für den der Slowmode entfernt werden soll.
-
-# Spielersuche
-## Ausschluss
-spielersuche-ausschluss-description = Schließt einen User von der Spielersuche aus und verwarnt ihn
-spielersuche-ausschluss-options-target-name = { -target }
-spielersuche-ausschluss-options-target-description = Der User, der ausgeschlossen werden soll
-spielersuche-ausschluss-options-paragraph-name = { -paragraph }
-spielersuche-ausschluss-options-paragraph-description = { -paragraph-description }
-spielersuche-ausschluss-reason = Du hast erneut gegen die Spielersucheregeln verstoßen **und wurdest von der Spielersuche ausgeschlossen!**
-## Freigeben
-spielersuche-freigeben-description = Hebt den Ausschluss eines Users von der Spielersuche auf
-spielersuche-freigeben-options-target-name = { -target }
-spielersuche-freigeben-options-target-description = Der User, dessen Ausschluss aufgehoben werden soll
-
 # Config
-config-name
-config-description
-config-set-name
-config-set-description
-config-set-spielersuche-ausschluss-rolle-name
-config-set-spielersuche-ausschluss-rolle-description
-config-set-spielersuche-ausschluss-rolle-options-role-name
-config-set-spielersuche-ausschluss-rolle-options-role-description
-config-set-serverlog-kanal-name
-config-set-serverlog-kanal-description
-config-set-serverlog-kanal-options-channel-name
-config-set-serverlog-kanal-options-channel-description
-config-list-name
-config-list-description
+## Set Rolle
+config-set-spielersuche-ausschluss-rolle-description = Setzt die Rolle für die Spielersuche Auschluss Funktion.
+config-set-spielersuche-ausschluss-rolle-options-role-name = rolle
+config-set-spielersuche-ausschluss-rolle-options-role-description = Die Rolle, welche der User erhalten soll, wenn er von der Spielersuche ausgeschlossen wird.
+## Set Serverlog
+config-set-serverlog-kanal-description = Setzt den Textkanal für den Serverlog.
+config-set-serverlog-kanal-options-channel-name = { -channel }
+config-set-serverlog-kanal-options-channel-description = Der Text-Kanal in denen die Bot-Logs gesendet werden sollen.
+## List
+config-list-description = Listet alle Konfigurationen auf
 
 # Permissions
 permissions-name
@@ -70,10 +35,6 @@ permissions-list-name
 permissions-list-description
 permissions-list-options-member-name
 permissions-list-options-member-description
-
-
-
-
 
 # Moderation
 ## General
@@ -201,3 +162,34 @@ mod-log-options-page-name
 mod-log-options-page-description
 mod-log-options-count-name
 mod-log-options-count-description
+
+# Slowmode
+## Info
+slowmode-info-description = Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.
+slowmode-info-options-channel-name = { -channel }
+slowmode-info-options-channel-description = Der Channel, für den die Informationen angezeigt werden sollen.
+
+## Set
+slowmode-set-description = Setzt den Slowmode für diesen oder einen anderen Kanal.
+slowmode-set-options-duration-name = { -duration }
+slowmode-set-options-duration-description = = Wie lang soll der Slowmode sein?
+slowmode-set-options-channel-name = { -channel }
+slowmode-set-options-channel-description = Der Channel, für den der Slowmode gesetzt werden soll.
+
+## Remove
+slowmode-remove-description = Entfernt den Slowmode für diesen Channel.
+slowmode-remove-options-channel-name = { -channel }
+slowmode-remove-options-channel-description = Der Channel, für den der Slowmode entfernt werden soll.
+
+# Spielersuche
+## Ausschluss
+spielersuche-ausschluss-description = Schließt einen User von der Spielersuche aus und verwarnt ihn
+spielersuche-ausschluss-options-target-name = { -target }
+spielersuche-ausschluss-options-target-description = Der User, der ausgeschlossen werden soll
+spielersuche-ausschluss-options-paragraph-name = { -paragraph }
+spielersuche-ausschluss-options-paragraph-description = { -paragraph-description }
+spielersuche-ausschluss-reason = Du hast erneut gegen die Spielersucheregeln verstoßen **und wurdest von der Spielersuche ausgeschlossen!**
+## Freigeben
+spielersuche-freigeben-description = Hebt den Ausschluss eines Users von der Spielersuche auf
+spielersuche-freigeben-options-target-name = { -target }
+spielersuche-freigeben-options-target-description = Der User, dessen Ausschluss aufgehoben werden soll

@@ -12,11 +12,11 @@ import java.util.Optional;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
-@Interaction
+@Interaction("slowmode")
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class SlowmodeCommands {
 
-    @Command("slowmode info")
+    @Command("info")
     public void slowmodeInfoCommand(CommandEvent event, Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         var slowmode = SlowmodeService.getSlowmode(guildChannel);
@@ -30,7 +30,7 @@ public class SlowmodeCommands {
         ).reply();
     }
 
-    @Command("slowmode set")
+    @Command("set")
     public void slowmodeSetCommand(CommandEvent event, @DurationMax(Integer.MAX_VALUE) Duration duration, Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
@@ -40,7 +40,7 @@ public class SlowmodeCommands {
         ).reply();
     }
 
-    @Command("slowmode remove")
+    @Command("remove")
     public void slowmodeRemoveCommand(CommandEvent event, Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         SlowmodeService.removeSlowmode(guildChannel);

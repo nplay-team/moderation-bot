@@ -23,13 +23,13 @@ import java.util.Optional;
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
 
-@Interaction
+@Interaction("spielersuche")
 public class SpielersucheAusschlussCommands {
 
     @Inject
     private Serverlog serverlog;
 
-    @Command("spielersuche ausschluss")
+    @Command("ausschluss")
     @Permissions(BotPermissions.MODERATION_CREATE)
     public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true) String paragraph) {
         var spielersucheAusschlussRolle = getSpielersucheAusschlussRolle(event);
@@ -56,7 +56,7 @@ public class SpielersucheAusschlussCommands {
         event.with().embeds(embed(event, "spielersucheBlockSuccess", target)).reply();
     }
 
-    @Command(value = "spielersuche freigeben")
+    @Command(value = "freigeben")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void spielersucheFreigeben(CommandEvent event, Member target) {
         var spielersucheAusschlussRolle = getSpielersucheAusschlussRolle(event);
