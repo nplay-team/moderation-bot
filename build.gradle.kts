@@ -20,7 +20,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.6.1") {
         exclude(module = "opus-java")
     }
-    implementation("club.minnced:discord-webhooks:0.8.4")
+    implementation("io.github.4drian3d:jdwebhooks:1.0.1")
     implementation("io.github.kaktushose:jda-commands:4.0.0-beta.8")
 
     implementation("ch.qos.logback:logback-core:1.5.13")
