@@ -10,6 +10,7 @@ import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public class DeleteCommand {
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "mod delete", desc = "Löscht eine Moderationshandlung")
     @Permissions(BotPermissions.MODERATION_DELETE)
-    public void deleteModeration(CommandEvent event, @Param("delete-act") ModerationAct moderationAct) {
+    public void deleteModeration(CommandEvent event, @Param(value = "delete-act", type = OptionType.NUMBER) ModerationAct moderationAct) {
         moderationAct.revert(event.getGuild(), event::embed, event.getUser(), null);
         log.info("Moderation act {} has been deleted by {}", moderationAct.id(), event.getUser().getName());
         ModerationService.deleteModerationAct(moderationAct.id());

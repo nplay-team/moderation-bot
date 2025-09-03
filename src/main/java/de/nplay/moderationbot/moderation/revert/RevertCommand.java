@@ -10,6 +10,7 @@ import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
@@ -22,7 +23,7 @@ public class RevertCommand {
     @Command(value = "mod revert", desc = "Hebt eine Moderationshandlung auf")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void revertModeration(CommandEvent event,
-                                 @Param("revert-act") ModerationAct moderationAct,
+                                 @Param(value = "revert-act", type = OptionType.NUMBER) ModerationAct moderationAct,
                                  @Param(value = "revert-reason", optional = true) String reason) {
 
         ModerationAct reverted = moderationAct.revert(event.getGuild(), event::embed, event.getUser(), reason);
