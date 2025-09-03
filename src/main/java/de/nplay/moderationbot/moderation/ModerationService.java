@@ -170,7 +170,7 @@ public class ModerationService {
             @Nullable String revertingReason,
             @Nullable String reason,
             @Nullable RuleParagraph paragraph,
-            @Nullable MessageReference referenceMessage,
+            MessageReferenceService.@Nullable MessageReference referenceMessage,
             @Nullable Timestamp revokeAt,
             @Nullable Long duration,
             Long issuerId,
