@@ -12,30 +12,29 @@ version = "1.1.0"
 repositories {
     mavenCentral()
     maven { url = uri("https://jitpack.io") }
+    mavenLocal()
 }
 
-val saduVersion = "2.3.3"
-
 dependencies {
-    implementation("net.dv8tion:JDA:5.6.1") {
+    implementation(libs.jda) {
         exclude(module = "opus-java")
     }
-    implementation("io.github.4drian3d:jdwebhooks:1.0.1")
-    implementation("io.github.kaktushose:jda-commands:4.0.0-beta.8")
+    implementation(libs.jdacommands)
+    implementation(libs.jdwebhooks)
 
-    implementation("ch.qos.logback:logback-core:1.5.13")
-    implementation("ch.qos.logback:logback-classic:1.5.13")
-    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation(libs.logback.core)
+    implementation(libs.logback.classic)
+    implementation(libs.slf4j)
 
-    implementation("org.postgresql:postgresql:42.7.4")
-    implementation("com.zaxxer:HikariCP:6.1.0")
-    implementation("de.chojo.sadu", "sadu-datasource", saduVersion)
-    implementation("de.chojo.sadu", "sadu-queries", saduVersion)
-    implementation("de.chojo.sadu", "sadu-mapper", saduVersion)
-    implementation("de.chojo.sadu", "sadu-postgresql", saduVersion)
-    implementation("de.chojo.sadu", "sadu-updater", saduVersion)
+    implementation(libs.postgres)
+    implementation(libs.hikari)
+    implementation(libs.sadu.datasource)
+    implementation(libs.sadu.queries)
+    implementation(libs.sadu.mapper)
+    implementation(libs.sadu.postgresql)
+    implementation(libs.sadu.updater)
 
-    implementation("org.jspecify:jspecify:1.0.0")
+    implementation(libs.jspecify)
 }
 
 tasks.test {
