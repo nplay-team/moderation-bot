@@ -2,7 +2,6 @@ package de.nplay.moderationbot.slowmode;
 
 import com.github.kaktushose.jda.commands.JDACommands;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.permissions.BotPermissionsService;
 import net.dv8tion.jda.api.Permission;

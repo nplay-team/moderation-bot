@@ -2,16 +2,16 @@ package de.nplay.moderationbot.embeds;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.embeds.Embed;
+import de.nplay.moderationbot.NPLAYModerationBot;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.bot.BotConfig;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Objects;
@@ -102,9 +102,9 @@ public class EmbedHelpers {
                 entry("reason", Objects.requireNonNullElse(moderationAct.reason(), "Kein Grund angegeben")),
                 entry("createdAt", moderationAct.createdAt().getTime() / 1000),
                 entry("until", moderationAct.duration() == null ? "?DEL?" : "<t:%d:F>".formatted((moderationAct.createdAt().getTime() + moderationAct.duration()) / 1000)),
-                entry("color", EmbedColors.DEFAULT),
-                entry("warningColor", EmbedColors.WARNING),
-                entry("deleteColor", EmbedColors.ERROR));
+                entry("color", NPLAYModerationBot.EmbedColors.DEFAULT),
+                entry("warningColor", NPLAYModerationBot.EmbedColors.WARNING),
+                entry("deleteColor", NPLAYModerationBot.EmbedColors.ERROR));
 
         embed.fields().remove("?DEL?");
         return embed;

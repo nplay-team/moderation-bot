@@ -14,7 +14,6 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
-import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.moderation.ModerationActLock;
 import de.nplay.moderationbot.moderation.revert.AutomaticRevertTask;
 import de.nplay.moderationbot.serverlog.Serverlog;
@@ -29,7 +28,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,35 +35,22 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
-/**
- * The main class of the bot
- */
 public class NPLAYModerationBot extends AbstractModule {
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final JDA jda;
     private final JDACommands jdaCommands;
     private final Guild guild;
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
-    /**
-     * Constructor of the bot, creates a JDA instance and initiates all relevant services.
-     *
-     * @param guildId The guild the bot should listen to
-     * @param token   The discord bot token
-     * @hidden The {@link SuppressWarnings} annotation is used to suppress an error message of sadu, which is caused
-     * due to the using of {@link ApiStatus.Internal} marked {@link de.chojo.sadu.core.updater.UpdaterBuilder} class.
-     */
-    @SuppressWarnings("UnstableApiUsage")
     private NPLAYModerationBot(String guildId, String token) throws InterruptedException {
         jda = JDABuilder.createDefault(token)
                 .enableIntents(
@@ -129,20 +114,10 @@ public class NPLAYModerationBot extends AbstractModule {
         scheduler.scheduleAtFixedRate(new AutomaticRevertTask(guild, jdaCommands, jda.getSelfUser()), 0, 1, TimeUnit.MINUTES);
     }
 
-    /**
-     * Creates and starts a new Bot instance
-     *
-     * @param guildId The guild the bot should listen to
-     * @param token   The discord bot token
-     * @return The {@link NPLAYModerationBot} instance
-     */
     public static NPLAYModerationBot start(String guildId, String token) throws InterruptedException {
         return new NPLAYModerationBot(guildId, token);
     }
 
-    /**
-     * Shuts the bot and all relevant services down.
-     */
     public void shutdown() {
         jda.shutdown();
     }
@@ -169,7 +144,25 @@ public class NPLAYModerationBot extends AbstractModule {
     }
 
     @Provides
-    public ModerationActLock getModerationManager() {
+    public ModerationActLock getModerationActLock() {
         return moderationActLock;
+    }
+
+    public enum EmbedColors {
+        DEFAULT("#020c24"),
+        ERROR("#ff0000"),
+        SUCCESS("#00ff00"),
+        WARNING("#ffff00");
+
+        public final String hexColor;
+
+        EmbedColors(String hexColor) {
+            this.hexColor = hexColor;
+        }
+
+        @Override
+        public String toString() {
+            return hexColor;
+        }
     }
 }

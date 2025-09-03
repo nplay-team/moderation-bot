@@ -8,16 +8,18 @@ import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.embeds.EmbedColors;
+import de.nplay.moderationbot.NPLAYModerationBot;
 import de.nplay.moderationbot.moderation.create.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
+
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
@@ -167,8 +169,8 @@ public class ModerationService {
             @Nullable Timestamp revertedAt,
             @Nullable String revertingReason,
             @Nullable String reason,
-            @Nullable RuleService.RuleParagraph paragraph,
-            @Nullable MessageReferenceService.MessageReference referenceMessage,
+            @Nullable RuleParagraph paragraph,
+            @Nullable MessageReference referenceMessage,
             @Nullable Timestamp revokeAt,
             @Nullable Long duration,
             Long issuerId,
@@ -293,7 +295,7 @@ public class ModerationService {
                     entry("revertedById", revertedBy == null ? "?DEL?" : revertedBy),
                     entry("revertedByUsername", revertedBy == null ? "?DEL?" : jda.retrieveUserById(revertedBy).complete().getName()),
                     entry("reversionReason", revertingReason == null ? "?DEL?" : revertingReason),
-                    entry("color", EmbedColors.DEFAULT)
+                    entry("color", NPLAYModerationBot.EmbedColors.DEFAULT)
             );
             embed.fields().removeIf(it -> it.getValue().contains("?DEL?"));
             return embed;

@@ -3,7 +3,6 @@ package de.nplay.moderationbot.notes;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
-import de.nplay.moderationbot.embeds.EmbedColors;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.entities.Member;
