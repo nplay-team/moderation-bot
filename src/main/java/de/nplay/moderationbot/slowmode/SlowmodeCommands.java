@@ -8,6 +8,7 @@ import de.nplay.moderationbot.duration.DurationMax;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
@@ -31,7 +32,10 @@ public class SlowmodeCommands {
     }
 
     @Command("set")
-    public void slowmodeSetCommand(CommandEvent event, @DurationMax(Integer.MAX_VALUE) Duration duration, Optional<GuildChannel> channel) {
+    public void slowmodeSetCommand(CommandEvent event,
+                                   @DurationMax(amount = Integer.MAX_VALUE, unit = ChronoUnit.SECONDS)
+                                   Duration duration,
+                                   Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
         event.with().embeds("slowmodeSet",

@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 
 @Interaction
@@ -35,7 +36,7 @@ public class TimeoutCommands extends CreateCommands {
     @Command("mod timeout")
     public void timeoutMember(CommandEvent event,
                               Member target,
-                              @DurationMax(2419200) Duration until,
+                              @DurationMax(amount = 28, unit = ChronoUnit.DAYS) Duration until,
                               @Param(optional = true) String paragraph,
                               @Param(optional = true) MessageLink messageLink) {
         if (moderationActLock.checkLocked(event, target, event.getUser())) {
