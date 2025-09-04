@@ -2,7 +2,7 @@ package de.nplay.moderationbot.config;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import de.nplay.moderationbot.config.bot.BotConfig;
+import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -25,14 +25,14 @@ public class ConfigCommands {
         onConfigSet(event, BotConfig.SERVERLOG_KANAL, channel.getId());
     }
 
-    void onConfigSet(CommandEvent event, BotConfig config, String value) {
+    private void onConfigSet(CommandEvent event, BotConfig config, String value) {
         ConfigService.set(config, value);
         event.with().embeds("configSet", entry("key", config)).reply();
     }
 
     @Command("list")
     public void listConfig(CommandEvent event) {
-        var configs = BotConfig.getConfigs();
+        var configs = BotConfig.configs();
 
         var embed = event.embed("configList");
 

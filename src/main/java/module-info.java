@@ -21,5 +21,4 @@ module moderationbot.main {
     requires sadu.sadu.postgresql.main;
     requires sadu.sadu.queries.main;
     requires sadu.sadu.updater.main;
-    requires moderationbot.main;
 }

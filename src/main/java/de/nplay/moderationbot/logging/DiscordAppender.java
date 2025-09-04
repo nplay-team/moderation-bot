@@ -17,7 +17,6 @@ public class DiscordAppender extends AppenderBase<ILoggingEvent> {
 
     public DiscordAppender() {
         webHookClient = WebHookClient.fromURL(System.getenv("WEBHOOK_URL"));
-        ;
     }
 
     @Override
