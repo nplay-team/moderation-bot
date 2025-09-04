@@ -1,14 +1,21 @@
 package de.nplay.moderationbot.notes;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
+import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
+import com.github.kaktushose.jda.commands.embeds.Embed;
+import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+
+import java.util.List;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
@@ -42,7 +49,7 @@ public class NotesCommands {
     @Command("notes list")
     public void listNotes(CommandEvent event, Member target) {
         var notes = NotesService.getNotesFromUser(target.getIdLong());
-        event.with().embeds(EmbedHelpers.getNotesEmbed(event, event.getJDA(), target, notes)).reply();
+        event.with().embeds(Helpers.notesEmbed(event, event.getJDA(), target, notes)).reply();
     }
 
     @Command("notes delete")
@@ -63,5 +70,4 @@ public class NotesCommands {
         var note = NotesService.createNote(target.getIdLong(), event.getMember().getIdLong(), content);
         event.with().ephemeral(ephemeral).embeds(EmbedHelpers.getNotesCreatedEmbed(event, event.getJDA(), note)).reply();
     }
-
 }

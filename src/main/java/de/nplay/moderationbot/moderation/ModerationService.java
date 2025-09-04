@@ -10,7 +10,7 @@ import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.NPLAYModerationBot;
 import de.nplay.moderationbot.moderation.act.ModerationActType;
-import de.nplay.moderationbot.moderation.commands.create.ModerationActBuilder.ModerationActCreateData;
+import de.nplay.moderationbot.moderation.act.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import net.dv8tion.jda.api.JDA;
@@ -68,7 +68,7 @@ public class ModerationService {
                 .bind(data.paragraphId())
                 .bind(data.messageReferenceId().orElse(null))
                 .bind(data.revokeAt().orElse(null))
-                .bind(data.duration())
+                .bind(Optional.ofNullable(data.duration()).map(Duration::toMillis).orElse(0L))
                 .bind(new Timestamp(System.currentTimeMillis()))
         ).insertAndGetKeys().keys().getFirst();
 
@@ -162,10 +162,10 @@ public class ModerationService {
     }
 
     public record ModerationAct(
-            Long id,
-            Long userId,
+            long id,
+            long userId,
             ModerationActType type,
-            Boolean reverted,
+            boolean reverted,
             @Nullable Long revertedBy,
             @Nullable Timestamp revertedAt,
             @Nullable String revertingReason,
@@ -248,8 +248,8 @@ public class ModerationService {
                     }, USER_HANDLER);
         }
 
-        public Field getEmbedField(JDA jda) {
-            String headLine = "#%s | %s | <t:%s>".formatted(id, type.humanReadableString, createdAt.getTime() / 1000);
+        public Field toField(JDA jda) {
+            String headLine = "#%s | %s | <t:%s>".formatted(id, type, createdAt.getTime() / 1000);
             List<String> bodyLines = new ArrayList<>();
 
             bodyLines.add("%s".formatted(reason));
@@ -283,14 +283,14 @@ public class ModerationService {
             var embed = event.embed("moderationActDetail");
             embed.placeholders(
                     entry("id", id),
-                    entry("type", type.humanReadableString),
+                    entry("type", type),
                     entry("date", createdAt.getTime() / 1000),
                     entry("issuerId", issuerId),
                     entry("issuerUsername", jda.retrieveUserById(issuerId).complete().getName()),
                     entry("reason", reason == null ? "?DEL?" : reason),
                     entry("paragraph", paragraph == null ? "?DEL?" : paragraph.fullDisplay()),
                     entry("duration", duration == null ? "?DEL?" : Helpers.durationToString(Duration.ofMillis(duration))),
-                    entry("referenceMessage", referenceMessage == null ? "?DEL?" : Matcher.quoteReplacement(referenceMessage.fullDisplay(guild))),
+                    entry("referenceMessage", referenceMessage == null ? "?DEL?" : Matcher.quoteReplacement(referenceMessage.jumpUrl(guild))),
                     entry("until", revokeAt == null ? "?DEL?" : revokeAt.getTime() / 1000),
                     entry("revertedAt", revertedAt == null ? "?DEL?" : revertedAt.getTime() / 1000),
                     entry("revertedById", revertedBy == null ? "?DEL?" : revertedBy),

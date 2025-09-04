@@ -5,11 +5,14 @@ import com.github.kaktushose.jda.commands.annotations.constraints.Min;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.moderation.act.ModerationActType;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -17,6 +20,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 
@@ -24,15 +28,20 @@ import java.time.Duration;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class BanCommands extends CreateCommands {
 
+    @Inject
+    public BanCommands(ModerationActLock moderationActLock, Serverlog serverlog) {
+        super(moderationActLock, serverlog);
+    }
+
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command("mod ban")
     public void banMember(
             CommandEvent event,
             User target,
-            @Param(optional = true) Duration until,
+            @Param(optional = true) @Nullable Duration until,
             @Param(optional = true) @Min(1) @Max(7) int delDays,
-            @Param(optional = true) String paragraph,
-            @Param(optional = true) MessageLink messageLink
+            @Param(optional = true) @Nullable String paragraph,
+            @Param(optional = true) @Nullable MessageLink messageLink
     ) {
         if (moderationActLock.checkLocked(event, target, event.getUser())) {
             return;
@@ -53,10 +62,9 @@ public class BanCommands extends CreateCommands {
         moderationActBuilder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
         if (until != null) {
-            moderationActBuilder.type(ModerationActType.TEMP_BAN).duration(until.getSeconds() * 1000);
-            event.replyModal("onModerate", modal -> modal.title("Begründung und Dauer angeben (Temp-Ban)"));
+            moderationActBuilder.duration(until);
+            event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Temp-Ban)"));
         } else {
-            moderationActBuilder.type(ModerationActType.BAN);
             event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Ban)"));
         }
     }
@@ -99,14 +107,14 @@ public class BanCommands extends CreateCommands {
                 event.with().ephemeral(true).reply("invalid-duration-limit");
                 return;
             }
-            moderationActBuilder.duration(duration.get().getSeconds() * 1000);
+            moderationActBuilder.duration(duration.get());
         }
         onModerate(event, reason);
     }
 
     @Modal(value = "reason-title")
     public void onModerate(ModalEvent event, @TextInput("reason-field") String reason) {
-        if (ModerationService.isBanned(moderationActBuilder.build().targetId())) {
+        if (ModerationService.isBanned(moderationActBuilder.targetId())) {
             event.with().embeds("userAlreadyBanned").reply();
             return;
         }

@@ -7,8 +7,9 @@ import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.entities.Member;
@@ -26,12 +27,9 @@ import java.time.temporal.ChronoUnit;
 public class TimeoutCommands extends CreateCommands {
 
     @Inject
-    private Serverlog serverlog;
-    @Inject
-    private ModerationActLock moderationActLock;
-    private ModerationActBuilder moderationActBuilder;
-    private boolean replyEphemeral;
-    private long targetId;
+    public TimeoutCommands(ModerationActLock moderationActLock, Serverlog serverlog) {
+        super(moderationActLock, serverlog);
+    }
 
     @Command("mod timeout")
     public void timeoutMember(CommandEvent event,
@@ -43,7 +41,7 @@ public class TimeoutCommands extends CreateCommands {
             return;
         }
         moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser())
-                .duration(until.getSeconds() * 1000)
+                .duration(until)
                 .paragraph(paragraph)
                 .messageReference(Helpers.retrieveMessage(event, messageLink));
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Timeout)"));
@@ -84,13 +82,13 @@ public class TimeoutCommands extends CreateCommands {
             return;
         }
 
-        moderationActBuilder.duration(duration.get().getSeconds() * 1000).reason(reason).build().execute(event);
+        moderationActBuilder.duration(duration.get()).reason(reason).execute(event);
         onModerate(event, reason);
     }
 
     @Modal(value = "reason-title")
     public void onModerate(ModalEvent event, @TextInput("reason-field") String reason) {
-        if (ModerationService.isTimeOuted(moderationActBuilder.build().targetId())) {
+        if (ModerationService.isTimeOuted(moderationActBuilder.targetId())) {
             event.with().embeds("userAlreadyTimeOuted").reply();
             return;
         }

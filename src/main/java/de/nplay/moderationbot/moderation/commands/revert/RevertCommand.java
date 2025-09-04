@@ -25,10 +25,8 @@ public class RevertCommand {
     public void revertModeration(CommandEvent event,
                                  @Param(type = OptionType.NUMBER) ModerationAct moderationAct,
                                  @Param(optional = true) String reason) {
-
         ModerationAct reverted = moderationAct.revert(event.getGuild(), event::embed, event.getUser(), reason);
         serverlog.onEvent(ModerationEvents.Reverted(event.getJDA(), event.getGuild(), reverted), event);
         event.with().embeds("reversionSuccessful", entry("id", moderationAct.id())).reply();
     }
-
 }

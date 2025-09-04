@@ -5,7 +5,7 @@ import de.nplay.moderationbot.BotEvent;
 import de.nplay.moderationbot.config.ConfigService;
 import net.dv8tion.jda.api.entities.Guild;
 
-public record Serverlog(Guild guild) {
+public record Serverlog() {
 
     public void onEvent(BotEvent event, ReplyableEvent<?> discordEvent) {
         var embed = event.embedSupplier().apply(discordEvent);

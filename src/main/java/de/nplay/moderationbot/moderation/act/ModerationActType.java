@@ -7,10 +7,15 @@ public enum ModerationActType {
     TEMP_BAN("Temporärer Bann"),
     BAN("Bann");
 
-    public final String humanReadableString;
+    private final String humanReadableString;
 
     ModerationActType(String humanReadableString) {
         this.humanReadableString = humanReadableString;
+    }
+
+    @Override
+    public String toString() {
+        return humanReadableString;
     }
 
     public boolean isBan() {

@@ -8,62 +8,65 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.dispatching.reply.Component;
 import com.github.kaktushose.jda.commands.embeds.Embed;
-import de.nplay.moderationbot.embeds.EmbedHelpers;
+import de.nplay.moderationbot.Helpers;
+import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
+import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.Nullable;
 
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
 @Interaction
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommand {
 
-    private Integer offset = 0;
-    private Integer limit = 5;
-    private Integer page = 1;
-
-    private Integer maxPage = 1;
-
-    private ModlogContext context;
-    private InteractionHook interactionHook;
-
-    public record ModlogContext(User user, @Nullable Member member) {}
+    private int offset = 0;
+    private int limit = 5;
+    private int page = 1;
+    private int maxPage = 1;
+    private User user;
+    @Nullable
+    private Member member;
 
     @Command(value = "mod log")
-    public void modlog(CommandEvent event, User target, @Param(optional = true) @Min(1) Integer page, @Param(optional = true) @Min(1) @Max(25) Integer count) {
-        interactionHook = event.jdaEvent().deferReply().complete();
-        Member member;
+    public void modlog(CommandEvent event,
+                       User target,
+                       @Param(optional = true) @Min(1) @Nullable Integer page,
+                       @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count) {
+        user = target;
         try {
-             member = event.getGuild().retrieveMember(target).complete();
-        } catch (ErrorResponseException exception) {
-            if (exception.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
-                member = null;
-            } else {
-                throw new IllegalStateException(exception);
+            this.member = event.getGuild().retrieveMember(target).complete();
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() != ErrorResponse.UNKNOWN_MEMBER) {
+                throw new IllegalStateException(e);
             }
         }
-        this.context = new ModlogContext(target, member);
 
-        if (page != null) {
+        if (page != null && count != null) {
             offset = (page - 1) * count;
             this.page = page;
+            limit = count;
         }
 
-        if (count != null) limit = count;
-
         maxPage = (int) Math.ceil(ModerationService.getModerationActCount(target) / (double) limit);
-
-        if (maxPage == 0) maxPage = 1;
+        if (maxPage == 0) {
+            maxPage = 1;
+        }
 
         if (this.page > maxPage) {
             this.page = maxPage;
@@ -98,7 +101,7 @@ public class ModlogCommand {
         reply(event);
     }
 
-    public void reply(ReplyableEvent<?> event) {
+    private void reply(ReplyableEvent<?> event) {
         if (maxPage < 2) {
             event.with().embeds(getEmbeds(event)).reply();
             return;
@@ -115,18 +118,51 @@ public class ModlogCommand {
                 .reply();
     }
 
-    public Embed[] getEmbeds(ReplyableEvent<?> event) {
+    private Embed[] getEmbeds(ReplyableEvent<?> event) {
         List<Embed> list = new ArrayList<>();
 
-        list.add(EmbedHelpers.getModlogEmbedHeader(event, context));
-        list.add(EmbedHelpers.getModlogEmbed(event, event.getJDA(), ModerationService.getModerationActs(context.user, limit, offset), page, maxPage));
+        list.add(header(event, user, member));
+        list.add(modlog(event, event.getJDA(), ModerationService.getModerationActs(user, limit, offset), page, maxPage));
 
-        var notes = NotesService.getNotesFromUser(context.user.getIdLong());
-
+        var notes = NotesService.getNotesFromUser(user.getIdLong());
         if (!notes.isEmpty()) {
-            list.add(1, EmbedHelpers.getNotesEmbed(event, event.getJDA(), context.user, notes));
+            list.add(1, Helpers.notesEmbed(event, event.getJDA(), user, notes));
         }
 
         return list.toArray(new Embed[0]);
+    }
+
+    private Embed header(ReplyableEvent<?> event, User user, @Nullable Member member) {
+        var embed = event.embed("modlogHeader").placeholders(
+                entry("username", user.getName()),
+                entry("effectiveName", user.getEffectiveName()),
+                entry("userId", user.getIdLong()),
+                entry("avatarUrl", user.getEffectiveAvatarUrl()),
+                entry("createdAt", user.getTimeCreated().getLong(ChronoField.INSTANT_SECONDS))
+        );
+
+        if (member == null) {
+            embed.placeholders(entry("roles", "?DEL?"), entry("joinedAt", "?DEL?"));
+        } else {
+            var spielersucheRoleId = ConfigService.get(ConfigService.BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE).orElse("-1");
+            if (member.getUnsortedRoles().stream().map(Role::getId).anyMatch(spielersucheRoleId::equals)) {
+                embed.placeholders(entry("roles", "<@&%s>".formatted(spielersucheRoleId)));
+            } else {
+                embed.placeholders(entry("roles", "?DEL?"));
+            }
+            embed.placeholders(entry("joinedAt", member.getTimeJoined().getLong(ChronoField.INSTANT_SECONDS)));
+
+        }
+        embed.fields().remove("?DEL?");
+        return embed;
+    }
+
+    private Embed modlog(ReplyableEvent<?> event, JDA jda, List<ModerationService.ModerationAct> moderationActs, Integer page, Integer maxPage) {
+        var embed = event.embed("modlogActs").placeholders(
+                entry("page", page),
+                entry("maxPage", maxPage));
+
+        embed.getFields().addAll(moderationActs.stream().map(it -> it.toField(jda)).toList());
+        return embed;
     }
 }

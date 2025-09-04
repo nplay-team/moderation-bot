@@ -10,7 +10,7 @@ import com.github.kaktushose.jda.commands.embeds.Embed;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
-import de.nplay.moderationbot.moderation.commands.create.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
@@ -48,7 +48,6 @@ public class SpielersucheAusschlussCommands {
         ModerationActBuilder.warn(target, event.getUser())
                 .reason(event.i18n().localize(event.getUserLocale().toLocale(), "spielersuche-ausschluss-reason"))
                 .paragraph(paragraph)
-                .build()
                 .execute(event);
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);

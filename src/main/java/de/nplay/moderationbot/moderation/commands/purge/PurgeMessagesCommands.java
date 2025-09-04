@@ -45,25 +45,17 @@ public class PurgeMessagesCommands {
         List<String> messageIds = new ArrayList<>();
 
         messageIds.add(pivotMessageId);
-
+        MessageHistory history;
         if (amount == null) {
-            messageIds.addAll(MessageHistory.getHistoryAfter(channel, pivotMessageId)
-                    .complete()
-                    .getRetrievedHistory()
-                    .stream()
-                    .map(Message::getId)
-                    .toList()
-            );
+            history = MessageHistory.getHistoryAfter(channel, pivotMessageId).complete();
         } else {
-            messageIds.addAll(MessageHistory.getHistoryBefore(channel, pivotMessageId)
-                    .limit(amount)
-                    .complete()
-                    .getRetrievedHistory()
-                    .stream()
-                    .map(Message::getId)
-                    .toList()
-            );
+            history = MessageHistory.getHistoryBefore(channel, pivotMessageId).limit(amount).complete();
         }
+        messageIds.addAll(history.getRetrievedHistory()
+                .stream()
+                .map(Message::getId)
+                .toList()
+        );
 
         channel.purgeMessagesById(messageIds);
         serverlog.onEvent(ModerationEvents.BulkMessageDeletion(channel.getJDA(), event.getGuild(), messageIds.size(), event.getUser()), event);

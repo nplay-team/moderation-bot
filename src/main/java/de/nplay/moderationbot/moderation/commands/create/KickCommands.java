@@ -4,9 +4,13 @@ import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.messagelink.MessageLink;
+import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -16,6 +20,11 @@ import net.dv8tion.jda.api.interactions.commands.Command.Type;
 @Interaction
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class KickCommands extends CreateCommands {
+
+    @Inject
+    public KickCommands(ModerationActLock moderationActLock, Serverlog serverlog) {
+        super(moderationActLock, serverlog);
+    }
 
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command("mod kick")

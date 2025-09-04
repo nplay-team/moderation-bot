@@ -78,7 +78,7 @@
   "moderationActTargetInfo": {
     "title": "{ $title }",
     "description": "{ $description }",
-    "color": "{ $colorDefault }",
+    "color": "{ $color }",
     "fields": [
       {
         "name": "Begründung",

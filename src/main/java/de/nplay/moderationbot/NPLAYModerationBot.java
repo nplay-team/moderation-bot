@@ -67,7 +67,7 @@ public class NPLAYModerationBot extends AbstractModule {
 
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
 
-        serverlog = new Serverlog(guild);
+        serverlog = new Serverlog();
 
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .embeds(config -> config
@@ -149,20 +149,20 @@ public class NPLAYModerationBot extends AbstractModule {
     }
 
     public enum EmbedColors {
-        DEFAULT("#020c24"),
-        ERROR("#ff0000"),
-        SUCCESS("#00ff00"),
-        WARNING("#ffff00");
+        DEFAULT(134180),
+        ERROR(16711680),
+        SUCCESS(65280),
+        WARNING(16776960);
 
-        public final String hexColor;
+        public final int color;
 
-        EmbedColors(String hexColor) {
-            this.hexColor = hexColor;
+        EmbedColors(int color) {
+            this.color = color;
         }
 
         @Override
         public String toString() {
-            return hexColor;
+            return String.valueOf(color);
         }
     }
 }

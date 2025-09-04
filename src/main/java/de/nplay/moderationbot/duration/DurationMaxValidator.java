@@ -17,7 +17,7 @@ public class DurationMaxValidator implements Validator<Duration, DurationMax> {
         }
     }
 
-   private String humanReadable(Duration duration) {
+    private String humanReadable(Duration duration) {
         return duration.toString()
                 .substring(2)
                 .replaceAll("(\\d[HMS])(?!$)", "$1 ")

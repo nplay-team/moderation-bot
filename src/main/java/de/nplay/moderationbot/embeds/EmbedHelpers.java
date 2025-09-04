@@ -3,60 +3,17 @@ package de.nplay.moderationbot.embeds;
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.NPLAYModerationBot;
-import de.nplay.moderationbot.config.ConfigService;
-import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jspecify.annotations.Nullable;
 
-import java.time.temporal.ChronoField;
-import java.util.List;
 import java.util.Objects;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
-import static de.nplay.moderationbot.moderation.commands.modlog.ModlogCommand.ModlogContext;
 
 public class EmbedHelpers {
-
-    public static Embed getModlogEmbedHeader(ReplyableEvent<?> event, ModlogContext context) {
-        var spielersucheAusschlussRolle = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
-
-        var embed = event.embed("modlogHeader").placeholders(
-                entry("username", context.user().getName()),
-                entry("effectiveName", context.user().getEffectiveName()),
-                entry("userId", context.user().getIdLong()),
-                entry("avatarUrl", context.user().getEffectiveAvatarUrl()),
-                entry("createdAt", context.user().getTimeCreated().getLong(ChronoField.INSTANT_SECONDS)));
-
-        if (context.member() == null) {
-            embed.placeholders(entry("roles", "?DEL?"),
-                    entry("joinedAt", "?DEL?"));
-        } else {
-            var roles = context.member().getRoles().stream()
-                    .filter(it -> it.getId().equals(spielersucheAusschlussRolle.orElse("-1")))
-                    .map(it -> "<@&%s>".formatted(it.getId()))
-                    .reduce((a, b) -> a + " " + b)
-                    .orElse("?DEL?");
-
-            embed.placeholders(entry("roles", roles),
-                    entry("joinedAt", context.member().getTimeJoined().getLong(ChronoField.INSTANT_SECONDS)));
-
-        }
-        embed.fields().remove("?DEL?");
-        return embed;
-    }
-
-    public static Embed getModlogEmbed(ReplyableEvent<?> event, JDA jda, List<ModerationService.ModerationAct> moderationActs, Integer page, Integer maxPage) {
-        var embed = event.embed("modlogActs").placeholders(
-                entry("page", page),
-                entry("maxPage", maxPage));
-
-        embed.getFields().addAll(moderationActs.stream().map(it -> it.getEmbedField(jda)).toList());
-        return embed;
-    }
 
     public static Embed getNotesCreatedEmbed(ReplyableEvent<?> event, JDA jda, NotesService.Note note) {
         var targetUsername = jda.retrieveUserById(note.userId()).complete().getName();
@@ -72,13 +29,6 @@ public class EmbedHelpers {
                 entry("createdAt", note.createdAt().getTime() / 1000));
     }
 
-    public static Embed getNotesEmbed(ReplyableEvent<?> event, JDA jda, UserSnowflake target, List<NotesService.Note> notes) {
-        var targetUsername = jda.retrieveUserById(target.getIdLong()).complete().getName();
-        var embed = event.embed("noteList").placeholders(entry("target", targetUsername));
-        embed.getFields().addAll(notes.stream().map(it -> it.getEmbedField(jda)).toList());
-        return embed;
-    }
-
     // EVENT EMBEDS //
 
     public static Embed getGenericModerationEventEmbed(ReplyableEvent<?> event, String name, JDA jda, ModerationService.ModerationAct moderationAct,
@@ -87,7 +37,7 @@ public class EmbedHelpers {
         var issuerUsername = jda.retrieveUserById(moderationAct.issuerId()).complete().getName();
         var revertedUsername = moderationAct.revertedBy() != null ? jda.retrieveUserById(moderationAct.revertedBy()).complete().getName() : null;
         var embed = event.embed(name).placeholders(
-                entry("type", moderationAct.type().humanReadableString),
+                entry("type", moderationAct.type()),
                 entry("id", moderationAct.id()),
                 entry("targetId", moderationAct.userId()),
                 entry("targetUsername", targetUsername),

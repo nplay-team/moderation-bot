@@ -37,7 +37,7 @@ permissions-manage-role-options-role-description = Die Rolle, dessen Berechtigun
 
 # Moderation
 ## General
--link = Nachrichtenlink
+-link = nachrichtenlink
 -link-description = Link zu einer Nachricht, die referenziert werden soll.
 -prune-duration = Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?.
 -del-days = del_days

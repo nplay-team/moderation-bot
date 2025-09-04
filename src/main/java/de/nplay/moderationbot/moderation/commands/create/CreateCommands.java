@@ -3,6 +3,7 @@ package de.nplay.moderationbot.moderation.commands.create;
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.duration.DurationAdapter;
+import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
@@ -18,25 +19,28 @@ import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 public class CreateCommands {
 
     protected static final DurationAdapter durationAdapter = new DurationAdapter();
-    @Inject
-    protected ModerationActLock moderationActLock;
+    protected final ModerationActLock moderationActLock;
+    private final Serverlog serverlog;
     protected ModerationActBuilder moderationActBuilder;
-    protected Boolean replyEphemeral = false;
-    @Inject
-    private Serverlog serverlog;
+    protected boolean replyEphemeral = false;
+
+    public CreateCommands(ModerationActLock moderationActLock, Serverlog serverlog) {
+        this.moderationActLock = moderationActLock;
+        this.serverlog = serverlog;
+    }
 
     public void executeModeration(ReplyableEvent<?> event, String reason) {
-        var moderationAct = moderationActBuilder.reason(reason).build().execute(event);
+        var moderationAct = moderationActBuilder.reason(reason).execute(event);
 
         var embed = event.embed("moderationActExecuted");
-        embed.placeholders(entry("type", moderationAct.type().humanReadableString))
+        embed.placeholders(entry("type", moderationAct.type()))
                 .footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName())
                 .getFields().addAll(generateFields(moderationAct));
 
         serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct), event);
 
         event.with().ephemeral(replyEphemeral).embeds(embed).reply();
-        moderationActLock.unlock(moderationAct.userId().toString());
+        moderationActLock.unlock(moderationAct.userId());
     }
 
     private List<Field> generateFields(ModerationService.ModerationAct moderationAct) {

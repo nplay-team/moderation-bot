@@ -5,10 +5,11 @@ import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
+import de.nplay.moderationbot.notes.NotesService;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -16,6 +17,8 @@ import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.*;
+
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
 public class Helpers {
 
@@ -78,7 +81,7 @@ public class Helpers {
                 "id", moderationAct.id(),
                 "until", moderationAct.revokeAt() != null ? moderationAct.revokeAt().getTime() / 1000 : "?DEL?",
                 "referenceMessage", moderationAct.referenceMessage() != null
-                        ? moderationAct.referenceMessage().fullDisplay(event.getGuild())
+                        ? moderationAct.referenceMessage().jumpUrl(event.getGuild())
                         : "?DEL?"
         ));
 
@@ -120,5 +123,11 @@ public class Helpers {
                 }, USER_HANDLER);
     }
 
+    public static Embed notesEmbed(ReplyableEvent<?> event, JDA jda, UserSnowflake target, List<NotesService.Note> notes) {
+        var targetUsername = jda.retrieveUserById(target.getIdLong()).complete().getName();
+        var embed = event.embed("noteList").placeholders(entry("target", targetUsername));
+        embed.getFields().addAll(notes.stream().map(it -> it.toField(jda)).toList());
+        return embed;
+    }
 
 }

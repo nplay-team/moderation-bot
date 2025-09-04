@@ -86,7 +86,7 @@ public class NotesService {
             );
         }
 
-        public Field getEmbedField(JDA jda) {
+        public Field toField(JDA jda) {
             var creatorUsername = jda.retrieveUserById(creatorId()).complete().getName();
             var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
             var body = "Moderator: <@%s> (%s)\n%s".formatted(creatorId(), creatorUsername, content());

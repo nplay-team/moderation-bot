@@ -14,7 +14,7 @@ import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 public class ModerationActLock {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationActLock.class);
-    private static final ConcurrentHashMap<String, String> activeModerationUsers = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Long, Long> activeModerationUsers = new ConcurrentHashMap<>();
 
     /// Attempts to lock the given target and moderator based on the event. If the lock is already set, returns `true`
     /// and will send an error message. Else returns `false`.
@@ -25,7 +25,7 @@ public class ModerationActLock {
     ///
     /// @return `true` if the moderation act is already locked, else returns `false`
     public boolean checkLocked(ReplyableEvent<?> event, UserSnowflake target, UserSnowflake moderator) {
-        if (lock(target.getId(), moderator.getId())) {
+        if (lock(target.getIdLong(), moderator.getIdLong())) {
             return false;
         }
 
@@ -42,13 +42,13 @@ public class ModerationActLock {
         return true;
     }
 
-    public void unlock(String userId) {
+    public void unlock(long userId) {
         log.debug("Unlocking user {}", userId);
         activeModerationUsers.remove(userId);
     }
 
     /// @return `true` if the lock was successful, else false
-    private boolean lock(String targetId, String moderatorId) {
+    private boolean lock(long targetId, long moderatorId) {
         if (activeModerationUsers.putIfAbsent(targetId, moderatorId) != null) {
             return false;
         }
