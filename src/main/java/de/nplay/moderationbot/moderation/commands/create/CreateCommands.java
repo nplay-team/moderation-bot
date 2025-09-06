@@ -2,9 +2,9 @@ package de.nplay.moderationbot.moderation.commands.create;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import de.nplay.moderationbot.duration.DurationAdapter;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
-import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
@@ -41,7 +41,7 @@ public class CreateCommands {
         moderationActLock.unlock(moderationAct.userId());
     }
 
-    private List<Field> generateFields(ModerationService.ModerationAct moderationAct) {
+    private List<Field> generateFields(ModerationActService.ModerationAct moderationAct) {
         List<Field> fields = new ArrayList<>();
 
         fields.add(new Field("ID", Long.toString(moderationAct.id()), true));

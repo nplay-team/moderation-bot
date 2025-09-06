@@ -1,6 +1,5 @@
 package de.nplay.moderationbot.permissions;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +24,6 @@ public class BotPermissions {
     }
 
     /// Decodes the given permission integer to a collection of [BitFields]
-    @NotNull
     public static Collection<BitFields> decode(int permissions) {
         return Arrays.stream(BitFields.values())
                 .filter(it -> (permissions & it.value) != 0)

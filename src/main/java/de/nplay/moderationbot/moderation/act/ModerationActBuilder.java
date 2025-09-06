@@ -2,8 +2,7 @@ package de.nplay.moderationbot.moderation.act;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.moderation.ModerationService;
-import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
+import de.nplay.moderationbot.moderation.act.ModerationActService.ModerationAct;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -162,7 +161,7 @@ public class ModerationActBuilder {
 
     public ModerationAct execute(ReplyableEvent<?> event) {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays);
-        ModerationAct act = ModerationService.createModerationAct(data);
+        ModerationAct act = ModerationActService.createModerationAct(data);
         executor.accept(data);
         Helpers.sendModerationToTarget(act, event);
         return act;
@@ -191,6 +190,33 @@ public class ModerationActBuilder {
 
         public Optional<Long> messageReferenceId() {
             return Optional.ofNullable(messageReference).map(ISnowflake::getIdLong);
+        }
+    }
+
+    public enum ModerationActType {
+        WARN("Verwarnung"),
+        TIMEOUT("Timeout"),
+        KICK("Kick"),
+        TEMP_BAN("Temporärer Bann"),
+        BAN("Bann");
+
+        private final String humanReadableString;
+
+        ModerationActType(String humanReadableString) {
+            this.humanReadableString = humanReadableString;
+        }
+
+        @Override
+        public String toString() {
+            return humanReadableString;
+        }
+
+        public boolean isBan() {
+            return this == BAN || this == TEMP_BAN;
+        }
+
+        public boolean isTemp() {
+            return this == TEMP_BAN || this == TIMEOUT;
         }
     }
 }

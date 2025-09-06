@@ -5,7 +5,7 @@ import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
 import com.github.kaktushose.jda.commands.annotations.interactions.Param;
 import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
+import de.nplay.moderationbot.moderation.act.ModerationActService.ModerationAct;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 

@@ -4,7 +4,7 @@ import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -16,8 +16,6 @@ import static net.dv8tion.jda.api.entities.MessageEmbed.Field;
 
 public class NotesService {
 
-    private static final Logger log = LoggerFactory.getLogger(NotesService.class);
-
     public static Optional<Note> getNote(long id) {
         return Query.query("SELECT * FROM notes WHERE id = ?")
                 .single(Call.of().bind(id))
@@ -69,9 +67,9 @@ public class NotesService {
      * @param createdAt the timestamp when the note was created
      */
     public record Note(
-            Long id,
-            Long userId,
-            Long creatorId,
+            long id,
+            long userId,
+            long creatorId,
             String content,
             Timestamp createdAt
     ) {

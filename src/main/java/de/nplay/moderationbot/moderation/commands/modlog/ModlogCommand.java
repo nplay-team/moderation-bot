@@ -10,7 +10,7 @@ import com.github.kaktushose.jda.commands.dispatching.reply.Component;
 import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.config.ConfigService;
-import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.JDA;
@@ -61,7 +61,7 @@ public class ModlogCommand {
             limit = count;
         }
 
-        maxPage = (int) Math.ceil(ModerationService.getModerationActCount(target) / (double) limit);
+        maxPage = (int) Math.ceil(ModerationActService.getModerationActCount(target) / (double) limit);
         if (maxPage == 0) {
             maxPage = 1;
         }
@@ -120,7 +120,7 @@ public class ModlogCommand {
         List<Embed> list = new ArrayList<>();
 
         list.add(header(event, user, member));
-        list.add(modlog(event, event.getJDA(), ModerationService.getModerationActs(user, limit, offset), page, maxPage));
+        list.add(modlog(event, event.getJDA(), ModerationActService.getModerationActs(user, limit, offset), page, maxPage));
 
         var notes = NotesService.getNotesFromUser(user.getIdLong());
         if (!notes.isEmpty()) {
@@ -155,7 +155,7 @@ public class ModlogCommand {
         return embed;
     }
 
-    private Embed modlog(ReplyableEvent<?> event, JDA jda, List<ModerationService.ModerationAct> moderationActs, Integer page, Integer maxPage) {
+    private Embed modlog(ReplyableEvent<?> event, JDA jda, List<ModerationActService.ModerationAct> moderationActs, Integer page, Integer maxPage) {
         var embed = event.embed("modlogActs").placeholders(
                 entry("page", page),
                 entry("maxPage", maxPage));

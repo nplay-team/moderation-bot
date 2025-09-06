@@ -6,7 +6,7 @@ import com.github.kaktushose.jda.commands.permissions.PermissionsProvider;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import org.jetbrains.annotations.NotNull;
+
 
 @Implementation
 public class BotPermissionsProvider implements PermissionsProvider {

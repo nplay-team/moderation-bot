@@ -14,8 +14,8 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
-import de.nplay.moderationbot.moderation.AutomaticRevertTask;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
@@ -85,7 +85,7 @@ public class NPLAYModerationBot extends AbstractModule {
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
 
-        jda.addEventListener(new SlowmodeEventHandler(jdaCommands));
+        jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));
 
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
 
@@ -111,7 +111,10 @@ public class NPLAYModerationBot extends AbstractModule {
             throw new RuntimeException("Failed to migrate database!", e);
         }
 
-        scheduler.scheduleAtFixedRate(new AutomaticRevertTask(guild, jdaCommands, jda.getSelfUser()), 0, 1, TimeUnit.MINUTES);
+        scheduler.scheduleAtFixedRate(
+                () -> ModerationActService.getModerationActsToRevert().forEach(it ->
+                        it.revert(guild, jdaCommands::embed, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
+                ), 0, 1, TimeUnit.MINUTES);
     }
 
     public static NPLAYModerationBot start(String guildId, String token) throws InterruptedException {
@@ -122,47 +125,31 @@ public class NPLAYModerationBot extends AbstractModule {
         jda.shutdown();
     }
 
-    public JDA getJda() {
-        return jda;
-    }
-
-    public JDACommands getJdaCommands() {
-        return jdaCommands;
-    }
-
-    public Guild getGuild() {
-        return guild;
-    }
-
-    public ScheduledExecutorService getScheduler() {
-        return scheduler;
-    }
-
     @Provides
-    public Serverlog getServerlog() {
+    public Serverlog serverlog() {
         return serverlog;
     }
 
     @Provides
-    public ModerationActLock getModerationActLock() {
+    public ModerationActLock moderationActLock() {
         return moderationActLock;
     }
 
     public enum EmbedColors {
-        DEFAULT(134180),
-        ERROR(16711680),
-        SUCCESS(65280),
-        WARNING(16776960);
+        DEFAULT("134180"),
+        ERROR("16711680"),
+        SUCCESS("65280"),
+        WARNING("16776960");
 
-        public final int color;
+        public final String color;
 
-        EmbedColors(int color) {
+        EmbedColors(String color) {
             this.color = color;
         }
 
         @Override
         public String toString() {
-            return String.valueOf(color);
+            return color;
         }
     }
 }

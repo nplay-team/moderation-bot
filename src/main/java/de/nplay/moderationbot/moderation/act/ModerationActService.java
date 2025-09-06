@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation;
+package de.nplay.moderationbot.moderation.act;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.embeds.Embed;
@@ -9,8 +9,9 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.NPLAYModerationBot;
-import de.nplay.moderationbot.moderation.act.ModerationActType;
+import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.ModerationActBuilder.ModerationActCreateData;
+import de.nplay.moderationbot.moderation.act.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import net.dv8tion.jda.api.JDA;
@@ -33,9 +34,9 @@ import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 /**
  * Utility class for managing moderation acts.
  */
-public class ModerationService {
+public class ModerationActService {
 
-    private static final Logger log = LoggerFactory.getLogger(ModerationService.class);
+    private static final Logger log = LoggerFactory.getLogger(ModerationActService.class);
 
     /**
      * Retrieves a moderation by its ID.

@@ -1,4 +1,4 @@
-package de.nplay.moderationbot;
+package de.nplay.moderationbot.serverlog;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.embeds.Embed;

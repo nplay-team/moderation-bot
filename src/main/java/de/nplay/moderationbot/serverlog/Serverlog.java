@@ -1,9 +1,7 @@
 package de.nplay.moderationbot.serverlog;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import de.nplay.moderationbot.BotEvent;
 import de.nplay.moderationbot.config.ConfigService;
-import net.dv8tion.jda.api.entities.Guild;
 
 public record Serverlog() {
 

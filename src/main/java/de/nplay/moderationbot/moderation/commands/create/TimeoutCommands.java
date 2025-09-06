@@ -7,14 +7,13 @@ import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
@@ -88,7 +87,7 @@ public class TimeoutCommands extends CreateCommands {
 
     @Modal(value = "reason-title")
     public void onModerate(ModalEvent event, @TextInput("reason-field") String reason) {
-        if (ModerationService.isTimeOuted(moderationActBuilder.targetId())) {
+        if (ModerationActService.isTimeOuted(moderationActBuilder.targetId())) {
             event.with().embeds("userAlreadyTimeOuted").reply();
             return;
         }

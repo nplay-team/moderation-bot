@@ -1,28 +1,26 @@
 package de.nplay.moderationbot.serverlog;
 
-import de.nplay.moderationbot.BotEvent;
 import de.nplay.moderationbot.embeds.EmbedHelpers;
-import de.nplay.moderationbot.moderation.ModerationService;
+import de.nplay.moderationbot.moderation.act.ModerationActService.ModerationAct;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-import org.jetbrains.annotations.NotNull;
 
 public class ModerationEvents {
 
-    public static BotEvent Created(JDA jda, Guild guild, ModerationService.ModerationAct moderationAct) {
+    public static BotEvent Created(JDA jda, Guild guild, ModerationAct moderationAct) {
         return new BotEvent(jda, guild, (event) ->
                 EmbedHelpers.getGenericModerationEventEmbed(event, "moderationCreateEvent", jda, moderationAct, null)
         );
     }
 
-    public static BotEvent Reverted(JDA jda, Guild guild, ModerationService.ModerationAct moderationAct) {
+    public static BotEvent Reverted(JDA jda, Guild guild, ModerationAct moderationAct) {
         return new BotEvent(jda, guild, (event) ->
                 EmbedHelpers.getGenericModerationEventEmbed(event, "moderationRevertEvent", jda, moderationAct, null)
         );
     }
 
-    public static BotEvent Deleted(JDA jda, Guild guild, ModerationService.ModerationAct moderationAct, User user) {
+    public static BotEvent Deleted(JDA jda, Guild guild, ModerationAct moderationAct, User user) {
         return new BotEvent(jda, guild, (event) ->
                 EmbedHelpers.getGenericModerationEventEmbed(event, "moderationDeleteEvent", jda, moderationAct, user)
         );

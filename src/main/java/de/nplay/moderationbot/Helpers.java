@@ -4,7 +4,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.moderation.ModerationService.ModerationAct;
+import de.nplay.moderationbot.moderation.act.ModerationActService.ModerationAct;
 import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;

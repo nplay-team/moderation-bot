@@ -8,7 +8,7 @@ import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import org.jetbrains.annotations.NotNull;
+
 
 /// Utility methods for basic CRUD operations on user or role permissions
 public class BotPermissionsService {
@@ -34,8 +34,7 @@ public class BotPermissionsService {
         }
 
         /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
-        @NotNull
-        public String readableList() {
+            public String readableList() {
             return String.join("\n", de.nplay.moderationbot.permissions.BotPermissions.decode(permissions).stream().map(it -> it.displayName).toList());
         }
     }
@@ -44,7 +43,6 @@ public class BotPermissionsService {
     ///
     /// @implNote Returns empty permissions if no user entry exists. If the provided [UserSnowflake] is a [Member] will
     /// combine the [Role] permissions.
-    @NotNull
     public static BotPermissionsService.EntityPermissions getUserPermissions(UserSnowflake user) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
@@ -65,7 +63,6 @@ public class BotPermissionsService {
     /// it creates a new entry. Otherwise, it updates the existing permissions.
     ///
     /// @return the updated [EntityPermissions]
-    @NotNull
     public static BotPermissionsService.EntityPermissions updateUserPermissions(UserSnowflake user, int permissions) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
@@ -86,7 +83,6 @@ public class BotPermissionsService {
     }
 
     /// Gets the permissions of a role. Returns empty permissions if no role entry exists
-    @NotNull
     public static BotPermissionsService.EntityPermissions getRolePermissions(Role role) {
         return Query.query("SELECT * FROM roles WHERE id = ?")
                 .single(Call.of().bind(role.getIdLong()))
@@ -98,7 +94,6 @@ public class BotPermissionsService {
     /// it creates a new entry. Otherwise, it updates the existing permissions.
     ///
     /// @return the updated [EntityPermissions]
-    @NotNull
     public static BotPermissionsService.EntityPermissions updateRolePermissions(Role role, int permissions) {
         var id = role.getIdLong();
         var rolePermissions = Query.query("SELECT * FROM roles WHERE id = ?")
