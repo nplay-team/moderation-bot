@@ -19,6 +19,10 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
+import io.github.kaktushose.proteus.Proteus;
+import io.github.kaktushose.proteus.mapping.Mapper;
+import io.github.kaktushose.proteus.mapping.MappingResult;
+import io.github.kaktushose.proteus.type.Type;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -31,6 +35,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
@@ -72,7 +77,6 @@ public class NPLAYModerationBot extends AbstractModule {
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .embeds(config -> config
                         .sources(EmbedDataSource.resource("embeds.json"))
-                        .errorSource(EmbedDataSource.resource("embeds.json"))
                         .placeholders(
                                 entry("colorDefault", EmbedColors.DEFAULT),
                                 entry("colorSuccess", EmbedColors.SUCCESS),
@@ -84,6 +88,9 @@ public class NPLAYModerationBot extends AbstractModule {
                 .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
+        Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
+                Mapper.uni((color, _) -> MappingResult.lossless(Color.decode(color.hex)))
+        );
 
         jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));
 
@@ -112,7 +119,7 @@ public class NPLAYModerationBot extends AbstractModule {
         }
 
         scheduler.scheduleAtFixedRate(
-                () -> ModerationActService.getModerationActsToRevert().forEach(it ->
+                () -> ModerationActService.getToRevert().forEach(it ->
                         it.revert(guild, jdaCommands::embed, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
                 ), 0, 1, TimeUnit.MINUTES);
     }
@@ -136,20 +143,20 @@ public class NPLAYModerationBot extends AbstractModule {
     }
 
     public enum EmbedColors {
-        DEFAULT("134180"),
-        ERROR("16711680"),
-        SUCCESS("65280"),
-        WARNING("16776960");
+        DEFAULT("020C2"),
+        ERROR("FF0000"),
+        SUCCESS("00FF00"),
+        WARNING("FFFF00");
 
-        public final String color;
+        public final String hex;
 
-        EmbedColors(String color) {
-            this.color = color;
+        EmbedColors(String hex) {
+            this.hex = hex;
         }
 
         @Override
         public String toString() {
-            return color;
+            return hex;
         }
     }
 }
