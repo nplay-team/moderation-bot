@@ -1,21 +1,13 @@
 package de.nplay.moderationbot.notes;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
-import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.embeds.EmbedHelpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-
-import java.util.List;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
@@ -63,10 +55,12 @@ public class NotesCommands {
     }
 
     @Modal("Notiz erstellen")
-    public void createNoteModal(ModalEvent event, @TextInput(value = "Inhalt der Notiz", style = TextInputStyle.PARAGRAPH) String content) {
+    public void createNoteModal(ModalEvent event,
+                                @TextInput(value = "Inhalt der Notiz", style = TextInputStyle.PARAGRAPH)
+                                String content) {
         var note = NotesService.createNote(target.getIdLong(), event.getMember().getIdLong(), content);
 
-        event.with().ephemeral(ephemeral).embeds("noteCreated",  entry("id", note.id()),
+        event.with().ephemeral(ephemeral).embeds("noteCreated", entry("id", note.id()),
                 entry("content", note.content()),
                 entry("targetId", note.userId()),
                 entry("targetUsername", target.getUser().getName()),

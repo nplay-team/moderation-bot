@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 @Constraint(Duration.class)
 public @interface DurationMax {
     long amount();
+
     ChronoUnit unit();
 }
 

@@ -16,7 +16,10 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 

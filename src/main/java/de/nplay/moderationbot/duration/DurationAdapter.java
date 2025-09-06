@@ -3,7 +3,6 @@ package de.nplay.moderationbot.duration;
 import com.github.kaktushose.jda.commands.dispatching.adapter.TypeAdapter;
 import com.github.kaktushose.jda.commands.guice.Implementation;
 import io.github.kaktushose.proteus.mapping.MappingResult;
-import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

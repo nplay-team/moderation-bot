@@ -1,6 +1,9 @@
 package de.nplay.moderationbot.config;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
+import com.github.kaktushose.jda.commands.annotations.interactions.Command;
+import com.github.kaktushose.jda.commands.annotations.interactions.CommandConfig;
+import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
+import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.permissions.BotPermissions;

@@ -2,7 +2,10 @@ package de.nplay.moderationbot.moderation.commands.purge;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.constraints.Min;
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
+import com.github.kaktushose.jda.commands.annotations.interactions.Command;
+import com.github.kaktushose.jda.commands.annotations.interactions.CommandConfig;
+import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
+import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -13,8 +16,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
-
 import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +44,8 @@ public class PurgeMessagesCommands {
         replyEvent(event, deletedMessages);
     }
 
-    private int purgeMessages(CommandEvent event, MessageChannel channel, String pivotMessageId, @Nullable Integer amount) {
+    private int purgeMessages(CommandEvent event, MessageChannel channel, String pivotMessageId,
+                              @Nullable Integer amount) {
         List<String> messageIds = new ArrayList<>();
 
         messageIds.add(pivotMessageId);

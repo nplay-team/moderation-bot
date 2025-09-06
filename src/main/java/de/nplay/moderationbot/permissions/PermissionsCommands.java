@@ -8,6 +8,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
 import com.github.kaktushose.jda.commands.dispatching.reply.Component;
+import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
 import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
@@ -58,10 +59,10 @@ public class PermissionsCommands {
                         .selectOptions(SelectOption.of(
                                 event.i18n().localize(event.getUserLocale().toLocale(), "permissions-none"),
                                 NONE_OPTION)
-                        ).selectOptions(Arrays.stream(BotPermissions.BitFields.values())
+                        ).selectOptions(Arrays.stream(BitFields.values())
                                 .map(it -> SelectOption.of(it.displayName, it.name()))
                                 .toList()
-                        ).maxValues(BotPermissions.BitFields.values().length)
+                        ).maxValues(BitFields.values().length)
                         .defaultValues(BotPermissions.decode(holder.permissions()).stream().map(Enum::name).toList())
                 ).embeds("permissionsEdit", entry("target", target))
                 .reply();
@@ -71,7 +72,7 @@ public class PermissionsCommands {
     @StringSelectMenu(value = "permissions-select")
     public void onPermissionsSelect(ComponentEvent event, List<String> selection) {
         int permissions = selection.contains(NONE_OPTION) ? 0 : BotPermissions.combine(
-                selection.stream().map(it -> BotPermissions.BitFields.valueOf(it).value).toList()
+                selection.stream().map(it -> BitFields.valueOf(it).value).toList()
         );
 
         var targetName = "";

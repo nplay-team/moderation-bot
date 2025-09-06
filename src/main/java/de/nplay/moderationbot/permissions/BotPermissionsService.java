@@ -5,39 +5,16 @@ import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
+import java.util.BitSet;
+
 
 /// Utility methods for basic CRUD operations on user or role permissions
 public class BotPermissionsService {
-
-    public record EntityPermissions(int permissions) {
-
-        @MappingProvider("")
-        public static RowMapping<EntityPermissions> map() {
-            return row -> new EntityPermissions(row.getInt(("permissions")));
-        }
-
-        public boolean hasPermissions(InvocationContext<?> context) {
-            if ((permissions() & de.nplay.moderationbot.permissions.BotPermissions.BitFields.ADMINISTRATOR.value) != 0) {
-                return true;
-            }
-            return context.definition().permissions().stream()
-                    .map(de.nplay.moderationbot.permissions.BotPermissions.BitFields::valueOf)
-                    .noneMatch(it -> (permissions() & it.value) == 0);
-        }
-
-        public boolean hasPermission(String permission) {
-            return (permissions() & BotPermissions.BitFields.valueOf(permission).value) != 0;
-        }
-
-        /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
-            public String readableList() {
-            return String.join("\n", de.nplay.moderationbot.permissions.BotPermissions.decode(permissions).stream().map(it -> it.displayName).toList());
-        }
-    }
 
     /// Gets the [EntityPermissions] of a [UserSnowflake].
     ///
@@ -112,5 +89,31 @@ public class BotPermissionsService {
         }
 
         return getRolePermissions(role);
+    }
+
+    public record EntityPermissions(int permissions) {
+
+        @MappingProvider("")
+        public static RowMapping<EntityPermissions> map() {
+            return row -> new EntityPermissions(row.getInt(("permissions")));
+        }
+
+        public boolean hasPermissions(InvocationContext<?> context) {
+            if ((permissions() & BitFields.ADMINISTRATOR.value) != 0) {
+                return true;
+            }
+            return context.definition().permissions().stream()
+                    .map(BitFields::valueOf)
+                    .noneMatch(it -> (permissions() & it.value) == 0);
+        }
+
+        public boolean hasPermission(String permission) {
+            return (permissions() & BitFields.valueOf(permission).value) != 0;
+        }
+
+        /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
+        public String readableList() {
+            return String.join("\n", BotPermissions.decode(permissions).stream().map(it -> it.displayName).toList());
+        }
     }
 }

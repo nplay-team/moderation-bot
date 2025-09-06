@@ -167,32 +167,6 @@ public class ModerationActBuilder {
         return act;
     }
 
-    public record ModerationActCreateData(
-            long targetId,
-            ModerationActType type,
-            long issuerId,
-            @Nullable String reason,
-            @Nullable Message messageReference,
-            @Nullable Integer paragraphId,
-            @Nullable Duration duration,
-            int deletionDays
-    ) {
-
-        public ModerationActCreateData {
-            Checks.isSnowflake(targetId + "", "targetId");
-            Checks.notNull(type, "ModerationActType");
-            Checks.isSnowflake(issuerId + "", "issuerId");
-        }
-
-        public Optional<Timestamp> revokeAt() {
-            return Optional.ofNullable(duration).map(it -> new Timestamp(System.currentTimeMillis() + it.toMillis()));
-        }
-
-        public Optional<Long> messageReferenceId() {
-            return Optional.ofNullable(messageReference).map(ISnowflake::getIdLong);
-        }
-    }
-
     public enum ModerationActType {
         WARN("Verwarnung"),
         TIMEOUT("Timeout"),
@@ -217,6 +191,32 @@ public class ModerationActBuilder {
 
         public boolean isTemp() {
             return this == TEMP_BAN || this == TIMEOUT;
+        }
+    }
+
+    public record ModerationActCreateData(
+            long targetId,
+            ModerationActType type,
+            long issuerId,
+            @Nullable String reason,
+            @Nullable Message messageReference,
+            @Nullable Integer paragraphId,
+            @Nullable Duration duration,
+            int deletionDays
+    ) {
+
+        public ModerationActCreateData {
+            Checks.isSnowflake(targetId + "", "targetId");
+            Checks.notNull(type, "ModerationActType");
+            Checks.isSnowflake(issuerId + "", "issuerId");
+        }
+
+        public Optional<Timestamp> revokeAt() {
+            return Optional.ofNullable(duration).map(it -> new Timestamp(System.currentTimeMillis() + it.toMillis()));
+        }
+
+        public Optional<Long> messageReferenceId() {
+            return Optional.ofNullable(messageReference).map(ISnowflake::getIdLong);
         }
     }
 }

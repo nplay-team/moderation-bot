@@ -15,12 +15,14 @@ import de.nplay.moderationbot.moderation.act.ModerationActBuilder.ModerationActT
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -205,7 +207,8 @@ public class ModerationActService {
             );
         }
 
-        public ModerationAct revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy, @Nullable String reason) {
+        public ModerationAct revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy,
+                                    @Nullable String reason) {
             if (reverted) {
                 return this;
             }
@@ -233,7 +236,8 @@ public class ModerationActService {
             return getModerationAct(id).orElseThrow();
         }
 
-        private void sendRevertMessageToUser(Guild guild, Function<String, Embed> embedFunction, User revertedBy, @Nullable String revertingReason) {
+        private void sendRevertMessageToUser(Guild guild, Function<String, Embed> embedFunction, User revertedBy,
+                                             @Nullable String revertingReason) {
             var embed = embedFunction.apply(type == ModerationActType.TIMEOUT ? "timeoutReverted" : "warnReverted").placeholders(
                     entry("date", createdAt.getTime() / 1000),
                     entry("id", id),
