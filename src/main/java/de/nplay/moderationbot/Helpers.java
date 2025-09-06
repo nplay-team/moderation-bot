@@ -126,7 +126,7 @@ public class Helpers {
     public static Embed notesEmbed(ReplyableEvent<?> event, JDA jda, UserSnowflake target, List<NotesService.Note> notes) {
         var targetUsername = jda.retrieveUserById(target.getIdLong()).complete().getName();
         var embed = event.embed("noteList").placeholders(entry("target", targetUsername));
-        embed.getFields().addAll(notes.stream().map(it -> it.toField(jda)).toList());
+        notes.stream().map(it -> it.toField(jda)).forEach(embed.fields()::add);
         return embed;
     }
 

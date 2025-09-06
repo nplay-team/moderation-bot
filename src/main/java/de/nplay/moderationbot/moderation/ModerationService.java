@@ -240,7 +240,7 @@ public class ModerationService {
                     entry("revertedById", revertedBy.getIdLong()),
                     entry("revertedByUsername", revertedBy.getName()));
 
-            embed.getFields().removeIf(it -> "?DEL?".equals(it.getValue()));
+            embed.fields().remove("?DEL?");
 
             guild.retrieveMemberById(userId).flatMap(it -> it.getUser().openPrivateChannel())
                     .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))

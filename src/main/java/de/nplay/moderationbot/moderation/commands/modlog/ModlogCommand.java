@@ -12,13 +12,11 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.ModerationService;
 import de.nplay.moderationbot.notes.NotesService;
-import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -161,8 +159,7 @@ public class ModlogCommand {
         var embed = event.embed("modlogActs").placeholders(
                 entry("page", page),
                 entry("maxPage", maxPage));
-
-        embed.getFields().addAll(moderationActs.stream().map(it -> it.toField(jda)).toList());
+        moderationActs.stream().map(it -> it.toField(jda)).forEach(embed.fields()::add);
         return embed;
     }
 }

@@ -1,7 +1,6 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import com.google.inject.Inject;
 import de.nplay.moderationbot.duration.DurationAdapter;
 import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
@@ -34,9 +33,8 @@ public class CreateCommands {
 
         var embed = event.embed("moderationActExecuted");
         embed.placeholders(entry("type", moderationAct.type()))
-                .footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName())
-                .getFields().addAll(generateFields(moderationAct));
-
+                .footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName());
+        generateFields(moderationAct).forEach(embed.fields()::add);
         serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), moderationAct), event);
 
         event.with().ephemeral(replyEphemeral).embeds(embed).reply();

@@ -5,6 +5,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.Comman
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
@@ -38,7 +39,7 @@ public class ConfigCommands {
 
         configs.forEach(config -> {
             var value = ConfigService.get(config);
-            embed.addField(config.toString(), value.orElse("Nicht gesetzt"), false);
+            embed.fields().add(new Field(config.toString(), value.orElse("Nicht gesetzt"), false));
         });
 
         event.with().embeds(embed).reply();
