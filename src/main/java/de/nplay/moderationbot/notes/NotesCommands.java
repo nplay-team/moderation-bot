@@ -28,22 +28,19 @@ public class NotesCommands {
 
     @Command("notes create")
     public void createNote(CommandEvent event, Member target) {
+        this.target = target;
         var noteCount = NotesService.getNoteCountFromUser(target.getIdLong());
-
         if (noteCount >= 25) {
             event.with().embeds(event.embed("noteLimitReached")).reply();
             return;
         }
-
-        this.target = target;
         event.replyModal("createNoteModal");
     }
 
     @Command(value = "Notiz erstellen", type = Type.USER)
-    public void createNoteContext(CommandEvent event, User target) {
-        this.target = event.getGuild().retrieveMember(target).complete();
+    public void createNoteContext(CommandEvent event, Member target) {
         ephemeral = true;
-        event.replyModal("createNoteModal");
+        createNote(event, target);
     }
 
     @Command("notes list")
@@ -68,6 +65,14 @@ public class NotesCommands {
     @Modal("Notiz erstellen")
     public void createNoteModal(ModalEvent event, @TextInput(value = "Inhalt der Notiz", style = TextInputStyle.PARAGRAPH) String content) {
         var note = NotesService.createNote(target.getIdLong(), event.getMember().getIdLong(), content);
-        event.with().ephemeral(ephemeral).embeds(EmbedHelpers.getNotesCreatedEmbed(event, event.getJDA(), note)).reply();
+
+        event.with().ephemeral(ephemeral).embeds("noteCreated",  entry("id", note.id()),
+                entry("content", note.content()),
+                entry("targetId", note.userId()),
+                entry("targetUsername", target.getUser().getName()),
+                entry("createdById", note.creatorId()),
+                entry("createdByUsername", event.getUser().getName()),
+                entry("createdAt", note.createdAt().getTime() / 1000)
+        ).reply();
     }
 }

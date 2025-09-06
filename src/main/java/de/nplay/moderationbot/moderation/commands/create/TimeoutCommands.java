@@ -48,11 +48,11 @@ public class TimeoutCommands extends CreateCommands {
     }
 
     @Command(value = "Timeoute Mitglied", type = Type.USER)
-    public void timeoutMemberContext(CommandEvent event, User target) {
+    public void timeoutMemberContext(CommandEvent event, Member target) {
         if (moderationActLock.checkLocked(event, target, event.getUser())) {
             return;
         }
-        moderationActBuilder = ModerationActBuilder.timeout(event.getGuild().retrieveMember(target).complete(), event.getUser());
+        moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser());
         replyEphemeral = true;
         event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Timeout)"));
     }

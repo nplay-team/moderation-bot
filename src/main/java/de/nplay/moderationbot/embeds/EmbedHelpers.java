@@ -15,20 +15,6 @@ import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
 public class EmbedHelpers {
 
-    public static Embed getNotesCreatedEmbed(ReplyableEvent<?> event, JDA jda, NotesService.Note note) {
-        var targetUsername = jda.retrieveUserById(note.userId()).complete().getName();
-        var creatorUsername = jda.retrieveUserById(note.creatorId()).complete().getName();
-
-        return event.embed("noteCreated").placeholders(
-                entry("id", note.id()),
-                entry("content", note.content()),
-                entry("targetId", note.userId()),
-                entry("targetUsername", targetUsername),
-                entry("createdById", note.creatorId()),
-                entry("createdByUsername", creatorUsername),
-                entry("createdAt", note.createdAt().getTime() / 1000));
-    }
-
     // EVENT EMBEDS //
 
     public static Embed getGenericModerationEventEmbed(ReplyableEvent<?> event, String name, JDA jda, ModerationService.ModerationAct moderationAct,

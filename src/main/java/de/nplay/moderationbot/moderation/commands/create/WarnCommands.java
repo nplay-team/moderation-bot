@@ -37,11 +37,11 @@ public class WarnCommands extends CreateCommands {
     }
 
     @Command(value = "Verwarne Mitglied", type = Type.USER)
-    public void warnMemberContext(CommandEvent event, User target) {
+    public void warnMemberContext(CommandEvent event, Member target) {
         if (moderationActLock.checkLocked(event, target, event.getUser())) {
             return;
         }
-        moderationActBuilder = ModerationActBuilder.warn(event.getGuild().retrieveMember(target).complete(), event.getUser());
+        moderationActBuilder = ModerationActBuilder.warn(target, event.getUser());
         replyEphemeral = true;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Warn)"));
     }

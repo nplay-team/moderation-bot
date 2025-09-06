@@ -45,11 +45,11 @@ public class KickCommands extends CreateCommands {
 
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command(value = "Kicke Mitglied", type = Type.USER)
-    public void kickMemberContext(CommandEvent event, User target) {
+    public void kickMemberContext(CommandEvent event, Member target) {
         if (moderationActLock.checkLocked(event, target, event.getUser())) {
             return;
         }
-        moderationActBuilder = ModerationActBuilder.kick(event.getGuild().retrieveMember(target).complete(), event.getUser());
+        moderationActBuilder = ModerationActBuilder.kick(target, event.getUser());
         replyEphemeral = true;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Kick)"));
     }
