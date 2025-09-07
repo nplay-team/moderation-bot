@@ -8,11 +8,11 @@
       },
       {
         "name": "Betroffener",
-        "value": "<@{ $targetId }> ({ $targetUsername })"
+        "value": "{ $target }"
       },
       {
         "name": "Moderator",
-        "value": "<@{ $issuerId }> ({ $issuerUsername })"
+        "value": "{ $issuer }"
       },
       {
         "name": "Begründung",
@@ -20,17 +20,13 @@
       },
       {
         "name": "Datum",
-        "value": "<t:{ $createdAt }:F>"
-      },
-      {
-        "name": "Aktiv bis",
-        "value": "{ $until }"
+        "value": "{ $createdAt }"
       }
     ],
     "color": "{ $colorDefault }"
   },
-  "moderationRevertEvent": {
-    "title": "REVIDIERUNG | { $type } | #{ $id }",
+  "moderationRemoveEvent": {
+    "title": "{ $action } | { $type } | #{ $id }",
     "fields": [
       {
         "name": "Typ",
@@ -38,15 +34,15 @@
       },
       {
         "name": "Betroffener",
-        "value": "<@{ $targetId }> ({ $targetUsername })"
+        "value": "{ $targetId }"
       },
       {
-        "name": "Moderator",
-        "value": "<@{ $issuerId }> ({ $issuerUsername })"
+        "name": "Ursprünglicher Moderator",
+        "value": "{ $issuerId }"
       },
       {
-        "name": "Revidierender Moderator",
-        "value": "<@{ $revertedById }> ({ $revertedByUsername })"
+        "name": "Ausführender Moderator",
+        "value": "{ $moderator }"
       },
       {
         "name": "Revidierungsgrund",
@@ -54,57 +50,13 @@
       },
       {
         "name": "Datum",
-        "value": "<t:{ $revertedAt }:F>"
+        "value": "{ $revertedAt }"
       }
     ],
-    "color": "{ $colorWarning }"
+    "color": "{ $color }"
   },
-  "moderationDeleteEvent": {
-    "title": "LÖSCHUNG | { $type } | #{ $id }",
-    "fields": [
-      {
-        "name": "Typ",
-        "value": "{ $type }"
-      },
-      {
-        "name": "Betroffener",
-        "value": "<@{ $targetId }> ({ $targetUsername })"
-      },
-      {
-        "name": "Moderator",
-        "value": "<@{ $issuerId }> ({ $issuerUsername })"
-      },
-      {
-        "name": "Löschender Moderator",
-        "value": "<@{ $deletedById }> ({ $deletedByUsername })"
-      },
-      {
-        "name": "Datum",
-        "value": "<t:{ $createdAt }:F>"
-      }
-    ],
-    "color": "{ $colorError }"
-  },
-  "bulkMessageDeleteEvent": {
-    "title": "Massenlöschung von Nachrichten",
-    "fields": [
-      {
-        "name": "Menge",
-        "value": "{ $amount } Nachrichten"
-      },
-      {
-        "name": "Moderator",
-        "value": "{ $issuer }"
-      },
-      {
-        "name": "Datum",
-        "value": "<t:{ $createdAt }:F>"
-      }
-    ],
-    "color": "{ $colorDefault }"
-  },
-  "spielersucheAusschlussEvent": {
-    "title": "Spielersuche-Ausschluss",
+  "genericEvent": {
+    "title": "{ $title }",
     "fields": [
       {
         "name": "Betroffener",
@@ -116,25 +68,7 @@
       },
       {
         "name": "Datum",
-        "value": "<t:{ $createdAt }:F>"
-      }
-    ],
-    "color": "{ $colorDefault }"
-  },
-  "spielersucheAusschlussRevertEvent": {
-    "title": "Spielersuche-Ausschluss-Aufhebung",
-    "fields": [
-      {
-        "name": "Betroffener",
-        "value": "{ $target }"
-      },
-      {
-        "name": "Moderator",
-        "value": "{ $issuer }"
-      },
-      {
-        "name": "Datum",
-        "value": "<t:{ $createdAt }:F>"
+        "value": "{ $createdAt }"
       }
     ],
     "color": "{ $colorDefault }"
