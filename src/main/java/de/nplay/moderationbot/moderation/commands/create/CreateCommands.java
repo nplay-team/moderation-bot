@@ -2,8 +2,8 @@ package de.nplay.moderationbot.moderation.commands.create;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import de.nplay.moderationbot.duration.DurationAdapter;
-import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
+import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.utils.TimeFormat;
@@ -35,7 +35,7 @@ public class CreateCommands {
         var fields = embed.fields()
                 .add("ID", Long.toString(moderationAct.id()))
                 .add("Betroffener Nutzer", moderationAct.user().getAsMention())
-                .add("Begründung", Optional.ofNullable(moderationAct.reason()).orElse( "Keine Begründung angegeben."));
+                .add("Begründung", Optional.ofNullable(moderationAct.reason()).orElse("Keine Begründung angegeben."));
 
         moderationAct.revokeAt().ifPresent(it -> fields.add("Aktiv bis", TimeFormat.DATE_TIME_SHORT.format(it.getTime())));
         moderationAct.paragraph().ifPresent(it -> fields.add("Regel", it.shortDisplay()));

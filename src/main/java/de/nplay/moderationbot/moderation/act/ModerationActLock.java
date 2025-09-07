@@ -19,10 +19,9 @@ public class ModerationActLock {
     /// Attempts to lock the given target and moderator based on the event. If the lock is already set, returns `true`
     /// and will send an error message. Else returns `false`.
     ///
-    /// @param event the corresponding [ReplyableEvent] of the moderation act
-    /// @param target the [target][UserSnowflake] of the moderation act
+    /// @param event     the corresponding [ReplyableEvent] of the moderation act
+    /// @param target    the [target][UserSnowflake] of the moderation act
     /// @param moderator the [moderator][UserSnowflake] performing the moderation act
-    ///
     /// @return `true` if the moderation act is already locked, else returns `false`
     public boolean checkLocked(ReplyableEvent<?> event, UserSnowflake target, UserSnowflake moderator) {
         if (lock(target.getIdLong(), moderator.getIdLong())) {

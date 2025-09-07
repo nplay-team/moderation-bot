@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.Timestamp;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 

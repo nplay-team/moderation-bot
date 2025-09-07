@@ -9,8 +9,8 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
-import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
+import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import net.dv8tion.jda.api.JDA;
@@ -32,7 +32,8 @@ import java.util.function.Function;
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 import static de.nplay.moderationbot.Helpers.formatTimestamp;
-import static net.dv8tion.jda.api.utils.TimeFormat.*;
+import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_SHORT;
+import static net.dv8tion.jda.api.utils.TimeFormat.DEFAULT;
 
 public sealed class ModerationAct permits RevertedModerationAct {
 

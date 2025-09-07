@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
-import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 /// Builder class for creating instances of [ModerationAct] used for creating a new moderation action.
 public class ModerationActBuilder {

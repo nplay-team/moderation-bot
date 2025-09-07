@@ -10,8 +10,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
-import java.util.BitSet;
-
 
 /// Utility methods for basic CRUD operations on user or role permissions
 public class BotPermissionsService {

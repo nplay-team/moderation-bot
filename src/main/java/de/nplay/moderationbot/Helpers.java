@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jspecify.annotations.Nullable;
@@ -20,7 +19,6 @@ import org.jspecify.annotations.Nullable;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
@@ -87,7 +85,7 @@ public class Helpers {
 
     public static String formatUser(JDA jda, UserSnowflake user) {
         if (user instanceof User resolved) {
-            return "%s (%s)".formatted(user.getAsMention(), ((User) user).getEffectiveName());
+            return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
         }
         return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
     }

@@ -5,8 +5,8 @@ import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
-import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
+import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
