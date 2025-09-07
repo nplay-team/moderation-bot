@@ -210,10 +210,7 @@ public class ModerationActBuilder {
         }
         embed.fields().remove("?DEL?");
 
-        event.getJDA().retrieveUserById(moderationAct.user().getId())
-                .flatMap(User::openPrivateChannel)
-                .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))
-                .queue(null, USER_HANDLER);
+        Helpers.sendDM(moderationAct.user(), event.getJDA(), channel -> channel.sendMessageEmbeds(embed.build()));
     }
 
     public enum ModerationActType {

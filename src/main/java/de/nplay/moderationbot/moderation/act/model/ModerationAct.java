@@ -142,10 +142,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
                 entry("revertedBy", Helpers.formatUser(guild.getJDA(), revertedBy))
         );
 
-        guild.getJDA().retrieveUserById(user.getId())
-                .flatMap(User::openPrivateChannel)
-                .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))
-                .queue(null, USER_HANDLER);
+        Helpers.sendDM(user, guild.getJDA(), channel -> channel.sendMessageEmbeds(embed.build()));
     }
 
     public long id() {

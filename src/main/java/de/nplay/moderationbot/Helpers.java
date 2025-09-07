@@ -6,22 +6,39 @@ import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.*;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 
 public class Helpers {
 
-    public static final ErrorHandler USER_HANDLER = new ErrorHandler().ignore(ErrorResponse.UNKNOWN_USER, ErrorResponse.UNKNOWN_MEMBER, ErrorResponse.CANNOT_SEND_TO_USER);
+    public static final ErrorHandler USER_HANDLER = new ErrorHandler().ignore(
+            ErrorResponse.UNKNOWN_USER,
+            ErrorResponse.UNKNOWN_MEMBER,
+            ErrorResponse.CANNOT_SEND_TO_USER
+    );
+
+    public static void sendDM(UserSnowflake user, JDA jda, Function<PrivateChannel, MessageCreateAction> function) {
+        jda.retrieveUserById(user.getId())
+                .flatMap(User::openPrivateChannel)
+                .flatMap(function)
+                .queue(null, USER_HANDLER);
+    }
 
     public static String formatDuration(Duration duration) {
         StringBuilder builder = new StringBuilder();
@@ -69,6 +86,9 @@ public class Helpers {
     }
 
     public static String formatUser(JDA jda, UserSnowflake user) {
+        if (user instanceof User resolved) {
+            return "%s (%s)".formatted(user.getAsMention(), ((User) user).getEffectiveName());
+        }
         return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
     }
 }

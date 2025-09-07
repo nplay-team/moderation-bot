@@ -4,6 +4,7 @@ import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.permissions.BotPermissionsService;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.TimeFormat;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -64,6 +66,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         message.delete().queue();
         notifyUser(
                 author,
+                event.getJDA(),
                 channel.getId(),
                 slowmode.get().duration(),
                 lastMessage.get().getTimeCreated().toInstant().getEpochSecond()
@@ -106,6 +109,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         thread.delete().queue();
         notifyUser(
                 owner.getUser(),
+                event.getJDA(),
                 forumChannel.getId(),
                 slowmode.get().duration(),
                 lastPost.get().getTimeCreated().toInstant().getEpochSecond()
@@ -126,16 +130,15 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         return current.toEpochMilli() - last.toEpochMilli() < slowmodeSeconds * 1000L;
     }
 
-    private void notifyUser(User user, String channelId, long duration, long lastMessageTimestamp) {
-        var channel = user.openPrivateChannel().complete();
-        channel.sendMessageEmbeds(
-                embedFunction.apply("slowmodeMessageRemoved").placeholders(
+    private void notifyUser(User user, JDA jda, String channelId, long duration, long lastMessageTimestamp) {
+        Helpers.sendDM(user, jda, channel ->
+                channel.sendMessageEmbeds(embedFunction.apply("slowmodeMessageRemoved").placeholders(
                         entry("channelId", channelId),
                         entry("duration", Helpers.formatDuration(Duration.ofSeconds(duration))),
-                        entry("timestampNextMessage", lastMessageTimestamp + duration),
-                        entry("timestampLastMessage", lastMessageTimestamp)
-                ).build()
-        ).queue();
+                        entry("timestampNextMessage", TimeFormat.RELATIVE.format(lastMessageTimestamp + duration)),
+                        entry("timestampLastMessage", TimeFormat.RELATIVE.format(lastMessageTimestamp))
+                ).build())
+        );
     }
 }
 

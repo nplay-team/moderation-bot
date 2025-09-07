@@ -54,22 +54,22 @@
   },
   "spielersucheAlreadyBlocked": {
     "title": "Fehler",
-    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** ist bereits blockiert!",
+    "description": "Der Benutzer { $target } ist bereits blockiert!",
     "color": "{ $colorError }"
   },
   "spielersucheBlockSuccess": {
     "title": "Erfolgreich",
-    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** wurde erfolgreich von der Spielersuche blockiert!",
+    "description": "Der Benutzer { $target } wurde erfolgreich von der Spielersuche blockiert!",
     "color": "{ $colorSuccess }"
   },
   "spielersucheUnblockSuccess": {
     "title": "Erfolgreich",
-    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** wurde erfolgreich für die Spielersuche wieder freigegeben!",
+    "description": "Der Benutzer { $target } wurde erfolgreich für die Spielersuche wieder freigegeben!",
     "color": "{ $colorSuccess }"
   },
   "spielersucheNotBlocked": {
     "title": "Fehler",
-    "description": "Der Benutzer **<@{ $targetId }> ({ $targetUsername })** ist nicht blockiert!",
+    "description": "Der Benutzer { $target } ist nicht blockiert!",
     "color": "{ $colorError }"
   },
   "spielersucheUnblockForTarget": {
@@ -133,11 +133,11 @@
     "fields": [
       {
         "name": "Nächste Nachricht möglich",
-        "value": "<t:{ $timestampNextMessage }:R>"
+        "value": "{ $timestampNextMessage }"
       },
       {
         "name": "Letzte Nachricht",
-        "value": "<t:{ $timestampLastMessage }:R>"
+        "value": "{ $timestampLastMessage }"
       }
     ],
     "color": "{ $colorDefault }"

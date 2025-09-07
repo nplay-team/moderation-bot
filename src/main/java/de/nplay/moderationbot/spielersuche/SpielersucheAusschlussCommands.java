@@ -17,7 +17,6 @@ import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
 import java.util.Optional;
@@ -73,11 +72,11 @@ public class SpielersucheAusschlussCommands {
         }
         event.getGuild().removeRoleFromMember(target, spielersucheAusschlussRolle.get()).queue();
 
-        PrivateChannel channel = target.getUser().openPrivateChannel().complete();
-        channel.sendMessage(event.embed("spielersucheUnblockForTarget").placeholders(
-                entry("issuer", Helpers.formatUser(event.getJDA(), event.getUser())),
-                entry("createdAt", TimeFormat.DATE_TIME_LONG.format(System.currentTimeMillis()))
-        ).toMessageCreateData()).queue();
+        Helpers.sendDM(target, event.getJDA(), channel ->
+                channel.sendMessageEmbeds(event.embed("spielersucheUnblockForTarget").placeholders(
+                        entry("issuer", Helpers.formatUser(event.getJDA(), event.getUser())),
+                        entry("createdAt", TimeFormat.DATE_TIME_LONG.format(System.currentTimeMillis()))).build())
+        );
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
 
@@ -90,8 +89,6 @@ public class SpielersucheAusschlussCommands {
     }
 
     private Embed embed(ReplyableEvent<?> event, String embedName, Member target) {
-        return event.embed(embedName).placeholders(
-                entry("targetId", target.getId()),
-                entry("targetUsername", target.getUser().getName()));
+        return event.embed(embedName).placeholders(entry("target", Helpers.formatUser(event.getJDA(), target)));
     }
 }
