@@ -8,15 +8,17 @@ import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.github.kaktushose.jda.commands.embeds.Embed;
 import com.google.inject.Inject;
+import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
-import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.utils.TimeFormat;
 
 import java.util.Optional;
 
@@ -73,9 +75,8 @@ public class SpielersucheAusschlussCommands {
 
         PrivateChannel channel = target.getUser().openPrivateChannel().complete();
         channel.sendMessage(event.embed("spielersucheUnblockForTarget").placeholders(
-                entry("issuerId", event.getUser().getId()),
-                entry("issuerUsername", event.getUser().getName()),
-                entry("createdAt", System.currentTimeMillis() / 1000)
+                entry("issuer", Helpers.formatUser(event.getJDA(), event.getUser())),
+                entry("createdAt", TimeFormat.DATE_TIME_LONG.format(System.currentTimeMillis()))
         ).toMessageCreateData()).queue();
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);

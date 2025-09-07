@@ -27,7 +27,7 @@ public class SlowmodeCommands {
         }
         event.with().embeds("slowmodeInfo",
                 entry("channelId", guildChannel.getId()),
-                entry("duration", Helpers.durationToString(Duration.ofSeconds(slowmode.get().duration()), true))
+                entry("duration", Helpers.formatDuration(Duration.ofSeconds(slowmode.get().duration())))
         ).reply();
     }
 
@@ -40,7 +40,7 @@ public class SlowmodeCommands {
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
         event.with().embeds("slowmodeSet",
                 entry("channelId", guildChannel.getId()),
-                entry("duration", Helpers.durationToString(duration))
+                entry("duration", Helpers.formatDuration(duration))
         ).reply();
     }
 

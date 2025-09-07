@@ -6,7 +6,7 @@ import com.github.kaktushose.jda.commands.annotations.interactions.Param;
 import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.google.inject.Inject;
-import de.nplay.moderationbot.moderation.act.ModerationActService.ModerationAct;
+import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;

@@ -76,15 +76,18 @@ public class NPLAYModerationBot extends AbstractModule {
 
         jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
                 .embeds(config -> config
-                        .sources(EmbedDataSource.resource("embeds.json"))
+                        .sources(
+                                EmbedDataSource.resource("embeds.json"),
+                                EmbedDataSource.resource("moderation.json"),
+                                EmbedDataSource.resource("events.json")
+                        ).errorSource(EmbedDataSource.resource("jdac.json"))
                         .placeholders(
                                 entry("colorDefault", EmbedColors.DEFAULT),
                                 entry("colorSuccess", EmbedColors.SUCCESS),
                                 entry("colorWarning", EmbedColors.WARNING),
                                 entry("colorError", EmbedColors.ERROR)
                         )
-                )
-                .localizer(new FluavaLocalizer(new Fluava(Locale.GERMAN)))
+                ).localizer(new FluavaLocalizer(new Fluava(Locale.GERMAN)))
                 .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();

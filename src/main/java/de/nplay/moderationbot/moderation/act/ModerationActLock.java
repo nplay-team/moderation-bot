@@ -29,14 +29,14 @@ public class ModerationActLock {
             return false;
         }
 
-        if (moderator.getId().equals(activeModerationUsers.get(target.getId()))) {
+        if (moderator.getIdLong() == activeModerationUsers.get(target.getIdLong())) {
             return false;
         }
 
         event.with().ephemeral(true)
                 .embeds("moderationTargetBlocked",
-                        entry("targetId", target.getId()),
-                        entry("moderatorId", activeModerationUsers.get(target.getId()))
+                        entry("target", target.getAsMention()),
+                        entry("moderator", UserSnowflake.fromId(activeModerationUsers.get(target.getIdLong())).getAsMention())
                 ).reply();
 
         return true;

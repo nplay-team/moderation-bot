@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 public class MessageReferenceService {
 
@@ -42,7 +43,7 @@ public class MessageReferenceService {
         }
 
         public String jumpUrl(Guild guild) {
-            return "%s\n[Link](%s)".formatted(content, format(guild));
+            return Matcher.quoteReplacement("%s\n[Link](%s)".formatted(content, format(guild)));
         }
 
         private String format(Guild guild) {

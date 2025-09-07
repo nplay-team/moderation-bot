@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.serverlog;
 
 import de.nplay.moderationbot.embeds.EmbedHelpers;
-import de.nplay.moderationbot.moderation.act.ModerationActService.ModerationAct;
+import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;

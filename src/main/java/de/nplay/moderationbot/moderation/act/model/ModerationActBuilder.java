@@ -1,10 +1,13 @@
-package de.nplay.moderationbot.moderation.act;
+package de.nplay.moderationbot.moderation.act.model;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
+import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.moderation.act.ModerationActService.ModerationAct;
+import de.nplay.moderationbot.NPLAYModerationBot;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.utils.TimeFormat;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -15,6 +18,9 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 
 /// Builder class for creating instances of [ModerationAct] used for creating a new moderation action.
 public class ModerationActBuilder {
@@ -161,10 +167,53 @@ public class ModerationActBuilder {
 
     public ModerationAct execute(ReplyableEvent<?> event) {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays);
-        ModerationAct act = ModerationActService.createModerationAct(data);
+        ModerationAct act = ModerationActService.create(data);
         executor.accept(data);
-        Helpers.sendModerationToTarget(act, event);
+        sendModerationToTarget(act, event);
         return act;
+    }
+
+    private void sendModerationToTarget(ModerationAct moderationAct, ReplyableEvent<?> event) {
+        Embed embed = event.embed("moderationActTargetInfo").placeholders(
+                entry("title", moderationAct.type().toString()),
+                entry("reason", moderationAct.reason()),
+                entry("date", TimeFormat.DEFAULT.format(moderationAct.createdAt().getTime())),
+                entry("until", moderationAct.revokeAt().isPresent()
+                        ? Helpers.formatTimestamp(moderationAct.revokeAt().get())
+                        : "?DEL?"),
+                entry("paragraph", moderationAct.paragraph().isPresent()
+                        ? moderationAct.paragraph().get().fullDisplay()
+                        : "?DEL?"),
+                entry("id", moderationAct.id()),
+                entry("referenceMessage", moderationAct.referenceMessage().isPresent()
+                        ? moderationAct.referenceMessage().get().content()
+                        : "?DEL"),
+                entry("issuer", Helpers.formatUser(event.getJDA(), UserSnowflake.fromId(issuerId)))
+        );
+
+        switch (moderationAct.type()) {
+            case WARN -> embed.placeholders(
+                    entry("description", "Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!"),
+                    entry("color", NPLAYModerationBot.EmbedColors.WARNING));
+            case TIMEOUT -> embed.placeholders(
+                    entry("description", "Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!"),
+                    entry("color", NPLAYModerationBot.EmbedColors.WARNING));
+            case KICK -> embed.placeholders(
+                    entry("description", "Du wurdest vom **NPLAY** Discord Server gekickt!"),
+                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
+            case TEMP_BAN -> embed.placeholders(
+                    entry("description", "Du wurdest temporär vom **NPLAY** Discord Server gebannt!"),
+                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
+            case BAN -> embed.placeholders(
+                    entry("description", "Du wurdest vom **NPLAY** Discord Server gebannt!"),
+                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
+        }
+        embed.fields().remove("?DEL?");
+
+        event.getJDA().retrieveUserById(moderationAct.user().getId())
+                .flatMap(User::openPrivateChannel)
+                .flatMap(channel -> channel.sendMessageEmbeds(embed.build()))
+                .queue(null, USER_HANDLER);
     }
 
     public enum ModerationActType {

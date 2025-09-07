@@ -131,7 +131,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         channel.sendMessageEmbeds(
                 embedFunction.apply("slowmodeMessageRemoved").placeholders(
                         entry("channelId", channelId),
-                        entry("duration", Helpers.durationToString(Duration.ofSeconds(duration), true)),
+                        entry("duration", Helpers.formatDuration(Duration.ofSeconds(duration))),
                         entry("timestampNextMessage", lastMessageTimestamp + duration),
                         entry("timestampLastMessage", lastMessageTimestamp)
                 ).build()

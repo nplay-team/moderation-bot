@@ -8,7 +8,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalE
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.moderation.act.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.permissions.BotPermissions;

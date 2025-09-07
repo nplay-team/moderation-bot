@@ -3,6 +3,7 @@ package de.nplay.moderationbot.duration;
 
 import com.github.kaktushose.jda.commands.dispatching.validation.Validator;
 import com.github.kaktushose.jda.commands.guice.Implementation;
+import de.nplay.moderationbot.Helpers;
 
 import java.time.Duration;
 
@@ -13,15 +14,7 @@ public class DurationMaxValidator implements Validator<Duration, DurationMax> {
     public void apply(Duration input, DurationMax durationMax, Context context) {
         Duration max = Duration.of(durationMax.amount(), durationMax.unit());
         if (input.compareTo(max) > 0) {
-            context.fail("Die angegebene Dauer ist zu lang! Die maximale Dauer beträgt %s.".formatted(humanReadable(max)));
+            context.fail("Die angegebene Dauer ist zu lang! Die maximale Dauer beträgt %s.".formatted(Helpers.formatDuration(max)));
         }
     }
-
-    private String humanReadable(Duration duration) {
-        return duration.toString()
-                .substring(2)
-                .replaceAll("(\\d[HMS])(?!$)", "$1 ")
-                .toLowerCase();
-    }
-
 }

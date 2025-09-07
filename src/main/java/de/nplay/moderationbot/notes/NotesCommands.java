@@ -6,6 +6,7 @@ import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalE
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
@@ -62,11 +63,9 @@ public class NotesCommands {
 
         event.with().ephemeral(ephemeral).embeds("noteCreated", entry("id", note.id()),
                 entry("content", note.content()),
-                entry("targetId", note.userId()),
-                entry("targetUsername", target.getUser().getName()),
-                entry("createdById", note.creatorId()),
-                entry("createdByUsername", event.getUser().getName()),
-                entry("createdAt", note.createdAt().getTime() / 1000)
+                entry("target", Helpers.formatUser(event.getJDA(), UserSnowflake.fromId(note.userId()))),
+                entry("createdBy", Helpers.formatUser(event.getJDA(), UserSnowflake.fromId(note.creatorId()))),
+                entry("createdAt", Helpers.formatTimestamp(note.createdAt()))
         ).reply();
     }
 }
