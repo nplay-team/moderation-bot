@@ -134,19 +134,20 @@ public class ModlogCommand {
     private Embed header(ReplyableEvent<?> event, User user, @Nullable Member member) {
         var embed = event.embed("modlogHeader").placeholders(
                 entry("name", Helpers.formatUser(event.getJDA(), user)),
-                entry("userId", user.getIdLong()),
+                entry("username", user.getEffectiveName()),
+                entry("userId", user.getId()),
                 entry("avatarUrl", user.getEffectiveAvatarUrl()),
                 entry("createdAt", Helpers.formatTimestamp(Timestamp.from(user.getTimeCreated().toInstant())))
         );
 
         if (member == null) {
-            embed.placeholders(entry("roles", "?DEL?"), entry("joinedAt", "?DEL?"));
+            embed.fields().removeByName("Rollen").removeByName("Beigetreten am");
         } else {
             var spielersucheRoleId = ConfigService.get(ConfigService.BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE).orElse("-1");
             if (member.getUnsortedRoles().stream().map(Role::getId).anyMatch(spielersucheRoleId::equals)) {
                 embed.placeholders(entry("roles", "<@&%s>".formatted(spielersucheRoleId)));
             } else {
-                embed.placeholders(entry("roles", "?DEL?"));
+                embed.fields().removeByName("Rollen");
             }
             embed.placeholders(entry("joinedAt", Helpers.formatTimestamp(Timestamp.from(member.getTimeJoined().toInstant()))));
 

@@ -39,9 +39,9 @@ import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
@@ -49,7 +49,6 @@ import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 public class NPLAYModerationBot extends AbstractModule {
 
     private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final JDA jda;
     private final JDACommands jdaCommands;
     private final Guild guild;
@@ -79,15 +78,16 @@ public class NPLAYModerationBot extends AbstractModule {
                         .sources(
                                 EmbedDataSource.resource("embeds.json"),
                                 EmbedDataSource.resource("moderation.json"),
-                                EmbedDataSource.resource("events.json")
-                        ).errorSource(EmbedDataSource.resource("jdac.json"))
+                                EmbedDataSource.resource("events.json"),
+                                EmbedDataSource.resource("jdac.json")
+                        )
                         .placeholders(
                                 entry("colorDefault", EmbedColors.DEFAULT),
                                 entry("colorSuccess", EmbedColors.SUCCESS),
                                 entry("colorWarning", EmbedColors.WARNING),
                                 entry("colorError", EmbedColors.ERROR)
                         )
-                ).localizer(new FluavaLocalizer(new Fluava(Locale.GERMAN)))
+                ).localizer(new FluavaLocalizer(new Fluava(Locale.GERMAN, Map.of())))
                 .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
@@ -121,7 +121,7 @@ public class NPLAYModerationBot extends AbstractModule {
             throw new RuntimeException("Failed to migrate database!", e);
         }
 
-        scheduler.scheduleAtFixedRate(
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> ModerationActService.getToRevert().forEach(it ->
                         it.revert(guild, jdaCommands::embed, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
                 ), 0, 1, TimeUnit.MINUTES);
@@ -146,10 +146,10 @@ public class NPLAYModerationBot extends AbstractModule {
     }
 
     public enum EmbedColors {
-        DEFAULT("020C2"),
-        ERROR("FF0000"),
-        SUCCESS("00FF00"),
-        WARNING("FFFF00");
+        DEFAULT("#020C24"),
+        ERROR("#FF0000"),
+        SUCCESS("#00FF00"),
+        WARNING("#FFFF00");
 
         public final String hex;
 

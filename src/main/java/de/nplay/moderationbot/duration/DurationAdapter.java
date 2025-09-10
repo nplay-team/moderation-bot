@@ -19,10 +19,6 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
 
     @Override
     public MappingResult<Duration> from(String source, MappingContext<String, Duration> context) {
-        if (source.isBlank()) {
-            return MappingResult.failure("Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an.");
-        }
-
         return parse(source)
                 .map(it -> (MappingResult<Duration>) MappingResult.lossless(it))
                 .orElse(MappingResult.failure("Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an."));

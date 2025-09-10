@@ -83,7 +83,7 @@
   "modlogHeader": {
     "author": {
       "name": "{ $username }",
-      "iconUrl": "{ $avatarUrl }"
+      "icon_url": "{ $avatarUrl }"
     },
     "title": "NPLAY-Moderation - Datenauskunft",
     "fields": [

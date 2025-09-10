@@ -31,7 +31,7 @@ public class ConfigCommands {
 
     private void onConfigSet(CommandEvent event, BotConfig config, String value) {
         ConfigService.set(config, value);
-        event.with().embeds("configSet", entry("key", config)).reply();
+        event.with().embeds("configSet", entry("key", config.toString()), entry("value", value)).reply();
     }
 
     @Command("list")

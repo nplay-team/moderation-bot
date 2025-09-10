@@ -1,7 +1,6 @@
 package de.nplay.moderationbot.moderation.act;
 
-import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
+import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
@@ -10,6 +9,7 @@ import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.Moderati
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class ModerationActService {
     public static Optional<ModerationAct> get(long moderationId) {
         return Query.query("SELECT * FROM moderations WHERE id = ?")
                 .single(Call.of().bind(moderationId))
-                .mapAs(ModerationAct.class)
+                .map(ModerationActService::map)
                 .first();
     }
 
@@ -54,7 +54,7 @@ public class ModerationActService {
     public static Collection<ModerationAct> getToRevert() {
         return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ? ORDER BY created_at DESC")
                 .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
-                .mapAs(ModerationAct.class)
+                .map(ModerationActService::map)
                 .all();
     }
 
@@ -64,7 +64,7 @@ public class ModerationActService {
                         .bind(user.getIdLong())
                         .bind(limit)
                         .bind(offset)
-                ).mapAs(ModerationAct.class)
+                ).map(ModerationActService::map)
                 .all();
     }
 
@@ -95,13 +95,10 @@ public class ModerationActService {
                 .first().orElse(false);
     }
 
-    @MappingProvider("")
-    public static RowMapping<ModerationAct> map() {
-        return row -> {
-            if (row.getBoolean("reverted")) {
-                return new RevertedModerationAct(row);
-            }
-            return new ModerationAct(row);
-        };
+    public static ModerationAct map(Row row) throws SQLException {
+        if (row.getBoolean("reverted")) {
+            return new RevertedModerationAct(row);
+        }
+        return new ModerationAct(row);
     }
 }

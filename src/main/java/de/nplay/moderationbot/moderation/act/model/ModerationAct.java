@@ -88,7 +88,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
         var embed = event.embed("moderationActDetail");
         embed.placeholders(
                 entry("id", id),
-                entry("type", type),
+                entry("type", type.toString()),
                 entry("created", formatTimestamp(createdAt)),
                 entry("issuer", Helpers.formatUser(event.getJDA(), issuer)),
                 entry("reason", reason),

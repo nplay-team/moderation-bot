@@ -83,17 +83,15 @@ public class ModerationEvents {
     }
 
     private static Embed genericModerationEmbed(ReplyableEvent<?> event, String action, RevertedModerationAct act) {
-        Embed embed = event.embed("moderationRemoveEvent").placeholders(
+        return event.embed("moderationRemoveEvent").placeholders(
                 entry("action", action),
-                entry("type", act.type()),
+                entry("type", act.type().toString()),
                 entry("id", act.id()),
                 entry("target", Helpers.formatUser(event.getJDA(), act.user())),
                 entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),
                 entry("revertedBy", Helpers.formatUser(event.getJDA(), act.revertedBy())),
                 entry("revertedAt", TimeFormat.DATE_TIME_LONG.format(act.revertedAt().getTime())),
                 entry("revertingReason", act.revertingReason()));
-        embed.fields().remove("?DEL?");
-        return embed;
     }
 
     private static Embed genericEmbed(ReplyableEvent<?> event, User issuer) {
