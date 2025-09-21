@@ -7,7 +7,7 @@ import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
 @Interaction
-public class AutoCompleteHandler {
+public class ModerationAutoCompleteHandler {
 
     @AutoComplete(value = {"mod", "spielersuche ausschluss"}, options = "paragraph")
     public void onParagraphAutocomplete(AutoCompleteEvent event) {
