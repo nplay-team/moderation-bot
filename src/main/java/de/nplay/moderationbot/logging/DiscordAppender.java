@@ -7,21 +7,27 @@ import ch.qos.logback.core.AppenderBase;
 import io.github._4drian3d.jdwebhooks.Embed;
 import io.github._4drian3d.jdwebhooks.WebHook;
 import io.github._4drian3d.jdwebhooks.WebHookClient;
+import org.jspecify.annotations.Nullable;
 
 import java.awt.*;
 import java.time.Instant;
 
 public class DiscordAppender extends AppenderBase<ILoggingEvent> {
 
-    private final WebHookClient webHookClient;
+    @Nullable
+    private WebHookClient webHookClient;
 
     public DiscordAppender() {
+        String webhookUrl = System.getenv("WEBHOOK_URL");
+        if (webhookUrl == null) {
+            return;
+        }
         webHookClient = WebHookClient.fromURL(System.getenv("WEBHOOK_URL"));
     }
 
     @Override
     protected void append(ILoggingEvent event) {
-        if (!event.getLevel().isGreaterOrEqual(Level.ERROR)) {
+        if (!event.getLevel().isGreaterOrEqual(Level.ERROR) || webHookClient == null) {
             return;
         }
         Embed embed = Embed.builder()
