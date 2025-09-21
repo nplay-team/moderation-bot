@@ -13,8 +13,6 @@ import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.commands.Command.Type;
 
 @Interaction
 @Permissions(BotPermissions.MODERATION_CREATE)
@@ -39,28 +37,6 @@ public class KickCommands extends CreateCommands {
                 deletionDays(delDays)
                 .messageReference(Helpers.retrieveMessage(event, messageLink));
 
-        event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Kick)"));
-    }
-
-    @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
-    @Command(value = "Kicke Mitglied", type = Type.USER)
-    public void kickMemberContext(CommandEvent event, Member target) {
-        if (moderationActLock.checkLocked(event, target, event.getUser())) {
-            return;
-        }
-        moderationActBuilder = ModerationActBuilder.kick(target, event.getUser());
-        replyEphemeral = true;
-        event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Kick)"));
-    }
-
-    @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
-    @Command(value = "Kicke Mitglied (💬)", type = Type.MESSAGE)
-    public void kickMemberMessageContext(CommandEvent event, Message target) {
-        if (moderationActLock.checkLocked(event, target.getAuthor(), event.getUser())) {
-            return;
-        }
-        moderationActBuilder = ModerationActBuilder.kick(target.getMember(), event.getUser()).messageReference(target);
-        replyEphemeral = true;
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Kick)"));
     }
 

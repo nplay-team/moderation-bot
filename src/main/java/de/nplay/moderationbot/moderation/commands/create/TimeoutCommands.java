@@ -13,9 +13,6 @@ import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.commands.Command.Type;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -44,45 +41,6 @@ public class TimeoutCommands extends CreateCommands {
                 .paragraph(paragraph)
                 .messageReference(Helpers.retrieveMessage(event, messageLink));
         event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Timeout)"));
-    }
-
-    @Command(value = "Timeoute Mitglied", type = Type.USER)
-    public void timeoutMemberContext(CommandEvent event, Member target) {
-        if (moderationActLock.checkLocked(event, target, event.getUser())) {
-            return;
-        }
-        moderationActBuilder = ModerationActBuilder.timeout(target, event.getUser());
-        replyEphemeral = true;
-        event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Timeout)"));
-    }
-
-    @Command(value = "Timeoute Mitglied (💬)", type = Type.MESSAGE)
-    public void timeoutMemberMessageContext(CommandEvent event, Message target) {
-        if (moderationActLock.checkLocked(event, target.getAuthor(), event.getUser())) {
-            return;
-        }
-        moderationActBuilder = ModerationActBuilder.timeout(target.getMember(), event.getUser()).messageReference(target);
-        replyEphemeral = true;
-        event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Timeout)"));
-    }
-
-    @Modal(value = "reason-duration-title")
-    public void onModerateDuration(ModalEvent event,
-                                   @TextInput(value = "reason-field") String reason,
-                                   @TextInput(value = "duration-field", style = TextInputStyle.SHORT)
-                                   String until) {
-        var duration = durationAdapter.parse(until);
-        if (duration.isEmpty()) {
-            event.with().ephemeral(true).reply("invalid-duration");
-            return;
-        }
-        if (duration.get().getSeconds() > 2419200) {
-            event.with().ephemeral(true).reply("invalid-duration-limit");
-            return;
-        }
-
-        moderationActBuilder.duration(duration.get()).reason(reason).execute(event);
-        onModerate(event, reason);
     }
 
     @Modal(value = "reason-title")
