@@ -29,14 +29,10 @@ public class ModerationActBuilder {
     private final long targetId;
     private final Consumer<ModerationActCreateData> executor;
     private ModerationActType type;
-    @Nullable
-    private String reason;
-    @Nullable
-    private Integer paragraphId;
-    @Nullable
-    private Message messageReference;
-    @Nullable
-    private Duration duration;
+    private @Nullable String reason;
+    private @Nullable Integer paragraphId;
+    private @Nullable Message messageReference;
+    private @Nullable Duration duration;
     private int deletionDays;
 
     private ModerationActBuilder(long issuerId, ModerationActType type, long targetId, Consumer<ModerationActCreateData> executor) {

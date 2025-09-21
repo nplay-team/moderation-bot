@@ -39,8 +39,7 @@ public class ModlogCommand {
     private int page = 1;
     private int maxPage = 1;
     private User user;
-    @Nullable
-    private Member member;
+    private @Nullable Member member;
 
     @Command(value = "mod log")
     public void modlog(CommandEvent event,

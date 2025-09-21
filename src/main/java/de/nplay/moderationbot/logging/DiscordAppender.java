@@ -14,8 +14,7 @@ import java.time.Instant;
 
 public class DiscordAppender extends AppenderBase<ILoggingEvent> {
 
-    @Nullable
-    private WebHookClient webHookClient;
+    private @Nullable WebHookClient webHookClient;
 
     public DiscordAppender() {
         String webhookUrl = System.getenv("WEBHOOK_URL");
