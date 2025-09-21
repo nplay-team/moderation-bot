@@ -12,6 +12,7 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
+import de.nplay.moderationbot.notes.NotesCommands;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.JDA;
@@ -124,7 +125,7 @@ public class ModlogCommand {
 
         var notes = NotesService.getNotesFromUser(user.getIdLong());
         if (!notes.isEmpty()) {
-            list.add(1, Helpers.notesEmbed(event, event.getJDA(), user, notes));
+            list.add(1, NotesCommands.notesEmbed(event, event.getJDA(), user, notes));
         }
 
         return list.toArray(new Embed[0]);

@@ -72,13 +72,6 @@ public class Helpers {
         return null;
     }
 
-    public static Embed notesEmbed(ReplyableEvent<?> event, JDA jda, UserSnowflake target, List<NotesService.Note> notes) {
-        var targetUsername = jda.retrieveUserById(target.getIdLong()).complete().getName();
-        var embed = event.embed("noteList").placeholders(entry("target", targetUsername));
-        notes.stream().map(it -> it.toField(jda)).forEach(embed.fields()::add);
-        return embed;
-    }
-
     public static String formatTimestamp(Timestamp timestamp) {
         return "%s (%s)".formatted(TimeFormat.DATE_TIME_LONG.format(timestamp.getTime()), TimeFormat.RELATIVE.atTimestamp(timestamp.getTime()));
     }
