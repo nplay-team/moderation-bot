@@ -25,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 import java.time.Duration;
 
 @Interaction
+@CommandConfig(enabledFor = Permission.BAN_MEMBERS)
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class BanCommands extends CreateCommands {
 
@@ -33,7 +34,6 @@ public class BanCommands extends CreateCommands {
         super(moderationActLock, serverlog);
     }
 
-    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command("mod ban")
     public void banMember(
             CommandEvent event,
@@ -69,7 +69,6 @@ public class BanCommands extends CreateCommands {
         }
     }
 
-    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "(Temp-)Ban Mitglied", type = net.dv8tion.jda.api.interactions.commands.Command.Type.USER)
     public void banMemberContext(CommandEvent event, User target) {
         if (moderationActLock.checkLocked(event, target, event.getUser())) {
@@ -80,7 +79,6 @@ public class BanCommands extends CreateCommands {
         event.replyModal("onModerateDuration", modal -> modal.title("Begründung und Dauer angeben (Temp-Ban)"));
     }
 
-    @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "(Temp-)Ban Mitglied (💬)", type = net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE)
     public void banMemberMessageContext(CommandEvent event, Message target) {
         if (moderationActLock.checkLocked(event, target.getAuthor(), event.getUser())) {
