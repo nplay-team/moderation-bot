@@ -23,9 +23,11 @@ public class RevertCommand {
 
     @Command("mod revert")
     @Permissions(BotPermissions.MODERATION_REVERT)
-    public void revertModeration(CommandEvent event,
-                                 @Param(type = OptionType.NUMBER) ModerationAct moderationAct,
-                                 @Param(optional = true) String reason) {
+    public void revertModeration(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct, String reason) {
+        if (moderationAct instanceof RevertedModerationAct) {
+            event.with().embeds("reversionFailed", entry("id", moderationAct.id())).reply();
+            return;
+        }
         RevertedModerationAct reverted = moderationAct.revert(event.getGuild(), event::embed, event.getUser(), reason);
         serverlog.onEvent(ModerationEvents.Reverted(event.getJDA(), event.getGuild(), reverted), event);
         event.with().embeds("reversionSuccessful", entry("id", moderationAct.id())).reply();

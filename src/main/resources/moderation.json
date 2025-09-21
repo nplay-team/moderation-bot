@@ -175,5 +175,10 @@
       }
     ],
     "color": "{ $colorSuccess }"
+  },
+  "reversionFailed": {
+    "title": "Fehler",
+    "description": "Die Moderationshandlung mit der ID **#{id}** wurde bereits rückgängig gemacht!",
+    "color": "{ $colorError } "
   }
 }
