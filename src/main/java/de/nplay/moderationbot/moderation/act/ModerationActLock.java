@@ -14,7 +14,7 @@ import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
 public class ModerationActLock {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationActLock.class);
-    private static final ConcurrentHashMap<Long, Long> activeModerationUsers = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Long, Long> activeModeratedUsers = new ConcurrentHashMap<>();
 
     /// Attempts to lock the given target and moderator based on the event. If the lock is already set, returns `true`
     /// and will send an error message. Else returns `false`.
@@ -28,14 +28,14 @@ public class ModerationActLock {
             return false;
         }
 
-        if (moderator.getIdLong() == activeModerationUsers.get(target.getIdLong())) {
+        if (moderator.getIdLong() == activeModeratedUsers.get(target.getIdLong())) {
             return false;
         }
 
         event.with().ephemeral(true)
                 .embeds("moderationTargetBlocked",
                         entry("target", target.getAsMention()),
-                        entry("moderator", UserSnowflake.fromId(activeModerationUsers.get(target.getIdLong())).getAsMention())
+                        entry("moderator", UserSnowflake.fromId(activeModeratedUsers.get(target.getIdLong())).getAsMention())
                 ).reply();
 
         return true;
@@ -43,19 +43,19 @@ public class ModerationActLock {
 
     public void unlock(long userId) {
         log.debug("Unlocking user {}", userId);
-        activeModerationUsers.remove(userId);
+        activeModeratedUsers.remove(userId);
     }
 
     /// @return `true` if the lock was successful, else false
     private boolean lock(long targetId, long moderatorId) {
-        if (activeModerationUsers.putIfAbsent(targetId, moderatorId) != null) {
+        if (activeModeratedUsers.putIfAbsent(targetId, moderatorId) != null) {
             return false;
         }
 
         log.debug("Locking user {}", targetId);
 
         CompletableFuture.delayedExecutor(1L, TimeUnit.MINUTES).execute(() -> {
-            if (activeModerationUsers.remove(targetId) != null) {
+            if (activeModeratedUsers.remove(targetId) != null) {
                 log.warn("Automatically unlocking user: {}", targetId);
             }
         });

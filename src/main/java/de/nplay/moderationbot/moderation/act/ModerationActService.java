@@ -50,14 +50,6 @@ public class ModerationActService {
                 .first();
     }
 
-
-    public static Collection<ModerationAct> getToRevert() {
-        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ? ORDER BY created_at DESC")
-                .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
-                .map(ModerationActService::map)
-                .all();
-    }
-
     public static List<ModerationAct> get(UserSnowflake user, int limit, int offset) {
         return Query.query("SELECT * FROM moderations WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
                 .single(Call.of()
@@ -65,6 +57,13 @@ public class ModerationActService {
                         .bind(limit)
                         .bind(offset)
                 ).map(ModerationActService::map)
+                .all();
+    }
+
+    public static Collection<ModerationAct> getToRevert() {
+        return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ? ORDER BY created_at DESC")
+                .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
+                .map(ModerationActService::map)
                 .all();
     }
 

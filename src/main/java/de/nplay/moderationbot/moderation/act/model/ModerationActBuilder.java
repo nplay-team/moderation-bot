@@ -125,7 +125,7 @@ public class ModerationActBuilder {
     }
 
     /// Sets the duration of the moderation act. This is only applicable for acts of type [ModerationActType#TIMEOUT]
-    /// or [ModerationActType#TEMP_BAN].
+    /// [ModerationActType#BAN] or [ModerationActType#TEMP_BAN].
     ///
     /// If this builder was of type [ModerationActType#BAN] will automatically transform this into a temp ban.
     public ModerationActBuilder duration(Duration duration) {
