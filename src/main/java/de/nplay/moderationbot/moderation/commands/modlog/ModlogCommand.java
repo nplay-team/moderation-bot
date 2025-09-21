@@ -152,7 +152,6 @@ public class ModlogCommand {
             embed.placeholders(entry("joinedAt", Helpers.formatTimestamp(Timestamp.from(member.getTimeJoined().toInstant()))));
 
         }
-        embed.fields().remove("?DEL?");
         return embed;
     }
 

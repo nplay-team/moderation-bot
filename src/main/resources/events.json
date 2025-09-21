@@ -34,11 +34,11 @@
       },
       {
         "name": "Betroffener",
-        "value": "{ $targetId }"
+        "value": "{ $target }"
       },
       {
         "name": "Ursprünglicher Moderator",
-        "value": "{ $issuerId }"
+        "value": "{ $issuer }"
       },
       {
         "name": "Ausführender Moderator",

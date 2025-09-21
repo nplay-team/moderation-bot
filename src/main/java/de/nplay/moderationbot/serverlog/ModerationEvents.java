@@ -58,7 +58,10 @@ public class ModerationEvents {
 
     private static Embed revertEmbed(ReplyableEvent<?> event, RevertedModerationAct act) {
         return genericModerationEmbed(event, "REVIDIERUNG", act)
-                .placeholders(entry("color", EmbedColors.WARNING));
+                .placeholders(
+                        entry("moderator", Helpers.formatUser(event.getJDA(), act.revertedBy())),
+                        entry("color", EmbedColors.WARNING)
+                );
     }
 
     private static Embed deleteEmbed(ReplyableEvent<?> event, RevertedModerationAct act) {
