@@ -188,7 +188,11 @@ duration-field = Dauer
 revoke-at-field = Aufhebung
 rule = Regel
 reference-message = Referenznachricht
-## ModeartionAct
+id = ID
+act-target = Betroffener Nutzer
+act-reason = Begründung
+active-until = Aktiv bis
+## ModerationAct
 warn-description = Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
 timeout-description = Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!
 kick-description = Du wurdest vom **NPLAY** Discord Server gekickt!
