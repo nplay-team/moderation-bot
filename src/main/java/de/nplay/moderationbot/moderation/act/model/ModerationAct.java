@@ -13,12 +13,8 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
@@ -61,23 +57,22 @@ public sealed class ModerationAct permits RevertedModerationAct {
         this.duration = row.getLong("duration");
     }
 
-    public Field toField(JDA jda) {
+    public Field toField(ReplyableEvent<?> event) {
         String headLine = "#%s | %s | %s".formatted(id, type, DEFAULT.format(createdAt.getTime()));
         List<String> bodyLines = new ArrayList<>();
 
         bodyLines.add(reason);
-        bodyLines.add("-%s (%s)".formatted(issuer.getAsMention(), jda.retrieveUserById(issuer.getId()).complete().getName()));
+        bodyLines.add("-%s".formatted(Helpers.formatUser(event.getJDA(), issuer)));
 
-        if (this instanceof RevertedModerationAct reverted && !reverted.revertedBy().getId().equals(jda.getSelfUser().getId())) {
+        if (this instanceof RevertedModerationAct reverted && !reverted.revertedBy().getId().equals(event.getJDA().getSelfUser().getId())) {
             headLine = "~~%s~~".formatted(headLine);
             bodyLines.forEach(it -> bodyLines.set(bodyLines.indexOf(it), "~~%s~~".formatted(it)));
-            bodyLines.addLast("*Aufgehoben am: %s*".formatted(DATE_TIME_SHORT.format(reverted.revertedAt().getTime())));
+            bodyLines.addLast(event.localize("reverted-at-inline", entry("revertedAt", DATE_TIME_SHORT.format(reverted.revertedAt().getTime()))));
         } else if (revokeAt != null) {
-            bodyLines.addFirst("Aktiv bis: %s".formatted(DATE_TIME_SHORT.format(revokeAt.getTime())));
-            bodyLines.addFirst("Dauer: %s".formatted(Helpers.formatDuration(Duration.ofMillis(duration))));
+            bodyLines.addFirst(event.localize("revoke-at-inline", entry("revokeAt", DATE_TIME_SHORT.format(revokeAt.getTime()))));
+            bodyLines.addFirst(event.localize("duration-inline", entry("duration", Helpers.formatDuration(Duration.ofMillis(duration)))));
         }
-
-        return new Field(
+        return new MessageEmbed.Field(
                 headLine,
                 String.join("\n", bodyLines),
                 false
@@ -88,30 +83,27 @@ public sealed class ModerationAct permits RevertedModerationAct {
         var embed = event.embed("moderationActDetail");
         embed.placeholders(
                 entry("id", id),
-                entry("type", type.toString()),
+                entry("type", event.localize(type.localizationKey())),
                 entry("created", formatTimestamp(createdAt)),
                 entry("issuer", Helpers.formatUser(event.getJDA(), issuer)),
                 entry("reason", reason),
                 entry("color", EmbedColors.DEFAULT));
 
-        paragraph().ifPresent(it -> embed.fields().add("Regel", it.fullDisplay()));
-        referenceMessage().ifPresent(it -> embed.fields().add("Referenznachricht", it.jumpUrl(event.getGuild())));
+        paragraph().ifPresent(it -> embed.fields().add(event.localize("rule"), it.fullDisplay()));
+        referenceMessage().ifPresent(it -> embed.fields().add(event.localize("reference-message"), it.jumpUrl(event.getGuild())));
 
         if (this instanceof RevertedModerationAct reverted && !reverted.revertedBy().getId().equals(event.getJDA().getSelfUser().getId())) {
             embed.fields()
-                    .add("Revidiert am", Helpers.formatTimestamp(reverted.revertedAt())
-                    ).add("Revidierender Moderator", "%s (%s)".formatted(
-                            reverted.revertedBy().getAsMention(),
-                            event.getJDA().retrieveUserById(reverted.revertedBy().getId()).complete().getName())
-                    ).add("Revidierungsgrund", reverted.revertingReason());
+                    .add(event.localize("reverted-at"), Helpers.formatTimestamp(reverted.revertedAt()))
+                    .add(event.localize("reverted-by"), Helpers.formatUser(event.getJDA(), reverted.revertedBy()))
+                    .add(event.localize("reverting-reason"), reverted.revertingReason());
         } else if (revokeAt != null) {
             embed.fields()
-                    .add("Dauer", Helpers.formatDuration(Duration.ofMillis(duration)))
-                    .add("Aufhebung", Helpers.formatTimestamp(revokeAt));
+                    .add(event.localize("duration-field"), Helpers.formatDuration(Duration.ofMillis(duration)))
+                    .add(event.localize("revoke-at-field"), Helpers.formatTimestamp(revokeAt));
         }
         return embed;
     }
-
     public RevertedModerationAct revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy, String reason) {
         if (this instanceof RevertedModerationAct reverted) {
             return reverted;

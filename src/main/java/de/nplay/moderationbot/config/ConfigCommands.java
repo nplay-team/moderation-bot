@@ -42,7 +42,7 @@ public class ConfigCommands {
 
         configs.forEach(config -> {
             var value = ConfigService.get(config);
-            embed.fields().add(new Field(config.toString(), value.orElse("Nicht gesetzt"), false));
+            embed.fields().add(new Field(config.toString(), value.orElse(event.localize("no-value-set")), false));
         });
 
         event.with().embeds(embed).reply();

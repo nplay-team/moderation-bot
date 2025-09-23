@@ -67,7 +67,7 @@ public class ModerationEvents {
     private static Embed deleteEmbed(ReplyableEvent<?> event, RevertedModerationAct act) {
         Embed embed = genericModerationEmbed(event, "LÖSCHUNG", act)
                 .placeholders(entry("color", EmbedColors.ERROR));
-        embed.fields().removeByName("Datum");
+        embed.fields().remove("{ $revertedAt }");
         return embed;
     }
 
@@ -88,7 +88,7 @@ public class ModerationEvents {
     private static Embed genericModerationEmbed(ReplyableEvent<?> event, String action, RevertedModerationAct act) {
         return event.embed("moderationRemoveEvent").placeholders(
                 entry("action", action),
-                entry("type", act.type().toString()),
+                entry("type", event.localize(act.type().localizationKey())),
                 entry("id", act.id()),
                 entry("target", Helpers.formatUser(event.getJDA(), act.user())),
                 entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),

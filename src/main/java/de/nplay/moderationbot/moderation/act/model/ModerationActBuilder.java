@@ -172,66 +172,59 @@ public class ModerationActBuilder {
         Embed embed = event.embed("moderationActTargetInfo").placeholders(
                 entry("title", moderationAct.type().toString()),
                 entry("reason", moderationAct.reason()),
-                entry("date", TimeFormat.DEFAULT.format(moderationAct.createdAt().getTime())),
-                entry("until", moderationAct.revokeAt().isPresent()
-                        ? Helpers.formatTimestamp(moderationAct.revokeAt().get())
-                        : "?DEL?"),
-                entry("paragraph", moderationAct.paragraph().isPresent()
-                        ? moderationAct.paragraph().get().fullDisplay()
-                        : "?DEL?"),
                 entry("id", moderationAct.id()),
-                entry("referenceMessage", moderationAct.referenceMessage().isPresent()
-                        ? moderationAct.referenceMessage().get().content()
-                        : "?DEL"),
-                entry("issuer", Helpers.formatUser(event.getJDA(), UserSnowflake.fromId(issuerId)))
+                entry("issuer", Helpers.formatUser(event.getJDA(), UserSnowflake.fromId(issuerId))),
+                entry("date", TimeFormat.DEFAULT.format(moderationAct.createdAt().getTime()))
+        );
+        moderationAct.revokeAt().ifPresentOrElse(
+                it -> embed.placeholders(entry("until", Helpers.formatTimestamp(it))),
+                () -> embed.fields().remove("{ $until }")
+        );
+        moderationAct.paragraph().ifPresentOrElse(
+                it -> embed.placeholders(entry("paragraph", it.fullDisplay())),
+                () -> embed.fields().remove("{ $paragraph }")
+        );
+        moderationAct.referenceMessage().ifPresentOrElse(
+                it -> embed.placeholders(entry("referenceMessage", it.content())),
+                () -> embed.fields().remove("{ $referenceMessage }")
         );
 
         switch (moderationAct.type()) {
             case WARN -> embed.placeholders(
-                    entry("description", "Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!"),
+                    entry("description", event.localize("warn-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.WARNING));
             case TIMEOUT -> embed.placeholders(
-                    entry("description", "Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!"),
+                    entry("description", event.localize("timeout-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.WARNING));
             case KICK -> embed.placeholders(
-                    entry("description", "Du wurdest vom **NPLAY** Discord Server gekickt!"),
+                    entry("description", event.localize("kick-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.ERROR));
             case TEMP_BAN -> embed.placeholders(
-                    entry("description", "Du wurdest temporär vom **NPLAY** Discord Server gebannt!"),
+                    entry("description", event.localize("temp-ban-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.ERROR));
             case BAN -> embed.placeholders(
-                    entry("description", "Du wurdest vom **NPLAY** Discord Server gebannt!"),
+                    entry("description", event.localize("ban-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.ERROR));
         }
-        embed.fields().remove("?DEL?");
 
         Helpers.sendDM(moderationAct.user(), event.getJDA(), channel -> channel.sendMessageEmbeds(embed.build()));
     }
 
     public enum ModerationActType {
-        WARN("Verwarnung"),
-        TIMEOUT("Timeout"),
-        KICK("Kick"),
-        TEMP_BAN("Temporärer Bann"),
-        BAN("Bann");
+        WARN("warn"),
+        TIMEOUT("timeout"),
+        KICK("kick"),
+        TEMP_BAN("temp-ban"),
+        BAN("ban");
 
-        private final String humanReadableString;
+        private final String localizationKey;
 
-        ModerationActType(String humanReadableString) {
-            this.humanReadableString = humanReadableString;
+        ModerationActType(String localizationKey) {
+            this.localizationKey = localizationKey;
         }
 
-        @Override
-        public String toString() {
-            return humanReadableString;
-        }
-
-        public boolean isBan() {
-            return this == BAN || this == TEMP_BAN;
-        }
-
-        public boolean isTemp() {
-            return this == TEMP_BAN || this == TIMEOUT;
+        public String localizationKey() {
+            return localizationKey;
         }
     }
 

@@ -6,6 +6,8 @@
 -paragraph-description = Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?
 
 # Config
+## General
+no-value-set = Nicht gesetzt
 ## Set Rolle
 config-set-spielersuche-ausschluss-rolle-description = Setzt die Rolle für die Spielersuche Auschluss Funktion.
 config-set-spielersuche-ausschluss-rolle-options-role-name = rolle
@@ -173,3 +175,29 @@ spielersuche-ausschluss-reason = Du hast erneut gegen die Spielersucheregeln ver
 spielersuche-freigeben-description = Hebt den Ausschluss eines Users von der Spielersuche auf
 spielersuche-freigeben-options-target-name = { -target }
 spielersuche-freigeben-options-target-description = Der User, dessen Ausschluss aufgehoben werden soll
+
+# Embeds
+## Modlog
+reverted-at-inline = *Aufgehoben am: { $revertedAt }*
+revoke-at-inline = Aktiv bis: { $revokeAt }
+duration-inline = Dauer: { $duration }
+reverted-at = Revidiert am
+reverted-by = Revidierender Moderator
+reverting-reason = Revidierungsgrund
+duration-field = Dauer
+revoke-at-field = Aufhebung
+rule = Regel
+reference-message = Referenznachricht
+## ModeartionAct
+warn-description = Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
+timeout-description = Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!
+kick-description = Du wurdest vom **NPLAY** Discord Server gekickt!
+temp-ban-description = Du wurdest temporär vom **NPLAY** Discord Server gebannt!
+ban-description = Du wurdest vom **NPLAY** Discord Server gebannt!
+
+# ModerationActType
+warn = Verwarnung
+kick = Kick
+timeout = Timeout
+temp-ban = Temporärer Bann
+ban = Bann
