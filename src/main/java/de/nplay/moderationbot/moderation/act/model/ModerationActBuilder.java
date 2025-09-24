@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
 
 /// Builder class for creating instances of [ModerationAct] used for creating a new moderation action.
 public class ModerationActBuilder {

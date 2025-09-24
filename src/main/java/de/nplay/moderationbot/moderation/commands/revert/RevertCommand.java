@@ -13,7 +13,7 @@ import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 
-import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
 
 @Interaction
 public class RevertCommand {

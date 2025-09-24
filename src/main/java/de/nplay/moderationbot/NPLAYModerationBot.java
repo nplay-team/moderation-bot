@@ -4,7 +4,7 @@ import com.github.kaktushose.jda.commands.JDACommands;
 import com.github.kaktushose.jda.commands.definitions.interactions.command.CommandDefinition.CommandConfig;
 import com.github.kaktushose.jda.commands.embeds.EmbedDataSource;
 import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
-import com.github.kaktushose.jda.commands.i18n.FluavaLocalizer;
+import com.github.kaktushose.jda.commands.message.i18n.FluavaLocalizer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
@@ -44,7 +44,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
 
 public class NPLAYModerationBot extends AbstractModule {
 

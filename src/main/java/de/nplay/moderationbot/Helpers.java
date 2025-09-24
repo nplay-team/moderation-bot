@@ -21,7 +21,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
 
 public class Helpers {
 
