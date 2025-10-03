@@ -21,7 +21,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
 
 public class SlowmodeEventHandler extends ListenerAdapter {
 

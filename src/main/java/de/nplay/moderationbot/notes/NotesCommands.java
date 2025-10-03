@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 import java.util.List;
 
-import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
 
 @Interaction
 @Permissions(BotPermissions.MODERATION_CREATE)

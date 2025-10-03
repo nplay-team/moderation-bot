@@ -8,7 +8,7 @@ import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
 
-import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
 
 public class CreateCommands {
 

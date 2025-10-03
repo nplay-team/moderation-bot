@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.github.kaktushose.jda.commands.message.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
 import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 import static de.nplay.moderationbot.Helpers.formatTimestamp;
 import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_SHORT;

@@ -184,7 +184,6 @@ duration-inline = Dauer: { $duration }
 reverted-at = Revidiert am
 reverted-by = Revidierender Moderator
 reverting-reason = Revidierungsgrund
-duration-field = Dauer
 revoke-at-field = Aufhebung
 rule = Regel
 reference-message = Referenznachricht
