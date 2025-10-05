@@ -69,7 +69,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                 event.getJDA(),
                 channel.getId(),
                 slowmode.get().duration(),
-                lastMessage.get().getTimeCreated().toInstant().getEpochSecond()
+                lastMessage.get().getTimeCreated().toInstant().toEpochMilli()
         );
     }
 
@@ -112,7 +112,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                 event.getJDA(),
                 forumChannel.getId(),
                 slowmode.get().duration(),
-                lastPost.get().getTimeCreated().toInstant().getEpochSecond()
+                lastPost.get().getTimeCreated().toInstant().toEpochMilli()
         );
     }
 
@@ -135,7 +135,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                 channel.sendMessageEmbeds(embedFunction.apply("slowmodeMessageRemoved").placeholders(
                         entry("channelId", channelId),
                         entry("duration", Helpers.formatDuration(Duration.ofSeconds(duration))),
-                        entry("timestampNextMessage", TimeFormat.RELATIVE.format(lastMessageTimestamp + duration)),
+                        entry("timestampNextMessage", TimeFormat.RELATIVE.format(lastMessageTimestamp + duration * 1000)),
                         entry("timestampLastMessage", TimeFormat.RELATIVE.format(lastMessageTimestamp))
                 ).build())
         );

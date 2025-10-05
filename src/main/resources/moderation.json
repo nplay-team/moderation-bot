@@ -65,7 +65,7 @@
       },
       {
         "name": "Revidierender Moderator",
-        "value": "{ $revertedById }"
+        "value": "{ $revertedBy }"
       }
     ],
     "color": "{ $colorSuccess }"

@@ -62,7 +62,7 @@ public class Helpers {
 
         var guildChannel = event.getGuild().getGuildChannelById(messageLink.channelId());
         if (guildChannel instanceof MessageChannel messageChannel) {
-            messageChannel.retrieveMessageById(messageLink.messageId()).complete();
+            return messageChannel.retrieveMessageById(messageLink.messageId()).complete();
         }
         return null;
     }

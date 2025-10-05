@@ -21,9 +21,9 @@
     ]
   },
   "constraintFailed": {
-    "title": "Parameter Validation fehlgeschlagen",
-    "description": "```{ $message }```",
-    "color": "{ $colorError }"
+    "title": "Falsche Eingabe",
+    "description": "{ $message }",
+    "color": "{ $colorWarning }"
   },
   "cooldown": {
     "title": "Cooldown",
@@ -36,10 +36,10 @@
     "fields": [
       {
         "name": "Fehlermeldung",
-        "value": "{ $colorError }"
+        "value": "{ $error }"
       }
     ],
-    "color": "#ff0000"
+    "color": "{ $colorError }"
   },
   "unknownInteraction": {
     "title": "Unbekannte Interaktion",

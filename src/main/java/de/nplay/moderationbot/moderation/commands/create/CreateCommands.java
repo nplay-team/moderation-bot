@@ -26,7 +26,7 @@ public class CreateCommands {
 
         var embed = event.embed("moderationActExecuted")
                 .placeholders(entry("type", moderationAct.type()))
-                .footer(event.getMember().getEffectiveAvatarUrl(), event.getMember().getEffectiveName());
+                .footer(event.getMember().getEffectiveName(), event.getMember().getEffectiveAvatarUrl());
 
         var fields = embed.fields()
                 .add(event.localize("id"), Long.toString(moderationAct.id()))

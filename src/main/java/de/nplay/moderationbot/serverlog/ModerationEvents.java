@@ -46,7 +46,7 @@ public class ModerationEvents {
 
     private static Embed createEmbed(ReplyableEvent<?> event, ModerationAct act) {
         Embed embed = event.embed("moderationCreateEvent").placeholders(
-                entry("type", act.type()),
+                entry("type", act.type().localizationKey()),
                 entry("id", act.id()),
                 entry("target", Helpers.formatUser(event.getJDA(), act.user())),
                 entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),

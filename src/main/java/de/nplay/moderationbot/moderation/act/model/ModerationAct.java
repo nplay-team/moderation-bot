@@ -58,7 +58,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
     }
 
     public Field toField(ReplyableEvent<?> event) {
-        String headLine = "#%s | %s | %s".formatted(id, type, DEFAULT.format(createdAt.getTime()));
+        String headLine = "#%s | %s | %s".formatted(id, event.localize(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
         List<String> bodyLines = new ArrayList<>();
 
         bodyLines.add(reason);

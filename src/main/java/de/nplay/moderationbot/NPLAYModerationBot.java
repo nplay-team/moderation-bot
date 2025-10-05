@@ -29,6 +29,8 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -77,9 +79,9 @@ public class NPLAYModerationBot extends AbstractModule {
                         .sources(
                                 EmbedDataSource.resource("embeds.json"),
                                 EmbedDataSource.resource("moderation.json"),
-                                EmbedDataSource.resource("events.json"),
-                                EmbedDataSource.resource("jdac.json")
+                                EmbedDataSource.resource("events.json")
                         )
+                        .errorSource(EmbedDataSource.resource("jdac.json"))
                         .placeholders(
                                 entry("colorDefault", EmbedColors.DEFAULT),
                                 entry("colorSuccess", EmbedColors.SUCCESS),
@@ -87,11 +89,18 @@ public class NPLAYModerationBot extends AbstractModule {
                                 entry("colorError", EmbedColors.ERROR)
                         )
                 ).localizer(new FluavaLocalizer(Fluava.create(Locale.GERMAN)))
-                .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
-                .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
+                .globalCommandConfig(CommandConfig.of(config -> config
+                        .enabledPermissions(Permission.MODERATE_MEMBERS)
+                        .integration(IntegrationType.GUILD_INSTALL)
+                        .context(InteractionContextType.GUILD))
+                ).extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
+
         Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
                 Mapper.uni((color, _) -> MappingResult.lossless(Color.decode(color.hex)))
+        );
+        Proteus.global().from(Type.of(Long.class)).into(Type.of(String.class),
+                Mapper.uni((value, _) -> MappingResult.lossless(value.toString()))
         );
 
         jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));

@@ -186,7 +186,7 @@ public class ModerationActBuilder {
         );
         moderationAct.referenceMessage().ifPresentOrElse(
                 it -> embed.placeholders(entry("referenceMessage", it.content())),
-                () -> embed.fields().remove("{ $referenceMessage }")
+                () -> embed.fields().remove("> { $referenceMessage }")
         );
 
         switch (moderationAct.type()) {
