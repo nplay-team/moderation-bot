@@ -39,7 +39,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -87,7 +86,7 @@ public class NPLAYModerationBot extends AbstractModule {
                                 entry("colorWarning", EmbedColors.WARNING),
                                 entry("colorError", EmbedColors.ERROR)
                         )
-                ).localizer(new FluavaLocalizer(new Fluava(Locale.GERMAN, Map.of())))
+                ).localizer(new FluavaLocalizer(Fluava.create(Locale.GERMAN)))
                 .globalCommandConfig(CommandConfig.of(config -> config.enabledPermissions(Permission.MODERATE_MEMBERS)))
                 .extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
