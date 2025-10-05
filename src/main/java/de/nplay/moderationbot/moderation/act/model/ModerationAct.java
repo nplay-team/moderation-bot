@@ -104,6 +104,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
         }
         return embed;
     }
+
     public RevertedModerationAct revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy, String reason) {
         if (this instanceof RevertedModerationAct reverted) {
             return reverted;

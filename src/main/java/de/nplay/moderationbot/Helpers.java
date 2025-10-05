@@ -1,9 +1,7 @@
 package de.nplay.moderationbot;
 
 import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import com.github.kaktushose.jda.commands.embeds.Embed;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.notes.NotesService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -18,10 +16,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.List;
 import java.util.function.Function;
-
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
 
 public class Helpers {
 
