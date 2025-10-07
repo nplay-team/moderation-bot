@@ -1,8 +1,11 @@
-package de.nplay.moderationbot.moderation.commands;
+package de.nplay.moderationbot.moderation.commands.purge;
 
 import com.github.kaktushose.jda.commands.annotations.constraints.Max;
 import com.github.kaktushose.jda.commands.annotations.constraints.Min;
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
+import com.github.kaktushose.jda.commands.annotations.interactions.Command;
+import com.github.kaktushose.jda.commands.annotations.interactions.CommandConfig;
+import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
+import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
 import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -13,26 +16,24 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.kaktushose.jda.commands.i18n.I18n.entry;
+import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
 
 @Interaction
 @CommandConfig(enabledFor = Permission.MESSAGE_MANAGE)
 @Permissions(BotPermissions.MODERATION_CREATE)
-public class BulkDeleteCommands {
+public class PurgeMessagesCommands {
 
     @Inject
     private Serverlog serverlog;
 
-    @Command(value = "mod purge messages", desc = "Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig")
-    public void purgeMessagesByAmount(CommandEvent event,
-                                      @Param("Anzahl der Nachrichten die gelöscht werden sollen") @Min(1) @Max(100)
-                                      int amount) {
+    @Command("mod purge messages")
+    public void purgeMessagesByAmount(CommandEvent event, @Min(1) @Max(100) int amount) {
         var deletedMessages = purgeMessages(event, event.getMessageChannel(), event.getMessageChannel().getLatestMessageId(), amount) - 1;
         replyEvent(event, deletedMessages);
     }
@@ -43,29 +44,22 @@ public class BulkDeleteCommands {
         replyEvent(event, deletedMessages);
     }
 
-    private int purgeMessages(CommandEvent event, MessageChannel channel, String pivotMessageId, @Nullable Integer amount) {
+    private int purgeMessages(CommandEvent event, MessageChannel channel, String pivotMessageId,
+                              @Nullable Integer amount) {
         List<String> messageIds = new ArrayList<>();
 
         messageIds.add(pivotMessageId);
-
+        MessageHistory history;
         if (amount == null) {
-            messageIds.addAll(MessageHistory.getHistoryAfter(channel, pivotMessageId)
-                    .complete()
-                    .getRetrievedHistory()
-                    .stream()
-                    .map(Message::getId)
-                    .toList()
-            );
+            history = MessageHistory.getHistoryAfter(channel, pivotMessageId).complete();
         } else {
-            messageIds.addAll(MessageHistory.getHistoryBefore(channel, pivotMessageId)
-                    .limit(amount)
-                    .complete()
-                    .getRetrievedHistory()
-                    .stream()
-                    .map(Message::getId)
-                    .toList()
-            );
+            history = MessageHistory.getHistoryBefore(channel, pivotMessageId).limit(amount).complete();
         }
+        messageIds.addAll(history.getRetrievedHistory()
+                .stream()
+                .map(Message::getId)
+                .toList()
+        );
 
         channel.purgeMessagesById(messageIds);
         serverlog.onEvent(ModerationEvents.BulkMessageDeletion(channel.getJDA(), event.getGuild(), messageIds.size(), event.getUser()), event);

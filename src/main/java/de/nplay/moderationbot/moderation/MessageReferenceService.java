@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
 
 public class MessageReferenceService {
 
@@ -42,11 +43,11 @@ public class MessageReferenceService {
         }
 
         public String jumpUrl(Guild guild) {
-            return "https://discord.com/channels/%d/%d/%d".formatted(guild.getIdLong(), channelId, messageId);
+            return Matcher.quoteReplacement("%s\n[Link](%s)".formatted(content, format(guild)));
         }
 
-        public String fullDisplay(Guild guild) {
-            return "%s\n[Link](%s)".formatted(content, jumpUrl(guild));
+        private String format(Guild guild) {
+            return "https://discord.com/channels/%d/%d/%d".formatted(guild.getIdLong(), channelId, messageId);
         }
     }
 }

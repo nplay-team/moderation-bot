@@ -1,0 +1,26 @@
+[versions]
+jda = "5.6.1"
+jda-commands = "4.0.0-SNAPSHOT"
+jdwebhooks = "1.0.1"
+logback = "1.5.13"
+slf4j = "2.0.9"
+postgres = "42.7.4"
+hikari = "6.1.0"
+sadu = "2.3.3"
+jspecify = "1.0.0"
+
+[libraries]
+jda = { group = "net.dv8tion", name = "JDA", version.ref = "jda" }
+jdacommands = { group = "io.github.kaktushose", name = "jda-commands", version.ref = "jda-commands" }
+jdwebhooks = { group = "io.github.4drian3d", name = "jdwebhooks", version.ref = "jdwebhooks" }
+logback-core = { group = "ch.qos.logback", name = "logback-core", version.ref = "logback" }
+logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+postgres = { group = "org.postgresql", name = "postgresql", version.ref = "postgres" }
+hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
+sadu-datasource = { group = "de.chojo.sadu", name = "sadu-datasource", version.ref = "sadu" }
+sadu-queries = { group = "de.chojo.sadu", name = "sadu-queries", version.ref = "sadu" }
+sadu-mapper = { group = "de.chojo.sadu", name = "sadu-mapper", version.ref = "sadu" }
+sadu-postgresql = { group = "de.chojo.sadu", name = "sadu-postgresql", version.ref = "sadu" }
+sadu-updater = { group = "de.chojo.sadu", name = "sadu-updater", version.ref = "sadu" }
+jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }

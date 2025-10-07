@@ -5,46 +5,19 @@ import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import org.jetbrains.annotations.NotNull;
+
 
 /// Utility methods for basic CRUD operations on user or role permissions
 public class BotPermissionsService {
-
-    public record EntityPermissions(int permissions) {
-
-        @MappingProvider("")
-        public static RowMapping<EntityPermissions> map() {
-            return row -> new EntityPermissions(row.getInt(("permissions")));
-        }
-
-        public boolean hasPermissions(InvocationContext<?> context) {
-            if ((permissions() & de.nplay.moderationbot.permissions.BotPermissions.BitFields.ADMINISTRATOR.value) != 0) {
-                return true;
-            }
-            return context.definition().permissions().stream()
-                    .map(de.nplay.moderationbot.permissions.BotPermissions.BitFields::valueOf)
-                    .noneMatch(it -> (permissions() & it.value) == 0);
-        }
-
-        public boolean hasPermission(String permission) {
-            return (permissions() & BotPermissions.BitFields.valueOf(permission).value) != 0;
-        }
-
-        /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
-        @NotNull
-        public String readableList() {
-            return String.join("\n", de.nplay.moderationbot.permissions.BotPermissions.decode(permissions).stream().map(it -> it.displayName).toList());
-        }
-    }
 
     /// Gets the [EntityPermissions] of a [UserSnowflake].
     ///
     /// @implNote Returns empty permissions if no user entry exists. If the provided [UserSnowflake] is a [Member] will
     /// combine the [Role] permissions.
-    @NotNull
     public static BotPermissionsService.EntityPermissions getUserPermissions(UserSnowflake user) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
@@ -65,7 +38,6 @@ public class BotPermissionsService {
     /// it creates a new entry. Otherwise, it updates the existing permissions.
     ///
     /// @return the updated [EntityPermissions]
-    @NotNull
     public static BotPermissionsService.EntityPermissions updateUserPermissions(UserSnowflake user, int permissions) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
@@ -86,7 +58,6 @@ public class BotPermissionsService {
     }
 
     /// Gets the permissions of a role. Returns empty permissions if no role entry exists
-    @NotNull
     public static BotPermissionsService.EntityPermissions getRolePermissions(Role role) {
         return Query.query("SELECT * FROM roles WHERE id = ?")
                 .single(Call.of().bind(role.getIdLong()))
@@ -98,7 +69,6 @@ public class BotPermissionsService {
     /// it creates a new entry. Otherwise, it updates the existing permissions.
     ///
     /// @return the updated [EntityPermissions]
-    @NotNull
     public static BotPermissionsService.EntityPermissions updateRolePermissions(Role role, int permissions) {
         var id = role.getIdLong();
         var rolePermissions = Query.query("SELECT * FROM roles WHERE id = ?")
@@ -117,5 +87,31 @@ public class BotPermissionsService {
         }
 
         return getRolePermissions(role);
+    }
+
+    public record EntityPermissions(int permissions) {
+
+        @MappingProvider("")
+        public static RowMapping<EntityPermissions> map() {
+            return row -> new EntityPermissions(row.getInt(("permissions")));
+        }
+
+        public boolean hasPermissions(InvocationContext<?> context) {
+            if ((permissions() & BitFields.ADMINISTRATOR.value) != 0) {
+                return true;
+            }
+            return context.definition().permissions().stream()
+                    .map(BitFields::valueOf)
+                    .noneMatch(it -> (permissions() & it.value) == 0);
+        }
+
+        public boolean hasPermission(String permission) {
+            return (permissions() & BitFields.valueOf(permission).value) != 0;
+        }
+
+        /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
+        public String readableList() {
+            return String.join("\n", BotPermissions.decode(permissions).stream().map(it -> it.displayName).toList());
+        }
     }
 }
