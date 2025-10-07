@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.commands.revert;
+package de.nplay.moderationbot.moderation.commands.modlog;
 
 import com.github.kaktushose.jda.commands.annotations.interactions.Command;
 import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
