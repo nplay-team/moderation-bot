@@ -173,7 +173,6 @@ public class ModerationActBuilder {
                 entry("title", moderationAct.type().toString()),
                 entry("reason", moderationAct.reason()),
                 entry("id", moderationAct.id()),
-                entry("issuer", Helpers.formatUser(event.getJDA(), UserSnowflake.fromId(issuerId))),
                 entry("date", TimeFormat.DEFAULT.format(moderationAct.createdAt().getTime()))
         );
         moderationAct.revokeAt().ifPresentOrElse(

@@ -39,12 +39,11 @@
       {
         "name": "Referenznachricht",
         "value": "> { $referenceMessage }"
-      },
-      {
-        "name": "Zuständiger Moderator",
-        "value": "{ $issuer }"
       }
-    ]
+    ],
+    "footer": {
+      "text": "Bei Fragen oder Problemen wende dich bitte an den Ticket-Support!"
+    }
   },
   "moderationActReverted": {
     "title": "{ $type } aufgehoben",
