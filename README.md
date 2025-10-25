@@ -21,8 +21,8 @@ suggestions and test preview versions. This is also the place to get support if 
 ## Installation
 
 Due to the high level of customization, we do not provide a public instance that anyone can invite. However, you can
-still host your own version of the bot. Therefore, you should have a basic understanding of the Node ecosystem, MySQL,
-Discord bots in general and Docker.
+still host your own version of the bot. Therefore, you should have a basic understanding of Docker, Java, PostgreSQL,
+and Discord bots in general.
 
 First clone the repository:
 
@@ -39,4 +39,4 @@ Then you can start the bot by running:
 docker compose up
 ```
 
-The MySQL server runs on port `3306`. You might want to adjust some values in order to meet your criterias.
+The PostgreSQL server runs on port `5433`. You might want to adjust some values in order to meet your criterias.
