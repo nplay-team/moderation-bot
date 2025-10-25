@@ -9,6 +9,7 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
@@ -21,7 +22,7 @@ import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class NotesCommands {
 
-    private Member target;
+    private User target;
     private boolean ephemeral = false;
 
     public static Embed notesEmbed(ReplyableEvent<?> event, JDA jda, UserSnowflake target, List<NotesService.Note> notes) {
@@ -32,7 +33,7 @@ public class NotesCommands {
     }
 
     @Command("notes create")
-    public void createNote(CommandEvent event, Member target) {
+    public void createNote(CommandEvent event, User target) {
         this.target = target;
         var noteCount = NotesService.getNoteCountFromUser(target.getIdLong());
         if (noteCount >= 25) {
@@ -43,13 +44,13 @@ public class NotesCommands {
     }
 
     @Command(value = "Notiz erstellen", type = Type.USER)
-    public void createNoteContext(CommandEvent event, Member target) {
+    public void createNoteContext(CommandEvent event, User target) {
         ephemeral = true;
         createNote(event, target);
     }
 
     @Command("notes list")
-    public void listNotes(CommandEvent event, Member target) {
+    public void listNotes(CommandEvent event, User target) {
         var notes = NotesService.getNotesFromUser(target.getIdLong());
         event.with().embeds(notesEmbed(event, event.getJDA(), target, notes)).reply();
     }
