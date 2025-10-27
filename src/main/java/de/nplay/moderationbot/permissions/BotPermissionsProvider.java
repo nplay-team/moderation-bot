@@ -6,18 +6,18 @@ import com.github.kaktushose.jda.commands.permissions.PermissionsProvider;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import org.jetbrains.annotations.NotNull;
+
 
 @Implementation
 public class BotPermissionsProvider implements PermissionsProvider {
 
     @Override
-    public boolean hasPermission(@NotNull User user, @NotNull InvocationContext<?> context) {
+    public boolean hasPermission(User user, InvocationContext<?> context) {
         return BotPermissionsService.getUserPermissions(user).hasPermissions(context);
     }
 
     @Override
-    public boolean hasPermission(@NotNull Member member, @NotNull InvocationContext<?> context) {
+    public boolean hasPermission(Member member, InvocationContext<?> context) {
         if (member.hasPermission(Permission.ADMINISTRATOR)) {
             return true;
         }

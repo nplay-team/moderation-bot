@@ -7,9 +7,6 @@ public class Bootstrapper {
 
     private final static Logger log = LoggerFactory.getLogger(Bootstrapper.class);
 
-    /**
-     * Main entry point of the Bot
-     */
     public static void main(String[] args) {
         Thread.currentThread().setName("Bot");
         long startTime = System.currentTimeMillis();

@@ -40,7 +40,7 @@ public class SlowmodeService {
                 .delete();
     }
 
-    public record Slowmode(Long channelId, Integer duration) {
+    public record Slowmode(long channelId, int duration) {
 
         @MappingProvider("")
         public static RowMapping<Slowmode> map() {
@@ -49,7 +49,5 @@ public class SlowmodeService {
                     row.getInt("duration")
             );
         }
-
     }
-
 }

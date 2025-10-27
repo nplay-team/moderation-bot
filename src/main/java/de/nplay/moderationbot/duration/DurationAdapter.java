@@ -2,9 +2,8 @@ package de.nplay.moderationbot.duration;
 
 import com.github.kaktushose.jda.commands.dispatching.adapter.TypeAdapter;
 import com.github.kaktushose.jda.commands.guice.Implementation;
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import io.github.kaktushose.proteus.mapping.MappingResult;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,18 +12,19 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-@Implementation.TypeAdapter(clazz = Duration.class)
-public class DurationAdapter implements TypeAdapter<Duration> {
+@Implementation.TypeAdapter(source = String.class, target = Duration.class)
+public class DurationAdapter implements TypeAdapter<String, Duration> {
 
     private static final Logger log = LoggerFactory.getLogger(DurationAdapter.class);
 
     @Override
-    @NotNull
-    public Optional<Duration> apply(@NotNull String raw, @NotNull GenericInteractionCreateEvent event) {
-        return parse(raw);
+    public MappingResult<Duration> from(String source, MappingContext<String, Duration> context) {
+        return parse(source)
+                .map(it -> (MappingResult<Duration>) MappingResult.lossless(it))
+                .orElse(MappingResult.failure("Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an."));
     }
 
-    public static Optional<Duration> parse(@Nullable String raw) {
+    public Optional<Duration> parse(@Nullable String raw) {
         if (raw == null || raw.isBlank()) {
             return Optional.empty();
         }
@@ -42,11 +42,11 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         if (months != null) days = (days != null ? days : 0) + months * 30; // Approximation, as months vary in length
 
         var parseString = "P" +
-                (days != null ? days + "D" : "") +
-                (hours != null || minutes != null || seconds != null ? "T" : "") +
-                (hours != null ? hours + "H" : "") +
-                (minutes != null ? minutes + "M" : "") +
-                (seconds != null ? seconds + "S" : "");
+                          (days != null ? days + "D" : "") +
+                          (hours != null || minutes != null || seconds != null ? "T" : "") +
+                          (hours != null ? hours + "H" : "") +
+                          (minutes != null ? minutes + "M" : "") +
+                          (seconds != null ? seconds + "S" : "");
 
         try {
             return Optional.of(Duration.parse(parseString));
@@ -56,10 +56,10 @@ public class DurationAdapter implements TypeAdapter<Duration> {
         }
     }
 
-    private static Integer extractValue(String input, String unit) {
+    @Nullable
+    private Integer extractValue(String input, String unit) {
         var pattern = "(?i)(\\d+)" + (unit.equals("MIN") ? "MIN" : unit + "(?!IN)");
         var matcher = Pattern.compile(pattern).matcher(input);
         return matcher.find() ? Integer.parseInt(matcher.group(1)) : null;
     }
-
 }

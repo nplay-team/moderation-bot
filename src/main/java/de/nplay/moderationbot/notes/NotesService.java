@@ -1,21 +1,18 @@
 package de.nplay.moderationbot.notes;
 
-import com.github.kaktushose.jda.commands.embeds.EmbedDTO;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.JDA;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-public class NotesService {
+import static net.dv8tion.jda.api.entities.MessageEmbed.Field;
 
-    private static final Logger log = LoggerFactory.getLogger(NotesService.class);
+public class NotesService {
 
     public static Optional<Note> getNote(long id) {
         return Query.query("SELECT * FROM notes WHERE id = ?")
@@ -68,9 +65,9 @@ public class NotesService {
      * @param createdAt the timestamp when the note was created
      */
     public record Note(
-            Long id,
-            Long userId,
-            Long creatorId,
+            long id,
+            long userId,
+            long creatorId,
             String content,
             Timestamp createdAt
     ) {
@@ -85,11 +82,11 @@ public class NotesService {
             );
         }
 
-        public EmbedDTO.Field getEmbedField(JDA jda) {
+        public Field toField(JDA jda) {
             var creatorUsername = jda.retrieveUserById(creatorId()).complete().getName();
             var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
             var body = "Moderator: <@%s> (%s)\n%s".formatted(creatorId(), creatorUsername, content());
-            return new EmbedDTO.Field(title, body, false);
+            return new Field(title, body, false);
         }
     }
 }

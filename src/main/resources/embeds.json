@@ -1,0 +1,145 @@
+{
+  "permissionsEdit": {
+    "title": "Berechtigungen von **{ $target }**",
+    "description": "Bitte wähle die Berechtigungen in dem Select-Menu aus:",
+    "color": "{ $colorDefault }"
+  },
+  "permissionsList": {
+    "title": "Berechtigungen von **{ $target }**",
+    "description": "{ $permissions }",
+    "color": "{ $colorDefault }"
+  },
+  "noteList": {
+    "title": "Notizen von **{ $target }**",
+    "color": "{ $colorDefault }"
+  },
+  "noteDeleted": {
+    "title": "Notiz gelöscht",
+    "description": "Die Notiz mit der ID **${ $id }** wurde erfolgreich gelöscht!",
+    "color": "{ $colorWarning }"
+  },
+  "noteLimitReached": {
+    "title": "Fehler",
+    "description": "Der Benutzer hat bereits die maximale Anzahl an Notizen (25x) erreicht!",
+    "color": "{ $colorError }"
+  },
+  "noteNotFound": {
+    "title": "Fehler",
+    "description": "Die Notiz mit der ID **${ $id }** existiert nicht!",
+    "color": "{ $colorError }"
+  },
+  "bulkDeleteSuccessful": {
+    "title": "Erfolgreich",
+    "description": "Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!",
+    "color": "{ $colorSuccess }"
+  },
+  "configSet": {
+    "title": "Einstellung { $key } gesetzt",
+    "description": "{ $value }",
+    "color": "{ $colorSuccess }"
+  },
+  "configGet": {
+    "title": "Einstellung { $key }",
+    "description": "{ $value }",
+    "color": "{ $colorDefault }"
+  },
+  "configNotSet": {
+    "title": "Fehler",
+    "description": "Die Einstellung **{ $key }** wurde noch nicht konfiguriert!",
+    "color": "{ $colorError }"
+  },
+  "configList": {
+    "title": "Einstellungen",
+    "color": "{ $colorDefault }"
+  },
+  "spielersucheAlreadyBlocked": {
+    "title": "Fehler",
+    "description": "Der Benutzer { $target } ist bereits blockiert!",
+    "color": "{ $colorError }"
+  },
+  "spielersucheBlockSuccess": {
+    "title": "Erfolgreich",
+    "description": "Der Benutzer { $target } wurde erfolgreich von der Spielersuche blockiert!",
+    "color": "{ $colorSuccess }"
+  },
+  "spielersucheUnblockSuccess": {
+    "title": "Erfolgreich",
+    "description": "Der Benutzer { $target } wurde erfolgreich für die Spielersuche wieder freigegeben!",
+    "color": "{ $colorSuccess }"
+  },
+  "spielersucheNotBlocked": {
+    "title": "Fehler",
+    "description": "Der Benutzer { $target } ist nicht blockiert!",
+    "color": "{ $colorError }"
+  },
+  "spielersucheUnblockForTarget": {
+    "title": "Spielersuche-Freigabe",
+    "description": "Du wurdest soeben für die Spielersuche wieder freigegeben! Bitte achte in Zukunft verstärkt auf die kanalspezifischen Regeln!",
+    "fields": [
+      {
+        "name": "Moderator",
+        "value": "{ $issuer }"
+      },
+      {
+        "name": "Datum",
+        "value": "{ $createdAt }"
+      }
+    ],
+    "color": "{ $colorDefault }"
+  },
+  "spielersucheRoleError": {
+    "title": "Fehler",
+    "description": "Die Spielersuche-Ausschluss-Rolle existiert nicht mehr oder wurde noch nicht konfiguriert!",
+    "color": "{ $colorError }"
+  },
+  "userAlreadyTimeOuted": {
+    "title": "Fehler",
+    "description": "Der angegebene Nutzer hat bereits ein aktives Timeout!",
+    "color": "{ $colorError }"
+  },
+  "userAlreadyBanned": {
+    "title": "Fehler",
+    "description": "Der angegebene Nutzer ist bereits gebannt!",
+    "color": "{ $colorError }"
+  },
+  "durationParsingFailed": {
+    "title": "Fehler",
+    "description": "Die Dauer konnte nicht korrekt eingelesen werden. Bitte verwende das Format **Xd Yh Zm**!\nEingabe: `{ $duration }`",
+    "color": "{ $colorError }"
+  },
+  "slowmodeInfo": {
+    "title": "Slowmode Info <#{ $channelId }>",
+    "description": "Der Slowmode für diesen Kanal beträgt **{ $duration }**!",
+    "color": "{ $colorDefault }"
+  },
+  "slowmodeSet": {
+    "title": "Slowmode gesetzt <#{ $channelId }>",
+    "description": "Der Slowmode für diesen Kanal wurde auf **{ $duration }** gesetzt!",
+    "color": "{ $colorSuccess }"
+  },
+  "slowmodeNotSet": {
+    "title": "Fehler",
+    "description": "Für den Kanal <#{ $channelId }> wurde kein Slowmode gesetzt!",
+    "color": "{ $colorError }"
+  },
+  "slowmodeRemove": {
+    "title": "Slowmode entfernt <#{ $channelId }>",
+    "description": "Der Slowmode für diesen Kanal wurde entfernt!",
+    "color": "{ $colorDefault }"
+  },
+  "slowmodeMessageRemoved": {
+    "title": "Slowmode - Nachricht entfernt",
+    "description": "Deine Nachricht im Kanal <#{ $channelId }> wurde gelöscht, weil dieser Kanal sich im Slowmode befindet! Zwischen den Nachrichten muss eine Wartezeit von **{ $duration }** liegen.",
+    "fields": [
+      {
+        "name": "Nächste Nachricht möglich",
+        "value": "{ $timestampNextMessage }"
+      },
+      {
+        "name": "Letzte Nachricht",
+        "value": "{ $timestampLastMessage }"
+      }
+    ],
+    "color": "{ $colorDefault }"
+  }
+}

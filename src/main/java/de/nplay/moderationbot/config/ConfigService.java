@@ -2,8 +2,9 @@ package de.nplay.moderationbot.config;
 
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
-import de.nplay.moderationbot.config.bot.BotConfig;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 public class ConfigService {
@@ -17,11 +18,16 @@ public class ConfigService {
 
     public static void set(BotConfig config, String value) {
         Query.query("INSERT INTO configs (name, value) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value")
-                .single(Call.of()
-                        .bind(config)
-                        .bind(value)
-                )
+                .single(Call.of().bind(config).bind(value))
                 .insert();
     }
 
+    public enum BotConfig {
+        SPIELERSUCHE_AUSSCHLUSS_ROLLE(),
+        SERVERLOG_KANAL();
+
+        public static Collection<BotConfig> configs() {
+            return Arrays.stream(BotConfig.values()).toList();
+        }
+    }
 }
