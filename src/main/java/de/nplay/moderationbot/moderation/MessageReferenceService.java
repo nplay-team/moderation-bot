@@ -36,7 +36,8 @@ public class MessageReferenceService {
 
         public MessageReference {
             if (content.length() > MessageEmbed.VALUE_MAX_LENGTH) {
-                content = content.substring(0, MessageEmbed.VALUE_MAX_LENGTH - 3) + "...";
+                // -100 just to be sure because we do some weird formatting
+                content = content.substring(0, MessageEmbed.VALUE_MAX_LENGTH - 100) + "...";
             }
         }
 
