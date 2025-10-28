@@ -6,6 +6,7 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -32,6 +33,12 @@ public class MessageReferenceService {
     }
 
     public record MessageReference(long messageId, long channelId, String content) {
+
+        public MessageReference {
+            if (content.length() > MessageEmbed.VALUE_MAX_LENGTH) {
+                content = content.substring(0, MessageEmbed.VALUE_MAX_LENGTH - 3) + "...";
+            }
+        }
 
         @MappingProvider("")
         public static RowMapping<MessageReference> map() {
