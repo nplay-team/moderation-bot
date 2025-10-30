@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.TimeFormat;
+import net.dv8tion.jda.api.utils.TimeUtil;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -42,17 +44,23 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         }
 
         var channel = event.getGuildChannel();
-        var message = event.getMessage();
-        var author = event.getAuthor();
         var slowmode = SlowmodeService.getSlowmode(channel);
 
         if (slowmode.isEmpty()) {
             return;
         }
 
-        Optional<Message> lastMessage = event.getGuild()
-                .getTextChannelById(channel.getId())
-                .getIterableHistory()
+        var message = event.getMessage();
+        var author = event.getAuthor();
+
+        var discordChannel = event.getGuild().getTextChannelById(channel.getId());
+
+        if(discordChannel == null) return;
+
+        Optional<Message> lastMessage = MessageHistory
+                .getHistoryAfter(channel, Long.toUnsignedString(TimeUtil.getDiscordTimestamp(System.currentTimeMillis() - slowmode.get().duration() * 1000L)))
+                .complete()
+                .getRetrievedHistory()
                 .stream()
                 .filter(it -> author.getId().equals(it.getAuthor().getId()))
                 .filter(it -> !it.getId().equals(message.getId()))
@@ -100,7 +108,6 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                 .filter(it -> !thread.getId().equals(it.getId()))
                 .filter(it -> isWithinSlowmode(thread.getTimeCreated().toInstant(), it.getTimeCreated().toInstant(), slowmode.get().duration()))
                 .findFirst();
-
 
         if (lastPost.isEmpty()) {
             return;
