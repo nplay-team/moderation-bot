@@ -110,7 +110,7 @@ public class NPLAYModerationBot extends AbstractModule {
 
         jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));
 
-        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("euren Nachrichten"), false);
+        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("Hört euren Nachrichten zu"), false);
 
         var dataSource = DataSourceCreator.create(PostgreSql.get())
                 .configure(config -> config.host(System.getenv("POSTGRES_HOST"))
