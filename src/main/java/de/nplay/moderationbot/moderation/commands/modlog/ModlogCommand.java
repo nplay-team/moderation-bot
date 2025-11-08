@@ -36,7 +36,6 @@ import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommand {
 
-    private static final Logger log = LoggerFactory.getLogger(ModlogCommand.class);
     private int offset = 0;
     private int limit = 5;
     private int page = 1;
@@ -49,7 +48,6 @@ public class ModlogCommand {
                        User target,
                        @Param(optional = true) @Min(1) @Nullable Integer page,
                        @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count) {
-        log.trace("Start modlog command");
         user = target;
         try {
             this.member = event.getGuild().retrieveMember(target).complete();
@@ -58,7 +56,6 @@ public class ModlogCommand {
                 throw new IllegalStateException(e);
             }
         }
-        log.trace("Queried member");
         if (page != null && count != null) {
             offset = (page - 1) * count;
             this.page = page;
@@ -74,7 +71,6 @@ public class ModlogCommand {
             this.page = maxPage;
             offset = (this.page - 1) * limit;
         }
-        log.trace("Calculated pages");
         reply(event);
     }
 
@@ -105,23 +101,19 @@ public class ModlogCommand {
 
     private void reply(ReplyableEvent<?> event) {
         if (maxPage < 2) {
-            log.trace("Replying without pagination");
             event.with().embeds(getEmbeds(event)).reply();
-            log.trace("Done");
             return;
         }
         var pages = new ArrayList<SelectOption>();
         for (int i = 2; i <= maxPage && i < 26; i++) {
             pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
         }
-        log.trace("Replying with pagination");
         event.with()
                 .keepComponents(false)
                 .embeds(getEmbeds(event))
                 .components(Component.stringSelect("selectPage").selectOptions(pages))
                 .components(Component.button("back").enabled(page > 1), Component.button("next").enabled(page < maxPage))
                 .reply();
-        log.trace("Done (pagination)");
     }
 
     private Embed[] getEmbeds(ReplyableEvent<?> event) {
