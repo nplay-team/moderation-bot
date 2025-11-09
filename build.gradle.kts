@@ -45,7 +45,7 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
     options.compilerArgs.add("-parameters")
-    sourceCompatibility = "24"
+    sourceCompatibility = "25"
 }
 
 tasks.withType<ShadowJar> {
