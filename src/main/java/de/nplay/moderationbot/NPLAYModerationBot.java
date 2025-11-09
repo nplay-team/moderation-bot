@@ -100,14 +100,6 @@ public class NPLAYModerationBot extends AbstractModule {
                 Mapper.uni((color, _) -> MappingResult.lossless(Color.decode(color.hex)))
         );
 
-        // can both be removed with next JDA-Commands release
-        Proteus.global().from(Type.of(Integer.class)).into(Type.of(String.class),
-                Mapper.uni((value, _) -> MappingResult.lossless(value.toString()))
-        );
-        Proteus.global().from(Type.of(Long.class)).into(Type.of(String.class),
-                Mapper.uni((value, _) -> MappingResult.lossless(value.toString()))
-        );
-
         jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));
 
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("Hört euren Nachrichten zu"), false);
