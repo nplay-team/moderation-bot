@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.moderation.act;
 
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationActLock {
 

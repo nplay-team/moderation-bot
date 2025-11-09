@@ -1,10 +1,10 @@
 package de.nplay.moderationbot;
 
-import com.github.kaktushose.jda.commands.JDACommands;
-import com.github.kaktushose.jda.commands.definitions.interactions.command.CommandDefinition.CommandConfig;
-import com.github.kaktushose.jda.commands.embeds.EmbedDataSource;
-import com.github.kaktushose.jda.commands.guice.GuiceExtensionData;
-import com.github.kaktushose.jda.commands.message.i18n.FluavaLocalizer;
+import io.github.kaktushose.jdac.JDACommands;
+import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
+import io.github.kaktushose.jdac.embeds.EmbedDataSource;
+import io.github.kaktushose.jdac.guice.GuiceExtensionData;
+import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
@@ -45,7 +45,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class NPLAYModerationBot extends AbstractModule {
 

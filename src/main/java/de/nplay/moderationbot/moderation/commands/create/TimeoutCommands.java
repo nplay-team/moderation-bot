@@ -1,8 +1,8 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
+import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
+import io.github.kaktushose.jdac.dispatching.events.interactions.ModalEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.duration.DurationMax;

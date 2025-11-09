@@ -1,13 +1,13 @@
 package de.nplay.moderationbot.moderation.commands.modlog;
 
-import com.github.kaktushose.jda.commands.annotations.constraints.Max;
-import com.github.kaktushose.jda.commands.annotations.constraints.Min;
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.ComponentEvent;
-import com.github.kaktushose.jda.commands.dispatching.reply.Component;
-import com.github.kaktushose.jda.commands.embeds.Embed;
+import io.github.kaktushose.jdac.annotations.constraints.Max;
+import io.github.kaktushose.jdac.annotations.constraints.Min;
+import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
+import io.github.kaktushose.jdac.dispatching.events.interactions.ComponentEvent;
+import io.github.kaktushose.jdac.dispatching.reply.Component;
+import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
@@ -30,7 +30,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Interaction
 @Permissions(BotPermissions.MODERATION_READ)

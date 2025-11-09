@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.slowmode;
 
-import com.github.kaktushose.jda.commands.embeds.Embed;
+import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.permissions.BotPermissionsService;
@@ -23,7 +23,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class SlowmodeEventHandler extends ListenerAdapter {
 

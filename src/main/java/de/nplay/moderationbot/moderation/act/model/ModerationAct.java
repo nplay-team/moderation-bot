@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.moderation.act.model;
 
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import com.github.kaktushose.jda.commands.embeds.Embed;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.embeds.Embed;
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 import static de.nplay.moderationbot.Helpers.formatTimestamp;
 import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_SHORT;

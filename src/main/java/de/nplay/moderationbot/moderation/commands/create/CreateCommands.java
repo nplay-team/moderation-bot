@@ -1,13 +1,13 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class CreateCommands {
 

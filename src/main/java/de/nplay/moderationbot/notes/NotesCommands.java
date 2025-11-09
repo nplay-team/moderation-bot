@@ -1,10 +1,10 @@
 package de.nplay.moderationbot.notes;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.ModalEvent;
-import com.github.kaktushose.jda.commands.embeds.Embed;
+import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
+import io.github.kaktushose.jdac.dispatching.events.interactions.ModalEvent;
+import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.JDA;
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 import java.util.List;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Interaction
 @Permissions(BotPermissions.MODERATION_CREATE)

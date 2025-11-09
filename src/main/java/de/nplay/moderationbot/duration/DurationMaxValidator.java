@@ -1,8 +1,8 @@
 package de.nplay.moderationbot.duration;
 
 
-import com.github.kaktushose.jda.commands.dispatching.validation.Validator;
-import com.github.kaktushose.jda.commands.guice.Implementation;
+import io.github.kaktushose.jdac.dispatching.validation.Validator;
+import io.github.kaktushose.jdac.guice.Implementation;
 import de.nplay.moderationbot.Helpers;
 
 import java.time.Duration;

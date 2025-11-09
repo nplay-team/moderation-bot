@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.serverlog;
 
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import com.github.kaktushose.jda.commands.embeds.Embed;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationEvents {
 

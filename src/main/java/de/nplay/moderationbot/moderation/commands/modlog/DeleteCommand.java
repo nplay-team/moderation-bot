@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.moderation.commands.modlog;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.*;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
+import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Interaction
 public class DeleteCommand {

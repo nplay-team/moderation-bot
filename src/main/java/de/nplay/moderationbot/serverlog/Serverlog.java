@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.serverlog;
 
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import de.nplay.moderationbot.config.ConfigService;
 
 public record Serverlog() {

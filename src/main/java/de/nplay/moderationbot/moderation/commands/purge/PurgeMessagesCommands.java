@@ -1,12 +1,12 @@
 package de.nplay.moderationbot.moderation.commands.purge;
 
-import com.github.kaktushose.jda.commands.annotations.constraints.Max;
-import com.github.kaktushose.jda.commands.annotations.constraints.Min;
-import com.github.kaktushose.jda.commands.annotations.interactions.Command;
-import com.github.kaktushose.jda.commands.annotations.interactions.CommandConfig;
-import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
-import com.github.kaktushose.jda.commands.annotations.interactions.Permissions;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
+import io.github.kaktushose.jdac.annotations.constraints.Max;
+import io.github.kaktushose.jdac.annotations.constraints.Min;
+import io.github.kaktushose.jdac.annotations.interactions.Command;
+import io.github.kaktushose.jdac.annotations.interactions.CommandConfig;
+import io.github.kaktushose.jdac.annotations.interactions.Interaction;
+import io.github.kaktushose.jdac.annotations.interactions.Permissions;
+import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Interaction
 @CommandConfig(enabledFor = Permission.MESSAGE_MANAGE)

@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.duration;
 
-import com.github.kaktushose.jda.commands.annotations.constraints.Constraint;
+import io.github.kaktushose.jdac.annotations.constraints.Constraint;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

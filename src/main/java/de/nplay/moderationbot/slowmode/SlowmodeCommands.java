@@ -1,8 +1,8 @@
 package de.nplay.moderationbot.slowmode;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.Command;
-import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.CommandEvent;
+import io.github.kaktushose.jdac.annotations.interactions.Command;
+import io.github.kaktushose.jdac.annotations.interactions.Interaction;
+import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.duration.DurationMax;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -11,7 +11,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Interaction("slowmode")
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")

@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.moderation.act.model;
 
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
-import com.github.kaktushose.jda.commands.embeds.Embed;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.NPLAYModerationBot;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import static com.github.kaktushose.jda.commands.message.placeholder.Entry.entry;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 /// Builder class for creating instances of [ModerationAct] used for creating a new moderation action.
 public class ModerationActBuilder {

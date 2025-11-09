@@ -1,6 +1,6 @@
 package de.nplay.moderationbot.permissions;
 
-import com.github.kaktushose.jda.commands.dispatching.context.InvocationContext;
+import io.github.kaktushose.jdac.dispatching.context.InvocationContext;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;

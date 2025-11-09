@@ -5,8 +5,8 @@ module moderationbot.main {
     requires net.dv8tion.jda;
     requires io.github._4drian3d.jdwebhooks;
 
-    requires io.github.kaktushose.jda.commands.core;
-    requires io.github.kaktushose.jda.commands.extension.guice;
+    requires io.github.kaktushose.jdac.core;
+    requires io.github.kaktushose.jdac.guice;
     requires dev.goldmensch.fluava;
     requires io.github.kaktushose.proteus;
     requires com.google.guice;

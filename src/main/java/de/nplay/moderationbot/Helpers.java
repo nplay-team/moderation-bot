@@ -1,6 +1,6 @@
 package de.nplay.moderationbot;
 
-import com.github.kaktushose.jda.commands.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;

@@ -1,8 +1,8 @@
 package de.nplay.moderationbot.moderation;
 
-import com.github.kaktushose.jda.commands.annotations.interactions.AutoComplete;
-import com.github.kaktushose.jda.commands.annotations.interactions.Interaction;
-import com.github.kaktushose.jda.commands.dispatching.events.interactions.AutoCompleteEvent;
+import io.github.kaktushose.jdac.annotations.interactions.AutoComplete;
+import io.github.kaktushose.jdac.annotations.interactions.Interaction;
+import io.github.kaktushose.jdac.dispatching.events.interactions.AutoCompleteEvent;
 import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
