@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     permissions:
       contents: read
       packages: write
@@ -24,7 +24,6 @@ jobs:
           containerfiles: |
             ./Dockerfile
           oci: false
-
       - name: Push To ghcr.io
         id: push-to-ghcr
         uses: redhat-actions/push-to-registry@v2
@@ -38,3 +37,11 @@ jobs:
             --disable-content-trust
       - name: Print image url
         run: echo "Image pushed to ${{ steps.push-to-ghcr.outputs.registry-paths }}"
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Redeploy
+        uses: distributhor/workflow-webhook@v3
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
