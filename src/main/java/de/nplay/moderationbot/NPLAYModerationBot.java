@@ -74,7 +74,8 @@ public class NPLAYModerationBot extends AbstractModule {
 
         serverlog = new Serverlog();
 
-        jdaCommands = JDACommands.builder(jda, NPLAYModerationBot.class, "de.nplay.moderationbot")
+        jdaCommands = JDACommands.builder(jda)
+                .packages("de.nplay.moderationbot")
                 .embeds(config -> config
                         .sources(
                                 EmbedDataSource.resource("embeds.json"),

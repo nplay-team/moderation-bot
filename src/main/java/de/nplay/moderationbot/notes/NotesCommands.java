@@ -8,11 +8,10 @@ import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.commands.Command.Type;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 import java.util.List;
 

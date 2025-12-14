@@ -13,7 +13,7 @@ import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermission
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.components.selections.SelectOption;
 
 import java.util.Arrays;
 import java.util.List;

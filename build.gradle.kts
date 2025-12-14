@@ -10,6 +10,7 @@ group = "de.nplay"
 version = "1.1.0"
 
 repositories {
+    maven("https://central.sonatype.com/repository/maven-snapshots/")
     mavenCentral()
 }
 
