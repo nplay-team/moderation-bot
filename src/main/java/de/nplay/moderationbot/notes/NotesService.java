@@ -93,8 +93,8 @@ public class NotesService {
         public TextDisplay toTextDisplay(JDA jda) {
             var creatorUsername = jda.retrieveUserById(creatorId()).complete().getName();
             var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
-            var body = "Moderator: <@%s> (%s)\n%s".formatted(creatorId(), creatorUsername, content());
-            return TextDisplay.of("## %s\n%s".formatted(title, body));
+            var body = "%s\n-# Moderator: <@%s> (%s)".formatted(content(), creatorId(), creatorUsername);
+            return TextDisplay.of("### %s\n%s".formatted(title, body));
         }
     }
 }

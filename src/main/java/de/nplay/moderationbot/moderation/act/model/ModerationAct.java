@@ -60,8 +60,8 @@ public sealed class ModerationAct permits RevertedModerationAct {
 
     public TextDisplay toTextDisplay(ReplyableEvent<?> event) {
         // TODO: add reverted case
-        String headLine = "#%s | %s | %s".formatted(id, event.localize(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
-        return TextDisplay.of("## %s\n%s\n-# %s".formatted(headLine, reason, Helpers.formatUser(event.getJDA(), issuer)));
+        String headLine = "\\#%s | %s | %s".formatted(id, event.localize(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
+        return TextDisplay.of("### %s\n%s\n-# Moderator: %s".formatted(headLine, reason, Helpers.formatUser(event.getJDA(), issuer)));
     }
 
     public Field toField(ReplyableEvent<?> event) {

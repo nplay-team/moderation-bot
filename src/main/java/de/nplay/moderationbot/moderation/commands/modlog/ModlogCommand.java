@@ -44,6 +44,9 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommand {
 
+    private static final int PAGE_COUNT_ID = 10000;
+    private static final int BUTTON_BACK_ID = 10001;
+    private static final int BUTTON_FORTH_ID = 10002;
     private int offset = 0;
     private int limit = 5;
     private int page = 1;
@@ -84,7 +87,7 @@ public class ModlogCommand {
         event.reply(getModlog(event));
     }
 
-    @Button(value = "Zurück", emoji = "⬅️", style = ButtonStyle.PRIMARY)
+    @Button(value = "Zurück", emoji = "⬅️", style = ButtonStyle.PRIMARY, uniqueId = BUTTON_BACK_ID)
     public void back(ComponentEvent event) {
         page--;
         offset -= limit;
@@ -102,7 +105,7 @@ public class ModlogCommand {
         replyEdit(event, oldPage);
     }
 
-    @Button(value = "Weiter", emoji = "➡️", style = ButtonStyle.PRIMARY)
+    @Button(value = "Weiter", emoji = "➡️", style = ButtonStyle.PRIMARY, uniqueId = BUTTON_FORTH_ID)
     public void next(ComponentEvent event) {
         page++;
         offset += limit;
@@ -112,18 +115,17 @@ public class ModlogCommand {
 
     private MessageTopLevelComponent getModlog(ReplyableEvent<?> event) {
         List<ContainerChildComponent> container = new ArrayList<>(List.of(
-                TextDisplay.of("## NPLAY-Moderation - Datenauskunft"),
-                Section.of(Thumbnail.fromUrl(user.getEffectiveAvatarUrl()), TextDisplay.of(Helpers.formatUser(event.getJDA(), user))),
-                TextDisplay.of("""
-                                ### Nutzer ID: %d
-                                ### Erstellt am: %s
-                                ### Beigetreten am: %s
-                                """.formatted(
-                                user.getIdLong(),
-                                Helpers.formatTimestamp(Timestamp.from(user.getTimeCreated().toInstant())),
-                                member == null ? "N/A" : Helpers.formatTimestamp(Timestamp.from(member.getTimeJoined().toInstant())) // TODO: remove member null check with more elegant way
-                        )
-                ),
+                Section.of(
+                        Thumbnail.fromUrl(user.getEffectiveAvatarUrl()),
+                        TextDisplay.of("## NPLAY-Moderation - Datenauskunft\n### %s".formatted(
+                                Helpers.formatUser(event.getJDA(), user)
+                        ))),
+                Separator.createInvisible(Separator.Spacing.SMALL),
+                TextDisplay.of("**Nutzer ID:** %d\n**Erstellt am:** %s\n**Beigetreten am:** %s".formatted(
+                        user.getIdLong(),
+                        Helpers.formatTimestamp(Timestamp.from(user.getTimeCreated().toInstant())),
+                        member == null ? "N/A" : Helpers.formatTimestamp(Timestamp.from(member.getTimeJoined().toInstant())) // TODO: remove member null check with more elegant way
+                )),
                 Separator.createDivider(Separator.Spacing.LARGE)
         ));
 
@@ -132,17 +134,16 @@ public class ModlogCommand {
             container.add(TextDisplay.of("## Notizen"));
             for (Note note : notes) {
                 container.add(note.toTextDisplay(event.getJDA()));
-                container.add(Separator.createInvisible(Separator.Spacing.SMALL));
             }
             container.add(Separator.createDivider(Separator.Spacing.LARGE));
         }
 
-        int uniqueId = page * 10;
+        int uniqueId = page * 100;
         container.add(TextDisplay.of("## Moderationshandlungen"));
         for (ModerationAct moderationAct : ModerationActService.get(user, limit, offset)) {
             container.add(moderationAct.toTextDisplay(event).withUniqueId(uniqueId++));
-            container.add(Separator.createInvisible(Separator.Spacing.SMALL));
             maxId = uniqueId;
+            System.out.println(uniqueId);
         }
 
         // only show navigation buttons if there is more than one page
@@ -157,11 +158,12 @@ public class ModlogCommand {
             container.add(ActionRow.of(
                     Component.stringSelect("selectPage").selectOptions(pages))
             );
-
             container.add(ActionRow.of(
                     Component.button("back").enabled(page > 1),
                     Component.button("next").enabled(page < maxPage)
             ));
+            container.add(Separator.createInvisible(Separator.Spacing.SMALL));
+            container.add(TextDisplay.of("-# Seite (%s/%s)".formatted(page, maxPage)).withUniqueId(PAGE_COUNT_ID));
         }
 
         return Container.of(container);
@@ -169,20 +171,23 @@ public class ModlogCommand {
 
     private void replyEdit(ComponentEvent event, int oldPage) {
         int index = 0;
-        int newIds = page * 10;
+        int newIds = page * 100;
 
-        List<ComponentReplacer> replacers = new ArrayList<>();
+        List<ComponentReplacer> replacer = new ArrayList<>();
         List<ModerationAct> moderationActs = ModerationActService.get(user, limit, offset);
 
-        for (int oldId = (oldPage) * 10; oldId <= maxId; oldId++) {
+        for (int oldId = (oldPage) * 100; oldId < maxId; oldId++) {
             TextDisplay newComponent = null; // remove "overhang", edge case: new page has fewer items than oldPage
-            if (index < moderationActs.size() - 1) {
+            if (index < moderationActs.size()) {
                 newComponent = moderationActs.get(index++).toTextDisplay(event).withUniqueId(newIds++);
             }
-            replacers.add(ComponentReplacer.byUniqueId(oldId, newComponent));
+            replacer.add(ComponentReplacer.byUniqueId(oldId, newComponent));
         }
 
-        event.reply(ComponentReplacer.all(replacers));
+        replacer.add(ComponentReplacer.byUniqueId(PAGE_COUNT_ID, TextDisplay.of("-# Seite (%s/%s)".formatted(page, maxPage)).withUniqueId(PAGE_COUNT_ID)));
+        replacer.add(ComponentReplacer.byUniqueId(BUTTON_BACK_ID, Component.button("back").enabled(page > 1)));
+        replacer.add(ComponentReplacer.byUniqueId(BUTTON_FORTH_ID, Component.button("next").enabled(page < maxPage)));
+        event.reply(ComponentReplacer.all(replacer));
     }
 
     private Embed[] getEmbeds(ReplyableEvent<?> event) {
