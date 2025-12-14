@@ -5,6 +5,7 @@ import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -87,6 +88,13 @@ public class NotesService {
             var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
             var body = "Moderator: <@%s> (%s)\n%s".formatted(creatorId(), creatorUsername, content());
             return new Field(title, body, false);
+        }
+
+        public TextDisplay toTextDisplay(JDA jda) {
+            var creatorUsername = jda.retrieveUserById(creatorId()).complete().getName();
+            var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
+            var body = "Moderator: <@%s> (%s)\n%s".formatted(creatorId(), creatorUsername, content());
+            return TextDisplay.of("## %s\n%s".formatted(title, body));
         }
     }
 }

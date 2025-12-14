@@ -1,7 +1,5 @@
 package de.nplay.moderationbot.moderation.act.model;
 
-import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
-import io.github.kaktushose.jdac.embeds.Embed;
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
@@ -13,6 +11,9 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.embeds.Embed;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import org.jspecify.annotations.Nullable;
@@ -25,9 +26,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 import static de.nplay.moderationbot.Helpers.formatTimestamp;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_SHORT;
 import static net.dv8tion.jda.api.utils.TimeFormat.DEFAULT;
 
@@ -55,6 +56,12 @@ public sealed class ModerationAct permits RevertedModerationAct {
         this.referenceMessage = MessageReferenceService.getMessageReference(row.getLong("reference_message")).orElse(null);
         this.revokeAt = row.getTimestamp("revoke_at");
         this.duration = row.getLong("duration");
+    }
+
+    public TextDisplay toTextDisplay(ReplyableEvent<?> event) {
+        // TODO: add reverted case
+        String headLine = "#%s | %s | %s".formatted(id, event.localize(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
+        return TextDisplay.of("## %s\n%s\n-# %s".formatted(headLine, reason, Helpers.formatUser(event.getJDA(), issuer)));
     }
 
     public Field toField(ReplyableEvent<?> event) {
