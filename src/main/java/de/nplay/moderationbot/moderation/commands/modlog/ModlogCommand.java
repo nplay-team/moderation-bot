@@ -37,6 +37,7 @@ import org.jspecify.annotations.Nullable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
@@ -143,7 +144,6 @@ public class ModlogCommand {
         for (ModerationAct moderationAct : ModerationActService.get(user, limit, offset)) {
             container.add(moderationAct.toTextDisplay(event).withUniqueId(uniqueId++));
             maxId = uniqueId;
-            System.out.println(uniqueId);
         }
 
         // only show navigation buttons if there is more than one page
@@ -159,7 +159,7 @@ public class ModlogCommand {
                     Component.stringSelect("selectPage").selectOptions(pages))
             );
             container.add(ActionRow.of(
-                    Component.button("back").enabled(page > 1),
+                    Component.button("back").enabled(true),
                     Component.button("next").enabled(page < maxPage)
             ));
             container.add(Separator.createInvisible(Separator.Spacing.SMALL));
@@ -181,58 +181,14 @@ public class ModlogCommand {
             if (index < moderationActs.size()) {
                 newComponent = moderationActs.get(index++).toTextDisplay(event).withUniqueId(newIds++);
             }
-            replacer.add(ComponentReplacer.byUniqueId(oldId, newComponent));
+            replacer.add(ComponentReplacer.byUniqueId(oldId, newComponent != null ? newComponent : Separator.createInvisible(Separator.Spacing.SMALL).withUniqueId(newIds++)));
         }
+
+        maxId = newIds;
 
         replacer.add(ComponentReplacer.byUniqueId(PAGE_COUNT_ID, TextDisplay.of("-# Seite (%s/%s)".formatted(page, maxPage)).withUniqueId(PAGE_COUNT_ID)));
-        replacer.add(ComponentReplacer.byUniqueId(BUTTON_BACK_ID, Component.button("back").enabled(page > 1)));
-        replacer.add(ComponentReplacer.byUniqueId(BUTTON_FORTH_ID, Component.button("next").enabled(page < maxPage)));
+//        replacer.add(ComponentReplacer.byUniqueId(BUTTON_BACK_ID, Component.button("back").enabled(page > 1)));
+//        replacer.add(ComponentReplacer.byUniqueId(BUTTON_FORTH_ID, Component.button("next").enabled(page < maxPage)));
         event.reply(ComponentReplacer.all(replacer));
-    }
-
-    private Embed[] getEmbeds(ReplyableEvent<?> event) {
-        List<Embed> list = new ArrayList<>();
-
-        list.add(header(event, user, member));
-        list.add(modlog(event, ModerationActService.get(user, limit, offset), page, maxPage));
-
-        var notes = NotesService.getNotesFromUser(user.getIdLong());
-        if (!notes.isEmpty()) {
-            list.add(1, NotesCommands.notesEmbed(event, event.getJDA(), user, notes));
-        }
-
-        return list.toArray(new Embed[0]);
-    }
-
-    private Embed header(ReplyableEvent<?> event, User user, @Nullable Member member) {
-        var embed = event.embed("modlogHeader").placeholders(
-                entry("name", Helpers.formatUser(event.getJDA(), user)),
-                entry("username", user.getEffectiveName()),
-                entry("userId", user.getId()),
-                entry("avatarUrl", user.getEffectiveAvatarUrl()),
-                entry("createdAt", Helpers.formatTimestamp(Timestamp.from(user.getTimeCreated().toInstant())))
-        );
-
-        if (member == null) {
-            embed.fields().remove("{ $roles }").remove("{ $joinedAt }");
-        } else {
-            var spielersucheRoleId = ConfigService.get(ConfigService.BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE).orElse("-1");
-            if (member.getUnsortedRoles().stream().map(Role::getId).anyMatch(spielersucheRoleId::equals)) {
-                embed.placeholders(entry("roles", "<@&%s>".formatted(spielersucheRoleId)));
-            } else {
-                embed.fields().remove("{ $roles }");
-            }
-            embed.placeholders(entry("joinedAt", Helpers.formatTimestamp(Timestamp.from(member.getTimeJoined().toInstant()))));
-
-        }
-        return embed;
-    }
-
-    private Embed modlog(ReplyableEvent<?> event, List<ModerationAct> moderationActs, Integer page, Integer maxPage) {
-        var embed = event.embed("modlogActs").placeholders(
-                entry("page", page),
-                entry("maxPage", maxPage));
-        moderationActs.stream().map(it -> it.toField(event)).forEach(embed.fields()::add);
-        return embed;
     }
 }
