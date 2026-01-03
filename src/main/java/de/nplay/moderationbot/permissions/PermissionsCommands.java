@@ -3,7 +3,7 @@ package de.nplay.moderationbot.permissions;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.annotations.interactions.Permissions;
-import io.github.kaktushose.jdac.annotations.interactions.StringSelectMenu;
+import io.github.kaktushose.jdac.annotations.interactions.StringMenu;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ComponentEvent;
@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.components.selections.SelectOption;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
@@ -57,7 +58,7 @@ public class PermissionsCommands {
     private void replyMenu(ReplyableEvent<?> event, EntityPermissions holder, String target) {
         event.with().components(Component.stringSelect("onPermissionsSelect")
                         .selectOptions(SelectOption.of(
-                                event.i18n().localize(event.getUserLocale().toLocale(), "permissions-none"),
+                                event.resolve("permissions-none"),
                                 NONE_OPTION)
                         ).selectOptions(Arrays.stream(BitFields.values())
                                 .map(it -> SelectOption.of(it.displayName, it.name()))
@@ -69,7 +70,7 @@ public class PermissionsCommands {
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
-    @StringSelectMenu(value = "permissions-select")
+    @StringMenu(value = "permissions-select")
     public void onPermissionsSelect(ComponentEvent event, List<String> selection) {
         int permissions = selection.contains(NONE_OPTION) ? 0 : BotPermissions.combine(
                 selection.stream().map(it -> BitFields.valueOf(it).value).toList()

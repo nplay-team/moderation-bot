@@ -96,7 +96,7 @@ public class ModlogCommand {
         replyEdit(event, page + 1);
     }
 
-    @StringSelectMenu(value = "Seitenauswahl")
+    @StringMenu(value = "Seitenauswahl")
     @MenuOption(value = "1", label = "Seite 1")
     public void selectPage(ComponentEvent event, List<String> values) {
         int oldPage = page;

@@ -12,10 +12,16 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 
 @Interaction
@@ -40,16 +46,21 @@ public class TimeoutCommands extends CreateCommands {
                 .duration(until)
                 .paragraph(paragraph)
                 .messageReference(Helpers.retrieveMessage(event, messageLink));
-        event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Timeout)"));
+
+        event.replyModal(
+                "onModerate",
+                List.of(Label.of("reason-field", TextInput.of(REASON_ID, TextInputStyle.PARAGRAPH))),
+                entry("reason-title","Begründung angeben (Timeout)")
+        );
     }
 
     @Modal(value = "reason-title")
-    public void onModerate(ModalEvent event, @TextInput("reason-field") String reason) {
+    public void onModerate(ModalEvent event) {
         if (ModerationActService.isTimeOuted(moderationActBuilder.targetId())) {
             event.with().embeds("userAlreadyTimeOuted").reply();
             return;
         }
 
-        executeModeration(event, reason);
+        executeModeration(event);
     }
 }

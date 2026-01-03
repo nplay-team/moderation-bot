@@ -47,7 +47,7 @@ public class SpielersucheAusschlussCommands {
         event.getGuild().addRoleToMember(target, spielersucheAusschlussRolle.get()).queue();
 
         ModerationActBuilder.warn(target, event.getUser())
-                .reason(event.i18n().localize(event.getUserLocale().toLocale(), "spielersuche-ausschluss-reason"))
+                .reason(event.resolve("spielersuche-ausschluss-reason"))
                 .paragraph(paragraph)
                 .execute(event);
 

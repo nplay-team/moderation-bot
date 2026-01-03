@@ -1,10 +1,5 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
-import io.github.kaktushose.jdac.annotations.constraints.Max;
-import io.github.kaktushose.jdac.annotations.constraints.Min;
-import io.github.kaktushose.jdac.annotations.interactions.*;
-import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
-import io.github.kaktushose.jdac.dispatching.events.interactions.ModalEvent;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.messagelink.MessageLink;
@@ -13,7 +8,15 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.Serverlog;
+import io.github.kaktushose.jdac.annotations.constraints.Max;
+import io.github.kaktushose.jdac.annotations.constraints.Min;
+import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
+import io.github.kaktushose.jdac.dispatching.events.interactions.ModalEvent;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.label.Label;
+import net.dv8tion.jda.api.components.textinput.TextInput;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -21,6 +24,9 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.List;
+
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Interaction
 @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
@@ -59,20 +65,23 @@ public class BanCommands extends CreateCommands {
 
         moderationActBuilder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
+        String title;
         if (until != null) {
             moderationActBuilder.duration(until);
-            event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Temp-Ban)"));
+            title = "Begründung angeben (Temp-Ban)";
         } else {
-            event.replyModal("onModerate", modal -> modal.title("Begründung angeben (Ban)"));
+            title = "Begründung angeben (Ban)";
         }
+
+
     }
 
     @Modal(value = "reason-title")
-    public void onModerate(ModalEvent event, @TextInput("reason-field") String reason) {
+    public void onModerate(ModalEvent event) {
         if (ModerationActService.isBanned(moderationActBuilder.targetId())) {
             event.with().embeds("userAlreadyBanned").reply();
             return;
         }
-        executeModeration(event, reason);
+        executeModeration(event);
     }
 }

@@ -60,12 +60,12 @@ public sealed class ModerationAct permits RevertedModerationAct {
 
     public TextDisplay toTextDisplay(ReplyableEvent<?> event) {
         // TODO: add reverted case
-        String headLine = "\\#%s | %s | %s".formatted(id, event.localize(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
+        String headLine = "\\#%s | %s | %s".formatted(id, event.resolve(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
         return TextDisplay.of("### %s\n%s\n-# Moderator: %s".formatted(headLine, reason, Helpers.formatUser(event.getJDA(), issuer)));
     }
 
     public Field toField(ReplyableEvent<?> event) {
-        String headLine = "#%s | %s | %s".formatted(id, event.localize(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
+        String headLine = "#%s | %s | %s".formatted(id, event.resolve(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
         List<String> bodyLines = new ArrayList<>();
 
         bodyLines.add(reason);
@@ -74,10 +74,10 @@ public sealed class ModerationAct permits RevertedModerationAct {
         if (this instanceof RevertedModerationAct reverted && !reverted.revertedBy().getId().equals(event.getJDA().getSelfUser().getId())) {
             headLine = "~~%s~~".formatted(headLine);
             bodyLines.forEach(it -> bodyLines.set(bodyLines.indexOf(it), "~~%s~~".formatted(it)));
-            bodyLines.addLast(event.localize("reverted-at-inline", entry("revertedAt", DATE_TIME_SHORT.format(reverted.revertedAt().getTime()))));
+            bodyLines.addLast(event.resolve("reverted-at-inline", entry("revertedAt", DATE_TIME_SHORT.format(reverted.revertedAt().getTime()))));
         } else if (revokeAt != null) {
-            bodyLines.addFirst(event.localize("revoke-at-inline", entry("revokeAt", DATE_TIME_SHORT.format(revokeAt.getTime()))));
-            bodyLines.addFirst(event.localize("duration-inline", entry("duration", Helpers.formatDuration(Duration.ofMillis(duration)))));
+            bodyLines.addFirst(event.resolve("revoke-at-inline", entry("revokeAt", DATE_TIME_SHORT.format(revokeAt.getTime()))));
+            bodyLines.addFirst(event.resolve("duration-inline", entry("duration", Helpers.formatDuration(Duration.ofMillis(duration)))));
         }
         return new MessageEmbed.Field(
                 headLine,
@@ -90,24 +90,24 @@ public sealed class ModerationAct permits RevertedModerationAct {
         var embed = event.embed("moderationActDetail");
         embed.placeholders(
                 entry("id", id),
-                entry("type", event.localize(type.localizationKey())),
+                entry("type", event.resolve(type.localizationKey())),
                 entry("created", formatTimestamp(createdAt)),
                 entry("issuer", Helpers.formatUser(event.getJDA(), issuer)),
                 entry("reason", reason),
                 entry("color", EmbedColors.DEFAULT));
 
-        paragraph().ifPresent(it -> embed.fields().add(event.localize("rule"), it.fullDisplay()));
-        referenceMessage().ifPresent(it -> embed.fields().add(event.localize("reference-message"), it.jumpUrl(event.getGuild())));
+        paragraph().ifPresent(it -> embed.fields().add(event.resolve("rule"), it.fullDisplay()));
+        referenceMessage().ifPresent(it -> embed.fields().add(event.resolve("reference-message"), it.jumpUrl(event.getGuild())));
 
         if (this instanceof RevertedModerationAct reverted && !reverted.revertedBy().getId().equals(event.getJDA().getSelfUser().getId())) {
             embed.fields()
-                    .add(event.localize("reverted-at"), Helpers.formatTimestamp(reverted.revertedAt()))
-                    .add(event.localize("reverted-by"), Helpers.formatUser(event.getJDA(), reverted.revertedBy()))
-                    .add(event.localize("reverting-reason"), reverted.revertingReason());
+                    .add(event.resolve("reverted-at"), Helpers.formatTimestamp(reverted.revertedAt()))
+                    .add(event.resolve("reverted-by"), Helpers.formatUser(event.getJDA(), reverted.revertedBy()))
+                    .add(event.resolve("reverting-reason"), reverted.revertingReason());
         } else if (revokeAt != null) {
             embed.fields()
-                    .add(event.localize("duration-field"), Helpers.formatDuration(Duration.ofMillis(duration)))
-                    .add(event.localize("revoke-at-field"), Helpers.formatTimestamp(revokeAt));
+                    .add(event.resolve("duration-field"), Helpers.formatDuration(Duration.ofMillis(duration)))
+                    .add(event.resolve("revoke-at-field"), Helpers.formatTimestamp(revokeAt));
         }
         return embed;
     }

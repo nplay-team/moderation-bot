@@ -190,19 +190,19 @@ public class ModerationActBuilder {
 
         switch (moderationAct.type()) {
             case WARN -> embed.placeholders(
-                    entry("description", event.localize("warn-description")),
+                    entry("description", event.resolve("warn-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.WARNING));
             case TIMEOUT -> embed.placeholders(
-                    entry("description", event.localize("timeout-description")),
+                    entry("description", event.resolve("timeout-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.WARNING));
             case KICK -> embed.placeholders(
-                    entry("description", event.localize("kick-description")),
+                    entry("description", event.resolve("kick-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.ERROR));
             case TEMP_BAN -> embed.placeholders(
-                    entry("description", event.localize("temp-ban-description")),
+                    entry("description", event.resolve("temp-ban-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.ERROR));
             case BAN -> embed.placeholders(
-                    entry("description", event.localize("ban-description")),
+                    entry("description", event.resolve("ban-description")),
                     entry("color", NPLAYModerationBot.EmbedColors.ERROR));
         }
 

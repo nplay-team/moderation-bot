@@ -82,7 +82,6 @@ public class NPLAYModerationBot extends AbstractModule {
                                 EmbedDataSource.resource("moderation.json"),
                                 EmbedDataSource.resource("events.json")
                         )
-                        .errorSource(EmbedDataSource.resource("jdac.json"))
                         .placeholders(
                                 entry("colorDefault", EmbedColors.DEFAULT),
                                 entry("colorSuccess", EmbedColors.SUCCESS),

@@ -88,7 +88,7 @@ public class ModerationEvents {
     private static Embed genericModerationEmbed(ReplyableEvent<?> event, String action, RevertedModerationAct act) {
         return event.embed("moderationRemoveEvent").placeholders(
                 entry("action", action),
-                entry("type", event.localize(act.type().localizationKey())),
+                entry("type", event.resolve(act.type().localizationKey())),
                 entry("id", act.id()),
                 entry("target", Helpers.formatUser(event.getJDA(), act.user())),
                 entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),
