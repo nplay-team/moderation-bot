@@ -1,9 +1,7 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
-import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -25,11 +23,6 @@ import java.time.Duration;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class BanCommand extends CreateCommand {
 
-    @Inject
-    public BanCommand(ModerationActLock moderationActLock) {
-        super(moderationActLock);
-    }
-
     @Command("mod ban")
     public void banMember(
             CommandEvent event,
@@ -39,10 +32,6 @@ public class BanCommand extends CreateCommand {
             @Param(optional = true) @Nullable String paragraph,
             @Param(optional = true) @Nullable MessageLink messageLink
     ) {
-        if (checkLocked(event, target, event.getUser())) {
-            return;
-        }
-
         if (ModerationActService.isBanned(target.getIdLong())) {
             event.with().embeds("userAlreadyBanned").reply();
             return;

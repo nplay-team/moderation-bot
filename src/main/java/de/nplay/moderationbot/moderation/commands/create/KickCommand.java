@@ -1,9 +1,7 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
-import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.messagelink.MessageLink;
-import de.nplay.moderationbot.moderation.act.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
@@ -16,11 +14,6 @@ import net.dv8tion.jda.api.entities.Member;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class KickCommand extends CreateCommand {
 
-    @Inject
-    public KickCommand(ModerationActLock moderationActLock) {
-        super(moderationActLock);
-    }
-
     @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
     @Command("mod kick")
     public void kickMember(CommandEvent event,
@@ -28,9 +21,6 @@ public class KickCommand extends CreateCommand {
                            @Param(optional = true) String paragraph,
                            @Param(optional = true) @Max(7) int delDays,
                            @Param(optional = true) MessageLink messageLink) {
-        if (checkLocked(event, target, event.getUser())) {
-            return;
-        }
         event.kv().put(BUILDER, ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph).
                 deletionDays(delDays)
                 .messageReference(Helpers.retrieveMessage(event, messageLink)));
