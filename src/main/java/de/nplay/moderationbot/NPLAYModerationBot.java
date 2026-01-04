@@ -49,6 +49,11 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class NPLAYModerationBot extends AbstractModule {
 
+    public static final Color DEFAULT = Color.decode("#020C24");
+    public static final Color WARNING = Color.decode("#FFFF00");
+    public static final Color ERROR = Color.decode("#FF0000");
+    public static final Color SUCCESS = Color.decode("#00FF00");
+
     private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
     private final JDA jda;
     private final JDACommands jdaCommands;
