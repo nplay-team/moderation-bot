@@ -14,7 +14,7 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
-import de.nplay.moderationbot.moderation.act.ModerationActLock;
+import de.nplay.moderationbot.moderation.act.lock.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;

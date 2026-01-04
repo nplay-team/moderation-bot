@@ -4,6 +4,7 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
+import de.nplay.moderationbot.moderation.act.lock.Lock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -21,6 +22,7 @@ import java.time.temporal.ChronoUnit;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class TimeoutCommand extends CreateCommand {
 
+    @Lock("target")
     @Command("mod timeout")
     public void timeoutMember(CommandEvent event,
                               Member target,

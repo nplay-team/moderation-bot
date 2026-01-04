@@ -2,6 +2,7 @@ package de.nplay.moderationbot.moderation.commands.create;
 
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.messagelink.MessageLink;
+import de.nplay.moderationbot.moderation.act.lock.Lock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.entities.Member;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class WarnCommand extends CreateCommand {
 
+    @Lock("target")
     @Command("mod warn")
     public void warnMember(CommandEvent event,
                            Member target,
