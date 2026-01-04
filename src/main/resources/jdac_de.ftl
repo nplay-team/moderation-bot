@@ -31,11 +31,10 @@ execution-failed-title =
     Bei der Ausführung ist ein plötzlicher Fehler aufgetreten. Bitte leite die Fehlermeldung an <@395908417879015424> weiter.
 execution-failed-message =
     ### Fehlermeldung
-    ```
-    Nuter: { $ user }
+    Nutzer: { $ user }
     Typ: `{ $interaction }`
     Timestamp: { $timestamp }
-    ```
+
 ## Unknown Interaction
 unknown-interaction =
     ### Unbekannte Interaktion
