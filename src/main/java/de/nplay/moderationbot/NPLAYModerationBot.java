@@ -20,8 +20,6 @@ import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
 import io.github.kaktushose.proteus.Proteus;
-import io.github.kaktushose.proteus.mapping.Mapper;
-import io.github.kaktushose.proteus.mapping.MappingResult;
 import io.github.kaktushose.proteus.type.Type;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -29,6 +27,7 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -46,6 +45,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
+import static io.github.kaktushose.proteus.mapping.Mapper.uni;
+import static io.github.kaktushose.proteus.mapping.MappingResult.lossless;
+import static io.github.kaktushose.proteus.mapping.MappingResult.lossy;
 
 public class NPLAYModerationBot extends AbstractModule {
 
@@ -102,7 +104,10 @@ public class NPLAYModerationBot extends AbstractModule {
                 .start();
 
         Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
-                Mapper.uni((color, _) -> MappingResult.lossless(Color.decode(color.hex)))
+                uni((color, _) -> lossless(Color.decode(color.hex)))
+        );
+        Proteus.global().from(Type.of(UserSnowflake.class)).into(Type.of(String.class),
+                uni((user, _) -> lossy(Helpers.formatUser(jda, user)))
         );
 
         jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));

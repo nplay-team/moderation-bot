@@ -36,66 +36,6 @@ permissions-manage-role-description = Verwaltet die Berechtigungen einer Rolle.
 permissions-manage-role-options-role-name = rolle
 permissions-manage-role-options-role-description = Die Rolle, dessen Berechtigungen bearbeitet werden sollen.
 
-
-# Moderation
-## General
--link = nachrichtenlink
--link-description = Link zu einer Nachricht, die referenziert werden soll.
--prune-duration = Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?.
--del-days = del_days
--del-days-description = Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?
-
-reason-title = Begründung angeben
-reason-field = Begründung der Moderationshandlung
-reason-duration-title = Begründung und Dauer angeben
-duration-field = Dauer der Moderationshandlung
-invalid-duration = Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an.
-invalid-duration-limit = Die angegebene Dauer ist zu lang. Bitte gib eine Dauer von maximal 28 Tagen an.
-
-## Warn
-mod-warn-description = Verwarnt einen Benutzer
-mod-warn-options-target-name = { -target }
-mod-warn-options-target-description = Der Benutzer, der verwarnt werden soll.
-mod-warn-options-paragraph-name = { -paragraph }
-mod-warn-options-paragraph-description = { -paragraph-description }
-mod-warn-options-message_link-name = { -link }
-mod-warn-options-message_link-description = { -link-description }
-
-## Timeout
-mod-timeout-description = Versetzt einen Benutzer in den Timeout
-mod-timeout-options-target-name = { -target }
-mod-timeout-options-target-description = Der Benutzer, den in den Timeout versetzt werden soll.
-mod-timeout-options-until-name = { -duration }
-mod-timeout-options-until-description = Für wie lange der Timeout andauern soll (max. 28 Tage).
-mod-timeout-options-paragraph-name = { -paragraph }
-mod-timeout-options-paragraph-description = { -paragraph-description }
-mod-timeout-options-message_link-name = { -link }
-mod-timeout-options-message_link-description = { -link-description }
-
-## Kick
-mod-kick-description = Kickt einen Benutzer vom Server
-mod-kick-options-target-name = { -target }
-mod-kick-options-target-description = Der Benutzer, der gekickt werden soll.
-mod-kick-options-paragraph-name  = { -paragraph }
-mod-kick-options-paragraph-description = { -paragraph-description }
-mod-kick-options-del_days-name = { -del-days }
-mod-kick-options-del_days-description = { -del-days-description }
-mod-kick-options-message_link-name = { -link }
-mod-kick-options-message_link-description = { -link-description }
-
-## Ban
-mod-ban-description = Bannt einen Benutzer vom Server
-mod-ban-options-target-name = { -target }
-mod-ban-options-target-description = Der Benutzer, der gebannt werden soll.
-mod-ban-options-until-name = { -duration }
-mod-ban-options-until-description = Für wie lange der Ban andauern soll.
-mod-ban-options-del_days-name = { -del-days }
-mod-ban-options-del_days-description = { -del-days-description }
-mod-ban-options-paragraph-name = { -paragraph }
-mod-ban-options-paragraph-description = { -paragraph-description }
-mod-ban-options-message_link-name = { -link }
-mod-ban-options-message_link-description = { -link-description }
-
 ## BulkDelete
 mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig
 mod-purge-messages-options-amount-name = anzahl
