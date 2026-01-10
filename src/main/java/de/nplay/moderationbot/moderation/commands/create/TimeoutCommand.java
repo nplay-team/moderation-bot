@@ -1,10 +1,11 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import de.nplay.moderationbot.Helpers;
+import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
-import de.nplay.moderationbot.moderation.act.lock.Lock;
+import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
@@ -33,7 +34,7 @@ public class TimeoutCommand extends CreateCommand {
                               @Param(optional = true) MessageLink messageLink) {
 
         if (ModerationActService.isTimeOuted(target.getIdLong())) {
-            event.with().embeds("userAlreadyTimeOuted").reply();
+            event.reply(Replies.error("already-timeout"));
             return;
         }
 

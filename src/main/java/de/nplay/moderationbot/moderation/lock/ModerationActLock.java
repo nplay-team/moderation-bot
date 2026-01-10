@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.act.lock;
+package de.nplay.moderationbot.moderation.lock;
 
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.slf4j.Logger;

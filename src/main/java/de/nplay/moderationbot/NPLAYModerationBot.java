@@ -14,7 +14,7 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
-import de.nplay.moderationbot.moderation.act.lock.ModerationActLock;
+import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
@@ -50,11 +50,6 @@ import static io.github.kaktushose.proteus.mapping.MappingResult.lossless;
 import static io.github.kaktushose.proteus.mapping.MappingResult.lossy;
 
 public class NPLAYModerationBot extends AbstractModule {
-
-    public static final Color DEFAULT = Color.decode("#020C24");
-    public static final Color WARNING = Color.decode("#FFFF00");
-    public static final Color ERROR = Color.decode("#FF0000");
-    public static final Color SUCCESS = Color.decode("#00FF00");
 
     private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
     private final JDA jda;

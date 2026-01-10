@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.moderation.act.lock;
+package de.nplay.moderationbot.moderation.lock;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

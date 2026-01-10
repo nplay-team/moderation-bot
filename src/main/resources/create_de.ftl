@@ -20,6 +20,9 @@ mod-ban-options-paragraph-name = { -paragraph }
 mod-ban-options-paragraph-description = { -paragraph-description }
 mod-ban-options-message_link-name = { -link }
 mod-ban-options-message_link-description = { -link-description }
+already-banned =
+    ### Fehler
+    Der angegebene Nutzer ist bereits gebannt!
 
 ########## Kick ##########
 mod-kick-description = Kickt einen Benutzer vom Server
@@ -42,6 +45,9 @@ mod-timeout-options-paragraph-name = { -paragraph }
 mod-timeout-options-paragraph-description = { -paragraph-description }
 mod-timeout-options-message_link-name = { -link }
 mod-timeout-options-message_link-description = { -link-description }
+already-timeout =
+    ### Fehler
+    Der angegebene Nutzer hat bereits ein aktives Timeout!
 
 ########## Warn ##########
 mod-warn-description = Verwarnt einen Benutzer
@@ -51,6 +57,11 @@ mod-warn-options-paragraph-name = { -paragraph }
 mod-warn-options-paragraph-description = { -paragraph-description }
 mod-warn-options-message_link-name = { -link }
 mod-warn-options-message_link-description = { -link-description }
+
+########## LockMiddleware ##########
+target-locked =
+    ### Fehler
+    Der angegebene Nutzer { $target } wird bereits durch { $moderator } moderiert!
 
 ########## Modal ##########
 reason-title = Begründung angeben ({ $type })

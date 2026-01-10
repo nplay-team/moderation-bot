@@ -1,13 +1,4 @@
 {
-  "moderationActExecuted": {
-    "title": "{ $type } erfolgreich ausgeführt!",
-    "color": "{ $colorSuccess }"
-  },
-  "moderationTargetBlocked": {
-    "title": "Fehler",
-    "description": "Der angegebene Nutzer { $target } wird bereits durch { $moderator } moderiert!",
-    "color": "{ $colorError }"
-  },
   "moderationActTargetInfo": {
     "title": "{ $title }",
     "description": "{ $description }",
