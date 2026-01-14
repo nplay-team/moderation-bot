@@ -67,6 +67,7 @@ public class Helpers {
         return null;
     }
 
+    @Deprecated
     public static String formatTimestamp(Timestamp timestamp) {
         return "%s (%s)".formatted(TimeFormat.DATE_TIME_LONG.format(timestamp.getTime()), TimeFormat.RELATIVE.atTimestamp(timestamp.getTime()));
     }

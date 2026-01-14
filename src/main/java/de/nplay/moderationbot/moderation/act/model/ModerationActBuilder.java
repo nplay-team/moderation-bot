@@ -176,7 +176,7 @@ public class ModerationActBuilder {
                 entry("date", TimeFormat.DEFAULT.format(moderationAct.createdAt().getTime()))
         );
         moderationAct.revokeAt().ifPresentOrElse(
-                it -> embed.placeholders(entry("until", Helpers.formatTimestamp(it))),
+                it -> embed.placeholders(entry("until", Helpers.formatTimestamp(it.timestamp()))),
                 () -> embed.fields().remove("{ $until }")
         );
         moderationAct.paragraph().ifPresentOrElse(

@@ -178,11 +178,18 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return Optional.ofNullable(referenceMessage);
     }
 
-    public Optional<Timestamp> revokeAt() {
-        return Optional.ofNullable(revokeAt);
+    public Optional<@Nullable RevokeAt> revokeAt() {
+        return Optional.ofNullable(revokeAt).map(RevokeAt::new);
     }
 
     public long duration() {
         return duration;
+    }
+
+    public record RevokeAt(Timestamp timestamp) {
+
+        public long time() {
+            return timestamp.getTime();
+        }
     }
 }

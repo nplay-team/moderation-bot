@@ -50,7 +50,7 @@ public class ReasonModal {
                 entry("reason", act.reason())
         ).withAccentColor(SUCCESS);
         act.revokeAt().ifPresent(it ->
-                container.add(TextDisplay.of("executed-until"), entry("until", DATE_TIME_SHORT.format(it.getTime())))
+                container.add(TextDisplay.of("executed-until"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
                 container.add(TextDisplay.of("executed-paragraph"), entry("paragraph", it.shortDisplay()))

@@ -1,10 +1,5 @@
 package de.nplay.moderationbot;
 
-import io.github.kaktushose.jdac.JDACommands;
-import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
-import io.github.kaktushose.jdac.embeds.EmbedDataSource;
-import io.github.kaktushose.jdac.guice.GuiceExtensionData;
-import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
@@ -14,11 +9,21 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
-import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
+import de.nplay.moderationbot.moderation.act.model.ModerationAct;
+import de.nplay.moderationbot.moderation.act.model.ModerationAct.RevokeAt;
+import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
+import dev.goldmensch.fluava.Result.Success;
+import dev.goldmensch.fluava.function.Function;
+import dev.goldmensch.fluava.function.Value.Text;
+import io.github.kaktushose.jdac.JDACommands;
+import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
+import io.github.kaktushose.jdac.embeds.EmbedDataSource;
+import io.github.kaktushose.jdac.guice.GuiceExtensionData;
+import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
 import io.github.kaktushose.proteus.Proteus;
 import io.github.kaktushose.proteus.type.Type;
 import net.dv8tion.jda.api.JDA;
@@ -32,6 +37,7 @@ import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.TimeFormat;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +53,8 @@ import java.util.concurrent.TimeUnit;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static io.github.kaktushose.proteus.mapping.Mapper.uni;
 import static io.github.kaktushose.proteus.mapping.MappingResult.lossless;
-import static io.github.kaktushose.proteus.mapping.MappingResult.lossy;
+import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_LONG;
+import static net.dv8tion.jda.api.utils.TimeFormat.RELATIVE;
 
 public class NPLAYModerationBot extends AbstractModule {
 
@@ -76,6 +83,15 @@ public class NPLAYModerationBot extends AbstractModule {
 
         serverlog = new Serverlog();
 
+        Fluava fluava = Fluava.builder()
+                .fallback(Locale.GERMAN)
+                .functions(config ->
+                        config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
+                                new Success<>(new Text(Helpers.formatUser(jda, user))), UserSnowflake.class)
+                        ).register("REVOKE_AT", Function.implicit((_, revokeAt, _) ->
+                                new Success<>(new Text("%s (%s)".formatted(DATE_TIME_LONG.format(revokeAt.time()), RELATIVE.atTimestamp(revokeAt.time())))), RevokeAt.class))
+                ).build();
+
         jdaCommands = JDACommands.builder(jda)
                 .packages("de.nplay.moderationbot")
                 .embeds(config -> config
@@ -90,7 +106,7 @@ public class NPLAYModerationBot extends AbstractModule {
                                 entry("colorWarning", EmbedColors.WARNING),
                                 entry("colorError", EmbedColors.ERROR)
                         )
-                ).localizer(new FluavaLocalizer(Fluava.create(Locale.GERMAN)))
+                ).localizer(new FluavaLocalizer(fluava))
                 .globalCommandConfig(CommandConfig.of(config -> config
                         .enabledPermissions(Permission.MODERATE_MEMBERS)
                         .integration(IntegrationType.GUILD_INSTALL)
@@ -100,9 +116,6 @@ public class NPLAYModerationBot extends AbstractModule {
 
         Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
                 uni((color, _) -> lossless(Color.decode(color.hex)))
-        );
-        Proteus.global().from(Type.of(UserSnowflake.class)).into(Type.of(String.class),
-                uni((user, _) -> lossy(Helpers.formatUser(jda, user)))
         );
 
         jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));

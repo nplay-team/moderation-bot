@@ -52,7 +52,7 @@ public class ModerationEvents {
                 entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),
                 entry("reason", act.reason()),
                 entry("createdAt", TimeFormat.DATE_TIME_LONG.format(act.createdAt().getTime())));
-        act.revokeAt().ifPresent(it -> embed.fields().add("Aktiv bis", Helpers.formatTimestamp(it)));
+        act.revokeAt().ifPresent(it -> embed.fields().add("Aktiv bis", Helpers.formatTimestamp(it.timestamp())));
         return embed;
     }
 
