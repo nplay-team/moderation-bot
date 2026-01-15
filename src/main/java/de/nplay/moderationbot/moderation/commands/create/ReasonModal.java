@@ -41,7 +41,6 @@ public class ReasonModal {
                 .execute(event);
 
         SeparatedContainer container = new SeparatedContainer(
-                event.messageResolver(),
                 TextDisplay.of("executed-header"),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("type", act.type()),

@@ -1,5 +1,7 @@
 package de.nplay.moderationbot.util;
 
+import io.github.kaktushose.jdac.configuration.Property;
+import io.github.kaktushose.jdac.introspection.Introspection;
 import io.github.kaktushose.jdac.message.placeholder.Entry;
 import io.github.kaktushose.jdac.message.resolver.ComponentResolver;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
@@ -32,6 +34,10 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
     private final List<Entry> placeholders;
     private final @Nullable Separator separator;
     private Container container;
+
+    public SeparatedContainer(ContainerChildComponent header, @Nullable Separator separator, Entry... entries) {
+        this(Introspection.scopedGet(Property.MESSAGE_RESOLVER), header, separator, entries);
+    }
 
     public SeparatedContainer(Resolver<String> resolver, ContainerChildComponent header, @Nullable Separator separator, Entry... entries) {
         this.separator = separator;
