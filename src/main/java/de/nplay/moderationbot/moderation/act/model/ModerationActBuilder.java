@@ -201,7 +201,7 @@ public class ModerationActBuilder {
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("title", type),
                 entry("description", type.localizationKey())
-        ).withAccentColor(color);;
+        ).withAccentColor(color);
         Helpers.sendDM(moderationAct.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
 

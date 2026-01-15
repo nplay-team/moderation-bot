@@ -88,7 +88,7 @@ executed =
 
 ########## Target Info ##########
 target-info =
-    { $title }
+    ### { $title }
     { $description ->
         *[warn] Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
         [timeout] Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!

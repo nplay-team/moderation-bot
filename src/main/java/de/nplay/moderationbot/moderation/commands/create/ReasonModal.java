@@ -18,7 +18,6 @@ import static de.nplay.moderationbot.Replies.SUCCESS;
 import static de.nplay.moderationbot.moderation.commands.create.CreateCommand.BUILDER;
 import static de.nplay.moderationbot.moderation.commands.create.CreateCommand.REASON_ID;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
-import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_SHORT;
 
 @Interaction
 @Bundle("create")
