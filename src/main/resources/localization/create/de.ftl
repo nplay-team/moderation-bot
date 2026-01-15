@@ -71,7 +71,7 @@ reason-label = Begründung der Moderationshandlung
 executed =
     ### { $type } erfolgreich ausgeführt
     { "**ID**" }
-    { $id }
+    \# { $id }
     { "**Betroffener Nutzer**" }
     { $target }
     { "**Begründung**" }
@@ -88,7 +88,7 @@ executed =
 
 ########## Target Info ##########
 target-info =
-    ### { $title }
+    ### { $type }
     { $description ->
         *[warn] Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
         [timeout] Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!
@@ -97,14 +97,12 @@ target-info =
         [ban] Du wurdest vom **NPLAY** Discord Server gebannt!
     }
     .reason =
-    { "**Begründung**" }
-    { $until }
-    .id =
     { "**ID**" }
-    { $id }
-    .date =
+    \#{ $id }
     { "**Datum**" }
     { $date }
+    { "**Begründung**" }
+    { $reason }
     .until =
     { "**Aktiv bis**" }
     { $until }
@@ -114,3 +112,4 @@ target-info =
     .reference =
     { "**Referenznachricht**" }
     > { $message }
+    .footer = -# Bei Fragen oder Problemen wende dich bitte an den Ticket-Support!

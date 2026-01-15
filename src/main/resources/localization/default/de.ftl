@@ -131,10 +131,8 @@ id = ID
 act-target = Betroffener Nutzer
 act-reason = Begründung
 active-until = Aktiv bis
-## ModerationAct
 
-
-# ModerationActType
+########## ModerationActType ##########
 warn = Verwarnung
 kick = Kick
 timeout = Timeout

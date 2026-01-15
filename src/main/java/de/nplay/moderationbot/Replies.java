@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
 import java.awt.*;
+import java.sql.Timestamp;
 
 public final class Replies {
 
@@ -32,4 +33,17 @@ public final class Replies {
         return Container.of(TextDisplay.of(key)).withAccentColor(color);
     }
 
+    public record AbsoluteTime(Timestamp timestamp) {
+
+        public long time() {
+            return timestamp.getTime();
+        }
+    }
+
+    public record RelativeTime(Timestamp timestamp) {
+
+        public long time() {
+            return timestamp.getTime();
+        }
+    }
 }

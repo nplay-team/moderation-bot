@@ -42,7 +42,7 @@ public class ReasonModal {
         SeparatedContainer container = new SeparatedContainer(
                 TextDisplay.of("executed"),
                 Separator.createDivider(Separator.Spacing.SMALL),
-                entry("type", act.type()),
+                entry("type", act.type().localized(event.getUserLocale())),
                 entry("id", act.id()),
                 entry("target", act.user()),
                 entry("reason", act.reason())

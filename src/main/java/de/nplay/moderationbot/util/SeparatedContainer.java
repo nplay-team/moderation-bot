@@ -34,6 +34,7 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
     private final List<Entry> placeholders;
     private final @Nullable Separator separator;
     private Container container;
+    private @Nullable Footer footer;
 
     public SeparatedContainer(ContainerChildComponent header, @Nullable Separator separator, Entry... entries) {
         this(Introspection.scopedGet(Property.MESSAGE_RESOLVER), header, separator, entries);
@@ -55,6 +56,16 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
         components.add((ContainerChildComponentUnion) section);
         placeholders.addAll(Arrays.asList(entries));
         container = container.withComponents(components);
+        return this;
+    }
+
+    public SeparatedContainer footer(ContainerChildComponent footer, Entry... entries) {
+        return footer(footer, false, entries);
+    }
+
+    public SeparatedContainer footer(ContainerChildComponent footer, boolean separate, Entry... entries) {
+        this.footer = new Footer(footer, separate);
+        placeholders.addAll(Arrays.asList(entries));
         return this;
     }
 
@@ -135,12 +146,16 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
 
     @Override
     public @Unmodifiable List<ContainerChildComponentUnion> getComponents() {
+        applyFooter();
         container = resolver.resolve(container, Locale.GERMAN, toMap());
         return container.getComponents();
     }
 
-    private Map<String, Object> toMap() {
-        return placeholders.stream().collect(Collectors.toMap(Entry::name, Entry::value));
+    @Override
+    public DataObject toData() {
+        applyFooter();
+        container = resolver.resolve(container, Locale.GERMAN, toMap());
+        return ((ContainerImpl) container).toData();
     }
 
     @Override
@@ -183,9 +198,39 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
         return this;
     }
 
-    @Override
-    public DataObject toData() {
-        container = resolver.resolve(container, Locale.GERMAN, toMap());
-        return ((ContainerImpl) container).toData();
+    private Map<String, Object> toMap() {
+        return placeholders.stream().collect(Collectors.toMap(Entry::name, Entry::value));
+    }
+
+    private void applyFooter() {
+        if (footer == null) {
+            return;
+        }
+
+        footer.apply().ifPresent(applied -> {
+            footer = applied;
+
+            ArrayList<ContainerChildComponentUnion> components = new ArrayList<>(container.getComponents());
+            if (footer.separate() && separator != null) {
+                components.addLast((ContainerChildComponentUnion) separator);
+            }
+            components.addLast((ContainerChildComponentUnion) footer.component());
+
+            container = container.withComponents(components);
+        });
+    }
+
+    private record Footer(ContainerChildComponent component, boolean separate, boolean applied) {
+
+        public Footer(ContainerChildComponent component, boolean separate) {
+            this(component, separate, false);
+        }
+
+        public Optional<Footer> apply() {
+            if (applied) {
+                return Optional.empty();
+            }
+            return Optional.of(new Footer(component, separate, true));
+        }
     }
 }

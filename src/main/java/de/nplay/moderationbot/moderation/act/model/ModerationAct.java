@@ -5,6 +5,8 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
+import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
@@ -161,34 +163,27 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return issuer;
     }
 
-    public Timestamp createdAt() {
-        return createdAt;
+    public AbsoluteTime createdAt() {
+        return new AbsoluteTime(createdAt);
     }
 
     public String reason() {
         return reason;
     }
 
-    public Optional<RuleParagraph> paragraph() {
+    public Optional<@Nullable RuleParagraph> paragraph() {
         return Optional.ofNullable(paragraph);
     }
 
-    public Optional<MessageReference> referenceMessage() {
+    public Optional<@Nullable MessageReference> referenceMessage() {
         return Optional.ofNullable(referenceMessage);
     }
 
-    public Optional<@Nullable RevokeAt> revokeAt() {
-        return Optional.ofNullable(revokeAt).map(RevokeAt::new);
+    public Optional<@Nullable RelativeTime> revokeAt() {
+        return Optional.ofNullable(revokeAt).map(RelativeTime::new);
     }
 
     public long duration() {
         return duration;
-    }
-
-    public record RevokeAt(Timestamp timestamp) {
-
-        public long time() {
-            return timestamp.getTime();
-        }
     }
 }

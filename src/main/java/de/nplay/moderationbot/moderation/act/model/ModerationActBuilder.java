@@ -1,16 +1,17 @@
 package de.nplay.moderationbot.moderation.act.model;
 
-import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.util.SeparatedContainer;
-import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
-import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
+import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.util.SeparatedContainer;
+import io.github.kaktushose.jdac.configuration.Property;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.introspection.Introspection;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.utils.TimeFormat;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -104,7 +106,7 @@ public class ModerationActBuilder {
         );
     }
 
-    public ModerationActBuilder reason(@Nullable String reason) {
+    public ModerationActBuilder reason(String reason) {
         this.reason = reason;
         return this;
     }
@@ -156,14 +158,6 @@ public class ModerationActBuilder {
         throw new UnsupportedOperationException("Cannot set deletion days on moderation act with type: " + type);
     }
 
-    public long issuerId() {
-        return issuerId;
-    }
-
-    public long targetId() {
-        return targetId;
-    }
-
     public ModerationAct execute(ReplyableEvent<?> event) {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays);
         ModerationAct act = ModerationActService.create(data);
@@ -172,45 +166,43 @@ public class ModerationActBuilder {
         return act;
     }
 
-    private void sendModerationToTarget(ModerationAct moderationAct, ReplyableEvent<?> event) {
-        Embed embed = event.embed("moderationActTargetInfo").placeholders(
-                entry("title", moderationAct.type().toString()),
-                entry("reason", moderationAct.reason()),
-                entry("id", moderationAct.id()),
-                entry("date", TimeFormat.DEFAULT.format(moderationAct.createdAt().getTime()))
-        );
-        moderationAct.revokeAt().ifPresentOrElse(
-                it -> embed.placeholders(entry("until", Helpers.formatTimestamp(it.timestamp()))),
-                () -> embed.fields().remove("{ $until }")
-        );
-        moderationAct.paragraph().ifPresentOrElse(
-                it -> embed.placeholders(entry("paragraph", it.fullDisplay())),
-                () -> embed.fields().remove("{ $paragraph }")
-        );
-        moderationAct.referenceMessage().ifPresentOrElse(
-                it -> embed.placeholders(entry("referenceMessage", it.content())),
-                () -> embed.fields().remove("> { $referenceMessage }")
-        );
-
-        Color color = switch (moderationAct.type()) {
+    private void sendModerationToTarget(ModerationAct act, ReplyableEvent<?> event) {
+        Color color = switch (act.type()) {
             case WARN, TIMEOUT -> Replies.WARNING;
             case KICK, TEMP_BAN, BAN -> Replies.ERROR;
         };
         SeparatedContainer container = new SeparatedContainer(
                 TextDisplay.of("target-info"),
                 Separator.createDivider(Separator.Spacing.SMALL),
-                entry("title", type),
+                entry("type", type.localized(event.getUserLocale())),
                 entry("description", type.localizationKey())
-        ).withAccentColor(color);
-        Helpers.sendDM(moderationAct.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
+        ).footer(TextDisplay.of("target-info.footer"), true).withAccentColor(color);
+
+        container.add(
+                TextDisplay.of("target-info.reason"),
+                entry("id", act.id()),
+                entry("reason", act.reason()),
+                entry("date", act.createdAt())
+        );
+        act.revokeAt().ifPresent(it ->
+                container.add(TextDisplay.of("target-info.revoke"), entry("until", it))
+        );
+        act.paragraph().ifPresent(it ->
+                container.add(TextDisplay.of("target-info.paragraph"), entry("paragraph", it.fullDisplay()))
+        );
+        act.referenceMessage().ifPresent(it ->
+                container.add(TextDisplay.of("target-info.reference"), entry("message", it.content()))
+        );
+
+        Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
 
     public enum ModerationActType {
-        WARN("warn"),
-        TIMEOUT("timeout"),
-        KICK("kick"),
-        TEMP_BAN("temp-ban"),
-        BAN("ban");
+        WARN("default$warn"),
+        TIMEOUT("default$timeout"),
+        KICK("default$kick"),
+        TEMP_BAN("default$temp-ban"),
+        BAN("default$ban");
 
         private final String localizationKey;
 
@@ -220,6 +212,10 @@ public class ModerationActBuilder {
 
         public String localizationKey() {
             return localizationKey;
+        }
+
+        public String localized(DiscordLocale locale) {
+            return Introspection.scopedGet(Property.MESSAGE_RESOLVER).resolve(localizationKey, locale.toLocale(), Map.of());
         }
     }
 

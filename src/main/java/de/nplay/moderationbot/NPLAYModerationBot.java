@@ -9,9 +9,9 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
-import de.nplay.moderationbot.moderation.act.model.ModerationAct.RevokeAt;
-import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
@@ -53,8 +53,7 @@ import java.util.concurrent.TimeUnit;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static io.github.kaktushose.proteus.mapping.Mapper.uni;
 import static io.github.kaktushose.proteus.mapping.MappingResult.lossless;
-import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_LONG;
-import static net.dv8tion.jda.api.utils.TimeFormat.RELATIVE;
+import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
 public class NPLAYModerationBot extends AbstractModule {
 
@@ -89,10 +88,10 @@ public class NPLAYModerationBot extends AbstractModule {
                 .functions(config ->
                         config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
                                result(Helpers.formatUser(jda, user)), UserSnowflake.class)
-                        ).register("REVOKE_AT", Function.implicit((_, revokeAt, _) ->
-                                result("%s (%s)".formatted(DATE_TIME_LONG.format(revokeAt.time()), RELATIVE.atTimestamp(revokeAt.time()))), RevokeAt.class)
-                        ).register("ACT_TYPE", Function.implicit((_, type, _) ->
-                                result(type.localizationKey()), ModerationActType.class)
+                        ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
+                                result("%s (%s)".formatted(DATE_TIME_LONG.format(time.time()), RELATIVE.atTimestamp(time.time()))), RelativeTime.class)
+                        ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
+                                result(DATE_TIME_SHORT.format(time.time())), AbsoluteTime.class)
                         )
                 ).build();
 
