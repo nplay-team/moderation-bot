@@ -30,7 +30,7 @@ public class Helpers {
         jda.retrieveUserById(user.getId())
                 .flatMap(User::openPrivateChannel)
                 .flatMap(function)
-                .queue(null, USER_HANDLER);
+                .complete();
     }
 
     public static String formatDuration(Duration duration) {
