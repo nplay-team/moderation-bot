@@ -10,12 +10,13 @@ import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
-import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct.RevokeAt;
+import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
+import dev.goldmensch.fluava.Result;
 import dev.goldmensch.fluava.Result.Success;
 import dev.goldmensch.fluava.function.Function;
 import dev.goldmensch.fluava.function.Value.Text;
@@ -37,7 +38,6 @@ import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.TimeFormat;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,9 +87,12 @@ public class NPLAYModerationBot extends AbstractModule {
                 .fallback(Locale.GERMAN)
                 .functions(config ->
                         config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
-                                new Success<>(new Text(Helpers.formatUser(jda, user))), UserSnowflake.class)
+                               result(Helpers.formatUser(jda, user)), UserSnowflake.class)
                         ).register("REVOKE_AT", Function.implicit((_, revokeAt, _) ->
-                                new Success<>(new Text("%s (%s)".formatted(DATE_TIME_LONG.format(revokeAt.time()), RELATIVE.atTimestamp(revokeAt.time())))), RevokeAt.class))
+                                result("%s (%s)".formatted(DATE_TIME_LONG.format(revokeAt.time()), RELATIVE.atTimestamp(revokeAt.time()))), RevokeAt.class)
+                        ).register("ACT_TYPE", Function.implicit((_, type, _) ->
+                                result(type.localizationKey()), ModerationActType.class)
+                        )
                 ).build();
 
         jdaCommands = JDACommands.builder(jda)
@@ -114,6 +117,7 @@ public class NPLAYModerationBot extends AbstractModule {
                 ).extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
 
+        // TODO remove
         Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
                 uni((color, _) -> lossless(Color.decode(color.hex)))
         );
@@ -168,6 +172,11 @@ public class NPLAYModerationBot extends AbstractModule {
         return moderationActLock;
     }
 
+    private Result<Text> result(String value) {
+        return new Success<>(new Text(value));
+    }
+
+    @Deprecated
     public enum EmbedColors {
         DEFAULT("#020C24"),
         ERROR("#FF0000"),

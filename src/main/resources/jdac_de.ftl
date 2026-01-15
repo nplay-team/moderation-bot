@@ -33,7 +33,7 @@ execution-failed-message =
     ### Fehlermeldung
     Nutzer: { $ user }
     Typ: `{ $interaction }`
-    Timestamp: { $timestamp }
+    Timestamp: { DATETIME($timestamp, dateStyle: "medium", timeStyle: "medium") }
 
 ## Unknown Interaction
 unknown-interaction =
