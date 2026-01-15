@@ -41,7 +41,7 @@ public class ReasonModal {
                 .execute(event);
 
         SeparatedContainer container = new SeparatedContainer(
-                TextDisplay.of("executed-header"),
+                TextDisplay.of("executed"),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("type", act.type()),
                 entry("id", act.id()),
@@ -49,13 +49,13 @@ public class ReasonModal {
                 entry("reason", act.reason())
         ).withAccentColor(SUCCESS);
         act.revokeAt().ifPresent(it ->
-                container.add(TextDisplay.of("executed-until"), entry("until", it))
+                container.add(TextDisplay.of("executed.until"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
-                container.add(TextDisplay.of("executed-paragraph"), entry("paragraph", it.shortDisplay()))
+                container.add(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
         );
         act.referenceMessage().ifPresent(it ->
-                container.add(TextDisplay.of("executed-reference"), entry("message", it.content()))
+                container.add(TextDisplay.of("executed.reference"), entry("message", it.content()))
         );
         event.reply(container);
 

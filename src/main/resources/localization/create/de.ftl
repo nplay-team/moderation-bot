@@ -68,7 +68,7 @@ reason-title = Begründung angeben ({ $type })
 reason-label = Begründung der Moderationshandlung
 
 ########## Moderator Reply ##########
-executed-header =
+executed =
     ### { $type } erfolgreich ausgeführt
     { "**ID**" }
     { $id }
@@ -76,12 +76,41 @@ executed-header =
     { $target }
     { "**Begründung**" }
     { $reason }
-executed-until =
+    .until =
     { "**Aktiv bis**" }
     { $until }
-executed-paragraph =
+    .paragraph =
     { "**Paragraph**" }
     { $paragraph }
-executed-reference =
+    .reference =
+    { "**Referenznachricht**" }
+    > { $message }
+
+########## Target Info ##########
+target-info =
+    { $title }
+    { $description ->
+        *[warn] Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
+        [timeout] Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!
+        [kick] Du wurdest vom **NPLAY** Discord Server gekickt!
+        [temp-ban] Du wurdest temporär vom **NPLAY** Discord Server gebannt!
+        [ban] Du wurdest vom **NPLAY** Discord Server gebannt!
+    }
+    .reason =
+    { "**Begründung**" }
+    { $until }
+    .id =
+    { "**ID**" }
+    { $id }
+    .date =
+    { "**Datum**" }
+    { $date }
+    .until =
+    { "**Aktiv bis**" }
+    { $until }
+    .paragraph =
+    { "**Regel, gegen die du verstoßen hast**" }
+    { $paragraph }
+    .reference =
     { "**Referenznachricht**" }
     > { $message }

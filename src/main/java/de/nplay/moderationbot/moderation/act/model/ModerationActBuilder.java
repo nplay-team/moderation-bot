@@ -1,11 +1,14 @@
 package de.nplay.moderationbot.moderation.act.model;
 
+import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.NPLAYModerationBot;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.rules.RuleService;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -13,6 +16,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Optional;
@@ -188,25 +192,17 @@ public class ModerationActBuilder {
                 () -> embed.fields().remove("> { $referenceMessage }")
         );
 
-        switch (moderationAct.type()) {
-            case WARN -> embed.placeholders(
-                    entry("description", event.resolve("warn-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.WARNING));
-            case TIMEOUT -> embed.placeholders(
-                    entry("description", event.resolve("timeout-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.WARNING));
-            case KICK -> embed.placeholders(
-                    entry("description", event.resolve("kick-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
-            case TEMP_BAN -> embed.placeholders(
-                    entry("description", event.resolve("temp-ban-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
-            case BAN -> embed.placeholders(
-                    entry("description", event.resolve("ban-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
-        }
-
-        Helpers.sendDM(moderationAct.user(), event.getJDA(), channel -> channel.sendMessageEmbeds(embed.build()));
+        Color color = switch (moderationAct.type()) {
+            case WARN, TIMEOUT -> Replies.WARNING;
+            case KICK, TEMP_BAN, BAN -> Replies.ERROR;
+        };
+        SeparatedContainer container = new SeparatedContainer(
+                TextDisplay.of("target-info"),
+                Separator.createDivider(Separator.Spacing.SMALL),
+                entry("title", type),
+                entry("description", type.localizationKey())
+        ).withAccentColor(color);;
+        Helpers.sendDM(moderationAct.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
 
     public enum ModerationActType {

@@ -85,6 +85,7 @@ public class NPLAYModerationBot extends AbstractModule {
 
         Fluava fluava = Fluava.builder()
                 .fallback(Locale.GERMAN)
+                //TODO .bundleRoot("localization")
                 .functions(config ->
                         config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
                                result(Helpers.formatUser(jda, user)), UserSnowflake.class)
