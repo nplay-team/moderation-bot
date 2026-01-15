@@ -62,13 +62,7 @@ public class ModlogCommand {
                        @Param(optional = true) @Min(1) @Nullable Integer page,
                        @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count) {
         user = target;
-        try {
-            this.member = event.getGuild().retrieveMember(target).complete();
-        } catch (ErrorResponseException e) {
-            if (e.getErrorResponse() != ErrorResponse.UNKNOWN_MEMBER) {
-                throw new IllegalStateException(e);
-            }
-        }
+        member = Helpers.completeOpt(event.getGuild().retrieveMember(target)).orElse(null);
         if (page != null && count != null) {
             offset = (page - 1) * count;
             this.page = page;

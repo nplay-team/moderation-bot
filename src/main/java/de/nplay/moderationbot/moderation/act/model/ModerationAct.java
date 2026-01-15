@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static de.nplay.moderationbot.Helpers.USER_HANDLER;
 import static de.nplay.moderationbot.Helpers.formatTimestamp;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_SHORT;
@@ -126,8 +125,8 @@ public sealed class ModerationAct permits RevertedModerationAct {
                 .update();
 
         switch (type) {
-            case BAN, TEMP_BAN -> guild.unban(user).queue(null, USER_HANDLER);
-            case TIMEOUT -> guild.retrieveMember(user).flatMap(Member::removeTimeout).queue(null, USER_HANDLER);
+            case BAN, TEMP_BAN -> Helpers.complete(guild.unban(user));
+            case TIMEOUT -> Helpers.complete(guild.retrieveMember(user).flatMap(Member::removeTimeout));
         }
 
         sendRevertMessageToUser(guild, embedFunction, revertedBy, reason);
