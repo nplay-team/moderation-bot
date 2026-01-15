@@ -55,17 +55,54 @@ import static io.github.kaktushose.proteus.mapping.Mapper.uni;
 import static io.github.kaktushose.proteus.mapping.MappingResult.lossless;
 import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
-public class NPLAYModerationBot extends AbstractModule {
+public class ModerationBot extends AbstractModule {
 
-    private static final Logger log = LoggerFactory.getLogger(NPLAYModerationBot.class);
+    private static final Logger log = LoggerFactory.getLogger(ModerationBot.class);
     private final JDA jda;
     private final JDACommands jdaCommands;
     private final Guild guild;
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
-    private NPLAYModerationBot(String guildId, String token) throws InterruptedException {
-        jda = JDABuilder.createDefault(token)
+    private ModerationBot(String guildId, String token) throws InterruptedException {
+        database();
+
+        jda = jda(token);
+        guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
+        serverlog = new Serverlog();
+
+        jdaCommands = jdaCommands(fluava());
+        // TODO remove once EmbedColors is gone
+        Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
+                uni((color, _) -> lossless(Color.decode(color.hex)))
+        );
+        jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));
+
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
+                () -> ModerationActService.getToRevert().forEach(it ->
+                        it.revert(guild, jdaCommands::embed, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
+                ), 0, 1, TimeUnit.MINUTES);
+
+        Thread.setDefaultUncaughtExceptionHandler((_, e) -> log.error("An uncaught exception has occurred!", e));
+        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("Hört euren Nachrichten zu"), false);
+    }
+
+    public static void start(String guildId, String token) throws InterruptedException {
+        new ModerationBot(guildId, token);
+    }
+
+    @Provides
+    public Serverlog serverlog() {
+        return serverlog;
+    }
+
+    @Provides
+    public ModerationActLock moderationActLock() {
+        return moderationActLock;
+    }
+
+    private JDA jda(String token) throws InterruptedException {
+        JDA jda = JDABuilder.createDefault(token)
                 .enableIntents(
                         GatewayIntent.GUILD_MEMBERS,
                         GatewayIntent.GUILD_PRESENCES,
@@ -78,24 +115,33 @@ public class NPLAYModerationBot extends AbstractModule {
                 .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
                 .build().awaitReady();
 
-        guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
+        Runtime.getRuntime().addShutdownHook(new Thread(jda::shutdown));
 
-        serverlog = new Serverlog();
+        return jda;
+    }
 
-        Fluava fluava = Fluava.builder()
+    private Fluava fluava() {
+        return Fluava.builder()
                 .fallback(Locale.GERMAN)
                 .bundleRoot("localization")
                 .functions(config ->
                         config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
-                               result(Helpers.formatUser(jda, user)), UserSnowflake.class)
+                                result(Helpers.formatUser(jda, user)), UserSnowflake.class)
                         ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
                                 result("%s (%s)".formatted(DATE_TIME_LONG.format(time.time()), RELATIVE.atTimestamp(time.time()))), RelativeTime.class)
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
                                 result(DATE_TIME_SHORT.format(time.time())), AbsoluteTime.class)
                         )
                 ).build();
+    }
 
-        jdaCommands = JDACommands.builder(jda)
+    // TODO workaround until Fluava improves API
+    private Result<Text> result(String value) {
+        return new Success<>(new Text(value));
+    }
+
+    private JDACommands jdaCommands(Fluava parent) {
+        return JDACommands.builder(jda)
                 .packages("de.nplay.moderationbot")
                 .embeds(config -> config
                         .sources(
@@ -109,31 +155,23 @@ public class NPLAYModerationBot extends AbstractModule {
                                 entry("colorWarning", EmbedColors.WARNING),
                                 entry("colorError", EmbedColors.ERROR)
                         )
-                ).localizer(new FluavaLocalizer(fluava))
+                ).localizer(new FluavaLocalizer(parent))
                 .globalCommandConfig(CommandConfig.of(config -> config
                         .enabledPermissions(Permission.MODERATE_MEMBERS)
                         .integration(IntegrationType.GUILD_INSTALL)
                         .context(InteractionContextType.GUILD))
                 ).extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
+    }
 
-        // TODO remove
-        Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
-                uni((color, _) -> lossless(Color.decode(color.hex)))
-        );
-
-        jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));
-
-        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("Hört euren Nachrichten zu"), false);
-
+    private void database() {
         var dataSource = DataSourceCreator.create(PostgreSql.get())
                 .configure(config -> config.host(System.getenv("POSTGRES_HOST"))
                         .port(System.getenv("POSTGRES_PORT"))
                         .user(System.getenv("POSTGRES_USER"))
                         .password(System.getenv("POSTGRES_PASSWORD"))
                         .database(System.getenv("POSTGRES_DATABASE"))
-                )
-                .create()
+                ).create()
                 .build();
 
         var config = QueryConfiguration.builder(dataSource)
@@ -147,33 +185,6 @@ public class NPLAYModerationBot extends AbstractModule {
         } catch (SQLException | IOException e) {
             throw new RuntimeException("Failed to migrate database!", e);
         }
-
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
-                () -> ModerationActService.getToRevert().forEach(it ->
-                        it.revert(guild, jdaCommands::embed, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
-                ), 0, 1, TimeUnit.MINUTES);
-    }
-
-    public static NPLAYModerationBot start(String guildId, String token) throws InterruptedException {
-        return new NPLAYModerationBot(guildId, token);
-    }
-
-    public void shutdown() {
-        jda.shutdown();
-    }
-
-    @Provides
-    public Serverlog serverlog() {
-        return serverlog;
-    }
-
-    @Provides
-    public ModerationActLock moderationActLock() {
-        return moderationActLock;
-    }
-
-    private Result<Text> result(String value) {
-        return new Success<>(new Text(value));
     }
 
     @Deprecated

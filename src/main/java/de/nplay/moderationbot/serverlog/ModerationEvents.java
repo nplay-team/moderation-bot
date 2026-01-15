@@ -3,7 +3,7 @@ package de.nplay.moderationbot.serverlog;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
+import de.nplay.moderationbot.ModerationBot.EmbedColors;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import net.dv8tion.jda.api.JDA;

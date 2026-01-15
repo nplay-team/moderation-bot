@@ -4,7 +4,7 @@ import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.NPLAYModerationBot.EmbedColors;
+import de.nplay.moderationbot.ModerationBot.EmbedColors;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
