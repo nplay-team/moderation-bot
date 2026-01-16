@@ -1,41 +1,4 @@
 {
-  "moderationActTargetInfo": {
-    "title": "{ $title }",
-    "description": "{ $description }",
-    "color": "{ $color }",
-    "fields": [
-      {
-        "name": "Begründung",
-        "value": "{ $reason }",
-        "inline": true
-      },
-      {
-        "name": "Datum",
-        "value": "{ $date }",
-        "inline": true
-      },
-      {
-        "name": "Aufhebung",
-        "value": "{ $until }"
-      },
-      {
-        "name": "Regel, gegen die du verstoßen hast",
-        "value": "{ $paragraph }",
-        "inline": false
-      },
-      {
-        "name": "ID",
-        "value": "#{ $id }"
-      },
-      {
-        "name": "Referenznachricht",
-        "value": "> { $referenceMessage }"
-      }
-    ],
-    "footer": {
-      "text": "Bei Fragen oder Problemen wende dich bitte an den Ticket-Support!"
-    }
-  },
   "moderationActReverted": {
     "title": "{ $type } aufgehoben",
     "description": "Dein { $type } auf dem **NPLAY** Discord Server wurde aufgehoben!",
