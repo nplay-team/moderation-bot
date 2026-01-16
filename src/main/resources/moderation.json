@@ -1,28 +1,4 @@
 {
-  "moderationActReverted": {
-    "title": "{ $type } aufgehoben",
-    "description": "Dein { $type } auf dem **NPLAY** Discord Server wurde aufgehoben!",
-    "fields": [
-      {
-        "name": "{ $type } vom",
-        "value": "{ $date }",
-        "inline": true
-      },
-      {
-        "name": "ID",
-        "value": "#{ $id }"
-      },
-      {
-        "name": "Begründung",
-        "value": "{ $reason }"
-      },
-      {
-        "name": "Revidierender Moderator",
-        "value": "{ $revertedBy }"
-      }
-    ],
-    "color": "{ $colorSuccess }"
-  },
   "reversionSuccessful": {
     "title": "Erfolgreich",
     "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich rückgängig gemacht!",

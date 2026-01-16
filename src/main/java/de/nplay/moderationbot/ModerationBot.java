@@ -21,6 +21,7 @@ import dev.goldmensch.fluava.Result.Success;
 import dev.goldmensch.fluava.function.Function;
 import dev.goldmensch.fluava.function.Value.Text;
 import io.github.kaktushose.jdac.JDACommands;
+import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
 import io.github.kaktushose.jdac.embeds.EmbedDataSource;
 import io.github.kaktushose.jdac.guice.GuiceExtensionData;
@@ -80,7 +81,7 @@ public class ModerationBot extends AbstractModule {
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> ModerationActService.getToRevert().forEach(it ->
-                        it.revert(guild, jdaCommands::embed, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
+                        it.revert(guild ,jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
                 ), 0, 1, TimeUnit.MINUTES);
 
         Thread.setDefaultUncaughtExceptionHandler((_, e) -> log.error("An uncaught exception has occurred!", e));

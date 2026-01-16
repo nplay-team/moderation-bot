@@ -5,6 +5,7 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.ModerationBot.EmbedColors;
+import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
@@ -13,8 +14,12 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
+import de.nplay.moderationbot.util.SeparatedContainer;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.embeds.Embed;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
+import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
@@ -26,7 +31,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static de.nplay.moderationbot.Helpers.formatTimestamp;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
@@ -65,6 +69,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return TextDisplay.of("### %s\n%s\n-# Moderator: %s".formatted(headLine, reason, Helpers.formatUser(event.getJDA(), issuer)));
     }
 
+    @Deprecated
     public Field toField(ReplyableEvent<?> event) {
         String headLine = "#%s | %s | %s".formatted(id, event.resolve(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
         List<String> bodyLines = new ArrayList<>();
@@ -87,6 +92,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
         );
     }
 
+    @Deprecated
     public Embed toEmbed(ReplyableEvent<?> event) {
         var embed = event.embed("moderationActDetail");
         embed.placeholders(
@@ -113,7 +119,11 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return embed;
     }
 
-    public RevertedModerationAct revert(Guild guild, Function<String, Embed> embedFunction, User revertedBy, String reason) {
+    public RevertedModerationAct revert(ReplyableEvent<?> event, String reason) {
+        return revert(event.getGuild(), event.getUser(), reason);
+    }
+
+    public RevertedModerationAct revert(Guild guild, User revertedBy, String reason) {
         if (this instanceof RevertedModerationAct reverted) {
             return reverted;
         }
@@ -131,20 +141,26 @@ public sealed class ModerationAct permits RevertedModerationAct {
             case TIMEOUT -> Helpers.complete(guild.retrieveMember(user).flatMap(Member::removeTimeout));
         }
 
-        sendRevertMessageToUser(guild, embedFunction, revertedBy, reason);
+        sendRevertMessageToUser(guild, revertedBy, reason);
         return (RevertedModerationAct) ModerationActService.get(id).orElseThrow();
     }
 
-    private void sendRevertMessageToUser(Guild guild, Function<String, Embed> embedFunction, User revertedBy, String reason) {
-        var embed = embedFunction.apply("moderationActReverted").placeholders(
-                entry("type", type == ModerationActType.TIMEOUT ? "Timeout" : "Warn"),
-                entry("date", DEFAULT.format(createdAt.getTime())),
+    @Bundle("revert")
+    private void sendRevertMessageToUser(Guild guild, User revertedBy, String reason) {
+        SeparatedContainer container = new SeparatedContainer(
+                TextDisplay.of("revert-info"),
+                Separator.createDivider(Separator.Spacing.SMALL),
+                entry("type", type)
+        ).withAccentColor(Replies.SUCCESS);
+        container.add(
+                TextDisplay.of("revert-info.body"),
                 entry("id", id),
-                entry("reason", reason),
-                entry("revertedBy", Helpers.formatUser(guild.getJDA(), revertedBy))
+                entry("date", createdAt()),
+                entry("reason", reason)
         );
+        container.add(TextDisplay.of("revert-info.reverter"), entry("revertedBy", revertedBy));
 
-        Helpers.sendDM(user, guild.getJDA(), channel -> channel.sendMessageEmbeds(embed.build()));
+        Helpers.sendDM(user, guild.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
 
     public long id() {

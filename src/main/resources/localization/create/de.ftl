@@ -86,8 +86,8 @@ executed =
     { "**Referenznachricht**" }
     > { $message }
 
-########## Target Info ##########
-target-info =
+########## Act Target Info ##########
+act-info =
     ### { $type }
     { $description ->
         *[warn] Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!

@@ -172,26 +172,26 @@ public class ModerationActBuilder {
             case KICK, TEMP_BAN, BAN -> Replies.ERROR;
         };
         SeparatedContainer container = new SeparatedContainer(
-                TextDisplay.of("target-info"),
+                TextDisplay.of("act-info"),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("type", type.localized(event.getUserLocale())),
                 entry("description", type.localizationKey())
-        ).footer(TextDisplay.of("target-info.footer"), true).withAccentColor(color);
+        ).footer(TextDisplay.of("act-info.footer"), true).withAccentColor(color);
 
         container.add(
-                TextDisplay.of("target-info.reason"),
+                TextDisplay.of("act-info.reason"),
                 entry("id", act.id()),
                 entry("reason", act.reason()),
                 entry("date", act.createdAt())
         );
         act.revokeAt().ifPresent(it ->
-                container.add(TextDisplay.of("target-info.revoke"), entry("until", it))
+                container.add(TextDisplay.of("act-info.revoke"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
-                container.add(TextDisplay.of("target-info.paragraph"), entry("paragraph", it.fullDisplay()))
+                container.add(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
         );
         act.referenceMessage().ifPresent(it ->
-                container.add(TextDisplay.of("target-info.reference"), entry("message", it.content()))
+                container.add(TextDisplay.of("act-info.reference"), entry("message", it.content()))
         );
 
         Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());

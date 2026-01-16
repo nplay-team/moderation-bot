@@ -28,7 +28,7 @@ public class RevertCommand {
             event.with().embeds("reversionFailed", entry("id", moderationAct.id())).reply();
             return;
         }
-        RevertedModerationAct reverted = moderationAct.revert(event.getGuild(), event::embed, event.getUser(), reason);
+        RevertedModerationAct reverted = moderationAct.revert(event, reason);
         serverlog.onEvent(ModerationEvents.Reverted(event.getJDA(), event.getGuild(), reverted), event);
         event.with().embeds("reversionSuccessful", entry("id", moderationAct.id())).reply();
     }
