@@ -21,7 +21,6 @@ import dev.goldmensch.fluava.Result.Success;
 import dev.goldmensch.fluava.function.Function;
 import dev.goldmensch.fluava.function.Value.Text;
 import io.github.kaktushose.jdac.JDACommands;
-import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
 import io.github.kaktushose.jdac.embeds.EmbedDataSource;
 import io.github.kaktushose.jdac.guice.GuiceExtensionData;
@@ -35,6 +34,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -81,7 +81,7 @@ public class ModerationBot extends AbstractModule {
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> ModerationActService.getToRevert().forEach(it ->
-                        it.revert(guild ,jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer")
+                        it.revert(guild, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer", DiscordLocale.GERMAN)
                 ), 0, 1, TimeUnit.MINUTES);
 
         Thread.setDefaultUncaughtExceptionHandler((_, e) -> log.error("An uncaught exception has occurred!", e));

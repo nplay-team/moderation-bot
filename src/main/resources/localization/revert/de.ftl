@@ -12,3 +12,12 @@ revert-info =
     .reverter =
     { "**Revidierender Moderator**" }
     { $revertedBy }
+revert-successful =
+    ### Erfolgreich
+    Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich rückgängig gemacht!
+revert-failed =
+    ### Fehler
+    Die Moderationshandlung mit der ID **#{ $id }** wurde bereits rückgängig gemacht!
+delete-successful =
+    ### Erfolgreich
+    Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich gelöscht!

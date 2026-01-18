@@ -1,14 +1,4 @@
 {
-  "reversionSuccessful": {
-    "title": "Erfolgreich",
-    "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich rückgängig gemacht!",
-    "color": "{ $colorSuccess }"
-  },
-  "deletionSuccessful": {
-    "title": "Erfolgreich",
-    "description": "Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich gelöscht!",
-    "color": "{ $colorSuccess }"
-  },
   "modlogHeader": {
     "author": {
       "name": "{ $username }",
@@ -104,10 +94,5 @@
       }
     ],
     "color": "{ $colorSuccess }"
-  },
-  "reversionFailed": {
-    "title": "Fehler",
-    "description": "Die Moderationshandlung mit der ID **#{id}** wurde bereits rückgängig gemacht!",
-    "color": "{ $colorError }"
   }
 }

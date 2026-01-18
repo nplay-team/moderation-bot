@@ -18,11 +18,11 @@ import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.embeds.Embed;
-import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
@@ -119,11 +119,13 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return embed;
     }
 
+    @Bundle("revert")
     public RevertedModerationAct revert(ReplyableEvent<?> event, String reason) {
-        return revert(event.getGuild(), event.getUser(), reason);
+        return revert(event.getGuild(), event.getUser(), reason, event.getUserLocale());
     }
 
-    public RevertedModerationAct revert(Guild guild, User revertedBy, String reason) {
+    @Bundle("revert")
+    public RevertedModerationAct revert(Guild guild, User revertedBy, String reason, DiscordLocale locale) {
         if (this instanceof RevertedModerationAct reverted) {
             return reverted;
         }
@@ -141,16 +143,15 @@ public sealed class ModerationAct permits RevertedModerationAct {
             case TIMEOUT -> Helpers.complete(guild.retrieveMember(user).flatMap(Member::removeTimeout));
         }
 
-        sendRevertMessageToUser(guild, revertedBy, reason);
+        sendRevertMessageToUser(guild, revertedBy, reason, locale);
         return (RevertedModerationAct) ModerationActService.get(id).orElseThrow();
     }
 
-    @Bundle("revert")
-    private void sendRevertMessageToUser(Guild guild, User revertedBy, String reason) {
+    private void sendRevertMessageToUser(Guild guild, User revertedBy, String reason, DiscordLocale locale) {
         SeparatedContainer container = new SeparatedContainer(
                 TextDisplay.of("revert-info"),
                 Separator.createDivider(Separator.Spacing.SMALL),
-                entry("type", type)
+                entry("type", type.localized(locale))
         ).withAccentColor(Replies.SUCCESS);
         container.add(
                 TextDisplay.of("revert-info.body"),
