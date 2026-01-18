@@ -15,7 +15,6 @@ import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.Moderati
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.util.SeparatedContainer;
-import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.embeds.Embed;
 import net.dv8tion.jda.api.components.separator.Separator;
@@ -119,12 +118,10 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return embed;
     }
 
-    @Bundle("revert")
     public RevertedModerationAct revert(ReplyableEvent<?> event, String reason) {
         return revert(event.getGuild(), event.getUser(), reason, event.getUserLocale());
     }
 
-    @Bundle("revert")
     public RevertedModerationAct revert(Guild guild, User revertedBy, String reason, DiscordLocale locale) {
         if (this instanceof RevertedModerationAct reverted) {
             return reverted;
@@ -149,17 +146,17 @@ public sealed class ModerationAct permits RevertedModerationAct {
 
     private void sendRevertMessageToUser(Guild guild, User revertedBy, String reason, DiscordLocale locale) {
         SeparatedContainer container = new SeparatedContainer(
-                TextDisplay.of("revert-info"),
+                TextDisplay.of("revert$revert-info"),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("type", type.localized(locale))
         ).withAccentColor(Replies.SUCCESS);
         container.add(
-                TextDisplay.of("revert-info.body"),
+                TextDisplay.of("revert$revert-info.body"),
                 entry("id", id),
                 entry("date", createdAt()),
                 entry("reason", reason)
         );
-        container.add(TextDisplay.of("revert-info.reverter"), entry("revertedBy", revertedBy));
+        container.add(TextDisplay.of("revert$revert-info.reverter"), entry("revertedBy", revertedBy));
 
         Helpers.sendDM(user, guild.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
