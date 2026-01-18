@@ -90,11 +90,11 @@ executed =
 act-info =
     ### { $type }
     { $description ->
-        *[warn] Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
-        [timeout] Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!
-        [kick] Du wurdest vom **NPLAY** Discord Server gekickt!
-        [temp-ban] Du wurdest temporär vom **NPLAY** Discord Server gebannt!
-        [ban] Du wurdest vom **NPLAY** Discord Server gebannt!
+        *[WARN] Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
+        [TIMEOUT] Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!
+        [KICK] Du wurdest vom **NPLAY** Discord Server gekickt!
+        [TEMP_BAN] Du wurdest temporär vom **NPLAY** Discord Server gebannt!
+        [BAN] Du wurdest vom **NPLAY** Discord Server gebannt!
     }
     .reason =
     { "**ID**" }

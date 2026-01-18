@@ -175,7 +175,7 @@ public class ModerationActBuilder {
                 TextDisplay.of("act-info"),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("type", type.localized(event.getUserLocale())),
-                entry("description", type.localizationKey())
+                entry("description", type)
         ).footer(TextDisplay.of("act-info.footer"), true).withAccentColor(color);
 
         container.add(
