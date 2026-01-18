@@ -38,9 +38,10 @@ public final class Helpers {
         completeOpt(restAction);
     }
 
+    @SuppressWarnings("OptionalOfNullableMisuse")
     public static <T> Optional<T> completeOpt(RestAction<T> restAction) {
         try {
-            return Optional.of(restAction.complete());
+            return Optional.ofNullable(restAction.complete());
         } catch (ErrorResponseException e) {
             if (!ALLOWED_ERRORS.contains(e.getErrorResponse())) {
                 throw e;

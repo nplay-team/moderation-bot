@@ -103,7 +103,7 @@ act-info =
     { $date }
     { "**Begründung**" }
     { $reason }
-    .until =
+    .revoke =
     { "**Aktiv bis**" }
     { $until }
     .paragraph =
