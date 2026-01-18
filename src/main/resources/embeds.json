@@ -33,25 +33,6 @@
     "description": "Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!",
     "color": "{ $colorSuccess }"
   },
-  "configSet": {
-    "title": "Einstellung { $key } gesetzt",
-    "description": "{ $value }",
-    "color": "{ $colorSuccess }"
-  },
-  "configGet": {
-    "title": "Einstellung { $key }",
-    "description": "{ $value }",
-    "color": "{ $colorDefault }"
-  },
-  "configNotSet": {
-    "title": "Fehler",
-    "description": "Die Einstellung **{ $key }** wurde noch nicht konfiguriert!",
-    "color": "{ $colorError }"
-  },
-  "configList": {
-    "title": "Einstellungen",
-    "color": "{ $colorDefault }"
-  },
   "spielersucheAlreadyBlocked": {
     "title": "Fehler",
     "description": "Der Benutzer { $target } ist bereits blockiert!",

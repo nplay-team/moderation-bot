@@ -1,5 +1,7 @@
 package de.nplay.moderationbot.config;
 
+import de.nplay.moderationbot.Replies;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.CommandConfig;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -14,6 +16,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
+@Bundle("config")
 @Interaction("config")
 @Permissions(BotPermissions.ADMINISTRATOR)
 @CommandConfig(enabledFor = Permission.ADMINISTRATOR)
@@ -31,20 +34,17 @@ public class ConfigCommands {
 
     private void onConfigSet(CommandEvent event, BotConfig config, String value) {
         ConfigService.set(config, value);
-        event.with().embeds("configSet", entry("key", config.toString()), entry("value", value)).reply();
+        event.reply(Replies.success("config-set"), entry("key", config.toString()), entry("value", value));
     }
 
     @Command("list")
     public void listConfig(CommandEvent event) {
-        var configs = BotConfig.configs();
+        var spielersucheRole = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
+        var serverlogChannel = ConfigService.get(BotConfig.SERVERLOG_KANAL);
 
-        var embed = event.embed("configList");
-
-        configs.forEach(config -> {
-            var value = ConfigService.get(config);
-            embed.fields().add(new Field(config.toString(), value.orElse(event.resolve("no-value-set")), false));
-        });
-
-        event.with().embeds(embed).reply();
+        event.reply(Replies.standard("config-list"),
+                entry("role", spielersucheRole.orElse("not set")),
+                entry("serverlog", serverlogChannel.orElse("not set"))
+        );
     }
 }
