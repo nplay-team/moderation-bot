@@ -5,21 +5,6 @@
 -paragraph = paragraph
 -paragraph-description = Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?
 
-# Config
-## General
-no-value-set = Nicht gesetzt
-## Set Rolle
-config-set-spielersuche-ausschluss-rolle-description = Setzt die Rolle für die Spielersuche Auschluss Funktion.
-config-set-spielersuche-ausschluss-rolle-options-role-name = rolle
-config-set-spielersuche-ausschluss-rolle-options-role-description = Die Rolle, welche der User erhalten soll, wenn er von der Spielersuche ausgeschlossen wird.
-## Set Serverlog
-config-set-serverlog-kanal-description = Setzt den Textkanal für den Serverlog.
-config-set-serverlog-kanal-options-channel-name = { -channel }
-config-set-serverlog-kanal-options-channel-description = Der Text-Kanal in denen die Bot-Logs gesendet werden sollen.
-## List
-config-list-description = Listet alle Konfigurationen auf
-
-
 # Permissions
 permissions-none = Keine Berechtigungen (löscht automatisch alle)
 permissions-select = Wähle eine oder mehrere Berechtigungen aus
@@ -41,11 +26,6 @@ mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gl
 mod-purge-messages-options-amount-name = anzahl
 mod-purge-messages-options-amount-description = Anzahl der Nachrichten die gelöscht werden sollen
 
-## Delete
-mod-delete-description = Löscht eine Moderationshandlung
-mod-delete-options-moderation_act-name = id
-mod-delete-options-moderation_act-description = Die ID der Moderationshandlung, die gelöscht werden soll.
-
 ## Detail
 mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung an
 mod-detail-options-moderation_act-name = id
@@ -59,14 +39,6 @@ mod-log-options-page-name = seite
 mod-log-options-page-description = Die Seite, die angezeigt werden soll
 mod-log-options-count-name = seiten
 mod-log-options-count-description = Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)
-
-## Revert
-mod-revert-description = Hebt eine Moderationshandlung auf
-mod-revert-options-moderation_act-name = id
-mod-revert-options-moderation_act-description = Die ID der Moderationshandlung, die aufgehoben werden soll.
-mod-revert-options-reason-name = grund
-mod-revert-options-reason-description = Der Grund für die Aufhebung.
-
 
 # Notes
 ## Create

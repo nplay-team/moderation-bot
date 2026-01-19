@@ -10,7 +10,6 @@ import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
@@ -43,8 +42,8 @@ public class ConfigCommands {
         var serverlogChannel = ConfigService.get(BotConfig.SERVERLOG_KANAL);
 
         event.reply(Replies.standard("config-list"),
-                entry("role", spielersucheRole.orElse("not set")),
-                entry("serverlog", serverlogChannel.orElse("not set"))
+                entry("role", spielersucheRole.orElse("no-value-set")),
+                entry("serverlog", serverlogChannel.orElse("no-value-set"))
         );
     }
 }
