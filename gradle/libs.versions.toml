@@ -1,5 +1,5 @@
 [versions]
-jda = "6.2.0"
+jda = "6.3.0"
 jda-commands = "5.0.0-SNAPSHOT"
 jdwebhooks = "1.0.1"
 logback = "1.5.13"
