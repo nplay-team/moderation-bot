@@ -21,12 +21,11 @@ import dev.goldmensch.fluava.Result.Success;
 import dev.goldmensch.fluava.function.Function;
 import dev.goldmensch.fluava.function.Value.Text;
 import io.github.kaktushose.jdac.JDACommands;
-import io.github.kaktushose.jdac.configuration.Property;
+import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
 import io.github.kaktushose.jdac.embeds.EmbedDataSource;
 import io.github.kaktushose.jdac.guice.GuiceExtensionData;
 import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
-import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import io.github.kaktushose.proteus.Proteus;
 import io.github.kaktushose.proteus.type.Type;
 import net.dv8tion.jda.api.JDA;
@@ -48,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -62,7 +62,6 @@ public class ModerationBot extends AbstractModule {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationBot.class);
     private final JDA jda;
-    private final JDACommands jdaCommands;
     private final Guild guild;
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
@@ -74,7 +73,7 @@ public class ModerationBot extends AbstractModule {
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
         serverlog = new Serverlog();
 
-        jdaCommands = jdaCommands(fluava());
+        JDACommands jdaCommands = jdaCommands(fluava());
         // TODO remove once EmbedColors is gone
         Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
                 uni((color, _) -> lossless(Color.decode(color.hex)))
@@ -159,6 +158,7 @@ public class ModerationBot extends AbstractModule {
                                 entry("colorError", EmbedColors.ERROR)
                         )
                 ).localizer(new FluavaLocalizer(parent))
+                .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())))
                 .globalCommandConfig(CommandConfig.of(config -> config
                         .enabledPermissions(Permission.MODERATE_MEMBERS)
                         .integration(IntegrationType.GUILD_INSTALL)
