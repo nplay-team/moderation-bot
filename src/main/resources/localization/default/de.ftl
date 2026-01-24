@@ -110,3 +110,8 @@ kick = Kick
 timeout = Timeout
 temp-ban = Temporärer Bann
 ban = Bann
+
+## Adapters
+invalid-duration = Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an!
+invalid-link = Der angegebene Link ist nicht gültig!
+invalid-act = Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!

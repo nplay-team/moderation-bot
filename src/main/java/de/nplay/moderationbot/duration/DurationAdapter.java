@@ -1,7 +1,10 @@
 package de.nplay.moderationbot.duration;
 
+import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.adapter.TypeAdapter;
 import io.github.kaktushose.jdac.guice.Implementation;
+import io.github.kaktushose.jdac.introspection.Introspection;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import io.github.kaktushose.proteus.mapping.MappingResult;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -9,6 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -16,12 +21,18 @@ import java.util.regex.Pattern;
 public class DurationAdapter implements TypeAdapter<String, Duration> {
 
     private static final Logger log = LoggerFactory.getLogger(DurationAdapter.class);
+    private final MessageResolver resolver;
+
+    public DurationAdapter() {
+        resolver = Introspection.scopedGet(Property.MESSAGE_RESOLVER);
+    }
 
     @Override
     public MappingResult<Duration> from(String source, MappingContext<String, Duration> context) {
+        Locale locale = Introspection.scopedGet(Property.JDA_EVENT).getUserLocale().toLocale();
         return parse(source)
                 .map(it -> (MappingResult<Duration>) MappingResult.lossless(it))
-                .orElse(MappingResult.failure("Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an."));
+                .orElse(MappingResult.failure(resolver.resolve("invalid-duration", locale, Map.of())));
     }
 
     public Optional<Duration> parse(@Nullable String raw) {
