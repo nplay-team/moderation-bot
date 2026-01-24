@@ -104,7 +104,7 @@ act-target = Betroffener Nutzer
 act-reason = Begründung
 active-until = Aktiv bis
 
-########## ModerationActType ##########
+## ModerationActType
 warn = Verwarnung
 kick = Kick
 timeout = Timeout
