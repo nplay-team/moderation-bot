@@ -4,14 +4,26 @@ permissions-member-options-member-name = { -target }
 permissions-member-options-member-description = Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.
 permissions-select = Wähle eine oder mehrere Berechtigungen aus
 member =
-    ## Berechtigungen von { $member }
-    { "-# kombiniert aus User & Rollen Berechtigungen" }
-    .edit =
-        ### Berechtigungen bearbeiten
-        { "-# Nutze `/permissions role` für die Rollen Berechtigungen" }
-    .list =
-        ### Aktuelle Berechtigungen
-        { $permissions }
+    ## Berechtigungen von { $target }
+    -# kombiniert aus User & Rollen Berechtigungen
+    .hint = -# Nutze `/permissions role` für die Rollen Berechtigungen
+
+## Manage Role
+permissions-role-description = Verwaltet die Berechtigungen einer Rolle.
+permissions-role-options-role-name = rolle
+permissions-role-options-role-description = Die Rolle, dessen Berechtigungen bearbeitet werden sollen.
+role =
+    ## Berechtigungen von { $target }
+    -# betrifft { $count } User
+    .hint = -# Nutze `/permissions member` für User Berechtigungen
+
+## Shared
+list =
+    ### Aktuelle Berechtigungen
+    { $permissions }
+edit =
+    ### Berechtigungen bearbeiten
+    { $hint }
     .modify = :tools: Bearbeiten
     .save = :floppy_disk: Speichern
     .remove = :wastebasket: Alle löschen
@@ -20,11 +32,6 @@ confirm =
     Möchtest du wirklich alle Berechtigungen löschen?
     .confirm = :wastebasket: Löschen
     .cancel = :x: Abbrechen
-
-## Manage Role
-permissions-manage-role-description = Verwaltet die Berechtigungen einer Rolle.
-permissions-manage-role-options-role-name = rolle
-permissions-manage-role-options-role-description = Die Rolle, dessen Berechtigungen bearbeitet werden sollen.
 
 ## Bot Permissions
 admin = Administrator
