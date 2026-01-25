@@ -9,6 +9,9 @@
 mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig
 mod-purge-messages-options-amount-name = anzahl
 mod-purge-messages-options-amount-description = Anzahl der Nachrichten die gelöscht werden sollen
+purge-success =
+    ### Erfolgreich
+    Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!
 
 ## Detail
 mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung an
@@ -58,19 +61,6 @@ slowmode-set-options-channel-description = Der Channel, für den der Slowmode ge
 slowmode-remove-description = Entfernt den Slowmode für diesen Channel.
 slowmode-remove-options-channel-name = { -channel }
 slowmode-remove-options-channel-description = Der Channel, für den der Slowmode entfernt werden soll.
-
-# Spielersuche
-## Ausschluss
-spielersuche-ausschluss-description = Schließt einen User von der Spielersuche aus und verwarnt ihn
-spielersuche-ausschluss-options-target-name = { -target }
-spielersuche-ausschluss-options-target-description = Der User, der ausgeschlossen werden soll
-spielersuche-ausschluss-options-paragraph-name = { -paragraph }
-spielersuche-ausschluss-options-paragraph-description = { -paragraph-description }
-spielersuche-ausschluss-reason = Du hast erneut gegen die Spielersucheregeln verstoßen **und wurdest von der Spielersuche ausgeschlossen!**
-## Freigeben
-spielersuche-freigeben-description = Hebt den Ausschluss eines Users von der Spielersuche auf
-spielersuche-freigeben-options-target-name = { -target }
-spielersuche-freigeben-options-target-description = Der User, dessen Ausschluss aufgehoben werden soll
 
 # Embeds
 ## Modlog

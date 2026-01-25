@@ -18,56 +18,7 @@
     "description": "Die Notiz mit der ID **${ $id }** existiert nicht!",
     "color": "{ $colorError }"
   },
-  "bulkDeleteSuccessful": {
-    "title": "Erfolgreich",
-    "description": "Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!",
-    "color": "{ $colorSuccess }"
-  },
-  "spielersucheAlreadyBlocked": {
-    "title": "Fehler",
-    "description": "Der Benutzer { $target } ist bereits blockiert!",
-    "color": "{ $colorError }"
-  },
-  "spielersucheBlockSuccess": {
-    "title": "Erfolgreich",
-    "description": "Der Benutzer { $target } wurde erfolgreich von der Spielersuche blockiert!",
-    "color": "{ $colorSuccess }"
-  },
-  "spielersucheUnblockSuccess": {
-    "title": "Erfolgreich",
-    "description": "Der Benutzer { $target } wurde erfolgreich für die Spielersuche wieder freigegeben!",
-    "color": "{ $colorSuccess }"
-  },
-  "spielersucheNotBlocked": {
-    "title": "Fehler",
-    "description": "Der Benutzer { $target } ist nicht blockiert!",
-    "color": "{ $colorError }"
-  },
-  "spielersucheUnblockForTarget": {
-    "title": "Spielersuche-Freigabe",
-    "description": "Du wurdest soeben für die Spielersuche wieder freigegeben! Bitte achte in Zukunft verstärkt auf die kanalspezifischen Regeln!",
-    "fields": [
-      {
-        "name": "Moderator",
-        "value": "{ $issuer }"
-      },
-      {
-        "name": "Datum",
-        "value": "{ $createdAt }"
-      }
-    ],
-    "color": "{ $colorDefault }"
-  },
-  "spielersucheRoleError": {
-    "title": "Fehler",
-    "description": "Die Spielersuche-Ausschluss-Rolle existiert nicht mehr oder wurde noch nicht konfiguriert!",
-    "color": "{ $colorError }"
-  },
-  "durationParsingFailed": {
-    "title": "Fehler",
-    "description": "Die Dauer konnte nicht korrekt eingelesen werden. Bitte verwende das Format **Xd Yh Zm**!\nEingabe: `{ $duration }`",
-    "color": "{ $colorError }"
-  },
+
   "slowmodeInfo": {
     "title": "Slowmode Info <#{ $channelId }>",
     "description": "Der Slowmode für diesen Kanal beträgt **{ $duration }**!",

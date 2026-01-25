@@ -5,6 +5,7 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.util.SeparatedContainer;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.introspection.Introspection;
@@ -166,6 +167,7 @@ public class ModerationActBuilder {
         return act;
     }
 
+    @Bundle("create")
     private void sendModerationToTarget(ModerationAct act, ReplyableEvent<?> event) {
         Color color = switch (act.type()) {
             case WARN, TIMEOUT -> Replies.WARNING;
