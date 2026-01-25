@@ -5,22 +5,6 @@
 -paragraph = paragraph
 -paragraph-description = Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?
 
-# Permissions
-permissions-none = Keine Berechtigungen (löscht automatisch alle)
-permissions-select = Wähle eine oder mehrere Berechtigungen aus
-## List
-permissions-list-description = Zeigt die Berechtigungen eines Benutzers an
-permissions-list-options-member-name = { -target }
-permissions-list-options-member-description = Der Benutzer, dessen Berechtigungen abgerufen werden sollen.
-## Member
-permissions-manage-member-description = Verwaltet die Berechtigungen eines Benutzers.
-permissions-manage-member-options-member-name = { -target }
-permissions-manage-member-options-member-description = Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.
-## Role
-permissions-manage-role-description = Verwaltet die Berechtigungen einer Rolle.
-permissions-manage-role-options-role-name = rolle
-permissions-manage-role-options-role-description = Die Rolle, dessen Berechtigungen bearbeitet werden sollen.
-
 ## BulkDelete
 mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig
 mod-purge-messages-options-amount-name = anzahl

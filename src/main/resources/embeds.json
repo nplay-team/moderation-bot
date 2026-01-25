@@ -1,14 +1,4 @@
 {
-  "permissionsEdit": {
-    "title": "Berechtigungen von **{ $target }**",
-    "description": "Bitte wähle die Berechtigungen in dem Select-Menu aus:",
-    "color": "{ $colorDefault }"
-  },
-  "permissionsList": {
-    "title": "Berechtigungen von **{ $target }**",
-    "description": "{ $permissions }",
-    "color": "{ $colorDefault }"
-  },
   "noteList": {
     "title": "Notizen von **{ $target }**",
     "color": "{ $colorDefault }"

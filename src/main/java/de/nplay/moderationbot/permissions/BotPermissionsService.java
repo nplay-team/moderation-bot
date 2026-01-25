@@ -1,11 +1,12 @@
 package de.nplay.moderationbot.permissions;
 
-import io.github.kaktushose.jdac.dispatching.context.InvocationContext;
 import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
+import io.github.kaktushose.jdac.dispatching.context.InvocationContext;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
@@ -110,8 +111,13 @@ public class BotPermissionsService {
         }
 
         /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
-        public String readableList() {
-            return String.join("\n", BotPermissions.decode(permissions).stream().map(it -> it.displayName).toList());
+        public String readableList(ReplyableEvent<?> event) {
+            if (permissions == 0) {
+                return event.resolve("- %s".formatted(event.resolve("perm-none")));
+            }
+            return String.join("\n", BotPermissions.decode(permissions).stream()
+                    .map(it -> "- %s".formatted(event.resolve(it.localizationKey)))
+                    .toList());
         }
     }
 }
