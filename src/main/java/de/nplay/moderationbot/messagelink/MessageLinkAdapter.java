@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.messagelink;
 
+import com.google.inject.Inject;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.adapter.TypeAdapter;
 import io.github.kaktushose.jdac.guice.Implementation;
@@ -14,8 +15,9 @@ public class MessageLinkAdapter implements TypeAdapter<String, MessageLink> {
 
     private final MessageResolver resolver;
 
-    public MessageLinkAdapter() {
-        resolver = Introspection.scopedGet(Property.MESSAGE_RESOLVER);
+    @Inject
+    public MessageLinkAdapter(MessageResolver resolver) {
+        this.resolver = resolver;
     }
 
     @Override

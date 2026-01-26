@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.duration;
 
+import com.google.inject.Inject;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.adapter.TypeAdapter;
 import io.github.kaktushose.jdac.guice.Implementation;
@@ -23,8 +24,9 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
     private static final Logger log = LoggerFactory.getLogger(DurationAdapter.class);
     private final MessageResolver resolver;
 
-    public DurationAdapter() {
-        resolver = Introspection.scopedGet(Property.MESSAGE_RESOLVER);
+    @Inject
+    public DurationAdapter(MessageResolver resolver) {
+        this.resolver = resolver;
     }
 
     @Override

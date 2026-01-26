@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.moderation.act;
 
+import com.google.inject.Inject;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.adapter.TypeAdapter;
 import io.github.kaktushose.jdac.guice.Implementation;
@@ -17,8 +18,9 @@ public class ModerationActAdapter implements TypeAdapter<Long, ModerationAct> {
 
     private final MessageResolver resolver;
 
-    public ModerationActAdapter() {
-        resolver = Introspection.scopedGet(Property.MESSAGE_RESOLVER);
+    @Inject
+    public ModerationActAdapter(MessageResolver resolver) {
+        this.resolver = resolver;
     }
 
     @Override
