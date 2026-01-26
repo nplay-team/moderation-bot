@@ -22,8 +22,6 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
@@ -80,7 +78,7 @@ public class SpielersucheAusschlussCommands {
                 TextDisplay.of("unblock-target"),
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("issuer", event.getUser()),
-                entry("createdAt", new AbsoluteTime(Timestamp.from(Instant.now())))
+                entry("createdAt", AbsoluteTime.now())
         ).add(TextDisplay.of("unblock-target.body")).withAccentColor(Replies.STANDARD);
         Helpers.sendDM(target, event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
 

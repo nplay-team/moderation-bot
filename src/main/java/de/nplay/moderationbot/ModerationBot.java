@@ -21,6 +21,7 @@ import dev.goldmensch.fluava.Result.Success;
 import dev.goldmensch.fluava.function.Function;
 import dev.goldmensch.fluava.function.Value.Text;
 import io.github.kaktushose.jdac.JDACommands;
+import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
 import io.github.kaktushose.jdac.embeds.EmbedDataSource;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -78,7 +80,7 @@ public class ModerationBot extends AbstractModule {
         Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
                 uni((color, _) -> lossless(Color.decode(color.hex)))
         );
-        jda.addEventListener(new SlowmodeEventHandler(jdaCommands::embed));
+        jda.addEventListener(new SlowmodeEventHandler(jdaCommands.property(Property.MESSAGE_RESOLVER)));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> ModerationActService.getToRevert().forEach(it ->
@@ -130,10 +132,11 @@ public class ModerationBot extends AbstractModule {
                         config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
                                 result(Helpers.formatUser(jda, user)), UserSnowflake.class)
                         ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
-                                result("%s (%s)".formatted(DATE_TIME_LONG.format(time.time()), RELATIVE.atTimestamp(time.time()))), RelativeTime.class)
+                                result("%s (%s)".formatted(DATE_TIME_LONG.format(time.millis()), RELATIVE.atTimestamp(time.millis()))), RelativeTime.class)
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
-                                result(DATE_TIME_SHORT.format(time.time())), AbsoluteTime.class)
-                        )
+                                result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class)
+                        ).register("RESOLVED_CHANNEL", Function.implicit((_, channel, _) ->
+                                result(channel.getAsMention()), Channel.class))
                 ).build();
     }
 

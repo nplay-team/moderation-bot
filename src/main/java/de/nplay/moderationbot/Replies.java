@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 
 import java.awt.*;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 public final class Replies {
 
@@ -35,14 +36,22 @@ public final class Replies {
 
     public record AbsoluteTime(Timestamp timestamp) {
 
-        public long time() {
+        public static AbsoluteTime now() {
+            return new AbsoluteTime(Timestamp.from(Instant.now()));
+        }
+
+        public long millis() {
             return timestamp.getTime();
         }
     }
 
     public record RelativeTime(Timestamp timestamp) {
 
-        public long time() {
+        public static RelativeTime ofMillis(long timestamp) {
+            return new RelativeTime(new Timestamp(timestamp));
+        }
+
+        public long millis() {
             return timestamp.getTime();
         }
     }

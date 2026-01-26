@@ -17,41 +17,5 @@
     "title": "Fehler",
     "description": "Die Notiz mit der ID **${ $id }** existiert nicht!",
     "color": "{ $colorError }"
-  },
-
-  "slowmodeInfo": {
-    "title": "Slowmode Info <#{ $channelId }>",
-    "description": "Der Slowmode für diesen Kanal beträgt **{ $duration }**!",
-    "color": "{ $colorDefault }"
-  },
-  "slowmodeSet": {
-    "title": "Slowmode gesetzt <#{ $channelId }>",
-    "description": "Der Slowmode für diesen Kanal wurde auf **{ $duration }** gesetzt!",
-    "color": "{ $colorSuccess }"
-  },
-  "slowmodeNotSet": {
-    "title": "Fehler",
-    "description": "Für den Kanal <#{ $channelId }> wurde kein Slowmode gesetzt!",
-    "color": "{ $colorError }"
-  },
-  "slowmodeRemove": {
-    "title": "Slowmode entfernt <#{ $channelId }>",
-    "description": "Der Slowmode für diesen Kanal wurde entfernt!",
-    "color": "{ $colorDefault }"
-  },
-  "slowmodeMessageRemoved": {
-    "title": "Slowmode - Nachricht entfernt",
-    "description": "Deine Nachricht im Kanal <#{ $channelId }> wurde gelöscht, weil dieser Kanal sich im Slowmode befindet! Zwischen den Nachrichten muss eine Wartezeit von **{ $duration }** liegen.",
-    "fields": [
-      {
-        "name": "Nächste Nachricht möglich",
-        "value": "{ $timestampNextMessage }"
-      },
-      {
-        "name": "Letzte Nachricht",
-        "value": "{ $timestampLastMessage }"
-      }
-    ],
-    "color": "{ $colorDefault }"
   }
 }

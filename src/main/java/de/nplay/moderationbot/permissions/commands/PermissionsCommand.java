@@ -80,7 +80,7 @@ public abstract class PermissionsCommand {
                 container,
                 entry("target", target),
                 entry("hint", event.resolve("%s.%s".formatted(type, "hint"))),
-                entry("count", roleCount.orElseThrow())
+                entry("count", roleCount.orElse(0))
         );
     }
 }
