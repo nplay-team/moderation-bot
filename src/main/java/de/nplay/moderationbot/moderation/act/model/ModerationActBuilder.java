@@ -180,20 +180,20 @@ public class ModerationActBuilder {
                 entry("description", type)
         ).footer(TextDisplay.of("act-info.footer"), true).withAccentColor(color);
 
-        container.add(
+        container.append(
                 TextDisplay.of("act-info.reason"),
                 entry("id", act.id()),
                 entry("reason", act.reason()),
                 entry("date", act.createdAt())
         );
         act.revokeAt().ifPresent(it ->
-                container.add(TextDisplay.of("act-info.revoke"), entry("until", it))
+                container.append(TextDisplay.of("act-info.revoke"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
-                container.add(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
+                container.append(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
         );
         act.referenceMessage().ifPresent(it ->
-                container.add(TextDisplay.of("act-info.reference"), entry("message", it.content()))
+                container.append(TextDisplay.of("act-info.reference"), entry("message", it.content()))
         );
 
         Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());

@@ -149,7 +149,6 @@ public class SlowmodeEventHandler extends ListenerAdapter {
     }
 
     private void notifyUser(User user, JDA jda, Channel channel, Duration duration, OffsetDateTime last) {
-        long lastMillis = last.toInstant().toEpochMilli();
         SeparatedContainer container = new SeparatedContainer(
                 resolver,
                 TextDisplay.of("removed"),
@@ -157,8 +156,8 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                 entry("channel", channel),
                 entry("duration", Helpers.formatDuration(duration))
         ).withAccentColor(Replies.STANDARD);
-        container.add(TextDisplay.of("removed.next"), entry("next", RelativeTime.ofMillis(lastMillis + duration.toMillis())));
-        container.add(TextDisplay.of("removed.last"), entry("last", RelativeTime.ofMillis(lastMillis)));
+        container.append(TextDisplay.of("removed.next"), entry("next", RelativeTime.of(last.plus(duration))));
+        container.append(TextDisplay.of("removed.last"), entry("last", RelativeTime.of(last)));
         Helpers.sendDM(user, jda, it -> it.sendMessageComponents(container).useComponentsV2());
     }
 }

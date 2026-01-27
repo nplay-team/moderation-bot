@@ -63,9 +63,9 @@ public class NotesCommands {
                 entry("id", note.id())
         ).withAccentColor(Replies.SUCCESS);
 
-        container.add(TextDisplay.of("created.content"), entry("content", note.content()));
-        container.add(TextDisplay.of("created.target"), entry("target", target));
-        container.add(
+        container.append(TextDisplay.of("created.content"), entry("content", note.content()));
+        container.append(TextDisplay.of("created.target"), entry("target", target));
+        container.append(
                 TextDisplay.of("created.creator"),
                 entry("createdBy", event.getMember()),
                 entry("createdAt", new AbsoluteTime(note.createdAt()))
@@ -85,9 +85,9 @@ public class NotesCommands {
         ).withAccentColor(Replies.STANDARD);
 
         if (notes.isEmpty()) {
-            container.add(TextDisplay.of("list.empty"));
+            container.append(TextDisplay.of("list.empty"));
         } else {
-            notes.forEach(note -> container.add(note.toTextDisplay(event.messageResolver(), event.getUserLocale())));
+            notes.forEach(note -> container.append(note.toTextDisplay(event.messageResolver(), event.getUserLocale())));
         }
 
         event.reply(container);

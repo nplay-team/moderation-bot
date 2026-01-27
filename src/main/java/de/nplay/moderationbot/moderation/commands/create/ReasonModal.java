@@ -48,13 +48,13 @@ public class ReasonModal {
                 entry("reason", act.reason())
         ).withAccentColor(SUCCESS);
         act.revokeAt().ifPresent(it ->
-                container.add(TextDisplay.of("executed.until"), entry("until", it))
+                container.append(TextDisplay.of("executed.until"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
-                container.add(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
+                container.append(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
         );
         act.referenceMessage().ifPresent(it ->
-                container.add(TextDisplay.of("executed.reference"), entry("message", it.content()))
+                container.append(TextDisplay.of("executed.reference"), entry("message", it.content()))
         );
         event.reply(container);
 

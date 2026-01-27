@@ -15,26 +15,30 @@ import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.Moderati
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.util.SeparatedContainer;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
+import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.embeds.Embed;
+import io.github.kaktushose.jdac.introspection.Introspection;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static de.nplay.moderationbot.Helpers.formatTimestamp;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
-import static net.dv8tion.jda.api.utils.TimeFormat.DATE_TIME_SHORT;
-import static net.dv8tion.jda.api.utils.TimeFormat.DEFAULT;
 
 public sealed class ModerationAct permits RevertedModerationAct {
 
@@ -62,33 +66,29 @@ public sealed class ModerationAct permits RevertedModerationAct {
         this.duration = row.getLong("duration");
     }
 
-    public TextDisplay toTextDisplay(ReplyableEvent<?> event) {
-        // TODO: add reverted case
-        String headLine = "\\#%s | %s | %s".formatted(id, event.resolve(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
-        return TextDisplay.of("### %s\n%s\n-# Moderator: %s".formatted(headLine, reason, Helpers.formatUser(event.getJDA(), issuer)));
+    @Bundle("modlog")
+    public TextDisplay toTextDisplay(MessageResolver resolver, DiscordLocale locale) {
+        return TextDisplay.of(resolver.resolve(
+                this instanceof RevertedModerationAct ? "entry.reverted" : "entry",
+                locale.toLocale(),
+                entries(locale)
+        ));
     }
 
-    @Deprecated
-    public Field toField(ReplyableEvent<?> event) {
-        String headLine = "#%s | %s | %s".formatted(id, event.resolve(type.localizationKey()), DEFAULT.format(createdAt.getTime()));
-        List<String> bodyLines = new ArrayList<>();
-
-        bodyLines.add(reason);
-        bodyLines.add("-%s".formatted(Helpers.formatUser(event.getJDA(), issuer)));
-
-        if (this instanceof RevertedModerationAct reverted && !reverted.revertedBy().getId().equals(event.getJDA().getSelfUser().getId())) {
-            headLine = "~~%s~~".formatted(headLine);
-            bodyLines.forEach(it -> bodyLines.set(bodyLines.indexOf(it), "~~%s~~".formatted(it)));
-            bodyLines.addLast(event.resolve("reverted-at-inline", entry("revertedAt", DATE_TIME_SHORT.format(reverted.revertedAt().getTime()))));
-        } else if (revokeAt != null) {
-            bodyLines.addFirst(event.resolve("revoke-at-inline", entry("revokeAt", DATE_TIME_SHORT.format(revokeAt.getTime()))));
-            bodyLines.addFirst(event.resolve("duration-inline", entry("duration", Helpers.formatDuration(Duration.ofMillis(duration)))));
+    private Map<String, Object> entries(DiscordLocale locale) {
+        Map<String, Object> entries = new HashMap<>() {{
+            put("id", id());
+            put("type", type().localized(locale));
+            put("createdAt", createdAt());
+            put("reason", reason());
+            put("issuer", issuer());
+        }};
+        if (this instanceof RevertedModerationAct act
+            && !act.revertedBy().getId().equals(Introspection.scopedGet(Property.JDA).getSelfUser().getId())
+        ) {
+            entries.put("reverter", act.revertedBy());
         }
-        return new MessageEmbed.Field(
-                headLine,
-                String.join("\n", bodyLines),
-                false
-        );
+        return entries;
     }
 
     @Deprecated
@@ -150,13 +150,13 @@ public sealed class ModerationAct permits RevertedModerationAct {
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("type", type.localized(locale))
         ).withAccentColor(Replies.SUCCESS);
-        container.add(
+        container.append(
                 TextDisplay.of("revert$revert-info.body"),
                 entry("id", id),
                 entry("date", createdAt()),
                 entry("reason", reason)
         );
-        container.add(TextDisplay.of("revert$revert-info.reverter"), entry("revertedBy", revertedBy));
+        container.append(TextDisplay.of("revert$revert-info.reverter"), entry("revertedBy", revertedBy));
 
         Helpers.sendDM(user, guild.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }

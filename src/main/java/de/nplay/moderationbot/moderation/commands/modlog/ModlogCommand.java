@@ -1,60 +1,54 @@
 package de.nplay.moderationbot.moderation.commands.modlog;
 
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.config.ConfigService;
+import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
-import de.nplay.moderationbot.notes.NotesCommands;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ComponentEvent;
 import io.github.kaktushose.jdac.dispatching.reply.Component;
-import io.github.kaktushose.jdac.embeds.Embed;
-import net.dv8tion.jda.api.components.MessageTopLevelComponent;
+import io.github.kaktushose.jdac.message.placeholder.Entry;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
-import net.dv8tion.jda.api.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.components.container.Container;
-import net.dv8tion.jda.api.components.container.ContainerChildComponent;
-import net.dv8tion.jda.api.components.replacer.ComponentReplacer;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.SelectOption;
 import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.separator.Separator.Spacing;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jspecify.annotations.Nullable;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
+@ReplyConfig(keepComponents = false, allowedMentions = {})
+@Bundle("modlog")
 @Interaction
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommand {
 
-    private static final int PAGE_COUNT_ID = 10000;
-    private static final int BUTTON_BACK_ID = 10001;
-    private static final int BUTTON_FORTH_ID = 10002;
     private int offset = 0;
     private int limit = 5;
     private int page = 1;
     private int maxPage = 1;
-    private User user;
+    private @Nullable User user;
     private @Nullable Member member;
-    private int maxId;
 
     @Command(value = "mod log")
     public void modlog(CommandEvent event,
@@ -63,7 +57,8 @@ public class ModlogCommand {
                        @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count) {
         user = target;
         member = Helpers.completeOpt(event.getGuild().retrieveMember(target)).orElse(null);
-        if (page != null && count != null) {
+        if (page != null) {
+            count = count == null ? limit : count;
             offset = (page - 1) * count;
             this.page = page;
             limit = count;
@@ -79,110 +74,116 @@ public class ModlogCommand {
             offset = (this.page - 1) * limit;
         }
 
-        event.reply(getModlog(event));
+        replyModlog(event);
     }
 
-    @Button(value = "Zurück", emoji = "⬅️", style = ButtonStyle.PRIMARY, uniqueId = BUTTON_BACK_ID)
+    @StringMenu("navigation")
+    public void selectPage(ComponentEvent event, List<String> values) {
+        page = Integer.parseInt(values.get(0));
+        offset = (page - 1) * limit;
+        event.jdaEvent().deferEdit().complete();
+        replyModlog(event);
+    }
+
+    @Button("navigation.back")
     public void back(ComponentEvent event) {
         page--;
         offset -= limit;
         event.jdaEvent().deferEdit().complete();
-        replyEdit(event, page + 1);
+        replyModlog(event);
     }
 
-    @StringMenu(value = "Seitenauswahl")
-    @MenuOption(value = "1", label = "Seite 1")
-    public void selectPage(ComponentEvent event, List<String> values) {
-        int oldPage = page;
-        page = Integer.parseInt(values.get(0));
-        offset = (page - 1) * limit;
-        event.jdaEvent().deferEdit().complete();
-        replyEdit(event, oldPage);
-    }
-
-    @Button(value = "Weiter", emoji = "➡️", style = ButtonStyle.PRIMARY, uniqueId = BUTTON_FORTH_ID)
+    @Button("navigation.next")
     public void next(ComponentEvent event) {
         page++;
         offset += limit;
         event.jdaEvent().deferEdit().complete();
-        replyEdit(event, page - 1);
+        replyModlog(event);
     }
 
-    private MessageTopLevelComponent getModlog(ReplyableEvent<?> event) {
-        List<ContainerChildComponent> container = new ArrayList<>(List.of(
-                Section.of(
-                        Thumbnail.fromUrl(user.getEffectiveAvatarUrl()),
-                        TextDisplay.of("## NPLAY-Moderation - Datenauskunft\n### %s".formatted(
-                                Helpers.formatUser(event.getJDA(), user)
-                        ))),
-                Separator.createInvisible(Separator.Spacing.SMALL),
-                TextDisplay.of("**Nutzer ID:** %d\n**Erstellt am:** %s\n**Beigetreten am:** %s".formatted(
-                        user.getIdLong(),
-                        Helpers.formatTimestamp(Timestamp.from(user.getTimeCreated().toInstant())),
-                        member == null ? "N/A" : Helpers.formatTimestamp(Timestamp.from(member.getTimeJoined().toInstant())) // TODO: remove member null check with more elegant way
-                )),
-                Separator.createDivider(Separator.Spacing.LARGE)
-        ));
+    private void replyModlog(ReplyableEvent<?> event) {
+        Thumbnail thumbnail = Thumbnail.fromFile(avatarUrl().downloadAsFileUpload("avatar.png"));
 
-        List<Note> notes = NotesService.getNotesFromUser(user.getIdLong());
+        SeparatedContainer container = new SeparatedContainer(
+                TextDisplay.of("modlog"),
+                Separator.createDivider(Spacing.LARGE),
+                entry("target", target()),
+                entry("id", target().getIdLong()),
+                entry("createdAt", RelativeTime.of(target().getTimeCreated())),
+                joinedAt()
+        ).withAccentColor(Replies.STANDARD).add(Section.of(thumbnail, TextDisplay.of("modlog.header")));
+
+        container.append(TextDisplay.of("modlog.notes"));
+        List<Note> notes = NotesService.getNotesFromUser(target().getIdLong());
         if (!notes.isEmpty()) {
-            container.add(TextDisplay.of("## Notizen"));
+            boolean first = true;
             for (Note note : notes) {
-                // note.append(container);
+                container.append(
+                        note.toTextDisplay(event.messageResolver(), event.getUserLocale()),
+                        first ? null : Separator.createInvisible(Spacing.SMALL)
+                );
+                first = false;
             }
-            container.add(Separator.createDivider(Separator.Spacing.LARGE));
+        } else {
+            container.add(TextDisplay.of("modlog.empty"));
         }
 
-        int uniqueId = page * 100;
-        container.add(TextDisplay.of("## Moderationshandlungen"));
-        for (ModerationAct moderationAct : ModerationActService.get(user, limit, offset)) {
-            container.add(moderationAct.toTextDisplay(event).withUniqueId(uniqueId++));
-            maxId = uniqueId;
+        container.append(TextDisplay.of("modlog.moderations"));
+        List<ModerationAct> moderationActs = ModerationActService.get(target(), limit, offset);
+        if (!moderationActs.isEmpty()) {
+            boolean first = true;
+            for (ModerationAct act : moderationActs) {
+                container.append(
+                        act.toTextDisplay(event.messageResolver(), event.getUserLocale()),
+                        first ? null : Separator.createInvisible(Spacing.SMALL)
+                );
+                first = false;
+            }
+        } else {
+            container.add(TextDisplay.of("modlog.empty"));
         }
 
-        // only show navigation buttons if there is more than one page
         if (!(maxPage < 2)) {
-            var pages = new ArrayList<SelectOption>();
+            List<SelectOption> pages = new ArrayList<SelectOption>();
             for (int i = 2; i <= maxPage && i < 26; i++) {
                 pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
             }
 
-            container.add(Separator.createDivider(Separator.Spacing.LARGE));
-
+            container.append(ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages)));
             container.add(ActionRow.of(
-                    Component.stringSelect("selectPage").selectOptions(pages))
-            );
-            container.add(ActionRow.of(
-                    Component.button("back").enabled(true),
+                    Component.button("back").enabled(page > 1),
                     Component.button("next").enabled(page < maxPage)
-            ));
-            container.add(Separator.createInvisible(Separator.Spacing.SMALL));
-            container.add(TextDisplay.of("-# Seite (%s/%s)".formatted(page, maxPage)).withUniqueId(PAGE_COUNT_ID));
+            )).footer(
+                    TextDisplay.of("modlog.pages"),
+                    true,
+                    entry("page", page),
+                    entry("maxPage", maxPage)
+            );
         }
 
-        return Container.of(container);
+        event.reply(container);
     }
 
-    private void replyEdit(ComponentEvent event, int oldPage) {
-        int index = 0;
-        int newIds = page * 100;
-
-        List<ComponentReplacer> replacer = new ArrayList<>();
-        List<ModerationAct> moderationActs = ModerationActService.get(user, limit, offset);
-
-        for (int oldId = (oldPage) * 100; oldId < maxId; oldId++) {
-            TextDisplay newComponent = null; // remove "overhang", edge case: new page has fewer items than oldPage
-            if (index < moderationActs.size()) {
-                newComponent = moderationActs.get(index++).toTextDisplay(event).withUniqueId(newIds++);
-            }
-            replacer.add(ComponentReplacer.byUniqueId(oldId, newComponent != null ? newComponent : Separator.createInvisible(Separator.Spacing.SMALL).withUniqueId(newIds++)));
+    private UserSnowflake target() {
+        if (member != null) {
+            return member;
         }
+        return Objects.requireNonNull(user);
+    }
 
-        maxId = newIds;
+    @SuppressWarnings("PatternVariableHidesField")
+    private ImageProxy avatarUrl() {
+        return switch (target()) {
+            case Member member -> member.getEffectiveAvatar();
+            case User user -> user.getEffectiveAvatar();
+            default -> throw new IllegalStateException("Unexpected value: " + target());
+        };
+    }
 
-        replacer.add(ComponentReplacer.byUniqueId(PAGE_COUNT_ID, TextDisplay.of("-# Seite (%s/%s)".formatted(page, maxPage)).withUniqueId(PAGE_COUNT_ID)));
-//        replacer.add(ComponentReplacer.byUniqueId(BUTTON_BACK_ID, Component.button("back").enabled(page > 1)));
-//        replacer.add(ComponentReplacer.byUniqueId(BUTTON_FORTH_ID, Component.button("next").enabled(page < maxPage)));
-        event.reply(ComponentReplacer.all(replacer));
+    private Entry joinedAt() {
+        if (member == null) {
+            return entry("joinedAt", "empty");
+        }
+        return entry("joinedAt", RelativeTime.of(member.getTimeJoined()));
     }
 }

@@ -79,7 +79,7 @@ public class SpielersucheAusschlussCommands {
                 Separator.createDivider(Separator.Spacing.SMALL),
                 entry("issuer", event.getUser()),
                 entry("createdAt", AbsoluteTime.now())
-        ).add(TextDisplay.of("unblock-target.body")).withAccentColor(Replies.STANDARD);
+        ).append(TextDisplay.of("unblock-target.body")).withAccentColor(Replies.STANDARD);
         Helpers.sendDM(target, event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);

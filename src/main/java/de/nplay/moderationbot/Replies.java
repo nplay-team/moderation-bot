@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 
 public final class Replies {
 
@@ -47,8 +48,8 @@ public final class Replies {
 
     public record RelativeTime(Timestamp timestamp) {
 
-        public static RelativeTime ofMillis(long timestamp) {
-            return new RelativeTime(new Timestamp(timestamp));
+        public static RelativeTime of(OffsetDateTime offsetDateTime) {
+            return new RelativeTime(new Timestamp(offsetDateTime.toInstant().toEpochMilli()));
         }
 
         public long millis() {

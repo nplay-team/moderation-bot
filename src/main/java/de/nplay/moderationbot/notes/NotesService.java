@@ -5,6 +5,7 @@ import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.UserSnowflake;
@@ -75,6 +76,7 @@ public class NotesService {
             );
         }
 
+        @Bundle("notes")
         public TextDisplay toTextDisplay(Resolver<String> resolver, DiscordLocale locale) {
             return TextDisplay.of(resolver.resolve(
                     "list.entry",

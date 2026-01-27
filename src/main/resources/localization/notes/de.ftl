@@ -29,8 +29,8 @@ list = ### Notizen von { $target }
     .empty = Keine Notizen vorhanden
     .entry =
         { "**" }Notiz ${$id} | {$date}{ "**" }
-        Moderator: { $createdBy }
         { $content }
+        -# Moderator: { $createdBy }
 
 ## Delete
 notes-delete-description = Löscht eine Notiz

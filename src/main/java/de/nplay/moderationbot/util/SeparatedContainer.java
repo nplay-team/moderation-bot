@@ -25,22 +25,21 @@ import org.jspecify.annotations.Nullable;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /// This is a proof of concept and will probably get moved to JDA-Commands
 public class SeparatedContainer extends AbstractComponentImpl implements Container, MessageTopLevelComponentUnion {
 
     private final ComponentResolver<Container> resolver;
     private final List<Entry> placeholders;
-    private final @Nullable Separator separator;
+    private final Separator separator;
     private Container container;
     private @Nullable Footer footer;
 
-    public SeparatedContainer(ContainerChildComponent header, @Nullable Separator separator, Entry... entries) {
+    public SeparatedContainer(ContainerChildComponent header, Separator separator, Entry... entries) {
         this(Introspection.scopedGet(Property.MESSAGE_RESOLVER), header, separator, entries);
     }
 
-    public SeparatedContainer(Resolver<String> resolver, ContainerChildComponent header, @Nullable Separator separator, Entry... entries) {
+    public SeparatedContainer(Resolver<String> resolver, ContainerChildComponent header, Separator separator, Entry... entries) {
         this.separator = separator;
         this.placeholders = new ArrayList<>();
         container = Container.of(header);
@@ -48,7 +47,19 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
         this.resolver = new ComponentResolver<>(resolver, Container.class);
     }
 
+    public SeparatedContainer add(ContainerChildComponent section) {
+        return add(section, new Entry[0]);
+    }
+
     public SeparatedContainer add(ContainerChildComponent section, Entry... entries) {
+        return append(section, null, entries);
+    }
+
+    public SeparatedContainer append(ContainerChildComponent section, Entry... entries) {
+        return append(section, separator, entries);
+    }
+
+    public SeparatedContainer append(ContainerChildComponent section, @Nullable Separator separator, Entry... entries) {
         ArrayList<ContainerChildComponentUnion> components = new ArrayList<>(container.getComponents());
         if (separator != null) {
             components.add((ContainerChildComponentUnion) separator);
@@ -198,8 +209,8 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
         return this;
     }
 
-    private Map<String, Object> toMap() {
-        return placeholders.stream().collect(Collectors.toMap(Entry::name, Entry::value));
+    private Map<String, @Nullable Object> toMap() {
+        return Entry.toMap(placeholders.toArray(Entry[]::new));
     }
 
     private void applyFooter() {
