@@ -4,14 +4,17 @@ import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.rowmapper.RowMapping;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
-import net.dv8tion.jda.api.JDA;
+import de.nplay.moderationbot.Replies.AbsoluteTime;
+import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
-import static net.dv8tion.jda.api.entities.MessageEmbed.Field;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class NotesService {
 
@@ -43,8 +46,7 @@ public class NotesService {
                         .bind(creatorId)
                         .bind(content)
                         .bind(new Timestamp(System.currentTimeMillis()))
-                )
-                .insertAndGetKeys();
+                ).insertAndGetKeys();
 
         return getNote(result.keys().getFirst()).orElseThrow();
     }
@@ -55,20 +57,10 @@ public class NotesService {
                 .delete();
     }
 
-    /**
-     * Mapping of a note.
-     * A note is a small text that can be created by a user belonging to another user.
-     *
-     * @param id        the internal id of the entry
-     * @param userId    the user id of the user the note belongs to
-     * @param creatorId the user id of the user who created the note
-     * @param content   the content of the note
-     * @param createdAt the timestamp when the note was created
-     */
     public record Note(
             long id,
             long userId,
-            long creatorId,
+            long createdBy,
             String content,
             Timestamp createdAt
     ) {
@@ -83,18 +75,15 @@ public class NotesService {
             );
         }
 
-        public Field toField(JDA jda) {
-            var creatorUsername = jda.retrieveUserById(creatorId()).complete().getName();
-            var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
-            var body = "Moderator: <@%s> (%s)\n%s".formatted(creatorId(), creatorUsername, content());
-            return new Field(title, body, false);
-        }
-
-        public TextDisplay toTextDisplay(JDA jda) {
-            var creatorUsername = jda.retrieveUserById(creatorId()).complete().getName();
-            var title = "Notiz $%s | <t:%s:F>".formatted(id(), createdAt().getTime() / 1000);
-            var body = "%s\n-# Moderator: <@%s> (%s)".formatted(content(), creatorId(), creatorUsername);
-            return TextDisplay.of("### %s\n%s".formatted(title, body));
+        public TextDisplay toTextDisplay(Resolver<String> resolver, DiscordLocale locale) {
+            return TextDisplay.of(resolver.resolve(
+                    "list.entry",
+                    locale.toLocale(),
+                    entry("id", id()),
+                    entry("date", new AbsoluteTime(createdAt())),
+                    entry("createdBy", UserSnowflake.fromId(createdBy())),
+                    entry("content", content())
+            ));
         }
     }
 }

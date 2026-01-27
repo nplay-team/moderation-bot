@@ -71,28 +71,5 @@
         "value": "{ $reason }"
       }
     ]
-  },
-  "noteCreated": {
-    "title": "Notiz erstellt",
-    "description": "Die Notiz mit der ID **${ $id }** wurde erfolgreich erstellt!",
-    "fields": [
-      {
-        "name": "Inhalt",
-        "value": "{ $content }"
-      },
-      {
-        "name": "Benutzer",
-        "value": "{ $target }"
-      },
-      {
-        "name": "Erstellt am",
-        "value": "{ $createdAt }"
-      },
-      {
-        "name": "Ersteller",
-        "value": "{ $createdBy }"
-      }
-    ],
-    "color": "{ $colorSuccess }"
   }
 }

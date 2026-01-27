@@ -1,10 +1,3 @@
-# Terms
--channel = kanal
--duration = dauer
--target = user
--paragraph = paragraph
--paragraph-description = Welcher Regel-Paragraph ist verletzt worden / soll referenziert werden?
-
 ## BulkDelete
 mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig
 mod-purge-messages-options-amount-name = anzahl
@@ -26,22 +19,6 @@ mod-log-options-page-name = seite
 mod-log-options-page-description = Die Seite, die angezeigt werden soll
 mod-log-options-count-name = seiten
 mod-log-options-count-description = Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)
-
-# Notes
-## Create
-notes-create-description = Erstellt eine Notiz über einen Benutzer
-notes-create-options-target-name = { -target }
-notes-create-options-target-description = Zu welchem Benutzer soll eine Notiz erstellt werden?
-
-## List
-notes-list-description = Listet alle Notizen eines Benutzers auf
-notes-list-options-target-name = { -target }
-notes-list-options-target-description = Welcher Benutzer soll aufgelistet werden?
-
-## Delete
-notes-delete-description = Löscht eine Notiz
-notes-delete-options-note_id-name = id
-notes-delete-options-note_id-description = Welche Notiz soll gelöscht werden?
 
 # Embeds
 ## Modlog

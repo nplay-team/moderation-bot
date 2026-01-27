@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -34,7 +33,7 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
         Locale locale = Introspection.scopedGet(Property.JDA_EVENT).getUserLocale().toLocale();
         return parse(source)
                 .map(it -> (MappingResult<Duration>) MappingResult.lossless(it))
-                .orElse(MappingResult.failure(resolver.resolve("invalid-duration", locale, Map.of())));
+                .orElse(MappingResult.failure(resolver.resolve("invalid-duration", locale)));
     }
 
     public Optional<Duration> parse(@Nullable String raw) {

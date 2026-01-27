@@ -128,7 +128,7 @@ public class ModlogCommand {
         if (!notes.isEmpty()) {
             container.add(TextDisplay.of("## Notizen"));
             for (Note note : notes) {
-                container.add(note.toTextDisplay(event.getJDA()));
+                // note.append(container);
             }
             container.add(Separator.createDivider(Separator.Spacing.LARGE));
         }
