@@ -45,7 +45,7 @@ public class NotesCommands {
     public void onCreate(CommandEvent event, User target) {
         this.target = target;
 
-        if (NotesService.getNoteCountFromUser(target.getIdLong()) >= 25) {
+        if (NotesService.getNoteCountFromUser(target.getIdLong()) >= 10) {
             event.reply(Replies.error("limit-reached"));
             return;
         }
