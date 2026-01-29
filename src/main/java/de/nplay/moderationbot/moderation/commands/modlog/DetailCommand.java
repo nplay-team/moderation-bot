@@ -18,7 +18,7 @@ public class DetailCommand {
     @Command("mod detail")
     @Permissions(BotPermissions.MODERATION_READ)
     public void detail(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct) {
-        event.reply(Container.of(moderationAct.toFullDisplay(event.messageResolver(), event.getUserLocale())));
+        event.reply(moderationAct.toFullDisplay(event.messageResolver(), event.getUserLocale(), event.getGuild()));
     }
 
 }

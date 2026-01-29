@@ -3,19 +3,25 @@ mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung a
 mod-detail-options-moderation_act-name = id
 mod-detail-options-moderation_act-description = Die ID der Moderationshandlung.
 detail =
-    ## NPLAY-Moderation - Moderationshandlung
-    ### \#{ $id } | { $type } | { $createdAt }
-    { "**Grund:**" } { $reason }
-    { "**Moderator:**" } { $issuer }
+    ## \#{ $id } | { $type } | { $createdAt }
+    { "**Grund:**" }
+    { $reason }
+    { "**Moderator:**" }
+    { $issuer }
+    .paragraph =
+        ### Paragraph
+        { $paragraph }
+    .reference =
+        ### Referenznachricht
+        > { $reference }
     .reverted =
-        ## NPLAY-Moderation - Moderationshandlung
-        ### \#{ $id } | { $type } | { $createdAt }
-        { "**Grund:**" } { $reason }
-        { "**Moderator:**" } { $issuer }
         ### Aufhebung | { $revertedAt }
         { "**Grund:**" } { $revertingReason }
         { "**Revidierender Moderator:**" } { $reverter }
-
+    .revoke =
+        ### Aufhebung
+        { "**Aktiv bis:**" } { $revokeAt }
+        { "**Dauer:**" } { $duration }
 ## Modlog
 mod-log-description = Zeigt den Modlog eines Mitglieds an.
 mod-log-options-target-name = { -target }

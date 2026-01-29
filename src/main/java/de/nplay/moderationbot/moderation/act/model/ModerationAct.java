@@ -3,9 +3,12 @@ package de.nplay.moderationbot.moderation.act.model;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.embeds.Embed;
 import io.github.kaktushose.jdac.introspection.Introspection;
+import io.github.kaktushose.jdac.message.placeholder.Entry;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.separator.Separator.Spacing;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -16,6 +19,7 @@ import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
+import de.nplay.moderationbot.ModerationBot.EmbedColors;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
@@ -30,10 +34,12 @@ import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static de.nplay.moderationbot.Helpers.formatTimestamp;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public sealed class ModerationAct permits RevertedModerationAct {
@@ -72,30 +78,49 @@ public sealed class ModerationAct permits RevertedModerationAct {
     }
 
     @Bundle("modlog")
-    public TextDisplay toFullDisplay(MessageResolver resolver, DiscordLocale locale) {
-        return TextDisplay.of(resolver.resolve(
-                this instanceof RevertedModerationAct ? "detail.reverted" : "detail",
-                locale.toLocale(),
+    public SeparatedContainer toFullDisplay(MessageResolver resolver, DiscordLocale locale, Guild guild) {
+        SeparatedContainer container = new SeparatedContainer(
+                resolver,
+                TextDisplay.of("detail"),
+                Separator.createDivider(Spacing.SMALL),
                 entries(locale)
-        ));
+        ).withAccentColor(Replies.STANDARD);
+
+        paragraph().ifPresent(it ->
+            container.append(TextDisplay.of("detail.paragraph"), entry("paragraph", it.fullDisplay()))
+        );
+        referenceMessage().ifPresent(it ->
+            container.append(TextDisplay.of("detail.reference"), entry("reference", it.jumpUrl(guild)))
+        );
+
+        if (this instanceof RevertedModerationAct) {
+            container.append(TextDisplay.of("detail.reverted"));
+        } else if (revokeAt().isPresent()) {
+            container.append(
+                    TextDisplay.of("detail.revoke"),
+                    entry("duration", Helpers.formatDuration(duration())),
+                    entry("revokeAt", revokeAt().get())
+            );
+        }
+        return container;
     }
 
-    private Map<String, Object> entries(DiscordLocale locale) {
-        Map<String, Object> entries = new HashMap<>() {{
-            put("id", id());
-            put("type", type().localized(locale));
-            put("createdAt", createdAt());
-            put("reason", reason());
-            put("issuer", issuer());
+    private Entry[] entries(DiscordLocale locale) {
+        List<Entry> entries = new ArrayList<>() {{
+            add(entry("id", id()));
+            add(entry("type", type().localized(locale)));
+            add(entry("createdAt", createdAt()));
+            add(entry("reason", reason()));
+            add(entry("issuer", issuer()));
         }};
         if (this instanceof RevertedModerationAct act
             && !act.revertedBy().getId().equals(Introspection.scopedGet(Property.JDA).getSelfUser().getId())
         ) {
-            entries.put("reverter", act.revertedBy());
-            entries.put("revertedAt", act.revertedAt());
-            entries.put("revertingReason", act.revertingReason());
+            entries.add(entry("reverter", act.revertedBy()));
+            entries.add(entry("revertedAt", act.revertedAt()));
+            entries.add(entry("revertingReason", act.revertingReason()));
         }
-        return entries;
+        return entries.toArray(Entry[]::new);
     }
 
     public RevertedModerationAct revert(ReplyableEvent<?> event, String reason) {
@@ -177,7 +202,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return Optional.ofNullable(revokeAt).map(RelativeTime::new);
     }
 
-    public long duration() {
-        return duration;
+    public Duration duration() {
+        return Duration.ofMillis(duration);
     }
 }
