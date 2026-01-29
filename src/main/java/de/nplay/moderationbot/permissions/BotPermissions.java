@@ -26,8 +26,8 @@ public class BotPermissions {
     /// Decodes the given permission integer to a collection of [BitFields]
     public static Collection<BitFields> decode(int permissions) {
         return Arrays.stream(BitFields.values())
-                .filter(it -> (permissions & it.value) != 0)
-                .toList();
+                     .filter(it -> (permissions & it.value) != 0)
+                     .toList();
     }
 
     public enum BitFields {

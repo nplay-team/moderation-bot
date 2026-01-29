@@ -36,10 +36,12 @@ public class SlowmodeCommands {
     }
 
     @Command("set")
-    public void slowmodeSetCommand(CommandEvent event,
-                                   @DurationMax(amount = Integer.MAX_VALUE, unit = ChronoUnit.SECONDS)
-                                   Duration duration,
-                                   Optional<GuildChannel> channel) {
+    public void slowmodeSetCommand(
+            CommandEvent event,
+            @DurationMax(amount = Integer.MAX_VALUE, unit = ChronoUnit.SECONDS)
+            Duration duration,
+            Optional<GuildChannel> channel
+    ) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
         event.reply(Replies.success("set"), entry("channel", guildChannel), entry("duration", Helpers.formatDuration(duration)));

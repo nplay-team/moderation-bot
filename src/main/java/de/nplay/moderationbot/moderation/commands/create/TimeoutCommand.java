@@ -27,11 +27,13 @@ public class TimeoutCommand extends CreateCommand {
 
     @Lock("target")
     @Command("mod timeout")
-    public void timeoutMember(CommandEvent event,
-                              Member target,
-                              @DurationMax(amount = 28, unit = ChronoUnit.DAYS) Duration until,
-                              @Param(optional = true) String paragraph,
-                              @Param(optional = true) MessageLink messageLink) {
+    public void timeoutMember(
+            CommandEvent event,
+            Member target,
+            @DurationMax(amount = 28, unit = ChronoUnit.DAYS) Duration until,
+            @Param(optional = true) String paragraph,
+            @Param(optional = true) MessageLink messageLink
+    ) {
 
         if (ModerationActService.isTimeOuted(target.getIdLong())) {
             event.reply(Replies.error("already-timeout"));

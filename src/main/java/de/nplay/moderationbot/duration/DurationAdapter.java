@@ -48,8 +48,12 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
         var minutes = extractValue(normalizedRaw, "MIN");
         var seconds = extractValue(normalizedRaw, "S");
 
-        if (years != null) days = (days != null ? days : 0) + years * 365;
-        if (months != null) days = (days != null ? days : 0) + months * 30; // Approximation, as months vary in length
+        if (years != null) {
+            days = (days != null ? days : 0) + years * 365;
+        }
+        if (months != null) {
+            days = (days != null ? days : 0) + months * 30; // Approximation, as months vary in length
+        }
 
         var parseString = "P" +
                           (days != null ? days + "D" : "") +

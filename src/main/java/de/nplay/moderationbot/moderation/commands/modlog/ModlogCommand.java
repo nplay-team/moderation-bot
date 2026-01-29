@@ -53,10 +53,12 @@ public class ModlogCommand {
     private @Nullable Member member;
 
     @Command(value = "mod log")
-    public void modlog(CommandEvent event,
-                       User target,
-                       @Param(optional = true) @Min(1) @Nullable Integer page,
-                       @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count) {
+    public void modlog(
+            CommandEvent event,
+            User target,
+            @Param(optional = true) @Min(1) @Nullable Integer page,
+            @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count
+    ) {
         user = target;
         member = Helpers.completeOpt(event.getGuild().retrieveMember(target)).orElse(null);
         if (page != null) {

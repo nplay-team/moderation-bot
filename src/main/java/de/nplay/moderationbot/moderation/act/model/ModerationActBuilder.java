@@ -101,7 +101,11 @@ public class ModerationActBuilder {
                 ModerationActType.BAN,
                 target.getIdLong(),
                 data -> {
-                    log.info("User {} has been{} banned by {}", target, data.revokeAt().isPresent() ? " temp" : "", issuer);
+                    log.info(
+                            "User {} has been{} banned by {}", target, data.revokeAt().isPresent()
+                                    ? " temp"
+                                    : "", issuer
+                    );
                     guild.ban(target, data.deletionDays(), TimeUnit.DAYS).reason(data.reason()).queue();
                 }
         );

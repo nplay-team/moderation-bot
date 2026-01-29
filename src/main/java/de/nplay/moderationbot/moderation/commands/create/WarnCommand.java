@@ -20,10 +20,12 @@ public class WarnCommand extends CreateCommand {
 
     @Lock("target")
     @Command("mod warn")
-    public void warnMember(CommandEvent event,
-                           Member target,
-                           @Param(optional = true) String paragraph,
-                           @Param(optional = true) MessageLink messageLink) {
+    public void warnMember(
+            CommandEvent event,
+            Member target,
+            @Param(optional = true) String paragraph,
+            @Param(optional = true) MessageLink messageLink
+    ) {
         event.kv().put(BUILDER, ModerationActBuilder.warn(target, event.getUser())
                 .paragraph(paragraph)
                 .messageReference(Helpers.retrieveMessage(event, messageLink)));

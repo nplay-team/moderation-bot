@@ -63,7 +63,12 @@ public sealed class ModerationAct permits RevertedModerationAct {
     }
 
     public RevertedModerationAct automaticRevert(Guild guild, Resolver<String> resolver) {
-        return revert(guild, guild.getJDA().getSelfUser(), resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN), DiscordLocale.GERMAN);
+        return revert(
+                guild,
+                guild.getJDA().getSelfUser(),
+                resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
+                DiscordLocale.GERMAN
+        );
     }
 
     private RevertedModerationAct revert(Guild guild, User revertedBy, String reason, DiscordLocale locale) {

@@ -41,7 +41,8 @@ public class ConfigCommands {
         var spielersucheRole = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
         var serverlogChannel = ConfigService.get(BotConfig.SERVERLOG_KANAL);
 
-        event.reply(Replies.standard("config-list"),
+        event.reply(
+                Replies.standard("config-list"),
                 entry("role", spielersucheRole.orElse("no-value-set")),
                 entry("serverlog", serverlogChannel.orElse("no-value-set"))
         );
