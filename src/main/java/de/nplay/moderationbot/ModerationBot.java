@@ -32,7 +32,6 @@ import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
-import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
@@ -76,7 +75,7 @@ public class ModerationBot extends ServiceModule {
         jda.addEventListener(new SlowmodeEventHandler(resolver));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
-                () -> ModerationActService.getToRevert().forEach(it -> it.automaticRevert(guild, resolver))
+                () -> moderationActService().getToRevert().forEach(it -> it.automaticRevert(guild, resolver))
                 , 0, 1, TimeUnit.MINUTES
         );
 

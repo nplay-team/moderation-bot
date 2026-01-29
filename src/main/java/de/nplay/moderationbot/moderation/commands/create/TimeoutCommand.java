@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.duration.DurationMax;
@@ -25,6 +26,13 @@ import java.time.temporal.ChronoUnit;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class TimeoutCommand extends CreateCommand {
 
+    private final ModerationActService actService;
+
+    @Inject
+    public TimeoutCommand(ModerationActService actService) {
+        this.actService = actService;
+    }
+
     @Lock("target")
     @Command("mod timeout")
     public void timeoutMember(
@@ -35,7 +43,7 @@ public class TimeoutCommand extends CreateCommand {
             @Param(optional = true) MessageLink messageLink
     ) {
 
-        if (ModerationActService.isTimeOuted(target.getIdLong())) {
+        if (actService.isTimeOuted(target)) {
             event.reply(Replies.error("already-timeout"));
             return;
         }

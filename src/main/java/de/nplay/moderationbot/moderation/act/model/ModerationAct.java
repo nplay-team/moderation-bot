@@ -90,6 +90,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
         }
 
         sendRevertMessageToUser(guild, revertedBy, reason, locale);
+        // todo move to service
         return (RevertedModerationAct) ModerationActService.get(id).orElseThrow();
     }
 

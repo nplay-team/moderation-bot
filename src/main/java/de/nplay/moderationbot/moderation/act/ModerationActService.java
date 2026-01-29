@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class ModerationActService {
 
-    public static ModerationAct create(ModerationActCreateData data) {
+    public ModerationAct create(ModerationActCreateData data) {
         if (data.messageReference() != null) {
             MessageReferenceService.createMessageReference(data.messageReference());
         }
@@ -43,58 +43,58 @@ public class ModerationActService {
         return get(id).orElseThrow();
     }
 
-    public static Optional<ModerationAct> get(long moderationId) {
+    public Optional<ModerationAct> get(long moderationId) {
         return Query.query("SELECT * FROM moderations WHERE id = ?")
                 .single(Call.of().bind(moderationId))
-                .map(ModerationActService::map)
+                .map(this::map)
                 .first();
     }
 
-    public static List<ModerationAct> get(UserSnowflake user, int limit, int offset) {
+    public List<ModerationAct> get(UserSnowflake user, int limit, int offset) {
         return Query.query("SELECT * FROM moderations WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?")
                 .single(Call.of()
                         .bind(user.getIdLong())
                         .bind(limit)
                         .bind(offset)
-                ).map(ModerationActService::map)
+                ).map(this::map)
                 .all();
     }
 
-    public static Collection<ModerationAct> getToRevert() {
+    public Collection<ModerationAct> getToRevert() {
         return Query.query("SELECT * FROM moderations WHERE reverted = false AND revoke_at < ? ORDER BY created_at DESC")
                 .single(Call.of().bind(new Timestamp(System.currentTimeMillis())))
-                .map(ModerationActService::map)
+                .map(this::map)
                 .all();
     }
 
-    public static int count(UserSnowflake user) {
+    public int count(UserSnowflake user) {
         return Query.query("SELECT COUNT(*) FROM moderations WHERE user_id = ?")
                 .single(Call.of().bind(user.getIdLong()))
                 .mapAs(Integer.class)
                 .first().orElse(0);
     }
 
-    public static void delete(long moderationId) {
+    public void delete(long moderationId) {
         Query.query("DELETE FROM moderations WHERE id = ?")
                 .single(Call.of().bind(moderationId))
                 .delete();
     }
 
-    public static boolean isTimeOuted(long userId) {
+    public boolean isTimeOuted(UserSnowflake user) {
         return Query.query("SELECT EXISTS(SELECT 1 FROM moderations WHERE user_id = ? AND TYPE = 'TIMEOUT' AND reverted = FALSE)")
-                .single(Call.of().bind(userId))
+                .single(Call.of().bind(user.getIdLong()))
                 .map(row -> row.getBoolean(1))
                 .first().orElse(false);
     }
 
-    public static boolean isBanned(long userId) {
+    public boolean isBanned(UserSnowflake user) {
         return Query.query("SELECT EXISTS(SELECT 1 FROM moderations WHERE user_id = ? AND TYPE IN ('BAN', 'TEMP_BAN') AND reverted = FALSE)")
-                .single(Call.of().bind(userId))
+                .single(Call.of().bind(user.getIdLong()))
                 .map(row -> row.getBoolean(1))
                 .first().orElse(false);
     }
 
-    public static ModerationAct map(Row row) throws SQLException {
+    private ModerationAct map(Row row) throws SQLException {
         if (row.getBoolean("reverted")) {
             return new RevertedModerationAct(row);
         }

@@ -53,10 +53,12 @@ public class ModlogCommand {
     private @Nullable User user;
     private @Nullable Member member;
     private final NotesService notesService;
+    private final ModerationActService actService;
 
     @Inject
-    public ModlogCommand(NotesService notesService) {
+    public ModlogCommand(NotesService notesService, ModerationActService actService) {
         this.notesService = notesService;
+        this.actService = actService;
     }
 
     @Command(value = "mod log")
@@ -75,7 +77,7 @@ public class ModlogCommand {
             limit = count;
         }
 
-        maxPage = (int) Math.ceil(ModerationActService.count(target) / (double) limit);
+        maxPage = (int) Math.ceil(actService.count(target) / (double) limit);
         if (maxPage == 0) {
             maxPage = 1;
         }
@@ -140,7 +142,7 @@ public class ModlogCommand {
         }
 
         container.append(TextDisplay.of("modlog.moderations"));
-        List<ModerationAct> moderationActs = ModerationActService.get(target(), limit, offset);
+        List<ModerationAct> moderationActs = actService.get(target(), limit, offset);
         if (!moderationActs.isEmpty()) {
             boolean first = true;
             for (ModerationAct act : moderationActs) {

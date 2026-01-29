@@ -165,6 +165,7 @@ public class ModerationActBuilder {
 
     public ModerationAct execute(ReplyableEvent<?> event) {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays);
+        // todo move to service
         ModerationAct act = ModerationActService.create(data);
         executor.accept(data);
         sendModerationToTarget(act, event);

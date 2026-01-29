@@ -24,10 +24,12 @@ public class DeleteCommand {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteCommand.class);
     private final Serverlog serverlog;
+    private final ModerationActService actService;
 
     @Inject
-    public DeleteCommand(Serverlog serverlog) {
+    public DeleteCommand(Serverlog serverlog, ModerationActService actService) {
         this.serverlog = serverlog;
+        this.actService = actService;
     }
 
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
@@ -36,7 +38,7 @@ public class DeleteCommand {
     public void deleteModeration(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct) {
         RevertedModerationAct reverted = moderationAct.revert(event, "Moderationshandlung wurde gelöscht");
         log.info("Moderation act {} has been deleted by {}", moderationAct.id(), event.getUser().getName());
-        ModerationActService.delete(moderationAct.id());
+        actService.delete(moderationAct.id());
         serverlog.onEvent(ModerationEvents.Deleted(event.getJDA(), event.getGuild(), reverted), event);
         event.reply(Replies.success("delete-successful"), entry("id", moderationAct.id()));
     }
