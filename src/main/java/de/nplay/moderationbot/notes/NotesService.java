@@ -80,7 +80,7 @@ public class NotesService {
         public TextDisplay toTextDisplay(Resolver<String> resolver, DiscordLocale locale) {
             return TextDisplay.of(resolver.resolve(
                     "list.entry",
-                    locale.toLocale(),
+                    locale,
                     entry("id", id()),
                     entry("date", new AbsoluteTime(createdAt())),
                     entry("createdBy", UserSnowflake.fromId(createdBy())),

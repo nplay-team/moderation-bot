@@ -217,7 +217,7 @@ public class ModerationActBuilder {
         }
 
         public String localized(DiscordLocale locale) {
-            return Introspection.scopedGet(Property.MESSAGE_RESOLVER).resolve(localizationKey, locale.toLocale(), Map.of());
+            return Introspection.scopedGet(Property.MESSAGE_RESOLVER).resolve(localizationKey, locale, Map.of());
         }
     }
 

@@ -27,7 +27,7 @@ public class DurationMaxValidator implements Validator<Duration, DurationMax> {
         if (input.compareTo(max) > 0) {
             context.fail(resolver.resolve(
                     "duration-too-long",
-                    context.invocationContext().event().getUserLocale().toLocale(),
+                    context.invocationContext().event().getUserLocale(),
                     entry("duration", Helpers.formatDuration(max)))
             );
         }

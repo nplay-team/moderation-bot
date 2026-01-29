@@ -8,8 +8,6 @@ import io.github.kaktushose.jdac.introspection.Introspection;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import io.github.kaktushose.proteus.mapping.MappingResult;
 
-import java.util.Locale;
-
 @Implementation.TypeAdapter(source = String.class, target = MessageLink.class)
 public class MessageLinkAdapter implements TypeAdapter<String, MessageLink> {
 
@@ -22,9 +20,8 @@ public class MessageLinkAdapter implements TypeAdapter<String, MessageLink> {
 
     @Override
     public MappingResult<MessageLink> from(String source, MappingContext<String, MessageLink> context) {
-        Locale locale = Introspection.scopedGet(Property.JDA_EVENT).getUserLocale().toLocale();
         return MessageLink.ofString(source)
                 .map(it -> (MappingResult<MessageLink>) MappingResult.lossless(it))
-                .orElse(MappingResult.failure(resolver.resolve("invalid-link", locale)));
+                .orElse(MappingResult.failure(resolver.resolve("invalid-link", Introspection.scopedGet(Property.JDA_EVENT).getUserLocale())));
     }
 }
