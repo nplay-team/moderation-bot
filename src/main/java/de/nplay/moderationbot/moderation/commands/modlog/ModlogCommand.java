@@ -40,7 +40,6 @@ import java.util.Objects;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-@ReplyConfig(keepComponents = false, allowedMentions = {})
 @Bundle("modlog")
 @Interaction
 @Permissions(BotPermissions.MODERATION_READ)

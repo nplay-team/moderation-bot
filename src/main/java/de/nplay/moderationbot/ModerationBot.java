@@ -156,8 +156,9 @@ public class ModerationBot extends AbstractModule {
                                 entry("colorError", EmbedColors.ERROR)
                         )
                 ).localizer(new FluavaLocalizer(parent))
-                .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())))
-                .globalCommandConfig(CommandConfig.of(config -> config
+                .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())
+                        .keepComponents(false))
+                ).globalCommandConfig(CommandConfig.of(config -> config
                         .enabledPermissions(Permission.MODERATE_MEMBERS)
                         .integration(IntegrationType.GUILD_INSTALL)
                         .context(InteractionContextType.GUILD))

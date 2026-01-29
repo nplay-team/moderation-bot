@@ -21,7 +21,6 @@ import java.util.List;
 
 @Bundle("permissions")
 @Interaction("permissions")
-@ReplyConfig(keepComponents = false, allowedMentions = {})
 @SuppressWarnings("ConstantConditions")
 public class MemberPermissionsCommand extends PermissionsCommand {
 
