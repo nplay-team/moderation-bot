@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.moderation.commands.modlog;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.RelativeTime;
@@ -51,6 +52,12 @@ public class ModlogCommand {
     private int maxPage = 1;
     private @Nullable User user;
     private @Nullable Member member;
+    private final NotesService notesService;
+
+    @Inject
+    public ModlogCommand(NotesService notesService) {
+        this.notesService = notesService;
+    }
 
     @Command(value = "mod log")
     public void modlog(
@@ -118,7 +125,7 @@ public class ModlogCommand {
         ).withAccentColor(Replies.STANDARD).add(Section.of(thumbnail, TextDisplay.of("modlog.header")));
 
         container.append(TextDisplay.of("modlog.notes"));
-        List<Note> notes = NotesService.getNotesFromUser(target().getIdLong());
+        List<Note> notes = notesService.getAll(target());
         if (!notes.isEmpty()) {
             boolean first = true;
             for (Note note : notes) {
