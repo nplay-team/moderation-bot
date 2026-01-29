@@ -5,6 +5,7 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
+import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -13,10 +14,12 @@ import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ComponentEvent;
 import io.github.kaktushose.jdac.dispatching.reply.Component;
+import io.github.kaktushose.jdac.introspection.Introspection;
 import io.github.kaktushose.jdac.message.placeholder.Entry;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.section.Section;
@@ -134,7 +137,7 @@ public class ModlogCommand {
             boolean first = true;
             for (ModerationAct act : moderationActs) {
                 container.append(
-                        act.toShortDisplay(event.messageResolver(), event.getUserLocale()),
+                        toTextDisplay(event, act),
                         first ? null : Separator.createInvisible(Spacing.SMALL)
                 );
                 first = false;
@@ -185,5 +188,28 @@ public class ModlogCommand {
             return entry("joinedAt", "empty");
         }
         return entry("joinedAt", RelativeTime.of(member.getTimeJoined()));
+    }
+
+    private TextDisplay toTextDisplay(ReplyableEvent<?> event, ModerationAct act) {
+        var entries = Entry.toMap(
+                entry("id", act.id()),
+                entry("type", act.type().localized(event.getUserLocale())),
+                entry("createdAt", act.createdAt()),
+                entry("reason", act.reason()),
+                entry("issuer", act.issuer())
+        );
+        if (act instanceof RevertedModerationAct reverted
+            && !reverted.revertedBy().getId().equals(Introspection.scopedGet(Property.JDA).getSelfUser().getId())
+        ) {
+            entries.putAll(Entry.toMap(
+                    entry("reverter", reverted.revertedBy()),
+                    entry("revertedAt", reverted.revertedAt()),
+                    entry("revertingReason", reverted.revertingReason())
+            ));
+        }
+        return TextDisplay.of(event.resolve(
+                act instanceof RevertedModerationAct ? "entry.reverted" : "entry",
+                entries
+        ));
     }
 }

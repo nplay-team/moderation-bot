@@ -80,6 +80,11 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
         return this;
     }
 
+    public SeparatedContainer entries(Entry... placeholders) {
+        this.placeholders.addAll(Arrays.asList(placeholders));
+        return this;
+    }
+
     @Override
     public SeparatedContainer replace(ComponentReplacer replacer) {
         container = container.replace(replacer);
