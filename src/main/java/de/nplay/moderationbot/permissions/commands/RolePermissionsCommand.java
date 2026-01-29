@@ -31,6 +31,7 @@ public class RolePermissionsCommand extends PermissionsCommand {
         super("role");
     }
 
+    @Permissions(BotPermissions.PERMISSION_READ)
     @Command("role")
     public void onCommand(CommandEvent event, Role role) {
         this.role = role;

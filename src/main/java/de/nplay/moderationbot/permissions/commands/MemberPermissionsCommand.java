@@ -31,6 +31,7 @@ public class MemberPermissionsCommand extends PermissionsCommand {
         super("member");
     }
 
+    @Permissions(BotPermissions.PERMISSION_READ)
     @Command("member")
     public void onCommand(CommandEvent event, Member member) {
         this.member = member;
