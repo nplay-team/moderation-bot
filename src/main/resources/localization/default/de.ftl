@@ -6,22 +6,6 @@ purge-success =
     ### Erfolgreich
     Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!
 
-# Embeds
-## Modlog
-reverted-at-inline = *Aufgehoben am: { $revertedAt }*
-revoke-at-inline = Aktiv bis: { $revokeAt }
-duration-inline = Dauer: { $duration }
-reverted-at = Revidiert am
-reverted-by = Revidierender Moderator
-reverting-reason = Revidierungsgrund
-revoke-at-field = Aufhebung
-rule = Regel
-reference-message = Referenznachricht
-id = ID
-act-target = Betroffener Nutzer
-act-reason = Begründung
-active-until = Aktiv bis
-
 ## ModerationActType
 warn = Verwarnung
 kick = Kick
@@ -34,3 +18,7 @@ invalid-duration = Die angegebene Dauer ist ungültig. Bitte gib eine gültige D
 duration-too-long = Die angegebene Dauer ist zu lang! Die maximale Dauer beträgt { $duration }!
 invalid-link = Der angegebene Link ist nicht gültig!
 invalid-act = Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!
+
+## Other / These cannot be localized
+automatic-revert-reason = Automatische Aufhebung nach Ablauf der Dauer
+bot-status =

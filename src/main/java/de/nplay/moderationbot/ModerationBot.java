@@ -1,5 +1,27 @@
 package de.nplay.moderationbot;
 
+import io.github.kaktushose.jdac.JDACommands;
+import io.github.kaktushose.jdac.configuration.Property;
+import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
+import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
+import io.github.kaktushose.jdac.embeds.EmbedDataSource;
+import io.github.kaktushose.jdac.guice.GuiceExtensionData;
+import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
@@ -20,29 +42,6 @@ import dev.goldmensch.fluava.Result;
 import dev.goldmensch.fluava.Result.Success;
 import dev.goldmensch.fluava.function.Function;
 import dev.goldmensch.fluava.function.Value.Text;
-import io.github.kaktushose.jdac.JDACommands;
-import io.github.kaktushose.jdac.configuration.Property;
-import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
-import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
-import io.github.kaktushose.jdac.embeds.EmbedDataSource;
-import io.github.kaktushose.jdac.guice.GuiceExtensionData;
-import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
-import io.github.kaktushose.proteus.Proteus;
-import io.github.kaktushose.proteus.type.Type;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
-import net.dv8tion.jda.api.interactions.IntegrationType;
-import net.dv8tion.jda.api.interactions.InteractionContextType;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +55,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
-import static io.github.kaktushose.proteus.mapping.Mapper.uni;
-import static io.github.kaktushose.proteus.mapping.MappingResult.lossless;
 import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
 public class ModerationBot extends AbstractModule {
@@ -76,19 +73,21 @@ public class ModerationBot extends AbstractModule {
         serverlog = new Serverlog();
 
         JDACommands jdaCommands = jdaCommands(fluava());
-        // TODO remove once EmbedColors is gone
-        Proteus.global().from(Type.of(EmbedColors.class)).into(Type.of(Color.class),
-                uni((color, _) -> lossless(Color.decode(color.hex)))
-        );
-        jda.addEventListener(new SlowmodeEventHandler(jdaCommands.property(Property.MESSAGE_RESOLVER)));
+        MessageResolver resolver = jdaCommands.property(Property.MESSAGE_RESOLVER);
+        jda.addEventListener(new SlowmodeEventHandler(resolver));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
-                () -> ModerationActService.getToRevert().forEach(it ->
-                        it.revert(guild, jda.getSelfUser(), "Automatische Aufhebung nach Ablauf der Dauer", DiscordLocale.GERMAN)
-                ), 0, 1, TimeUnit.MINUTES);
+                () -> ModerationActService.getToRevert().forEach(it -> it.automaticRevert(guild, resolver))
+                , 0, 1, TimeUnit.MINUTES
+        );
 
         Thread.setDefaultUncaughtExceptionHandler((_, e) -> log.error("An uncaught exception has occurred!", e));
-        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("Hört euren Nachrichten zu"), false);
+
+        jda.getPresence().setPresence(
+                OnlineStatus.ONLINE,
+                Activity.listening(resolver.resolve("bot-status", Locale.GERMAN)),
+                false
+        );
     }
 
     public static void start(String guildId, String token) throws InterruptedException {
@@ -107,17 +106,17 @@ public class ModerationBot extends AbstractModule {
 
     private JDA jda(String token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(token)
-                .enableIntents(
-                        GatewayIntent.GUILD_MEMBERS,
-                        GatewayIntent.GUILD_PRESENCES,
-                        GatewayIntent.MESSAGE_CONTENT
-                )
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
-                .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
-                .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
-                .build().awaitReady();
+                            .enableIntents(
+                                    GatewayIntent.GUILD_MEMBERS,
+                                    GatewayIntent.GUILD_PRESENCES,
+                                    GatewayIntent.MESSAGE_CONTENT
+                            )
+                            .setMemberCachePolicy(MemberCachePolicy.ALL)
+                            .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
+                            .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
+                            .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                            .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
+                            .build().awaitReady();
 
         Runtime.getRuntime().addShutdownHook(new Thread(jda::shutdown));
 
@@ -130,7 +129,7 @@ public class ModerationBot extends AbstractModule {
                 .bundleRoot("localization")
                 .functions(config ->
                         config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
-                                result(Helpers.formatUser(jda, user)), UserSnowflake.class)
+                                result(formatUser(jda, user)), UserSnowflake.class)
                         ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
                                 result("%s (%s)".formatted(DATE_TIME_LONG.format(time.millis()), RELATIVE.atTimestamp(time.millis()))), RelativeTime.class)
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
@@ -150,10 +149,10 @@ public class ModerationBot extends AbstractModule {
                 .packages("de.nplay.moderationbot")
                 .embeds(config -> config.sources(EmbedDataSource.resource("events.json"))
                         .placeholders(
-                                entry("colorDefault", EmbedColors.DEFAULT),
-                                entry("colorSuccess", EmbedColors.SUCCESS),
-                                entry("colorWarning", EmbedColors.WARNING),
-                                entry("colorError", EmbedColors.ERROR)
+                                entry("colorDefault", Color.decode(EmbedColors.DEFAULT.hex)),
+                                entry("colorSuccess", Color.decode(EmbedColors.SUCCESS.hex)),
+                                entry("colorWarning", Color.decode(EmbedColors.WARNING.hex)),
+                                entry("colorError", Color.decode(EmbedColors.ERROR.hex))
                         )
                 ).localizer(new FluavaLocalizer(parent))
                 .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())
@@ -187,6 +186,13 @@ public class ModerationBot extends AbstractModule {
         } catch (SQLException | IOException e) {
             throw new RuntimeException("Failed to migrate database!", e);
         }
+    }
+
+    private String formatUser(JDA jda, UserSnowflake user) {
+        if (user instanceof User resolved) {
+            return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
+        }
+        return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
     }
 
     @Deprecated

@@ -12,6 +12,8 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
+import java.sql.Timestamp;
+
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationEvents {
@@ -48,18 +50,18 @@ public class ModerationEvents {
         Embed embed = event.embed("moderationCreateEvent").placeholders(
                 entry("type", act.type().localizationKey()),
                 entry("id", act.id()),
-                entry("target", Helpers.formatUser(event.getJDA(), act.user())),
-                entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),
+                entry("target", act.user()),
+                entry("issuer", act.issuer()),
                 entry("reason", act.reason()),
                 entry("createdAt", act.createdAt()));
-        act.revokeAt().ifPresent(it -> embed.fields().add("Aktiv bis", Helpers.formatTimestamp(it.timestamp())));
+        act.revokeAt().ifPresent(it -> embed.fields().add("Aktiv bis", formatTimestamp(it.timestamp())));
         return embed;
     }
 
     private static Embed revertEmbed(ReplyableEvent<?> event, RevertedModerationAct act) {
         return genericModerationEmbed(event, "REVIDIERUNG", act)
                 .placeholders(
-                        entry("moderator", Helpers.formatUser(event.getJDA(), act.revertedBy())),
+                        entry("moderator", act.revertedBy()),
                         entry("color", EmbedColors.WARNING)
                 );
     }
@@ -82,7 +84,7 @@ public class ModerationEvents {
     private static Embed spielersucheAusschlussEmbed(ReplyableEvent<?> event, User target, User issuer, Boolean reverted) {
         return genericEmbed(event, issuer).placeholders(
                 entry("title", "Spielersuche-Ausschluss" + (reverted ? "-Aufhebung" : "")),
-                entry("target", Helpers.formatUser(event.getJDA(), target)));
+                entry("target", target));
     }
 
     private static Embed genericModerationEmbed(ReplyableEvent<?> event, String action, RevertedModerationAct act) {
@@ -90,16 +92,21 @@ public class ModerationEvents {
                 entry("action", action),
                 entry("type", event.resolve(act.type().localizationKey())),
                 entry("id", act.id()),
-                entry("target", Helpers.formatUser(event.getJDA(), act.user())),
-                entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),
-                entry("revertedBy", Helpers.formatUser(event.getJDA(), act.revertedBy())),
+                entry("target", act.user()),
+                entry("issuer", act.issuer()),
+                entry("revertedBy", act.revertedBy()),
                 entry("revertedAt", act.revertedAt()),
                 entry("revertingReason", act.revertingReason()));
     }
 
     private static Embed genericEmbed(ReplyableEvent<?> event, User issuer) {
         return event.embed("genericEvent").placeholders(
-                entry("issuer", Helpers.formatUser(event.getJDA(), issuer)),
+                entry("issuer", issuer),
                 entry("createdAt", TimeFormat.DATE_TIME_SHORT.format(System.currentTimeMillis())));
+    }
+
+    private static String formatTimestamp(Timestamp timestamp) {
+        return "%s (%s)".formatted(TimeFormat.DATE_TIME_LONG.format(timestamp.getTime()),
+                                   TimeFormat.RELATIVE.atTimestamp(timestamp.getTime()));
     }
 }

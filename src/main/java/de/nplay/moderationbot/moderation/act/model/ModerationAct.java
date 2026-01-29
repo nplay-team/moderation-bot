@@ -1,6 +1,7 @@
 package de.nplay.moderationbot.moderation.act.model;
 
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
@@ -61,7 +62,11 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return revert(event.getGuild(), event.getUser(), reason, event.getUserLocale());
     }
 
-    public RevertedModerationAct revert(Guild guild, User revertedBy, String reason, DiscordLocale locale) {
+    public RevertedModerationAct automaticRevert(Guild guild, Resolver<String> resolver) {
+        return revert(guild, guild.getJDA().getSelfUser(), resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN), DiscordLocale.GERMAN);
+    }
+
+    private RevertedModerationAct revert(Guild guild, User revertedBy, String reason, DiscordLocale locale) {
         if (this instanceof RevertedModerationAct reverted) {
             return reverted;
         }
