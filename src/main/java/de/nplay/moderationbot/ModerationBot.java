@@ -148,12 +148,7 @@ public class ModerationBot extends AbstractModule {
     private JDACommands jdaCommands(Fluava parent) {
         return JDACommands.builder(jda)
                 .packages("de.nplay.moderationbot")
-                .embeds(config -> config
-                        .sources(
-                                EmbedDataSource.resource("embeds.json"),
-                                EmbedDataSource.resource("moderation.json"),
-                                EmbedDataSource.resource("events.json")
-                        )
+                .embeds(config -> config.sources(EmbedDataSource.resource("events.json"))
                         .placeholders(
                                 entry("colorDefault", EmbedColors.DEFAULT),
                                 entry("colorSuccess", EmbedColors.SUCCESS),

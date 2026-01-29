@@ -93,7 +93,7 @@ public class ModerationEvents {
                 entry("target", Helpers.formatUser(event.getJDA(), act.user())),
                 entry("issuer", Helpers.formatUser(event.getJDA(), act.issuer())),
                 entry("revertedBy", Helpers.formatUser(event.getJDA(), act.revertedBy())),
-                entry("revertedAt", TimeFormat.DATE_TIME_LONG.format(act.revertedAt().getTime())),
+                entry("revertedAt", act.revertedAt()),
                 entry("revertingReason", act.revertingReason()));
     }
 

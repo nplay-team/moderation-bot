@@ -1,5 +1,5 @@
 ## Config Set
-config-set =
+config-update =
     ### Einstellung { $key } gesetzt
     { $value }
 

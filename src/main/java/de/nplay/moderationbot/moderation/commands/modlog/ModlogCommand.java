@@ -134,7 +134,7 @@ public class ModlogCommand {
             boolean first = true;
             for (ModerationAct act : moderationActs) {
                 container.append(
-                        act.toTextDisplay(event.messageResolver(), event.getUserLocale()),
+                        act.toShortDisplay(event.messageResolver(), event.getUserLocale()),
                         first ? null : Separator.createInvisible(Spacing.SMALL)
                 );
                 first = false;

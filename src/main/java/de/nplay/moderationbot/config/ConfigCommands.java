@@ -33,7 +33,7 @@ public class ConfigCommands {
 
     private void onConfigSet(CommandEvent event, BotConfig config, String value) {
         ConfigService.set(config, value);
-        event.reply(Replies.success("config-set"), entry("key", config.toString()), entry("value", value));
+        event.reply(Replies.success("config-update"), entry("key", config.toString()), entry("value", value));
     }
 
     @Command("list")

@@ -1,3 +1,21 @@
+## Detail
+mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung an
+mod-detail-options-moderation_act-name = id
+mod-detail-options-moderation_act-description = Die ID der Moderationshandlung.
+detail =
+    ## NPLAY-Moderation - Moderationshandlung
+    ### \#{ $id } | { $type } | { $createdAt }
+    { "**Grund:**" } { $reason }
+    { "**Moderator:**" } { $issuer }
+    .reverted =
+        ## NPLAY-Moderation - Moderationshandlung
+        ### \#{ $id } | { $type } | { $createdAt }
+        { "**Grund:**" } { $reason }
+        { "**Moderator:**" } { $issuer }
+        ### Aufhebung | { $revertedAt }
+        { "**Grund:**" } { $revertingReason }
+        { "**Revidierender Moderator:**" } { $reverter }
+
 ## Modlog
 mod-log-description = Zeigt den Modlog eines Mitglieds an.
 mod-log-options-target-name = { -target }
@@ -33,4 +51,4 @@ entry =
         ~~{ "**" }#{ $id } | { $type } | { $createdAt }{ "**" }~~
         ~~{ $reason }~~
         -# ~~Moderator: { $issuer }~~
-        -# Aufgehoben von: { $reverter }
+        -# Aufgehoben von: { $reverter } | { $revertedAt }

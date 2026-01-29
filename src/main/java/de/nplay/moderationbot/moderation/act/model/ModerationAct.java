@@ -1,10 +1,21 @@
 package de.nplay.moderationbot.moderation.act.model;
 
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
+import io.github.kaktushose.jdac.configuration.Property;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.introspection.Introspection;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.ModerationBot.EmbedColors;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
@@ -15,29 +26,14 @@ import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.Moderati
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.util.SeparatedContainer;
-import io.github.kaktushose.jdac.annotations.i18n.Bundle;
-import io.github.kaktushose.jdac.configuration.Property;
-import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
-import io.github.kaktushose.jdac.embeds.Embed;
-import io.github.kaktushose.jdac.introspection.Introspection;
-import io.github.kaktushose.jdac.message.resolver.MessageResolver;
-import net.dv8tion.jda.api.components.separator.Separator;
-import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static de.nplay.moderationbot.Helpers.formatTimestamp;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public sealed class ModerationAct permits RevertedModerationAct {
@@ -67,9 +63,18 @@ public sealed class ModerationAct permits RevertedModerationAct {
     }
 
     @Bundle("modlog")
-    public TextDisplay toTextDisplay(MessageResolver resolver, DiscordLocale locale) {
+    public TextDisplay toShortDisplay(MessageResolver resolver, DiscordLocale locale) {
         return TextDisplay.of(resolver.resolve(
                 this instanceof RevertedModerationAct ? "entry.reverted" : "entry",
+                locale.toLocale(),
+                entries(locale)
+        ));
+    }
+
+    @Bundle("modlog")
+    public TextDisplay toFullDisplay(MessageResolver resolver, DiscordLocale locale) {
+        return TextDisplay.of(resolver.resolve(
+                this instanceof RevertedModerationAct ? "detail.reverted" : "detail",
                 locale.toLocale(),
                 entries(locale)
         ));
@@ -87,35 +92,10 @@ public sealed class ModerationAct permits RevertedModerationAct {
             && !act.revertedBy().getId().equals(Introspection.scopedGet(Property.JDA).getSelfUser().getId())
         ) {
             entries.put("reverter", act.revertedBy());
+            entries.put("revertedAt", act.revertedAt());
+            entries.put("revertingReason", act.revertingReason());
         }
         return entries;
-    }
-
-    @Deprecated
-    public Embed toEmbed(ReplyableEvent<?> event) {
-        var embed = event.embed("moderationActDetail");
-        embed.placeholders(
-                entry("id", id),
-                entry("type", event.resolve(type.localizationKey())),
-                entry("created", formatTimestamp(createdAt)),
-                entry("issuer", Helpers.formatUser(event.getJDA(), issuer)),
-                entry("reason", reason),
-                entry("color", EmbedColors.DEFAULT));
-
-        paragraph().ifPresent(it -> embed.fields().add(event.resolve("rule"), it.fullDisplay()));
-        referenceMessage().ifPresent(it -> embed.fields().add(event.resolve("reference-message"), it.jumpUrl(event.getGuild())));
-
-        if (this instanceof RevertedModerationAct reverted && !reverted.revertedBy().getId().equals(event.getJDA().getSelfUser().getId())) {
-            embed.fields()
-                    .add(event.resolve("reverted-at"), Helpers.formatTimestamp(reverted.revertedAt()))
-                    .add(event.resolve("reverted-by"), Helpers.formatUser(event.getJDA(), reverted.revertedBy()))
-                    .add(event.resolve("reverting-reason"), reverted.revertingReason());
-        } else if (revokeAt != null) {
-            embed.fields()
-                    .add(event.resolve("duration-field"), Helpers.formatDuration(Duration.ofMillis(duration)))
-                    .add(event.resolve("revoke-at-field"), Helpers.formatTimestamp(revokeAt));
-        }
-        return embed;
     }
 
     public RevertedModerationAct revert(ReplyableEvent<?> event, String reason) {

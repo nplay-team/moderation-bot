@@ -6,11 +6,6 @@ purge-success =
     ### Erfolgreich
     Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!
 
-## Detail
-mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung an
-mod-detail-options-moderation_act-name = id
-mod-detail-options-moderation_act-description = Die ID der Moderationshandlung.
-
 # Embeds
 ## Modlog
 reverted-at-inline = *Aufgehoben am: { $revertedAt }*
