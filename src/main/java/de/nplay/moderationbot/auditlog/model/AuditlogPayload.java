@@ -15,16 +15,11 @@ public sealed interface AuditlogPayload {
     ObjectMapper objectMapper = new ObjectMapper();
 
     static Optional<AuditlogPayload> fromJson(AuditlogType type, @Nullable String json) {
-        if (json == null) {
+        if (json == null || type.payloadType() == null) {
             return Optional.empty();
         }
         try {
-            return switch (type) {
-                case PERMISSIONS_USER_UPDATE, PERMISSIONS_ROLE_UPDATE ->
-                        Optional.of(objectMapper.readValue(json, PermissionsUpdate.class));
-                case CONFIG_UPDATE -> Optional.of(objectMapper.readValue(json, ConfigUpdate.class));
-                default -> Optional.empty();
-            };
+            return Optional.of(objectMapper.readValue(json, type.payloadType()));
         } catch (JsonProcessingException e) {
             log.error("Failed to deserialize AuditlogPayload", e);
             return Optional.empty();
