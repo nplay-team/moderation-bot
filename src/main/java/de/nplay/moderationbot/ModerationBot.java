@@ -75,8 +75,8 @@ public class ModerationBot extends ServiceModule {
         jda.addEventListener(new SlowmodeEventHandler(resolver));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
-                () -> moderationActService().getToRevert().forEach(it -> it.automaticRevert(guild, resolver))
-                , 0, 1, TimeUnit.MINUTES
+                () -> moderationActService().automaticRevert(guild, resolver),
+                0, 1, TimeUnit.MINUTES
         );
 
         Thread.setDefaultUncaughtExceptionHandler((_, e) -> log.error("An uncaught exception has occurred!", e));

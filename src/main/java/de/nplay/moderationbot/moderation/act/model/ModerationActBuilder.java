@@ -163,10 +163,9 @@ public class ModerationActBuilder {
         throw new UnsupportedOperationException("Cannot set deletion days on moderation act with type: " + type);
     }
 
-    public ModerationAct execute(ReplyableEvent<?> event) {
+    public ModerationAct execute(ReplyableEvent<?> event, ModerationActService service) {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays);
-        // todo move to service
-        ModerationAct act = ModerationActService.create(data);
+        ModerationAct act = service.create(data);
         executor.accept(data);
         sendModerationToTarget(act, event);
         return act;

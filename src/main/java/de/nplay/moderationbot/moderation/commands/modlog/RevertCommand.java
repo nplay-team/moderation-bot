@@ -2,6 +2,7 @@ package de.nplay.moderationbot.moderation.commands.modlog;
 
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -22,10 +23,12 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class RevertCommand {
 
     private final Serverlog serverlog;
+    private final ModerationActService actService;
 
     @Inject
-    public RevertCommand(Serverlog serverlog) {
+    public RevertCommand(Serverlog serverlog, ModerationActService actService) {
         this.serverlog = serverlog;
+        this.actService = actService;
     }
 
     @Command("mod revert")
@@ -35,7 +38,7 @@ public class RevertCommand {
             event.reply(Replies.error("revert-failed"), entry("id", moderationAct.id()));
             return;
         }
-        RevertedModerationAct reverted = moderationAct.revert(event, reason);
+        RevertedModerationAct reverted = actService.revert(moderationAct, event, reason);
         serverlog.onEvent(ModerationEvents.Reverted(event.getJDA(), event.getGuild(), reverted), event);
         event.reply(Replies.success("revert-successful"), entry("id", moderationAct.id()));
     }

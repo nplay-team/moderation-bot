@@ -6,6 +6,7 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
@@ -31,10 +32,12 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class SpielersucheAusschlussCommands {
 
     private final Serverlog serverlog;
+    private final ModerationActService actService;
 
     @Inject
-    public SpielersucheAusschlussCommands(Serverlog serverlog) {
+    public SpielersucheAusschlussCommands(Serverlog serverlog, ModerationActService actService) {
         this.serverlog = serverlog;
+        this.actService = actService;
     }
 
     @Command("ausschluss")
@@ -54,7 +57,7 @@ public class SpielersucheAusschlussCommands {
         ModerationActBuilder.warn(target, event.getUser())
                 .reason(event.resolve("spielersuche-ausschluss-reason"))
                 .paragraph(paragraph)
-                .execute(event);
+                .execute(event, actService);
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
         event.reply(Replies.success("block"), entry("target", target));
