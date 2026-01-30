@@ -11,35 +11,31 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
+public class PermissionsService {
 
-/// Utility methods for basic CRUD operations on user or role permissions
-public class BotPermissionsService {
-
-    /// Gets the [EntityPermissions] of a [UserSnowflake].
-    ///
-    /// @implNote Returns empty permissions if no user entry exists. If the provided [UserSnowflake] is a [Member] will
-    /// combine the [Role] permissions.
-    public static BotPermissionsService.EntityPermissions getUserPermissions(UserSnowflake user) {
-        var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
+    public EntityPermissions getUser(UserSnowflake user) {
+        return Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
                 .mapAs(EntityPermissions.class)
                 .first().orElse(new EntityPermissions(0));
-
-        if (user instanceof Member member) {
-            var rolePermissions = 0;
-            for (Role role : member.getRoles()) {
-                rolePermissions |= getRolePermissions(role).permissions;
-            }
-            return new EntityPermissions(userPermissions.permissions | rolePermissions);
-        }
-        return userPermissions;
     }
 
-    /// Sets the permissions for a user. If the user does not have existing permissions,
-    /// it creates a new entry. Otherwise, it updates the existing permissions.
-    ///
-    /// @return the updated [EntityPermissions]
-    public static BotPermissionsService.EntityPermissions updateUserPermissions(UserSnowflake user, int permissions) {
+    public EntityPermissions getRole(Role role) {
+        return Query.query("SELECT * FROM roles WHERE id = ?")
+                .single(Call.of().bind(role.getIdLong()))
+                .mapAs(EntityPermissions.class)
+                .first().orElse(new EntityPermissions(0));
+    }
+
+    public EntityPermissions getCombined(Member member) {
+        int rolePermissions = member.getRoles().stream()
+                .map(this::getRole)
+                .mapToInt(EntityPermissions::permissions)
+                .reduce(0, ((left, right) -> left | right));
+        return new EntityPermissions(getUser(member).permissions | rolePermissions);
+    }
+
+    public void updateUser(UserSnowflake user, int permissions) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
                 .single(Call.of().bind(user.getIdLong()))
                 .mapAs(EntityPermissions.class)
@@ -54,23 +50,9 @@ public class BotPermissionsService {
                     .single(Call.of().bind(permissions).bind(user.getIdLong()))
                     .update();
         }
-
-        return getUserPermissions(user);
     }
 
-    /// Gets the permissions of a role. Returns empty permissions if no role entry exists
-    public static BotPermissionsService.EntityPermissions getRolePermissions(Role role) {
-        return Query.query("SELECT * FROM roles WHERE id = ?")
-                .single(Call.of().bind(role.getIdLong()))
-                .mapAs(EntityPermissions.class)
-                .first().orElse(new EntityPermissions(0));
-    }
-
-    /// Sets the permissions for a role. If the role does not have existing permissions,
-    /// it creates a new entry. Otherwise, it updates the existing permissions.
-    ///
-    /// @return the updated [EntityPermissions]
-    public static BotPermissionsService.EntityPermissions updateRolePermissions(Role role, int permissions) {
+    public EntityPermissions updateRole(Role role, int permissions) {
         var id = role.getIdLong();
         var rolePermissions = Query.query("SELECT * FROM roles WHERE id = ?")
                 .single(Call.of().bind(id))
@@ -87,7 +69,7 @@ public class BotPermissionsService {
                     .update();
         }
 
-        return getRolePermissions(role);
+        return getRole(role);
     }
 
     public record EntityPermissions(int permissions) {
@@ -110,7 +92,6 @@ public class BotPermissionsService {
             return (permissions() & BitFields.valueOf(permission).value) != 0;
         }
 
-        /// Gets a human-readable, line-by-line overview of all included permissions of a bitfield permission value
         public String readableList(ReplyableEvent<?> event) {
             if (permissions == 0) {
                 return event.resolve("- %s".formatted(event.resolve("perm-none")));

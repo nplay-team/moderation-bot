@@ -10,6 +10,7 @@ import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.notes.NotesService;
+import de.nplay.moderationbot.permissions.PermissionsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +22,13 @@ public class DatabaseModule extends AbstractModule {
     private static final Logger log = LoggerFactory.getLogger(DatabaseModule.class);
     private final ModerationActService moderationActService;
     private final NotesService notesService;
+    private final PermissionsService permissionsService;
 
     public DatabaseModule() {
         initialize();
         notesService = new NotesService();
         moderationActService = new ModerationActService();
+        permissionsService = new PermissionsService();
     }
 
     @Provides
@@ -36,6 +39,11 @@ public class DatabaseModule extends AbstractModule {
     @Provides
     public ModerationActService moderationActService() {
         return moderationActService;
+    }
+
+    @Provides
+    public PermissionsService permissionsService() {
+        return permissionsService;
     }
 
     private void initialize() {

@@ -1,10 +1,10 @@
 package de.nplay.moderationbot.permissions.commands;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
-import de.nplay.moderationbot.permissions.BotPermissionsService;
-import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
+import de.nplay.moderationbot.permissions.PermissionsService;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
@@ -27,8 +27,9 @@ public class MemberPermissionsCommand extends PermissionsCommand {
     private @Nullable Member member;
     private @Nullable Integer newPermissions;
 
-    public MemberPermissionsCommand() {
-        super("member");
+    @Inject
+    public MemberPermissionsCommand(PermissionsService permissionsService) {
+        super("member", permissionsService);
     }
 
     @Permissions(BotPermissions.PERMISSION_READ)
@@ -50,7 +51,8 @@ public class MemberPermissionsCommand extends PermissionsCommand {
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @Button(value = "confirm.confirm", style = ButtonStyle.DANGER)
     public void onConfirm(ComponentEvent event) {
-        replyList(event, BotPermissionsService.updateUserPermissions(member, 0), member.getEffectiveName());
+        permissionsService.updateUser(member, 0);
+        replyList(event, permissionsService.getCombined(member), member.getEffectiveName());
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
@@ -62,7 +64,7 @@ public class MemberPermissionsCommand extends PermissionsCommand {
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @Button(value = "edit.modify")
     public void onModify(ComponentEvent event) {
-        replyModify(event, BotPermissionsService.getUserPermissions(member), member.getEffectiveName());
+        replyModify(event, permissionsService.getUser(member), member.getEffectiveName());
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
@@ -75,12 +77,9 @@ public class MemberPermissionsCommand extends PermissionsCommand {
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @Button(value = "edit.save", style = ButtonStyle.SUCCESS)
     public void onSave(ComponentEvent event) {
-        EntityPermissions permissions;
-        if (newPermissions == null) {
-            permissions = BotPermissionsService.getUserPermissions(member);
-        } else {
-            permissions = BotPermissionsService.updateUserPermissions(member, newPermissions);
+        if (newPermissions != null) {
+            permissionsService.updateUser(member, newPermissions);
         }
-        replyList(event, permissions, member.getEffectiveName());
+        replyList(event, member);
     }
 }

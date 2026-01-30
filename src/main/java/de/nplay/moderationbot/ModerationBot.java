@@ -62,7 +62,7 @@ public class ModerationBot extends DatabaseModule {
 
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(Property.MESSAGE_RESOLVER);
-        jda.addEventListener(new SlowmodeEventHandler(resolver));
+        jda.addEventListener(new SlowmodeEventHandler(resolver, permissionsService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> moderationActService().automaticRevert(guild, resolver),
