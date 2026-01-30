@@ -43,7 +43,7 @@ public class DatabaseModule extends AbstractModule {
         permissionsService = new PermissionsService();
         slowmodeService = new SlowmodeService();
         configService = new ConfigService();
-        auditlogService = new AuditlogService(moderationActService);
+        auditlogService = new AuditlogService();
     }
 
     @Provides

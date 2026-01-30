@@ -1,5 +1,6 @@
 package de.nplay.moderationbot;
 
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
 import io.github.kaktushose.jdac.JDACommands;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
@@ -54,6 +55,7 @@ public class ModerationBot extends DatabaseModule {
     private final Guild guild;
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
+    private final Lifecycle lifecycle = new Lifecycle();
 
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
@@ -90,6 +92,11 @@ public class ModerationBot extends DatabaseModule {
     @Provides
     public ModerationActLock moderationActLock() {
         return moderationActLock;
+    }
+
+    @Provides
+    public Lifecycle lifecycle() {
+        return lifecycle;
     }
 
     private JDA jda(String token) throws InterruptedException {
