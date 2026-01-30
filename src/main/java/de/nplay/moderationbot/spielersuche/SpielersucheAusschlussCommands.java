@@ -6,8 +6,10 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.util.SeparatedContainer;
@@ -21,6 +23,7 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 import java.util.Optional;
 
@@ -31,15 +34,22 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class SpielersucheAusschlussCommands {
 
     private final Serverlog serverlog;
+    private final ModerationActService actService;
+    private final ConfigService configService;
 
     @Inject
-    public SpielersucheAusschlussCommands(Serverlog serverlog) {
+    public SpielersucheAusschlussCommands(
+            Serverlog serverlog, ModerationActService actService,
+            ConfigService configService
+    ) {
         this.serverlog = serverlog;
+        this.actService = actService;
+        this.configService = configService;
     }
 
     @Command("ausschluss")
     @Permissions(BotPermissions.MODERATION_CREATE)
-    public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true) String paragraph) {
+    public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph) {
         var role = role(event);
         if (role.isEmpty()) {
             event.reply(Replies.error("role-error"));
@@ -54,7 +64,7 @@ public class SpielersucheAusschlussCommands {
         ModerationActBuilder.warn(target, event.getUser())
                 .reason(event.resolve("spielersuche-ausschluss-reason"))
                 .paragraph(paragraph)
-                .execute(event);
+                .execute(event, actService);
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
         event.reply(Replies.success("block"), entry("target", target));
@@ -87,7 +97,7 @@ public class SpielersucheAusschlussCommands {
     }
 
     private Optional<Role> role(CommandEvent event) {
-        var role = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
+        var role = configService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
         return role.map(it -> event.getGuild().getRoleById(it));
     }
 }

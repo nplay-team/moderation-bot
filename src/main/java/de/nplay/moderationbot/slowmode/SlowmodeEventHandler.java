@@ -1,11 +1,10 @@
 package de.nplay.moderationbot.slowmode;
 
-import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.permissions.BotPermissionsService;
+import de.nplay.moderationbot.permissions.PermissionsService;
 import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
@@ -36,15 +35,22 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class SlowmodeEventHandler extends ListenerAdapter {
 
     private final MessageResolver resolver;
+    private final SlowmodeService slowmodeService;
+    private final PermissionsService permissionsService;
 
-    @Inject
-    public SlowmodeEventHandler(MessageResolver resolver) {
+    public SlowmodeEventHandler(
+            MessageResolver resolver,
+            SlowmodeService slowmodeService,
+            PermissionsService permissionsService
+    ) {
         this.resolver = resolver;
+        this.slowmodeService = slowmodeService;
+        this.permissionsService = permissionsService;
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.isWebhookMessage() || !event.isFromGuild()) {
+        if (event.getMember() == null) {
             return;
         }
 
@@ -53,7 +59,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         }
 
         var channel = event.getGuildChannel();
-        var slowmode = SlowmodeService.getSlowmode(channel);
+        var slowmode = slowmodeService.get(channel);
 
         if (slowmode.isEmpty()) {
             return;
@@ -105,7 +111,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         }
 
         var forumChannel = thread.getParentChannel().asForumChannel();
-        var slowmode = SlowmodeService.getSlowmode(forumChannel);
+        var slowmode = slowmodeService.get(forumChannel);
 
         if (slowmode.isEmpty()) {
             return;
@@ -141,7 +147,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
             return true;
         }
-        return BotPermissionsService.getUserPermissions(member).hasPermission(BotPermissions.MODERATION_CREATE);
+        return permissionsService.getCombined(member).hasPermission(BotPermissions.MODERATION_CREATE);
     }
 
     private boolean isWithinSlowmode(Instant current, Instant last, Duration slowmode) {

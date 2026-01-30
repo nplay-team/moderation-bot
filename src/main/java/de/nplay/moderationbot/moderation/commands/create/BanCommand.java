@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.messagelink.MessageLink;
@@ -7,6 +8,8 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
@@ -16,6 +19,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.Nullable;
 
@@ -27,6 +31,13 @@ import java.time.Duration;
 @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
 public class BanCommand extends CreateCommand {
 
+    private final ModerationActService actService;
+
+    @Inject
+    public BanCommand(ModerationActService actService) {
+        this.actService = actService;
+    }
+
     @Lock("target")
     @Command("mod ban")
     public void banMember(
@@ -34,10 +45,10 @@ public class BanCommand extends CreateCommand {
             User target,
             @Param(optional = true) @Nullable Duration until,
             @Param(optional = true) @Min(1) @Max(7) int delDays,
-            @Param(optional = true) @Nullable String paragraph,
+            @Param(optional = true, type = OptionType.INTEGER) @Nullable RuleParagraph paragraph,
             @Param(optional = true) @Nullable MessageLink messageLink
     ) {
-        if (ModerationActService.isBanned(target.getIdLong())) {
+        if (actService.isBanned(target)) {
             event.reply(Replies.error("user-already-banned"));
             return;
         }
