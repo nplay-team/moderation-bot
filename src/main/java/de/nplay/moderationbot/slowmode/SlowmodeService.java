@@ -1,11 +1,12 @@
 package de.nplay.moderationbot.slowmode;
 
 import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
+import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -37,11 +38,8 @@ public class SlowmodeService {
     public record Slowmode(long channelId, Duration duration) {
 
         @MappingProvider("")
-        public static RowMapping<Slowmode> map() {
-            return row -> new Slowmode(
-                    row.getLong("channel_id"),
-                    Duration.ofSeconds(row.getInt("duration"))
-            );
+        public Slowmode(Row row) throws SQLException {
+            this(row.getLong("channel_id"), Duration.ofSeconds(row.getInt("duration")));
         }
     }
 }

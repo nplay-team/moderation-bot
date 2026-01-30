@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.permissions;
 
 import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
+import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
@@ -10,6 +10,8 @@ import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+
+import java.sql.SQLException;
 
 public class PermissionsService {
 
@@ -75,8 +77,8 @@ public class PermissionsService {
     public record EntityPermissions(int permissions) {
 
         @MappingProvider("")
-        public static RowMapping<EntityPermissions> map() {
-            return row -> new EntityPermissions(row.getInt(("permissions")));
+        public EntityPermissions(Row row) throws SQLException {
+            this(row.getInt("permissions"));
         }
 
         public boolean hasPermissions(InvocationContext<?> context) {

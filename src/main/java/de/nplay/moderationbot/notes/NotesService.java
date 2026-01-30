@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.notes;
 
 import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
+import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -58,16 +59,11 @@ public class NotesService {
                 .delete();
     }
 
-    public record Note(
-            long id,
-            UserSnowflake userId,
-            UserSnowflake createdBy,
-            String content,
-            AbsoluteTime createdAt
-    ) {
+    public record Note(long id, UserSnowflake userId, UserSnowflake createdBy, String content, AbsoluteTime createdAt) {
+
         @MappingProvider("")
-        public static RowMapping<Note> map() {
-            return row -> new Note(
+        public Note(Row row) throws SQLException {
+            this(
                     row.getLong("id"),
                     UserSnowflake.fromId(row.getLong("user_id")),
                     UserSnowflake.fromId(row.getLong("creator_id")),

@@ -1,12 +1,15 @@
 package de.nplay.moderationbot.rules;
 
 import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
+import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class RuleService {
 
@@ -37,9 +40,9 @@ public class RuleService {
 
     public record RuleParagraph(int id, String number, String title, Optional<String> content) {
 
-        @MappingProvider("")
-        public static RowMapping<RuleParagraph> map() {
-            return row -> new RuleParagraph(
+        @MappingProvider("this")
+        public RuleParagraph(Row row) throws SQLException {
+            this(
                     row.getInt("id"),
                     row.getString("number"),
                     row.getString("title"),

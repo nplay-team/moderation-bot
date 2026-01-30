@@ -1,13 +1,14 @@
 package de.nplay.moderationbot.moderation;
 
 import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
+import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
@@ -36,12 +37,8 @@ public class MessageReferenceService {
         }
 
         @MappingProvider("")
-        public static RowMapping<MessageReference> map() {
-            return row -> new MessageReference(
-                    row.getLong("message_id"),
-                    row.getLong("channel_id"),
-                    row.getString("content")
-            );
+        public MessageReference(Row row) throws SQLException {
+            this(row.getLong("message_id"), row.getLong("channel_id"), row.getString("content"));
         }
 
         public String jumpUrl(Guild guild) {
