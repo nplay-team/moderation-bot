@@ -21,7 +21,7 @@ CREATE TABLE auditlog
     created_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     issuer_id  BIGINT        NOT NULL,
     target_id  BIGINT        NOT NULL,
-    payload    JSON
+    payload    JSONB
 );
 
 CREATE INDEX idx_auditlog_query_issuer ON auditlog (issuer_id, created_at, type);

@@ -27,7 +27,7 @@ public class AuditlogService {
         Long id = Query.query("""
                 INSERT INTO auditlog
                 (type, issuer_id, target_id, payload)
-                VALUES (?::auditlog_type, ?, ?, ?::json)
+                VALUES (?::auditlog_type, ?, ?, ?::jsonb)
                 """
         ).single(Call.of()
                 .bind(data.type())
