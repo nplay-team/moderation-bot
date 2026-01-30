@@ -35,10 +35,16 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class SlowmodeEventHandler extends ListenerAdapter {
 
     private final MessageResolver resolver;
+    private final SlowmodeService slowmodeService;
     private final PermissionsService permissionsService;
 
-    public SlowmodeEventHandler(MessageResolver resolver, PermissionsService permissionsService) {
+    public SlowmodeEventHandler(
+            MessageResolver resolver,
+            SlowmodeService slowmodeService,
+            PermissionsService permissionsService
+    ) {
         this.resolver = resolver;
+        this.slowmodeService = slowmodeService;
         this.permissionsService = permissionsService;
     }
 
@@ -53,7 +59,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         }
 
         var channel = event.getGuildChannel();
-        var slowmode = SlowmodeService.getSlowmode(channel);
+        var slowmode = slowmodeService.get(channel);
 
         if (slowmode.isEmpty()) {
             return;
@@ -105,7 +111,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         }
 
         var forumChannel = thread.getParentChannel().asForumChannel();
-        var slowmode = SlowmodeService.getSlowmode(forumChannel);
+        var slowmode = slowmodeService.get(forumChannel);
 
         if (slowmode.isEmpty()) {
             return;
