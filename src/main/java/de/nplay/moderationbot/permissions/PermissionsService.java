@@ -4,6 +4,10 @@ import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
+import de.nplay.moderationbot.auditlog.lifecycle.Service;
+import de.nplay.moderationbot.auditlog.lifecycle.events.PermissionsEvent;
+import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
 import io.github.kaktushose.jdac.dispatching.context.InvocationContext;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
@@ -13,7 +17,11 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import java.sql.SQLException;
 
-public class PermissionsService {
+public class PermissionsService extends Service {
+
+    public PermissionsService(Lifecycle lifecycle) {
+        super(lifecycle);
+    }
 
     public EntityPermissions getUser(UserSnowflake user) {
         return Query.query("SELECT * FROM users WHERE id = ?")
@@ -37,29 +45,45 @@ public class PermissionsService {
         return new EntityPermissions(getUser(member).permissions | rolePermissions);
     }
 
-    public void updateUser(UserSnowflake user, int permissions) {
+    public void updateUser(UserSnowflake target, int permissions, UserSnowflake issuer) {
         var userPermissions = Query.query("SELECT * FROM users WHERE id = ?")
-                .single(Call.of().bind(user.getIdLong()))
+                .single(Call.of().bind(target.getIdLong()))
                 .mapAs(EntityPermissions.class)
                 .first();
 
+        publish(new PermissionsEvent(
+                AuditlogType.PERMISSIONS_USER_UPDATE,
+                issuer,
+                target,
+                userPermissions.map(EntityPermissions::permissions).orElse(0),
+                permissions
+        ));
+
         if (userPermissions.isEmpty()) {
             Query.query("INSERT INTO users(id, permissions) VALUES(? ,?) ON CONFLICT DO NOTHING")
-                    .single(Call.of().bind(user.getIdLong()).bind(permissions))
+                    .single(Call.of().bind(target.getIdLong()).bind(permissions))
                     .insert();
         } else {
             Query.query("UPDATE users SET permissions = ? WHERE id = ?")
-                    .single(Call.of().bind(permissions).bind(user.getIdLong()))
+                    .single(Call.of().bind(permissions).bind(target.getIdLong()))
                     .update();
         }
     }
 
-    public EntityPermissions updateRole(Role role, int permissions) {
+    public EntityPermissions updateRole(Role role, int permissions, UserSnowflake issuer) {
         var id = role.getIdLong();
         var rolePermissions = Query.query("SELECT * FROM roles WHERE id = ?")
                 .single(Call.of().bind(id))
                 .mapAs(EntityPermissions.class)
                 .first();
+
+        publish(new PermissionsEvent(
+                AuditlogType.PERMISSIONS_ROLE_UPDATE,
+                issuer,
+                role,
+                rolePermissions.map(EntityPermissions::permissions).orElse(0),
+                permissions
+        ));
 
         if (rolePermissions.isEmpty()) {
             Query.query("INSERT INTO roles(id, permissions) VALUES(? ,?) ON CONFLICT DO NOTHING")

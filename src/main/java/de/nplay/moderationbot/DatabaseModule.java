@@ -43,7 +43,7 @@ public class DatabaseModule extends AbstractModule {
         ruleService = new RuleService();
         moderationActService = new ModerationActService(referenceService, ruleService);
         notesService = new NotesService(lifecycle);
-        permissionsService = new PermissionsService();
+        permissionsService = new PermissionsService(lifecycle);
         slowmodeService = new SlowmodeService();
         configService = new ConfigService();
         auditlogService = new AuditlogService();

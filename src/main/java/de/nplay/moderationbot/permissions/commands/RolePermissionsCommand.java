@@ -52,7 +52,7 @@ public class RolePermissionsCommand extends PermissionsCommand {
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @Button(value = "confirm.confirm", style = ButtonStyle.DANGER)
     public void onConfirm(ComponentEvent event) {
-        replyList(event, permissionsService.updateRole(role, 0), role.getAsMention());
+        replyList(event, permissionsService.updateRole(role, 0, event.getUser()), role.getAsMention());
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
@@ -81,7 +81,7 @@ public class RolePermissionsCommand extends PermissionsCommand {
         if (newPermissions == null) {
             permissions = permissionsService.getRole(role);
         } else {
-            permissions = permissionsService.updateRole(role, newPermissions);
+            permissions = permissionsService.updateRole(role, newPermissions, event.getUser());
         }
         replyList(event, permissions, role.getAsMention());
     }
