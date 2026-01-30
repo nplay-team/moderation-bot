@@ -6,6 +6,7 @@ import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
+import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
@@ -31,9 +32,15 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationActService {
 
+    private final MessageReferenceService referenceService;
+
+    public ModerationActService(MessageReferenceService referenceService) {
+        this.referenceService = referenceService;
+    }
+
     public ModerationAct create(ModerationActCreateData data) {
         if (data.messageReference() != null) {
-            MessageReferenceService.createMessageReference(data.messageReference());
+            referenceService.create(data.messageReference());
         }
 
         var id = Query.query("""
@@ -162,9 +169,10 @@ public class ModerationActService {
     }
 
     private ModerationAct map(Row row) throws SQLException {
+        MessageReference referenceMessage = referenceService.get(row.getLong("reference_message")).orElse(null);
         if (row.getBoolean("reverted")) {
-            return new RevertedModerationAct(row);
+            return new RevertedModerationAct(row, referenceMessage);
         }
-        return new ModerationAct(row);
+        return new ModerationAct(row, referenceMessage);
     }
 }

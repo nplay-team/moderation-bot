@@ -56,7 +56,7 @@ public class ReasonModal {
         act.paragraph().ifPresent(it ->
                 container.append(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
         );
-        act.referenceMessage().ifPresent(it ->
+        act.messageReference().ifPresent(it ->
                 container.append(TextDisplay.of("executed.reference"), entry("message", it.content()))
         );
         event.reply(container);

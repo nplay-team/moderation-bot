@@ -13,23 +13,17 @@ import java.util.regex.Matcher;
 
 public class MessageReferenceService {
 
-    public static Optional<MessageReference> getMessageReference(long messageId) {
+    public Optional<MessageReference> get(long messageId) {
         return Query.query("SELECT * FROM message_references WHERE message_id = ?")
                 .single(Call.of().bind(messageId))
                 .mapAs(MessageReference.class)
                 .first();
     }
 
-    public static void createMessageReference(Message message) {
+    public void create(Message message) {
         Query.query("INSERT INTO message_references VALUES(?, ?, ?) ON CONFLICT DO NOTHING")
                 .single(Call.of().bind(message.getIdLong()).bind(message.getChannelIdLong()).bind(message.getContentRaw()))
                 .insert();
-    }
-
-    public static void deleteMessageReference(long messageId) {
-        Query.query("DELETE FROM message_references where message_id = ?")
-                .single(Call.of().bind(messageId))
-                .delete();
     }
 
     public record MessageReference(long messageId, long channelId, String content) {

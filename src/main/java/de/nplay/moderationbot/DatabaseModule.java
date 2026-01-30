@@ -8,9 +8,11 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.PermissionsService;
+import de.nplay.moderationbot.slowmode.SlowmodeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +22,19 @@ import java.sql.SQLException;
 public class DatabaseModule extends AbstractModule {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseModule.class);
+    private final MessageReferenceService referenceService;
     private final ModerationActService moderationActService;
     private final NotesService notesService;
     private final PermissionsService permissionsService;
+    private final SlowmodeService slowmodeService;
 
     public DatabaseModule() {
         initialize();
+        referenceService = new MessageReferenceService();
+        moderationActService = new ModerationActService(referenceService);
         notesService = new NotesService();
-        moderationActService = new ModerationActService();
         permissionsService = new PermissionsService();
+        slowmodeService = new SlowmodeService();
     }
 
     @Provides
@@ -44,6 +50,16 @@ public class DatabaseModule extends AbstractModule {
     @Provides
     public PermissionsService permissionsService() {
         return permissionsService;
+    }
+
+    @Provides
+    public SlowmodeService slowmodeService() {
+        return slowmodeService;
+    }
+
+    @Provides
+    public MessageReferenceService referenceService() {
+        return referenceService;
     }
 
     private void initialize() {

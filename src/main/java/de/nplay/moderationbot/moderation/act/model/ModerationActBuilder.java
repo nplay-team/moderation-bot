@@ -196,7 +196,7 @@ public class ModerationActBuilder {
         act.paragraph().ifPresent(it ->
                 container.append(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
         );
-        act.referenceMessage().ifPresent(it ->
+        act.messageReference().ifPresent(it ->
                 container.append(TextDisplay.of("act-info.reference"), entry("message", it.content()))
         );
 

@@ -2,7 +2,9 @@ package de.nplay.moderationbot.moderation.act.model;
 
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -13,8 +15,8 @@ public final class RevertedModerationAct extends ModerationAct {
     private final Timestamp revertedAt;
     private final String revertingReason;
 
-    public RevertedModerationAct(Row row) throws SQLException {
-        super(row);
+    public RevertedModerationAct(Row row, @Nullable MessageReference messageReference) throws SQLException {
+        super(row, messageReference);
         if (!row.getBoolean("reverted")) {
             throw new IllegalStateException("ModerationAct is not reverted!");
         }
