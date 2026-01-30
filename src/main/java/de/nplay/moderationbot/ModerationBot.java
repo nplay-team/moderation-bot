@@ -58,7 +58,7 @@ public class ModerationBot extends DatabaseModule {
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
-        serverlog = new Serverlog();
+        serverlog = new Serverlog(configService());
 
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(Property.MESSAGE_RESOLVER);

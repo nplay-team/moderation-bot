@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.config;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -21,6 +22,13 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @CommandConfig(enabledFor = Permission.ADMINISTRATOR)
 public class ConfigCommands {
 
+    private final ConfigService configService;
+
+    @Inject
+    public ConfigCommands(ConfigService configService) {
+        this.configService = configService;
+    }
+
     @Command("set spielersuche-ausschluss-rolle")
     public void setSpielersucheAusschlussRolle(CommandEvent event, Role role) {
         onConfigSet(event, BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE, role.getId());
@@ -32,14 +40,14 @@ public class ConfigCommands {
     }
 
     private void onConfigSet(CommandEvent event, BotConfig config, String value) {
-        ConfigService.set(config, value);
+        configService.set(config, value);
         event.reply(Replies.success("config-update"), entry("key", config.toString()), entry("value", value));
     }
 
     @Command("list")
     public void listConfig(CommandEvent event) {
-        var spielersucheRole = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
-        var serverlogChannel = ConfigService.get(BotConfig.SERVERLOG_KANAL);
+        var spielersucheRole = configService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
+        var serverlogChannel = configService.get(BotConfig.SERVERLOG_KANAL);
 
         event.reply(
                 Replies.standard("config-list"),

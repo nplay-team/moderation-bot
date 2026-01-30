@@ -33,11 +33,16 @@ public class SpielersucheAusschlussCommands {
 
     private final Serverlog serverlog;
     private final ModerationActService actService;
+    private final ConfigService configService;
 
     @Inject
-    public SpielersucheAusschlussCommands(Serverlog serverlog, ModerationActService actService) {
+    public SpielersucheAusschlussCommands(
+            Serverlog serverlog, ModerationActService actService,
+            ConfigService configService
+    ) {
         this.serverlog = serverlog;
         this.actService = actService;
+        this.configService = configService;
     }
 
     @Command("ausschluss")
@@ -90,7 +95,7 @@ public class SpielersucheAusschlussCommands {
     }
 
     private Optional<Role> role(CommandEvent event) {
-        var role = ConfigService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
+        var role = configService.get(BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
         return role.map(it -> event.getGuild().getRoleById(it));
     }
 }
