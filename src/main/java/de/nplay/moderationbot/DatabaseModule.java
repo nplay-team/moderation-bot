@@ -1,7 +1,6 @@
 package de.nplay.moderationbot;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 import de.chojo.sadu.datasource.DataSourceCreator;
 import de.chojo.sadu.mapper.RowMapperRegistry;
@@ -9,6 +8,7 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.auditlog.AuditlogService;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
@@ -32,6 +32,7 @@ public class DatabaseModule extends AbstractModule {
     private final SlowmodeService slowmodeService;
     private final ConfigService configService;
     private final RuleService ruleService;
+    private final AuditlogService auditlogService;
 
     public DatabaseModule() {
         initialize();
@@ -42,6 +43,7 @@ public class DatabaseModule extends AbstractModule {
         permissionsService = new PermissionsService();
         slowmodeService = new SlowmodeService();
         configService = new ConfigService();
+        auditlogService = new AuditlogService(moderationActService);
     }
 
     @Provides
@@ -77,6 +79,11 @@ public class DatabaseModule extends AbstractModule {
     @Provides
     public RuleService ruleService() {
         return ruleService;
+    }
+
+    @Provides
+    public AuditlogService getAuditlogService() {
+        return auditlogService;
     }
 
     private void initialize() {
