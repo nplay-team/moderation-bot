@@ -10,7 +10,7 @@ config-set-spielersuche-ausschluss-rolle-options-role-description = Die Rolle, w
 
 ## Set Serverlog
 config-set-serverlog-kanal-description = Setzt den Textkanal für den Serverlog.
-config-set-serverlog-kanal-options-channel-name = { -channel }
+config-set-serverlog-kanal-options-channel-name = kanal
 config-set-serverlog-kanal-options-channel-description = Der Text-Kanal in denen die Bot-Logs gesendet werden sollen.
 
 ## Config List

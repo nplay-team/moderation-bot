@@ -1,6 +1,6 @@
 ## Manage Member
 permissions-member-description = Verwaltet die Berechtigungen eines Benutzers.
-permissions-member-options-member-name = { -target }
+permissions-member-options-member-name = nutzer
 permissions-member-options-member-description = Der Benutzer, dessen Berechtigungen bearbeitet werden sollen.
 permissions-select = Wähle eine oder mehrere Berechtigungen aus
 member =
