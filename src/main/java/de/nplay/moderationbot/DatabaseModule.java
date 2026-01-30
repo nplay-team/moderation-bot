@@ -14,6 +14,7 @@ import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.PermissionsService;
+import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.slowmode.SlowmodeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +31,13 @@ public class DatabaseModule extends AbstractModule {
     private final PermissionsService permissionsService;
     private final SlowmodeService slowmodeService;
     private final ConfigService configService;
+    private final RuleService ruleService;
 
     public DatabaseModule() {
         initialize();
         referenceService = new MessageReferenceService();
-        moderationActService = new ModerationActService(referenceService);
+        ruleService = new RuleService();
+        moderationActService = new ModerationActService(referenceService, ruleService);
         notesService = new NotesService();
         permissionsService = new PermissionsService();
         slowmodeService = new SlowmodeService();
@@ -69,6 +72,11 @@ public class DatabaseModule extends AbstractModule {
     @Inject
     public ConfigService configService() {
         return configService;
+    }
+
+    @Inject
+    public RuleService ruleService() {
+        return ruleService;
     }
 
     private void initialize() {

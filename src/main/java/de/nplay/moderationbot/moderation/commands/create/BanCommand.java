@@ -8,6 +8,8 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
@@ -17,6 +19,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jspecify.annotations.Nullable;
 
@@ -42,7 +45,7 @@ public class BanCommand extends CreateCommand {
             User target,
             @Param(optional = true) @Nullable Duration until,
             @Param(optional = true) @Min(1) @Max(7) int delDays,
-            @Param(optional = true) @Nullable String paragraph,
+            @Param(optional = true, type = OptionType.INTEGER) @Nullable RuleParagraph paragraph,
             @Param(optional = true) @Nullable MessageLink messageLink
     ) {
         if (actService.isBanned(target)) {

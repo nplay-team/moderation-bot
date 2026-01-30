@@ -10,16 +10,16 @@ import java.util.stream.Collectors;
 
 public class RuleService {
 
-    private static final Set<RuleParagraph> cache = new HashSet<>();
+    private final Set<RuleParagraph> cache = new HashSet<>();
 
-    public static List<RuleParagraph> getRuleParagraphs() {
+    public List<RuleParagraph> getAll() {
         return Query.query("SELECT * FROM rule_paragraphs")
                 .single()
                 .mapAs(RuleParagraph.class)
                 .all();
     }
 
-    public static Optional<RuleParagraph> getRuleParagraph(int id) {
+    public Optional<RuleParagraph> get(int id) {
         var cacheEntry = cache.stream().filter(it -> it.id == id).findFirst();
 
         if (cacheEntry.isPresent()) {
@@ -33,19 +33,6 @@ public class RuleService {
             paragraph.ifPresent(cache::add);
             return paragraph;
         }
-    }
-
-    public static Optional<RuleParagraph> getRuleParagraphByDisplayName(String displayName) {
-        return getRuleParagraphs()
-                .stream()
-                .filter(r -> r.shortDisplay().equalsIgnoreCase(displayName))
-                .findFirst();
-    }
-
-    public static Map<Integer, RuleParagraph> getParagraphIdMapping() {
-        return getRuleParagraphs()
-                .stream()
-                .collect(Collectors.toMap(r -> r.id, r -> r));
     }
 
     public record RuleParagraph(int id, String number, String title, Optional<String> content) {

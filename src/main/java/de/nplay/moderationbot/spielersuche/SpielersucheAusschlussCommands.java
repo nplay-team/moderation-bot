@@ -9,6 +9,7 @@ import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.util.SeparatedContainer;
@@ -22,6 +23,7 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 
 import java.util.Optional;
 
@@ -47,7 +49,7 @@ public class SpielersucheAusschlussCommands {
 
     @Command("ausschluss")
     @Permissions(BotPermissions.MODERATION_CREATE)
-    public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true) String paragraph) {
+    public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph) {
         var role = role(event);
         if (role.isEmpty()) {
             event.reply(Replies.error("role-error"));

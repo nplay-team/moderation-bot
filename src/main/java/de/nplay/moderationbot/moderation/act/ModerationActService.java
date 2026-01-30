@@ -10,15 +10,14 @@ import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReferenc
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActCreateData;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
+import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 
 import java.sql.SQLException;
@@ -33,15 +32,15 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class ModerationActService {
 
     private final MessageReferenceService referenceService;
+    private final RuleService ruleService;
 
-    public ModerationActService(MessageReferenceService referenceService) {
+    public ModerationActService(MessageReferenceService referenceService, RuleService ruleService) {
         this.referenceService = referenceService;
+        this.ruleService = ruleService;
     }
 
     public ModerationAct create(ModerationActCreateData data) {
-        if (data.messageReference() != null) {
-            referenceService.create(data.messageReference());
-        }
+        data.messageReference().ifPresent(referenceService::create);
 
         var id = Query.query("""
                 INSERT INTO moderations
@@ -53,8 +52,8 @@ public class ModerationActService {
                 .bind(data.type())
                 .bind(data.issuerId())
                 .bind(data.reason())
-                .bind(data.paragraphId())
-                .bind(data.messageReferenceId().orElse(null))
+                .bind(data.ruleParagraph().map(RuleParagraph::id).orElse(null))
+                .bind(data.messageReference().map(ISnowflake::getIdLong).orElse(null))
                 .bind(data.revokeAt().orElse(null))
                 .bind(Optional.ofNullable(data.duration()).map(Duration::toMillis).orElse(0L))
                 .bind(new Timestamp(System.currentTimeMillis()))
@@ -170,9 +169,10 @@ public class ModerationActService {
 
     private ModerationAct map(Row row) throws SQLException {
         MessageReference referenceMessage = referenceService.get(row.getLong("reference_message")).orElse(null);
+        RuleParagraph paragraph = ruleService.get(row.getInt("paragraph_id")).orElse(null);
         if (row.getBoolean("reverted")) {
-            return new RevertedModerationAct(row, referenceMessage);
+            return new RevertedModerationAct(row, referenceMessage, paragraph);
         }
-        return new ModerationAct(row, referenceMessage);
+        return new ModerationAct(row, referenceMessage, paragraph);
     }
 }

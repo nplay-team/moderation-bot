@@ -1,13 +1,12 @@
 package de.nplay.moderationbot.moderation.act.model;
 
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.ModerationActType;
-import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
@@ -29,14 +28,18 @@ public sealed class ModerationAct permits RevertedModerationAct {
     private final @Nullable Timestamp revokeAt;
     private final long duration;
 
-    public ModerationAct(Row row, @Nullable MessageReference messageReference) throws SQLException {
+    public ModerationAct(
+            Row row,
+            @Nullable MessageReference messageReference,
+            @Nullable RuleParagraph paragraph
+    ) throws SQLException {
         this.id = row.getLong("id");
         this.user = UserSnowflake.fromId(row.getLong("user_id"));
         this.type = ModerationActType.valueOf(row.getString("type"));
         this.issuer = UserSnowflake.fromId(row.getLong("issuer_id"));
         this.createdAt = row.getTimestamp("created_at");
         this.reason = row.getString("reason");
-        this.paragraph = RuleService.getRuleParagraph(row.getInt("paragraph_id")).orElse(null);
+        this.paragraph = paragraph;
         this.messageReference = messageReference;
         this.revokeAt = row.getTimestamp("revoke_at");
         this.duration = row.getLong("duration");
