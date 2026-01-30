@@ -24,12 +24,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
-import de.chojo.sadu.datasource.DataSourceCreator;
-import de.chojo.sadu.mapper.RowMapperRegistry;
-import de.chojo.sadu.postgresql.databases.PostgreSql;
-import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
-import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
-import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
@@ -44,8 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -55,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
-public class ModerationBot extends ServiceModule {
+public class ModerationBot extends DatabaseModule {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationBot.class);
     private final JDA jda;
@@ -64,8 +56,6 @@ public class ModerationBot extends ServiceModule {
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
     private ModerationBot(String guildId, String token) throws InterruptedException {
-        database();
-
         jda = jda(token);
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
         serverlog = new Serverlog();
@@ -108,8 +98,7 @@ public class ModerationBot extends ServiceModule {
                                     GatewayIntent.GUILD_MEMBERS,
                                     GatewayIntent.GUILD_PRESENCES,
                                     GatewayIntent.MESSAGE_CONTENT
-                            )
-                            .setMemberCachePolicy(MemberCachePolicy.ALL)
+                            ).setMemberCachePolicy(MemberCachePolicy.ALL)
                             .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
                             .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                             .setStatus(OnlineStatus.DO_NOT_DISTURB)
@@ -161,29 +150,6 @@ public class ModerationBot extends ServiceModule {
                         .context(InteractionContextType.GUILD))
                 ).extensionData(new GuiceExtensionData(Guice.createInjector(this)))
                 .start();
-    }
-
-    private void database() {
-        var dataSource = DataSourceCreator.create(PostgreSql.get())
-                .configure(config -> config.host(System.getenv("POSTGRES_HOST"))
-                        .port(System.getenv("POSTGRES_PORT"))
-                        .user(System.getenv("POSTGRES_USER"))
-                        .password(System.getenv("POSTGRES_PASSWORD"))
-                        .database(System.getenv("POSTGRES_DATABASE"))
-                ).create()
-                .build();
-
-        var config = QueryConfiguration.builder(dataSource)
-                .setExceptionHandler(err -> log.error("An error occurred during a database request", err))
-                .setRowMapperRegistry(new RowMapperRegistry().register(PostgresqlMapper.getDefaultMapper()))
-                .build();
-        QueryConfiguration.setDefault(config);
-
-        try {
-            SqlUpdater.builder(dataSource, PostgreSql.get()).execute();
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException("Failed to migrate database!", e);
-        }
     }
 
     private String formatUser(JDA jda, UserSnowflake user) {
