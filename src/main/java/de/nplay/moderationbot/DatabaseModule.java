@@ -45,7 +45,7 @@ public class DatabaseModule extends AbstractModule {
         notesService = new NotesService(lifecycle);
         permissionsService = new PermissionsService(lifecycle);
         slowmodeService = new SlowmodeService();
-        configService = new ConfigService();
+        configService = new ConfigService(lifecycle);
         auditlogService = new AuditlogService();
     }
 

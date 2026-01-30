@@ -3,6 +3,7 @@ package de.nplay.moderationbot.auditlog.model;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload.ConfigUpdate;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload.NotePayload;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload.PermissionsUpdate;
+import de.nplay.moderationbot.auditlog.model.AuditlogPayload.SlowmodePayload;
 import org.jspecify.annotations.Nullable;
 
 public enum AuditlogType {
@@ -15,8 +16,7 @@ public enum AuditlogType {
     PERMISSIONS_USER_UPDATE(PermissionsUpdate.class),
     PERMISSIONS_ROLE_UPDATE(PermissionsUpdate.class),
     CONFIG_UPDATE(ConfigUpdate.class),
-    SLOWMODE_SET,
-    SLOWMODE_REMOVE,
+    SLOWMODE_UPDATE(SlowmodePayload.class),
     SPIELERSUCHE_AUSSCHLUSS,
     SPIELERSUCHE_FREIGABE;
 

@@ -3,11 +3,12 @@ package de.nplay.moderationbot.auditlog;
 import de.nplay.moderationbot.auditlog.AuditlogService.AuditlogCreateData;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.Subscriber;
+import de.nplay.moderationbot.auditlog.lifecycle.events.ConfigEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.events.NoteEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.events.PermissionsEvent;
+import de.nplay.moderationbot.auditlog.lifecycle.events.SlowmodeEvent;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload;
-import de.nplay.moderationbot.auditlog.model.AuditlogPayload.NotePayload;
-import de.nplay.moderationbot.auditlog.model.AuditlogPayload.PermissionsUpdate;
+import de.nplay.moderationbot.auditlog.model.AuditlogPayload.*;
 
 public class AuditlogSubscriber implements Subscriber<BotEvent> {
 
@@ -22,6 +23,8 @@ public class AuditlogSubscriber implements Subscriber<BotEvent> {
         AuditlogPayload payload = switch (botEvent) {
             case NoteEvent event -> new NotePayload(event.note());
             case PermissionsEvent event -> new PermissionsUpdate(event.oldPermissions(), event.newPermissions());
+            case ConfigEvent event -> new ConfigUpdate(event.config(), event.oldValue(), event.newValue());
+            case SlowmodeEvent event -> new SlowmodePayload(event.durationMillis());
             default -> null;
         };
 

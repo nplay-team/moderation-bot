@@ -1,7 +1,20 @@
 package de.nplay.moderationbot;
 
+import com.google.inject.Guice;
+import com.google.inject.Provides;
+import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.Replies.RelativeTime;
+import de.nplay.moderationbot.auditlog.AuditlogService.UnresolvedSnowflake;
 import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
+import de.nplay.moderationbot.moderation.lock.ModerationActLock;
+import de.nplay.moderationbot.serverlog.Serverlog;
+import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
+import dev.goldmensch.fluava.Fluava;
+import dev.goldmensch.fluava.Result;
+import dev.goldmensch.fluava.Result.Success;
+import dev.goldmensch.fluava.function.Function;
+import dev.goldmensch.fluava.function.Value.Text;
 import io.github.kaktushose.jdac.JDACommands;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
@@ -21,18 +34,6 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
-import de.nplay.moderationbot.Replies.AbsoluteTime;
-import de.nplay.moderationbot.Replies.RelativeTime;
-import de.nplay.moderationbot.moderation.lock.ModerationActLock;
-import de.nplay.moderationbot.serverlog.Serverlog;
-import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
-import dev.goldmensch.fluava.Fluava;
-import dev.goldmensch.fluava.Result;
-import dev.goldmensch.fluava.Result.Success;
-import dev.goldmensch.fluava.function.Function;
-import dev.goldmensch.fluava.function.Value.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +125,9 @@ public class ModerationBot extends DatabaseModule {
                         ).register("RESOLVED_CHANNEL", Function.implicit((_, channel, _) ->
                                 result(channel.getAsMention()), Channel.class)
                         ).register("RESOLVED_ROLE", Function.implicit((_, role, _) ->
-                        result(role.getAsMention()), Role.class))
+                                result(role.getAsMention()), Role.class)
+                        ).register("UNRESOLVED_SNOWFLAKE", Function.implicit((_, snowflake, _) ->
+                                result(snowflake.getId()), UnresolvedSnowflake.class))
                 ).build();
     }
 

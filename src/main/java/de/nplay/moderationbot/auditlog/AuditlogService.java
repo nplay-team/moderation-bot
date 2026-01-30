@@ -42,12 +42,12 @@ public class AuditlogService {
         AuditlogType type = row.getEnum("type", AuditlogType.class);
 
         long targetId = row.getLong("target_id");
-        ISnowflake target;
-        if (type == AuditlogType.PERMISSIONS_ROLE_UPDATE) {
-            target = guild.getRoleById(targetId);
-        } else {
-            target = UserSnowflake.fromId(targetId);
-        }
+        ISnowflake target = switch (type) {
+            case PERMISSIONS_ROLE_UPDATE -> guild.getRoleById(targetId);
+            case CONFIG_UPDATE -> null;
+            case SLOWMODE_UPDATE -> guild.getGuildChannelById(targetId);
+            default -> UserSnowflake.fromId(targetId);
+        };
 
         return new AuditlogEntry(row, type, Objects.requireNonNullElse(target, new UnresolvedSnowflake(targetId)));
     }

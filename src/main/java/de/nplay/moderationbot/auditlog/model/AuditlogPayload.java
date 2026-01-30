@@ -48,4 +48,7 @@ public sealed interface AuditlogPayload {
             this(note.id(), note.issuer().getIdLong(), note.target().getIdLong(), note.content(), note.createdAt().millis());
         }
     }
+
+    record SlowmodePayload(long duration) implements AuditlogPayload { }
+
 }

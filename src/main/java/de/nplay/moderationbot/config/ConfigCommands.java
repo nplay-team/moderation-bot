@@ -40,7 +40,7 @@ public class ConfigCommands {
     }
 
     private void onConfigSet(CommandEvent event, BotConfig config, String value) {
-        configService.set(config, value);
+        configService.set(config, value, event.getUser());
         event.reply(Replies.success("config-update"), entry("key", config.toString()), entry("value", value));
     }
 
