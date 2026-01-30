@@ -2,6 +2,10 @@ package de.nplay.moderationbot.notes;
 
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
+import de.nplay.moderationbot.auditlog.lifecycle.events.NoteEvent;
+import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.util.SeparatedContainer;
@@ -63,7 +67,9 @@ public class NotesCommands {
 
     @Modal("modal")
     public void onModal(ModalEvent event) {
-        var note = notesService.create(target, event.getMember(), event.value(NOTE_ID).getAsString());
+        var note = notesService.create(target, event.getUser(), event.value(NOTE_ID).getAsString());
+
+        notesService.publish(new NoteEvent(AuditlogType.NOTE_CREATE, event.getUser(), target, note));
 
         SeparatedContainer container = new SeparatedContainer(
                 TextDisplay.of("created"),
@@ -87,9 +93,9 @@ public class NotesCommands {
         List<Note> notes = notesService.getAll(target);
 
         SeparatedContainer container = new SeparatedContainer(
-            TextDisplay.of("list"),
-            Separator.createDivider(Separator.Spacing.SMALL),
-            entry("target", target)
+                TextDisplay.of("list"),
+                Separator.createDivider(Separator.Spacing.SMALL),
+                entry("target", target)
         ).withAccentColor(Replies.STANDARD);
 
         if (notes.isEmpty()) {
@@ -110,7 +116,9 @@ public class NotesCommands {
             return;
         }
 
-        notesService.delete(note.get().id());
+        notesService.publish(new NoteEvent(AuditlogType.NOTE_DELETE, event.getUser(), note.get().target(), note.get()));
+        notesService.delete(noteId);
+
         event.reply(Replies.success("deleted"), entry("id", noteId));
     }
 }

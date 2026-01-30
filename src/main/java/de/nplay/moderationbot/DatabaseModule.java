@@ -9,6 +9,7 @@ import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.nplay.moderationbot.auditlog.AuditlogService;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
@@ -25,6 +26,7 @@ import java.sql.SQLException;
 public class DatabaseModule extends AbstractModule {
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseModule.class);
+    private final Lifecycle lifecycle;
     private final MessageReferenceService referenceService;
     private final ModerationActService moderationActService;
     private final NotesService notesService;
@@ -36,14 +38,20 @@ public class DatabaseModule extends AbstractModule {
 
     public DatabaseModule() {
         initialize();
+        lifecycle = new Lifecycle();
         referenceService = new MessageReferenceService();
         ruleService = new RuleService();
         moderationActService = new ModerationActService(referenceService, ruleService);
-        notesService = new NotesService();
+        notesService = new NotesService(lifecycle);
         permissionsService = new PermissionsService();
         slowmodeService = new SlowmodeService();
         configService = new ConfigService();
         auditlogService = new AuditlogService();
+    }
+
+    @Provides
+    public Lifecycle lifecycle() {
+        return lifecycle;
     }
 
     @Provides
@@ -82,7 +90,7 @@ public class DatabaseModule extends AbstractModule {
     }
 
     @Provides
-    public AuditlogService getAuditlogService() {
+    public AuditlogService auditlogService() {
         return auditlogService;
     }
 

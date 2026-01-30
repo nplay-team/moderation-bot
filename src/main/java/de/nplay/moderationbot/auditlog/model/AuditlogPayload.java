@@ -3,6 +3,7 @@ package de.nplay.moderationbot.auditlog.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
+import de.nplay.moderationbot.notes.NotesService.Note;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,10 @@ public sealed interface AuditlogPayload {
 
     record ConfigUpdate(BotConfig config, String oldValue, String newValue) implements AuditlogPayload { }
 
-    record NoteCreate(long noteId) implements AuditlogPayload { }
+    record NotePayload(long id, long issuerId, long targetId, String content, long createdAt) implements AuditlogPayload {
 
+        public NotePayload(Note note) {
+            this(note.id(), note.issuer().getIdLong(), note.target().getIdLong(), note.content(), note.createdAt().millis());
+        }
+    }
 }

@@ -21,8 +21,10 @@ public class Lifecycle {
     }
 
     public void publish(BotEvent event) {
-        for (Subscriber<BotEvent> subscriber : subscriptions.getOrDefault(event.getClass(), Set.of())) {
-            subscriber.accept(event);
-        }
+        subscriptions.keySet().stream()
+                .filter(it -> it.isAssignableFrom(event.getClass()))
+                .map(subscriptions::get)
+                .flatMap(Set::stream)
+                .forEach(it -> it.accept(event));
     }
 }

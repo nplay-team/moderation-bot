@@ -6,7 +6,6 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload;
 import de.nplay.moderationbot.auditlog.model.AuditlogType;
-import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jspecify.annotations.Nullable;
@@ -27,14 +26,13 @@ public class AuditlogService {
     public AuditlogEntry create(AuditlogCreateData data) {
         Long id = Query.query("""
                 INSERT INTO auditlog
-                (type, issuer_id, target_id, moderation_id, old_state, new_state)
-                VALUES (?::auditlog_type, ?, ?, ?, ?::json)
+                (type, issuer_id, target_id, payload)
+                VALUES (?::auditlog_type, ?, ?, ?::json)
                 """
         ).single(Call.of()
                 .bind(data.type())
                 .bind(data.issuer().getIdLong())
                 .bind(data.target().getIdLong())
-                .bind(Optional.ofNullable(data.act()).map(ModerationAct::id).orElse(null))
                 .bind(data.payloadJson().orElse(null))
         ).insertAndGetKeys().keys().getFirst();
 
@@ -45,7 +43,6 @@ public class AuditlogService {
             AuditlogType type,
             UserSnowflake issuer,
             ISnowflake target,
-            @Nullable ModerationAct act,
             @Nullable AuditlogPayload payload
     ) {
         public Optional<String> payloadJson() {

@@ -5,6 +5,8 @@ import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
+import de.nplay.moderationbot.auditlog.lifecycle.Service;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -18,7 +20,11 @@ import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-public class NotesService {
+public class NotesService extends Service {
+
+    public NotesService(Lifecycle lifecycle) {
+        super(lifecycle);
+    }
 
     public Optional<Note> get(long id) {
         return Query.query("SELECT * FROM notes WHERE id = ?")
@@ -41,11 +47,11 @@ public class NotesService {
                 .first().orElseThrow();
     }
 
-    public Note create(UserSnowflake user, UserSnowflake creator, String content) {
+    public Note create(UserSnowflake target, UserSnowflake issuer, String content) {
         var result = Query.query("INSERT INTO notes (user_id, creator_id, content, created_at) VALUES (?, ?, ?, ?)")
                 .single(Call.of()
-                        .bind(user.getIdLong())
-                        .bind(creator.getIdLong())
+                        .bind(target.getIdLong())
+                        .bind(issuer.getIdLong())
                         .bind(content)
                         .bind(new Timestamp(System.currentTimeMillis()))
                 ).insertAndGetKeys();
@@ -59,7 +65,7 @@ public class NotesService {
                 .delete();
     }
 
-    public record Note(long id, UserSnowflake userId, UserSnowflake createdBy, String content, AbsoluteTime createdAt) {
+    public record Note(long id, UserSnowflake target, UserSnowflake issuer, String content, AbsoluteTime createdAt) {
 
         @MappingProvider("")
         public Note(Row row) throws SQLException {
@@ -79,7 +85,7 @@ public class NotesService {
                     locale,
                     entry("id", id()),
                     entry("date", createdAt()),
-                    entry("createdBy", createdBy()),
+                    entry("createdBy", issuer()),
                     entry("content", content())
             ));
         }

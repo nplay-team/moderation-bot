@@ -1,6 +1,7 @@
 package de.nplay.moderationbot;
 
-import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
+import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
+import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
 import io.github.kaktushose.jdac.JDACommands;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
@@ -55,12 +56,12 @@ public class ModerationBot extends DatabaseModule {
     private final Guild guild;
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
-    private final Lifecycle lifecycle = new Lifecycle();
 
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
         serverlog = new Serverlog(configService());
+        lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
 
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(Property.MESSAGE_RESOLVER);
@@ -92,11 +93,6 @@ public class ModerationBot extends DatabaseModule {
     @Provides
     public ModerationActLock moderationActLock() {
         return moderationActLock;
-    }
-
-    @Provides
-    public Lifecycle lifecycle() {
-        return lifecycle;
     }
 
     private JDA jda(String token) throws InterruptedException {
