@@ -69,12 +69,12 @@ public class DatabaseModule extends AbstractModule {
         return referenceService;
     }
 
-    @Inject
+    @Provides
     public ConfigService configService() {
         return configService;
     }
 
-    @Inject
+    @Provides
     public RuleService ruleService() {
         return ruleService;
     }
