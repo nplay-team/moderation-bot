@@ -14,10 +14,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
@@ -125,7 +122,9 @@ public class ModerationBot extends DatabaseModule {
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
                                 result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class)
                         ).register("RESOLVED_CHANNEL", Function.implicit((_, channel, _) ->
-                                result(channel.getAsMention()), Channel.class))
+                                result(channel.getAsMention()), Channel.class)
+                        ).register("RESOLVED_ROLE", Function.implicit((_, role, _) ->
+                        result(role.getAsMention()), Role.class))
                 ).build();
     }
 

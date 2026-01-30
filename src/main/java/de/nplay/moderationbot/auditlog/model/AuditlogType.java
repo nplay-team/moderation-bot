@@ -13,7 +13,7 @@ public enum AuditlogType {
     NOTE_CREATE(NotePayload.class),
     NOTE_DELETE(NotePayload.class),
     PERMISSIONS_USER_UPDATE(PermissionsUpdate.class),
-    PERMISSIONS_ROLE_UPDATE,
+    PERMISSIONS_ROLE_UPDATE(PermissionsUpdate.class),
     CONFIG_UPDATE(ConfigUpdate.class),
     SLOWMODE_SET,
     SLOWMODE_REMOVE,

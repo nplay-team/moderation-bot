@@ -8,6 +8,8 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 public sealed interface AuditlogPayload {
@@ -15,21 +17,21 @@ public sealed interface AuditlogPayload {
     Logger log = LoggerFactory.getLogger(AuditlogPayload.class);
     ObjectMapper objectMapper = new ObjectMapper();
 
-    static Optional<AuditlogPayload> fromJson(AuditlogType type, @Nullable String json) {
+    static Optional<AuditlogPayload> fromJson(AuditlogType type, @Nullable InputStream json) {
         if (json == null || type.payloadType() == null) {
             return Optional.empty();
         }
         try {
             return Optional.of(objectMapper.readValue(json, type.payloadType()));
-        } catch (JsonProcessingException e) {
+        } catch (IOException e) {
             log.error("Failed to deserialize AuditlogPayload", e);
             return Optional.empty();
         }
     }
 
-    static Optional<String> toJson(AuditlogPayload state) {
+    static Optional<String> toJson(AuditlogPayload payload) {
         try {
-            return Optional.ofNullable(objectMapper.writeValueAsString(state));
+            return Optional.ofNullable(objectMapper.writeValueAsString(payload));
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize AuditlogPayload", e);
             return Optional.empty();
