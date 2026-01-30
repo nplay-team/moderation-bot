@@ -1,6 +1,6 @@
 ## info
 slowmode-info-description = Gibt Informationen zu den aktuellen Slowmode-Einstellungen zurück oder setzt diese.
-slowmode-info-options-channel-name = { -channel }
+slowmode-info-options-channel-name = kanal
 slowmode-info-options-channel-description = Der Channel, für den die Informationen angezeigt werden sollen.
 not-set =
     ### Fehler
@@ -11,9 +11,9 @@ info =
 
 ## Set
 slowmode-set-description = Setzt den Slowmode für diesen oder einen anderen Kanal.
-slowmode-set-options-duration-name = { -duration }
+slowmode-set-options-duration-name = dauer
 slowmode-set-options-duration-description = = Wie lang soll der Slowmode sein?
-slowmode-set-options-channel-name = { -channel }
+slowmode-set-options-channel-name = kanal
 slowmode-set-options-channel-description = Der Channel, für den der Slowmode gesetzt werden soll.
 set =
     ### Slowmode gesetzt { $channel }
@@ -21,7 +21,7 @@ set =
 
 ## Remove
 slowmode-remove-description = Entfernt den Slowmode für diesen Channel.
-slowmode-remove-options-channel-name = { -channel }
+slowmode-remove-options-channel-name = kanal
 slowmode-remove-options-channel-description = Der Channel, für den der Slowmode entfernt werden soll.
 remove =
     ### Slowmode entfernt { $channel }

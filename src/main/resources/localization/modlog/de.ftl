@@ -24,7 +24,7 @@ detail =
         { "**Dauer:**" } { $duration }
 ## Modlog
 mod-log-description = Zeigt den Modlog eines Mitglieds an.
-mod-log-options-target-name = { -target }
+mod-log-options-target-name = nutzer
 mod-log-options-target-description = Der User, dessen Modlog abgerufen werden soll.
 mod-log-options-page-name = seite
 mod-log-options-page-description = Die Seite, die angezeigt werden soll

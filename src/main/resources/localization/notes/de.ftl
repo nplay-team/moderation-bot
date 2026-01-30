@@ -23,7 +23,7 @@ created =
         { $createdAt }
 ## List
 notes-list-description = Listet alle Notizen eines Benutzers auf
-notes-list-options-target-name = { -target }
+notes-list-options-target-name = nutzer
 notes-list-options-target-description = Welcher Benutzer soll aufgelistet werden?
 list = ### Notizen von { $target }
     .empty = Keine Notizen vorhanden
