@@ -3,14 +3,14 @@ package de.nplay.moderationbot.config;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
-import de.nplay.moderationbot.auditlog.lifecycle.Service;
+import de.nplay.moderationbot.auditlog.lifecycle.LifecycleService;
 import de.nplay.moderationbot.auditlog.lifecycle.events.ConfigEvent;
 import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import java.util.Optional;
 
-public class ConfigService extends Service {
+public class ConfigService extends LifecycleService {
 
     public ConfigService(Lifecycle lifecycle) {
         super(lifecycle);

@@ -1,10 +1,10 @@
 package de.nplay.moderationbot.auditlog.lifecycle;
 
-public class Service {
+public class LifecycleService {
 
     private final Lifecycle lifecycle;
 
-    public Service(Lifecycle lifecycle) {
+    public LifecycleService(Lifecycle lifecycle) {
         this.lifecycle = lifecycle;
     }
 

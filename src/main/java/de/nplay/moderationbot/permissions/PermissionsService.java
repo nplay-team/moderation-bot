@@ -5,7 +5,7 @@ import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
-import de.nplay.moderationbot.auditlog.lifecycle.Service;
+import de.nplay.moderationbot.auditlog.lifecycle.LifecycleService;
 import de.nplay.moderationbot.auditlog.lifecycle.events.PermissionsEvent;
 import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import java.sql.SQLException;
 
-public class PermissionsService extends Service {
+public class PermissionsService extends LifecycleService {
 
     public PermissionsService(Lifecycle lifecycle) {
         super(lifecycle);

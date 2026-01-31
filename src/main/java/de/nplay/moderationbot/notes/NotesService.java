@@ -6,7 +6,7 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
-import de.nplay.moderationbot.auditlog.lifecycle.Service;
+import de.nplay.moderationbot.auditlog.lifecycle.LifecycleService;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-public class NotesService extends Service {
+public class NotesService extends LifecycleService {
 
     public NotesService(Lifecycle lifecycle) {
         super(lifecycle);
