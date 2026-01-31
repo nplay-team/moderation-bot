@@ -164,7 +164,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         ).withAccentColor(Replies.STANDARD);
         container.append(TextDisplay.of("removed.next"), entry("next", RelativeTime.of(last.plus(duration))));
         container.append(TextDisplay.of("removed.last"), entry("last", RelativeTime.of(last)));
-        Helpers.sendDM(user, jda, it -> it.sendMessageComponents(container).useComponentsV2());
+        Helpers.sendDM(user, jda, container);
     }
 }
 

@@ -89,7 +89,7 @@ public class SpielersucheAusschlussCommands {
                 entry("issuer", event.getUser()),
                 entry("createdAt", AbsoluteTime.now())
         ).append(TextDisplay.of("unblock-target.body")).withAccentColor(Replies.STANDARD);
-        Helpers.sendDM(target, event.getJDA(), channel -> channel.sendMessageComponents(container).setAllowedMentions(List.of()).useComponentsV2());
+        Helpers.sendDM(target, event.getJDA(),container);
 
         lifecycle.publish(new SpielersucheFreigabeEvent(target, event.getUser()));
         event.reply(Replies.success("unblock"), entry("target", target));

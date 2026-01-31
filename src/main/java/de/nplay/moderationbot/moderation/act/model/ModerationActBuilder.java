@@ -201,7 +201,7 @@ public class ModerationActBuilder {
                                                  container.append(TextDisplay.of("act-info.reference"), entry("message", it.content()))
         );
 
-        Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
+        Helpers.sendDM(act.user(), event.getJDA(),container);
     }
 
     public enum ModerationActType {

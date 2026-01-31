@@ -173,7 +173,7 @@ public class ModerationActService extends LifecycleService {
         );
         container.append(TextDisplay.of("revert$revert-info.reverter"), entry("revertedBy", revertedBy));
 
-        Helpers.sendDM(act.user(), guild.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
+        Helpers.sendDM(act.user(), guild.getJDA(), container);
     }
 
     private ModerationAct map(Row row) throws SQLException {
