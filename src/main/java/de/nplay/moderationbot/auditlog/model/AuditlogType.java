@@ -3,6 +3,9 @@ package de.nplay.moderationbot.auditlog.model;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload.*;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public enum AuditlogType {
 
     MODERATION_CREATE(ModerationCreate.class),
@@ -30,5 +33,12 @@ public enum AuditlogType {
 
     public @Nullable Class<? extends AuditlogPayload> payloadType() {
         return payloadType;
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.stream(name().toLowerCase().split("_"))
+                .map(it -> it.substring(0, 1).toUpperCase() + it.substring(1))
+                .collect(Collectors.joining(" "));
     }
 }

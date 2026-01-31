@@ -1,6 +1,7 @@
 package de.nplay.moderationbot.auditlog.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.auditlog.lifecycle.events.MessagePurgeEvent;
@@ -39,6 +40,15 @@ public sealed interface AuditlogPayload {
     static Optional<String> toJson(AuditlogPayload payload) {
         try {
             return Optional.ofNullable(objectMapper.writeValueAsString(payload));
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize AuditlogPayload", e);
+            return Optional.empty();
+        }
+    }
+
+    static Optional<String> toPrettyJson(AuditlogPayload payload) {
+        try {
+            return Optional.ofNullable(objectMapper.writer().with(new DefaultPrettyPrinter()).writeValueAsString(payload));
         } catch (JsonProcessingException e) {
             log.error("Failed to serialize AuditlogPayload", e);
             return Optional.empty();

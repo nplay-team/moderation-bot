@@ -40,7 +40,7 @@ public class AuditlogCommands {
                 entry("createdAt", auditlog.createdAt()),
                 entry("issuer", auditlog.issuer()),
                 entry("target", auditlog.target()),
-                entry("payload", auditlog.payload().flatMap(AuditlogPayload::toJson).orElse("no payload"))
+                entry("payload", auditlog.payload().flatMap(AuditlogPayload::toPrettyJson).orElse("no payload"))
         );
     }
 }

@@ -7,7 +7,9 @@ import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.auditlog.AuditlogService.UnresolvedSnowflake;
 import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
+import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
+import de.nplay.moderationbot.serverlog.ModerationSubscriber;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
 import dev.goldmensch.fluava.Result;
@@ -56,10 +58,13 @@ public class ModerationBot extends DatabaseModule {
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
-        lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
 
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(Property.MESSAGE_RESOLVER);
+
+        lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
+        lifecycle().subscribe(ModerationEvent.class, new ModerationSubscriber(guild, configService(), resolver));
+
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(

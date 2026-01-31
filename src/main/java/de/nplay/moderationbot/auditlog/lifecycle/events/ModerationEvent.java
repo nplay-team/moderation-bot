@@ -18,7 +18,7 @@ public interface ModerationEvent extends BotEvent {
 
     @Override
     default ISnowflake target() {
-        return act().issuer();
+        return act().user();
     }
 
     record Create(ModerationAct act) implements ModerationEvent {
