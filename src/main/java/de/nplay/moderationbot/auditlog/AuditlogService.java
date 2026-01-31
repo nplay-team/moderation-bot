@@ -45,7 +45,7 @@ public class AuditlogService {
         ISnowflake target = switch (type) {
             case PERMISSIONS_ROLE_UPDATE -> guild.getRoleById(targetId);
             case CONFIG_UPDATE -> null;
-            case SLOWMODE_UPDATE -> guild.getGuildChannelById(targetId);
+            case SLOWMODE_UPDATE, MESSAGE_PURGE -> guild.getGuildChannelById(targetId);
             default -> UserSnowflake.fromId(targetId);
         };
 

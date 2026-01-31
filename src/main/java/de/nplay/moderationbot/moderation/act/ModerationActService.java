@@ -5,6 +5,9 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
+import de.nplay.moderationbot.auditlog.lifecycle.Service;
+import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
@@ -29,12 +32,13 @@ import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-public class ModerationActService {
+public class ModerationActService extends Service {
 
     private final MessageReferenceService referenceService;
     private final RuleService ruleService;
 
-    public ModerationActService(MessageReferenceService referenceService, RuleService ruleService) {
+    public ModerationActService(MessageReferenceService referenceService, RuleService ruleService, Lifecycle lifecycle) {
+        super(lifecycle);
         this.referenceService = referenceService;
         this.ruleService = ruleService;
     }
@@ -59,7 +63,9 @@ public class ModerationActService {
                 .bind(new Timestamp(System.currentTimeMillis()))
         ).insertAndGetKeys().keys().getFirst();
 
-        return get(id).orElseThrow();
+        ModerationAct act = get(id).orElseThrow();
+        publish(new ModerationEvent.Create(act));
+        return act;
     }
 
     public Optional<ModerationAct> get(long moderationId) {
@@ -118,13 +124,16 @@ public class ModerationActService {
     }
 
     public void automaticRevert(Guild guild, Resolver<String> resolver) {
-        getToRevert().forEach(act -> revert(
-                act,
-                guild,
-                guild.getJDA().getSelfUser(),
-                resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
-                DiscordLocale.GERMAN
-        ));
+        getToRevert().forEach(act -> {
+            RevertedModerationAct reverted = revert(
+                    act,
+                    guild,
+                    guild.getJDA().getSelfUser(),
+                    resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
+                    DiscordLocale.GERMAN
+            );
+            publish(new ModerationEvent.Revert(reverted, true));
+        });
     }
 
     private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {

@@ -5,8 +5,6 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
-import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -25,13 +23,11 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class ReasonModal {
 
     private final ModerationActLock moderationActLock;
-    private final Serverlog serverlog;
     private final ModerationActService actService;
 
     @Inject
-    public ReasonModal(ModerationActLock moderationActLock, Serverlog serverlog, ModerationActService actService) {
+    public ReasonModal(ModerationActLock moderationActLock, ModerationActService actService) {
         this.moderationActLock = moderationActLock;
-        this.serverlog = serverlog;
         this.actService = actService;
     }
 
@@ -61,7 +57,6 @@ public class ReasonModal {
         );
         event.reply(container);
 
-        serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), act), event);
         moderationActLock.unlock(act.user().getIdLong());
     }
 }

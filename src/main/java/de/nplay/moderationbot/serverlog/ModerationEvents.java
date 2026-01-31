@@ -5,8 +5,6 @@ import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.ModerationBot.EmbedColors;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.TimeFormat;
@@ -16,34 +14,6 @@ import java.sql.Timestamp;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationEvents {
-
-    public static BotEvent Created(JDA jda, Guild guild, ModerationAct moderationAct) {
-        return new BotEvent(jda, guild, (event) -> createEmbed(event, moderationAct));
-    }
-
-    public static BotEvent Reverted(JDA jda, Guild guild, RevertedModerationAct moderationAct) {
-        return new BotEvent(jda, guild, (event) -> revertEmbed(event, moderationAct));
-    }
-
-    public static BotEvent Deleted(JDA jda, Guild guild, RevertedModerationAct moderationAct) {
-        return new BotEvent(jda, guild, (event) -> deleteEmbed(event, moderationAct));
-    }
-
-    public static BotEvent BulkMessageDeletion(JDA jda, Guild guild, Integer amount, User user) {
-        return new BotEvent(jda, guild, (event) -> bulkMessageDeletionEmbed(event, amount, user));
-    }
-
-    public static BotEvent SpielersucheAusschluss(JDA jda, Guild guild, User target, User issuer) {
-        return new BotEvent(jda, guild, (event) ->
-                spielersucheAusschlussEmbed(event, target, issuer, false)
-        );
-    }
-
-    public static BotEvent SpielersucheAusschlussRevert(JDA jda, Guild guild, User target, User issuer) {
-        return new BotEvent(jda, guild, (event) ->
-                spielersucheAusschlussEmbed(event, target, issuer, true)
-        );
-    }
 
     private static Embed createEmbed(ReplyableEvent<?> event, ModerationAct act) {
         Embed embed = event.embed("moderationCreateEvent").placeholders(

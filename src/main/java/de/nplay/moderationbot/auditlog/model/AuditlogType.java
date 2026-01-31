@@ -1,16 +1,14 @@
 package de.nplay.moderationbot.auditlog.model;
 
-import de.nplay.moderationbot.auditlog.model.AuditlogPayload.ConfigUpdate;
-import de.nplay.moderationbot.auditlog.model.AuditlogPayload.NotePayload;
-import de.nplay.moderationbot.auditlog.model.AuditlogPayload.PermissionsUpdate;
-import de.nplay.moderationbot.auditlog.model.AuditlogPayload.SlowmodePayload;
+import de.nplay.moderationbot.auditlog.model.AuditlogPayload.*;
 import org.jspecify.annotations.Nullable;
 
 public enum AuditlogType {
-    MODERATION_CREATE,
-    MODERATION_REVERT,
-    MODERATION_DELETE,
-    MODERATION_PURGE,
+
+    MODERATION_CREATE(ModerationCreate.class),
+    MODERATION_REVERT(ModerationRevert.class),
+    MODERATION_DELETE(ModerationDelete.class),
+    MESSAGE_PURGE(MessagePurge.class),
     NOTE_CREATE(NotePayload.class),
     NOTE_DELETE(NotePayload.class),
     PERMISSIONS_USER_UPDATE(PermissionsUpdate.class),

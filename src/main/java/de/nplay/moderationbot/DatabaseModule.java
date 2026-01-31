@@ -41,7 +41,7 @@ public class DatabaseModule extends AbstractModule {
         lifecycle = new Lifecycle();
         referenceService = new MessageReferenceService();
         ruleService = new RuleService();
-        moderationActService = new ModerationActService(referenceService, ruleService);
+        moderationActService = new ModerationActService(referenceService, ruleService, lifecycle);
         notesService = new NotesService(lifecycle);
         permissionsService = new PermissionsService(lifecycle);
         slowmodeService = new SlowmodeService();
