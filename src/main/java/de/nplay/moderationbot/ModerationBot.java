@@ -8,8 +8,11 @@ import de.nplay.moderationbot.auditlog.AuditlogService.UnresolvedSnowflake;
 import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
+import de.nplay.moderationbot.auditlog.lifecycle.events.NoteEvent;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.ModerationSubscriber;
+import de.nplay.moderationbot.serverlog.NoteSubscriber;
+import de.nplay.moderationbot.serverlog.ServerlogSubscriber;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
 import dev.goldmensch.fluava.Result;
@@ -24,6 +27,7 @@ import io.github.kaktushose.jdac.embeds.EmbedDataSource;
 import io.github.kaktushose.jdac.guice.GuiceExtensionData;
 import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
+import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -62,9 +66,7 @@ public class ModerationBot extends DatabaseModule {
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(Property.MESSAGE_RESOLVER);
 
-        lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
-        lifecycle().subscribe(ModerationEvent.class, new ModerationSubscriber(guild, configService(), resolver));
-
+        subscribers(resolver);
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
@@ -159,6 +161,14 @@ public class ModerationBot extends DatabaseModule {
             return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
         }
         return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
+    }
+
+    private void subscribers(Resolver<String> resolver) {
+        lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
+
+        ServerlogSubscriber.Data data = new ServerlogSubscriber.Data(guild, configService(), resolver);
+        lifecycle().subscribe(ModerationEvent.class, new ModerationSubscriber(data));
+        lifecycle().subscribe(NoteEvent.class, new NoteSubscriber(data));
     }
 
     @Deprecated

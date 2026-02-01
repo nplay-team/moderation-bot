@@ -20,5 +20,16 @@ moderation =
     .until =
     { "**Aktiv bis**" }
     { $until }
-
 delete-reason = Moderationshandlung wurde gelöscht
+
+## Notes
+note =
+    ### { $type } | ${ $id }
+    { "**Betroffener Nutzer**" }
+    { $target }
+    { "**Moderator**" }
+    { $issuer }
+    { "**Notiz**" }
+    { $note }
+    { "**Datum**" }
+    { $createdAt }
