@@ -49,7 +49,7 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.withType<JavaExec>() {
-    jvmArgs("--enable-preview")
+    jvmArgs("--enable-preview", "--sun-misc-unsafe-memory-access=allow")
 }
 
 tasks.withType<ShadowJar> {

@@ -145,7 +145,7 @@ public class ModerationBot extends DatabaseModule {
                                 entry("colorWarning", Color.decode(EmbedColors.WARNING.hex)),
                                 entry("colorError", Color.decode(EmbedColors.ERROR.hex))
                         )
-                ).localizer(new FluavaLocalizer(parent))
+                ).localizer(FluavaLocalizer.create(parent))
                 .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())
                         .keepComponents(false))
                 ).globalCommandConfig(CommandConfig.of(config -> config
