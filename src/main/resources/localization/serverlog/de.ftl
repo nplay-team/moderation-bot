@@ -33,3 +33,39 @@ note =
     { $note }
     { "**Datum**" }
     { $createdAt }
+
+## Updates (Config, Permissions, Slowmode)
+config =
+    ### { $type }
+    { "**Config Wert**" }
+    { $config }
+    { "**Moderator**" }
+    { $issuer }
+    { "**Alter Wert**" }
+    { $oldValue }
+    { "**Neuer Wert**" }
+    { $newValue }
+    { "**Datum**" }
+    { $createdAt }
+permissions =
+    ### { $type }
+    { "**Ziel**" }
+    { $target }
+    { "**Moderator**" }
+    { $issuer }
+    { "**Alte Berechtigungen**" }
+    { $oldValue }
+    { "**Neue Berechtigungen**" }
+    { $newValue }
+    { "**Datum**" }
+    { $createdAt }
+slowmode =
+    ### { $type }
+    { "**Textkanal**" }
+    { $target }
+    { "**Moderator**" }
+    { $issuer }
+    { "**Slowmode**" }
+    { $duration }
+    { "**Datum**" }
+    { $createdAt }

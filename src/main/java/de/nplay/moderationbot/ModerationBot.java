@@ -8,10 +8,9 @@ import de.nplay.moderationbot.auditlog.AuditlogService.UnresolvedSnowflake;
 import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
-import de.nplay.moderationbot.auditlog.lifecycle.events.NoteEvent;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
+import de.nplay.moderationbot.serverlog.BotEventSubscriber;
 import de.nplay.moderationbot.serverlog.ModerationSubscriber;
-import de.nplay.moderationbot.serverlog.NoteSubscriber;
 import de.nplay.moderationbot.serverlog.ServerlogSubscriber;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
@@ -167,8 +166,9 @@ public class ModerationBot extends DatabaseModule {
         lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
 
         ServerlogSubscriber.Data data = new ServerlogSubscriber.Data(guild, configService(), resolver);
+        lifecycle().subscribe(BotEvent.class, new BotEventSubscriber(data));
         lifecycle().subscribe(ModerationEvent.class, new ModerationSubscriber(data));
-        lifecycle().subscribe(NoteEvent.class, new NoteSubscriber(data));
+
     }
 
     @Deprecated
