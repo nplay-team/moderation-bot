@@ -43,13 +43,12 @@ tasks.test {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
-    options.compilerArgs.add("-parameters")
-    options.compilerArgs.add("--enable-preview")
+    options.compilerArgs.addAll(listOf("-parameters", "--enable-preview"))
     sourceCompatibility = "25"
 }
 
 tasks.withType<JavaExec>() {
-    jvmArgs("--enable-preview")
+    jvmArgs("--enable-preview", "--sun-misc-unsafe-memory-access=allow")
 }
 
 tasks.withType<ShadowJar> {
