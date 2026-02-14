@@ -37,14 +37,3 @@ jobs:
             --disable-content-trust
       - name: Print image url
         run: echo "Image pushed to ${{ steps.push-to-ghcr.outputs.registry-paths }}"
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger Redeploy
-        uses:  wirgen/portainer-stack-redeploy-action@v1.1
-        with:
-          portainerUrl: ${{ secrets.PORTAINER_URL }}
-          accessToken: ${{ secrets.ACCESS_TOKEN }}
-          stackId: ${{ secrets.STACK_ID }}
-          endpointId: ${{ secrets.ENDPOINT_ID }}
