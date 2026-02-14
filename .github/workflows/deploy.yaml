@@ -42,6 +42,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Redeploy
-        uses: distributhor/workflow-webhook@v3
+        uses:  wirgen/portainer-stack-redeploy-action@v1.1
         with:
-          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          portainerUrl: ${{ secrets.PORTAINER_URL }}
+          accessToken: ${{ secrets.ACCESS_TOKEN }}
+          stackId: ${{ secrets.STACK_ID }}
+          endpointId: ${{ secrets.ENDPOINT_ID }}
