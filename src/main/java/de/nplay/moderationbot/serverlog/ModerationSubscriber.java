@@ -31,7 +31,7 @@ public class ModerationSubscriber extends ServerlogSubscriber<ModerationEvent> {
         } else if (event instanceof ModerationEvent.Delete delete) {
             container.entries(
                     entry("revertingModerator", delete.deletedBy()),
-                    entry("reason", resolver.resolve("delete-reason", Locale.GERMAN)),
+                    entry("reason", "-delete-reason"),
                     entry("revert", true)
             );
         } else {

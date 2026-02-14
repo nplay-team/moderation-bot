@@ -20,7 +20,7 @@ moderation =
     .until =
     { "**Aktiv bis**" }
     { $until }
-delete-reason = Moderationshandlung wurde gelöscht
+-delete-reason = Moderationshandlung wurde gelöscht
 
 ## Notes
 note =
