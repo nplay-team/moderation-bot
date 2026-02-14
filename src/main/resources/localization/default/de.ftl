@@ -21,4 +21,4 @@ invalid-act = Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!
 
 ## Other / These cannot be localized
 automatic-revert-reason = Automatische Aufhebung nach Ablauf der Dauer
-bot-status =
+bot-status = Hört euren Nachrichten zu
