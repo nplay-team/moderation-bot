@@ -18,13 +18,13 @@ public class AuditlogSubscriber implements Subscriber<BotEvent> {
     @Override
     public void accept(BotEvent botEvent) {
         AuditlogPayload payload = switch (botEvent) {
-            case NoteEvent event -> new NotePayload(event.note());
+            case NoteEvent event -> new NoteCreate(event.note());
             case PermissionsEvent event -> new PermissionsUpdate(event.oldPermissions(), event.newPermissions());
             case ConfigEvent event -> new ConfigUpdate(event.config(), event.oldValue(), event.newValue());
             case SlowmodeEvent event -> new SlowmodePayload(event.durationMillis());
             case ModerationEvent.Create event -> new ModerationCreate(event.act());
             case ModerationEvent.Revert event -> new ModerationRevert(event.act(), event.automatic());
-            case ModerationEvent.Delete event -> new ModerationDelete(event.act(), event.deletedBy());
+            case ModerationEvent.Delete event -> new ModerationDelete(event.act().id());
             case MessagePurgeEvent event -> new MessagePurge(event);
             default -> null;
         };

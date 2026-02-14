@@ -59,25 +59,19 @@ public sealed interface AuditlogPayload {
 
     record ConfigUpdate(BotConfig config, String oldValue, String newValue) implements AuditlogPayload { }
 
-    record NotePayload(
-            long id,
-            long issuerId,
-            long targetId,
-            String content,
-            long createdAt
-    ) implements AuditlogPayload {
+    record NoteCreate(long id, String content, long createdAt) implements AuditlogPayload {
 
-        public NotePayload(Note note) {
-            this(note.id(), note.issuer().getIdLong(), note.target().getIdLong(), note.content(), note.createdAt().millis());
+        public NoteCreate(Note note) {
+            this(note.id(), note.content(), note.createdAt().millis());
         }
     }
+
+    record NoteDelete(long id) implements AuditlogPayload { }
 
     record SlowmodePayload(long duration) implements AuditlogPayload { }
 
     record ModerationCreate(
             long id,
-            long issuerId,
-            long targetId,
             String reason,
             @Nullable Integer paragraphId,
             @Nullable Long messageReferenceId,
@@ -88,8 +82,6 @@ public sealed interface AuditlogPayload {
         public ModerationCreate(ModerationAct act) {
             this(
                     act.id(),
-                    act.issuer().getIdLong(),
-                    act.user().getIdLong(),
                     act.reason(),
                     act.paragraph().map(RuleService.RuleParagraph::id).orElse(null),
                     act.messageReference().map(MessageReferenceService.MessageReference::messageId).orElse(null),
@@ -99,69 +91,19 @@ public sealed interface AuditlogPayload {
         }
     }
 
-    record ModerationRevert(
-            long id,
-            long issuerId,
-            long targetId,
-            String reason,
-            @Nullable Integer paragraphId,
-            @Nullable Long messageReferenceId,
-            long revertedBy,
-            String revertingReason,
-            boolean automatic
-    ) implements AuditlogPayload {
+    record ModerationRevert(long id, long revertedBy, String revertingReason, boolean automatic) implements AuditlogPayload {
 
         public ModerationRevert(RevertedModerationAct act, boolean automatic) {
-            this(
-                    act.id(),
-                    act.issuer().getIdLong(),
-                    act.user().getIdLong(),
-                    act.reason(),
-                    act.paragraph().map(RuleService.RuleParagraph::id).orElse(null),
-                    act.messageReference().map(MessageReferenceService.MessageReference::messageId).orElse(null),
-                    act.revertedBy().getIdLong(),
-                    act.revertingReason(),
-                    automatic
-            );
+            this(act.id(), act.revertedBy().getIdLong(), act.revertingReason(), automatic);
         }
     }
 
-    record ModerationDelete(
-            long id,
-            long issuerId,
-            long targetId,
-            String reason,
-            @Nullable Integer paragraphId,
-            @Nullable Long messageReferenceId,
-            @Nullable Long revokeAt,
-            long duration,
-            long deletedBy
-    ) implements AuditlogPayload {
+    record ModerationDelete(long id) implements AuditlogPayload { }
 
-        public ModerationDelete(ModerationAct act, UserSnowflake deletedBy) {
-            this(
-                    act.id(),
-                    act.issuer().getIdLong(),
-                    act.user().getIdLong(),
-                    act.reason(),
-                    act.paragraph().map(RuleService.RuleParagraph::id).orElse(null),
-                    act.messageReference().map(MessageReferenceService.MessageReference::messageId).orElse(null),
-                    act.revokeAt().map(Replies.RelativeTime::millis).orElse(null),
-                    act.duration().toMillis(),
-                    deletedBy.getIdLong()
-            );
-        }
-    }
-
-    record MessagePurge(
-            long issuerId,
-            long targetId,
-            long pivotMessageId,
-            @Nullable Integer amount
-    ) implements AuditlogPayload {
+    record MessagePurge(long pivotMessageId, @Nullable Integer amount) implements AuditlogPayload {
 
         public MessagePurge(MessagePurgeEvent event) {
-            this(event.issuer().getIdLong(), event.target().getIdLong(), event.pivotMessageId(), event.amount());
+            this(event.pivotMessageId(), event.amount());
         }
     }
 }

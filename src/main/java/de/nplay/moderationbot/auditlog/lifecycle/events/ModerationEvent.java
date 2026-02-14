@@ -32,6 +32,11 @@ public interface ModerationEvent extends BotEvent {
     record Delete(ModerationAct act, UserSnowflake deletedBy) implements ModerationEvent {
 
         @Override
+        public UserSnowflake issuer() {
+            return deletedBy;
+        }
+
+        @Override
         public AuditlogType type() {
             return AuditlogType.MODERATION_DELETE;
         }
