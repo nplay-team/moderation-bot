@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,6 +23,48 @@ public class AuditlogService {
                 .single(Call.of().bind(id))
                 .map(row -> map(row, guild))
                 .first();
+    }
+
+    public List<AuditlogEntry> getIssuer(UserSnowflake issuer, @Nullable AuditlogType type, int limit, int offset, Guild guild) {
+        return getAll("issuer_id", issuer, type, limit, offset, guild);
+    }
+
+
+    public List<AuditlogEntry> getTarget(UserSnowflake target, @Nullable AuditlogType type, int limit, int offset, Guild guild) {
+        return getAll("target_id", target, type, limit, offset, guild);
+    }
+
+    private List<AuditlogEntry> getAll(String target, UserSnowflake user, @Nullable AuditlogType type, int limit, int offset, Guild guild) {
+        Call call = Call.of().bind("id", user.getIdLong())
+                .bind("limit", limit)
+                .bind("offset", offset);
+        if (type != null) {
+            call = call.bind("type", type);
+        }
+        return Query.query("""
+                                SELECT * FROM auditlog
+                                WHERE %s = :id %s
+                                ORDER BY created_at DESC LIMIT :limit OFFSET :offset
+                                """,
+                        target,
+                        type == null ? "" : "AND type = :type::AUDITLOG_TYPE"
+                ).single(call)
+                .map(row -> map(row, guild))
+                .all();
+    }
+
+    private List<AuditlogEntry> getAll(AuditlogType type, int limit, int offset, Guild guild) {
+        return Query.query("""
+                                SELECT * FROM auditlog
+                                WHERE type = :type::AUDITLOG_TYPE
+                                ORDER BY created_at DESC LIMIT :limit OFFSET :offset
+                                """
+                ).single(Call.of()
+                        .bind("type", type)
+                        .bind("limit", limit)
+                        .bind("offset", offset)
+                ).map(row -> map(row, guild))
+                .all();
     }
 
     public void create(AuditlogCreateData data) {

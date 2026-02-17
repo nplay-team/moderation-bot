@@ -23,5 +23,5 @@ CREATE TABLE auditlog
     payload    JSONB
 );
 
-CREATE INDEX idx_auditlog_query_issuer ON auditlog (issuer_id, created_at, type);
-CREATE INDEX idx_auditlog_query_target ON auditlog (target_id, created_at, type);
+CREATE INDEX idx_auditlog_query_issuer ON auditlog (issuer_id, type);
+CREATE INDEX idx_auditlog_query_target ON auditlog (target_id, type);
