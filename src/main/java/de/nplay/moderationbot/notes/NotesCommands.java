@@ -1,7 +1,11 @@
 package de.nplay.moderationbot.notes;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
+import de.nplay.moderationbot.auditlog.lifecycle.events.NoteEvent;
+import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.util.SeparatedContainer;
@@ -31,9 +35,17 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class NotesCommands {
 
+    private static final int NOTE_LIMIT = 10;
     private static final String NOTE_ID = "note-id";
     private @Nullable User target;
     private boolean ephemeral;
+
+    private final NotesService notesService;
+
+    @Inject
+    public NotesCommands(NotesService notesService) {
+        this.notesService = notesService;
+    }
 
     @Command(value = "modal", type = Type.USER)
     public void onCreateContext(CommandEvent event, User target) {
@@ -45,7 +57,7 @@ public class NotesCommands {
     public void onCreate(CommandEvent event, User target) {
         this.target = target;
 
-        if (NotesService.getNoteCountFromUser(target.getIdLong()) >= 10) {
+        if (notesService.count(target) >= NOTE_LIMIT) {
             event.reply(Replies.error("limit-reached"));
             return;
         }
@@ -55,7 +67,9 @@ public class NotesCommands {
 
     @Modal("modal")
     public void onModal(ModalEvent event) {
-        var note = NotesService.createNote(target.getIdLong(), event.getMember().getIdLong(), event.value(NOTE_ID).getAsString());
+        var note = notesService.create(target, event.getUser(), event.value(NOTE_ID).getAsString());
+
+        notesService.publish(new NoteEvent(AuditlogType.NOTE_CREATE, event.getUser(), target, note));
 
         SeparatedContainer container = new SeparatedContainer(
                 TextDisplay.of("created"),
@@ -68,7 +82,7 @@ public class NotesCommands {
         container.append(
                 TextDisplay.of("created.creator"),
                 entry("createdBy", event.getMember()),
-                entry("createdAt", new AbsoluteTime(note.createdAt()))
+                entry("createdAt", note.createdAt())
         );
 
         event.with().ephemeral(ephemeral).reply(container);
@@ -76,12 +90,12 @@ public class NotesCommands {
 
     @Command("notes list")
     public void onList(CommandEvent event, User target) {
-        List<Note> notes = NotesService.getNotesFromUser(target.getIdLong());
+        List<Note> notes = notesService.getAll(target);
 
         SeparatedContainer container = new SeparatedContainer(
-            TextDisplay.of("list"),
-            Separator.createDivider(Separator.Spacing.SMALL),
-            entry("target", target)
+                TextDisplay.of("list"),
+                Separator.createDivider(Separator.Spacing.SMALL),
+                entry("target", target)
         ).withAccentColor(Replies.STANDARD);
 
         if (notes.isEmpty()) {
@@ -95,14 +109,16 @@ public class NotesCommands {
 
     @Command("notes delete")
     public void onDelete(CommandEvent event, long noteId) {
-        Optional<Note> note = NotesService.getNote(noteId);
+        Optional<Note> note = notesService.get(noteId);
 
         if (note.isEmpty()) {
             event.reply(Replies.warning("not-found"), entry("id", noteId));
             return;
         }
 
-        NotesService.deleteNote(note.get().id());
+        notesService.publish(new NoteEvent(AuditlogType.NOTE_DELETE, event.getUser(), note.get().target(), note.get()));
+        notesService.delete(noteId);
+
         event.reply(Replies.success("deleted"), entry("id", noteId));
     }
 }

@@ -1,10 +1,11 @@
 package de.nplay.moderationbot.permissions.commands;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
-import de.nplay.moderationbot.permissions.BotPermissionsService;
-import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
+import de.nplay.moderationbot.permissions.PermissionsService;
+import de.nplay.moderationbot.permissions.PermissionsService.EntityPermissions;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
@@ -27,8 +28,9 @@ public class RolePermissionsCommand extends PermissionsCommand {
     private @Nullable Role role;
     private @Nullable Integer newPermissions;
 
-    public RolePermissionsCommand() {
-        super("role");
+    @Inject
+    public RolePermissionsCommand(PermissionsService permissionsService) {
+        super("role", permissionsService);
     }
 
     @Permissions(BotPermissions.PERMISSION_READ)
@@ -50,7 +52,7 @@ public class RolePermissionsCommand extends PermissionsCommand {
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @Button(value = "confirm.confirm", style = ButtonStyle.DANGER)
     public void onConfirm(ComponentEvent event) {
-        replyList(event, BotPermissionsService.updateRolePermissions(role, 0), role.getAsMention());
+        replyList(event, permissionsService.updateRole(role, 0, event.getUser()), role.getAsMention());
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
@@ -62,7 +64,7 @@ public class RolePermissionsCommand extends PermissionsCommand {
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @Button(value = "edit.modify")
     public void onModify(ComponentEvent event) {
-        replyModify(event, BotPermissionsService.getRolePermissions(role), role.getAsMention());
+        replyModify(event, permissionsService.getRole(role), role.getAsMention());
     }
 
     @Permissions(BotPermissions.PERMISSION_MANAGE)
@@ -77,9 +79,9 @@ public class RolePermissionsCommand extends PermissionsCommand {
     public void onSave(ComponentEvent event) {
         EntityPermissions permissions;
         if (newPermissions == null) {
-            permissions = BotPermissionsService.getRolePermissions(role);
+            permissions = permissionsService.getRole(role);
         } else {
-            permissions = BotPermissionsService.updateRolePermissions(role, newPermissions);
+            permissions = permissionsService.updateRole(role, newPermissions, event.getUser());
         }
         replyList(event, permissions, role.getAsMention());
     }

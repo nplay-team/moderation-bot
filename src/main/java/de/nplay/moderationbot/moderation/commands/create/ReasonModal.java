@@ -1,11 +1,10 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import com.google.inject.Inject;
+import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
-import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -24,12 +23,12 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class ReasonModal {
 
     private final ModerationActLock moderationActLock;
-    private final Serverlog serverlog;
+    private final ModerationActService actService;
 
     @Inject
-    public ReasonModal(ModerationActLock moderationActLock, Serverlog serverlog) {
+    public ReasonModal(ModerationActLock moderationActLock, ModerationActService actService) {
         this.moderationActLock = moderationActLock;
-        this.serverlog = serverlog;
+        this.actService = actService;
     }
 
     @Modal("reason-title")
@@ -37,7 +36,7 @@ public class ReasonModal {
         ModerationAct act = event.kv().get(BUILDER, ModerationActBuilder.class)
                 .orElseThrow()
                 .reason(event.value(REASON_ID).getAsString())
-                .execute(event);
+                .execute(event, actService);
 
         SeparatedContainer container = new SeparatedContainer(
                 TextDisplay.of("executed"),
@@ -53,12 +52,11 @@ public class ReasonModal {
         act.paragraph().ifPresent(it ->
                 container.append(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
         );
-        act.referenceMessage().ifPresent(it ->
+        act.messageReference().ifPresent(it ->
                 container.append(TextDisplay.of("executed.reference"), entry("message", it.content()))
         );
         event.reply(container);
 
-        serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), act), event);
         moderationActLock.unlock(act.user().getIdLong());
     }
 }

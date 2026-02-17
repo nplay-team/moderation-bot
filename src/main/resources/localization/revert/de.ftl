@@ -33,3 +33,4 @@ mod-delete-options-moderation_act-description = Die ID der Moderationshandlung, 
 delete-successful =
     ### Erfolgreich
     Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich gelöscht!
+delete-reason = Moderationshandlung wurde gelöscht

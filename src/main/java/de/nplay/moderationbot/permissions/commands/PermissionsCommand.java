@@ -2,8 +2,8 @@ package de.nplay.moderationbot.permissions.commands;
 
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.permissions.BotPermissionsService;
-import de.nplay.moderationbot.permissions.BotPermissionsService.EntityPermissions;
+import de.nplay.moderationbot.permissions.PermissionsService;
+import de.nplay.moderationbot.permissions.PermissionsService.EntityPermissions;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.reply.Component;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -22,18 +22,20 @@ public abstract class PermissionsCommand {
 
     private final StableValue<Integer> roleCount = StableValue.of();
     private final String type;
+    protected final PermissionsService permissionsService;
 
-    protected PermissionsCommand(String type) {
+    protected PermissionsCommand(String type, PermissionsService permissionsService) {
         this.type = type;
+        this.permissionsService = permissionsService;
     }
 
     protected void replyList(ReplyableEvent<?> event, Role role) {
         Integer count = roleCount.orElseSet(() -> event.getGuild().retrieveRoleMemberCounts().complete().get(role));
-        replyList(event, BotPermissionsService.getRolePermissions(role), role.getAsMention(), count);
+        replyList(event, permissionsService.getRole(role), role.getAsMention(), count);
     }
 
     protected void replyList(ReplyableEvent<?> event, Member member) {
-        replyList(event, BotPermissionsService.getUserPermissions(member), member.getEffectiveName(), roleCount.orElse(0));
+        replyList(event, permissionsService.getCombined(member), member.getEffectiveName(), roleCount.orElse(0));
     }
 
     protected void replyList(ReplyableEvent<?> event, EntityPermissions permissions, String target) {

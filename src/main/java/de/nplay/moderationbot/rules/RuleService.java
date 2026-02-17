@@ -1,25 +1,28 @@
 package de.nplay.moderationbot.rules;
 
 import de.chojo.sadu.mapper.annotation.MappingProvider;
-import de.chojo.sadu.mapper.rowmapper.RowMapping;
+import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class RuleService {
 
-    private static final Set<RuleParagraph> cache = new HashSet<>();
+    private final Set<RuleParagraph> cache = new HashSet<>();
 
-    public static List<RuleParagraph> getRuleParagraphs() {
+    public List<RuleParagraph> getAll() {
         return Query.query("SELECT * FROM rule_paragraphs")
                 .single()
                 .mapAs(RuleParagraph.class)
                 .all();
     }
 
-    public static Optional<RuleParagraph> getRuleParagraph(int id) {
+    public Optional<RuleParagraph> get(int id) {
         var cacheEntry = cache.stream().filter(it -> it.id == id).findFirst();
 
         if (cacheEntry.isPresent()) {
@@ -35,24 +38,11 @@ public class RuleService {
         }
     }
 
-    public static Optional<RuleParagraph> getRuleParagraphByDisplayName(String displayName) {
-        return getRuleParagraphs()
-                .stream()
-                .filter(r -> r.shortDisplay().equalsIgnoreCase(displayName))
-                .findFirst();
-    }
-
-    public static Map<Integer, RuleParagraph> getParagraphIdMapping() {
-        return getRuleParagraphs()
-                .stream()
-                .collect(Collectors.toMap(r -> r.id, r -> r));
-    }
-
     public record RuleParagraph(int id, String number, String title, Optional<String> content) {
 
-        @MappingProvider("")
-        public static RowMapping<RuleParagraph> map() {
-            return row -> new RuleParagraph(
+        @MappingProvider("this")
+        public RuleParagraph(Row row) throws SQLException {
+            this(
                     row.getInt("id"),
                     row.getString("number"),
                     row.getString("title"),

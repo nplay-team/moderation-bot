@@ -3,7 +3,7 @@ package de.nplay.moderationbot.moderation.act.model;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
-import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.configuration.Property;
@@ -11,12 +11,13 @@ import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.introspection.Introspection;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.sql.Timestamp;
@@ -31,18 +32,22 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 /// Builder class for creating instances of [ModerationAct] used for creating a new moderation action.
 public class ModerationActBuilder {
 
-    private static final Logger log = LoggerFactory.getLogger(ModerationActBuilder.class);
     private final long issuerId;
     private final long targetId;
     private final Consumer<ModerationActCreateData> executor;
     private ModerationActType type;
     private @Nullable String reason;
-    private @Nullable Integer paragraphId;
+    private @Nullable RuleParagraph paragraph;
     private @Nullable Message messageReference;
     private @Nullable Duration duration;
     private int deletionDays;
 
-    private ModerationActBuilder(long issuerId, ModerationActType type, long targetId, Consumer<ModerationActCreateData> executor) {
+    private ModerationActBuilder(
+            long issuerId,
+            ModerationActType type,
+            long targetId,
+            Consumer<ModerationActCreateData> executor
+    ) {
         this.issuerId = issuerId;
         this.type = type;
         this.targetId = targetId;
@@ -54,7 +59,7 @@ public class ModerationActBuilder {
                 issuer.getIdLong(),
                 ModerationActType.WARN,
                 target.getIdLong(),
-                _ -> log.info("User {} has been warned by {}", target, issuer)
+                _ -> {}
         );
     }
 
@@ -67,7 +72,6 @@ public class ModerationActBuilder {
                     if (data.revokeAt().isEmpty()) {
                         throw new IllegalStateException("Cannot perform timeout without duration being set!");
                     }
-                    log.info("User {} has been timed out by {} until {}", target, issuer, data.duration());
                     target.timeoutUntil(data.revokeAt().get().toInstant()).reason(data.reason()).queue();
                 }
         );
@@ -79,7 +83,6 @@ public class ModerationActBuilder {
                 ModerationActType.KICK,
                 target.getIdLong(),
                 data -> {
-                    log.info("User {} has been kicked by {}", target, issuer);
                     if (data.deletionDays > 0) {
                         target.ban(data.deletionDays(), TimeUnit.DAYS).queue(_ -> {
                             target.getGuild().unban(target.getUser()).queue();
@@ -101,11 +104,6 @@ public class ModerationActBuilder {
                 ModerationActType.BAN,
                 target.getIdLong(),
                 data -> {
-                    log.info(
-                            "User {} has been{} banned by {}", target, data.revokeAt().isPresent()
-                                    ? " temp"
-                                    : "", issuer
-                    );
                     guild.ban(target, data.deletionDays(), TimeUnit.DAYS).reason(data.reason()).queue();
                 }
         );
@@ -116,17 +114,8 @@ public class ModerationActBuilder {
         return this;
     }
 
-    public ModerationActBuilder paragraph(@Nullable String paragraphId) {
-        if (paragraphId == null) {
-            return this;
-        }
-        try {
-            this.paragraphId = Integer.parseInt(paragraphId);
-        } catch (NumberFormatException _) {
-            this.paragraphId = RuleService.getRuleParagraphByDisplayName(paragraphId)
-                    .map(RuleService.RuleParagraph::id)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid paragraph ID or name: " + paragraphId));
-        }
+    public ModerationActBuilder paragraph(@Nullable RuleParagraph paragraph) {
+        this.paragraph = paragraph;
         return this;
     }
 
@@ -163,9 +152,11 @@ public class ModerationActBuilder {
         throw new UnsupportedOperationException("Cannot set deletion days on moderation act with type: " + type);
     }
 
-    public ModerationAct execute(ReplyableEvent<?> event) {
-        var data = new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays);
-        ModerationAct act = ModerationActService.create(data);
+    public ModerationAct execute(ReplyableEvent<?> event, ModerationActService service) {
+        reason = reason == null ? event.resolve("default-reason") : reason;
+        var data = new ModerationActCreateData(targetId, type, issuerId, reason, Optional.ofNullable(messageReference),
+                                               Optional.ofNullable(paragraph), duration, deletionDays);
+        ModerationAct act = service.create(data);
         executor.accept(data);
         sendModerationToTarget(act, event);
         return act;
@@ -191,16 +182,16 @@ public class ModerationActBuilder {
                 entry("date", act.createdAt())
         );
         act.revokeAt().ifPresent(it ->
-                container.append(TextDisplay.of("act-info.revoke"), entry("until", it))
+                                         container.append(TextDisplay.of("act-info.revoke"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
-                container.append(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
+                                          container.append(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
         );
-        act.referenceMessage().ifPresent(it ->
-                container.append(TextDisplay.of("act-info.reference"), entry("message", it.content()))
+        act.messageReference().ifPresent(it ->
+                                                 container.append(TextDisplay.of("act-info.reference"), entry("message", it.content()))
         );
 
-        Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
+        Helpers.sendDM(act.user(), event.getJDA(),container);
     }
 
     public enum ModerationActType {
@@ -229,9 +220,9 @@ public class ModerationActBuilder {
             long targetId,
             ModerationActType type,
             long issuerId,
-            @Nullable String reason,
-            @Nullable Message messageReference,
-            @Nullable Integer paragraphId,
+            String reason,
+            Optional<Message> messageReference,
+            Optional<RuleParagraph> ruleParagraph,
             @Nullable Duration duration,
             int deletionDays
     ) {
@@ -244,10 +235,6 @@ public class ModerationActBuilder {
 
         public Optional<Timestamp> revokeAt() {
             return Optional.ofNullable(duration).map(it -> new Timestamp(System.currentTimeMillis() + it.toMillis()));
-        }
-
-        public Optional<Long> messageReferenceId() {
-            return Optional.ofNullable(messageReference).map(ISnowflake::getIdLong);
         }
     }
 }
