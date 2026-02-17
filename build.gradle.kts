@@ -43,8 +43,7 @@ tasks.test {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
-    options.compilerArgs.add("-parameters")
-    options.compilerArgs.add("--enable-preview")
+    options.compilerArgs.addAll(listOf("-parameters", "--enable-preview"))
     sourceCompatibility = "25"
 }
 
