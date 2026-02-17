@@ -6,6 +6,7 @@ import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.auditlog.AuditlogService.UnresolvedSnowflake;
 import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
+import de.nplay.moderationbot.auditlog.LoggingSubscriber;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
@@ -22,7 +23,6 @@ import io.github.kaktushose.jdac.JDACommands;
 import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
-import io.github.kaktushose.jdac.embeds.EmbedDataSource;
 import io.github.kaktushose.jdac.guice.GuiceExtensionData;
 import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -152,6 +151,8 @@ public class ModerationBot extends DatabaseModule {
 
     private void subscribers(Resolver<String> resolver) {
         lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
+
+        lifecycle().subscribe(BotEvent.class, new LoggingSubscriber());
 
         ServerlogSubscriber.Data data = new ServerlogSubscriber.Data(guild, configService(), resolver);
         lifecycle().subscribe(BotEvent.class, new BotEventSubscriber(data));

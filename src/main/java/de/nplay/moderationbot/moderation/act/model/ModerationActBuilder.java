@@ -18,8 +18,6 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.sql.Timestamp;
@@ -34,7 +32,6 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 /// Builder class for creating instances of [ModerationAct] used for creating a new moderation action.
 public class ModerationActBuilder {
 
-    private static final Logger log = LoggerFactory.getLogger(ModerationActBuilder.class);
     private final long issuerId;
     private final long targetId;
     private final Consumer<ModerationActCreateData> executor;
@@ -62,7 +59,7 @@ public class ModerationActBuilder {
                 issuer.getIdLong(),
                 ModerationActType.WARN,
                 target.getIdLong(),
-                _ -> log.info("User {} has been warned by {}", target, issuer)
+                _ -> {}
         );
     }
 
@@ -75,7 +72,6 @@ public class ModerationActBuilder {
                     if (data.revokeAt().isEmpty()) {
                         throw new IllegalStateException("Cannot perform timeout without duration being set!");
                     }
-                    log.info("User {} has been timed out by {} until {}", target, issuer, data.duration());
                     target.timeoutUntil(data.revokeAt().get().toInstant()).reason(data.reason()).queue();
                 }
         );
@@ -87,7 +83,6 @@ public class ModerationActBuilder {
                 ModerationActType.KICK,
                 target.getIdLong(),
                 data -> {
-                    log.info("User {} has been kicked by {}", target, issuer);
                     if (data.deletionDays > 0) {
                         target.ban(data.deletionDays(), TimeUnit.DAYS).queue(_ -> {
                             target.getGuild().unban(target.getUser()).queue();
@@ -109,11 +104,6 @@ public class ModerationActBuilder {
                 ModerationActType.BAN,
                 target.getIdLong(),
                 data -> {
-                    log.info(
-                            "User {} has been{} banned by {}", target, data.revokeAt().isPresent()
-                                    ? " temp"
-                                    : "", issuer
-                    );
                     guild.ban(target, data.deletionDays(), TimeUnit.DAYS).reason(data.reason()).queue();
                 }
         );

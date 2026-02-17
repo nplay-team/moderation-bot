@@ -12,8 +12,6 @@ import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
@@ -21,7 +19,6 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Interaction
 public class DeleteCommand {
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteCommand.class);
     private final ModerationActService actService;
 
     @Inject
@@ -34,7 +31,6 @@ public class DeleteCommand {
     @Permissions(BotPermissions.MODERATION_DELETE)
     public void deleteModeration(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct) {
         RevertedModerationAct reverted = actService.revert(moderationAct, event, event.resolve("delete-reason"));
-        log.info("Moderation act {} has been deleted by {}", moderationAct.id(), event.getUser().getName());
         actService.delete(moderationAct.id());
         actService.publish(new ModerationEvent.Delete(moderationAct, event.getUser()));
         event.reply(Replies.success("delete-successful"), entry("id", moderationAct.id()));

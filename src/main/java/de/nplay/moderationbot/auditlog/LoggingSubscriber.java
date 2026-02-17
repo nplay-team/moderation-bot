@@ -11,6 +11,6 @@ public class LoggingSubscriber implements Subscriber<BotEvent> {
 
     @Override
     public void accept(BotEvent event) {
-        log.info("User {} performed {} on target {}", event.issuer(), event.type(), event.target());
+        log.info("User {} performed {} on target {}", event.issuer(), event.type().name(), event.target());
     }
 }
