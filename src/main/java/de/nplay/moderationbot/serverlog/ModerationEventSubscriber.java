@@ -10,9 +10,9 @@ import java.util.Locale;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("serverlog")
-public class ModerationSubscriber extends ServerlogSubscriber<ModerationEvent> {
+public class ModerationEventSubscriber extends ServerlogSubscriber<ModerationEvent> {
 
-    public ModerationSubscriber(Data data) {
+    public ModerationEventSubscriber(Data data) {
         super(data);
     }
 
@@ -31,7 +31,7 @@ public class ModerationSubscriber extends ServerlogSubscriber<ModerationEvent> {
         } else if (event instanceof ModerationEvent.Delete delete) {
             container.entries(
                     entry("revertingModerator", delete.deletedBy()),
-                    entry("reason", "-delete-reason"),
+                    entry("reason", resolver.resolve("delete-reason", Locale.GERMAN)),
                     entry("revert", true)
             );
         } else {

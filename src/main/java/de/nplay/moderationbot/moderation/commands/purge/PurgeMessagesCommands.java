@@ -5,7 +5,6 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
 import de.nplay.moderationbot.auditlog.lifecycle.events.MessagePurgeEvent;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -68,7 +67,7 @@ public class PurgeMessagesCommands {
         );
 
         channel.purgeMessagesById(messageIds);
-        lifecycle.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId), amount));
+        lifecycle.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId),  messageIds.size()));
         return messageIds.size();
     }
 

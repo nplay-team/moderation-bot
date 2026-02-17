@@ -20,7 +20,17 @@ moderation =
     .until =
     { "**Aktiv bis**" }
     { $until }
--delete-reason = Moderationshandlung wurde gelöscht
+delete-reason = Moderationshandlung wurde gelöscht
+
+## MessagePurge
+purge =
+    ### { $type }
+    { "**Gelöschte Nachrichten**" }
+    { $amount }
+    { "**Moderator**" }
+    { $issuer }
+    { "**Datum**" }
+    { $createdAt }
 
 ## Notes
 note =
@@ -67,5 +77,15 @@ slowmode =
     { $issuer }
     { "**Slowmode**" }
     { $duration }
+    { "**Datum**" }
+    { $createdAt }
+
+## Spielersuche
+spielersuche =
+    ### { $type }
+    { "**Betroffener Nutzer**" }
+    { $target }
+    { "**Moderator**" }
+    { $issuer }
     { "**Datum**" }
     { $createdAt }

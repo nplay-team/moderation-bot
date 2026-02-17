@@ -10,7 +10,7 @@ import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.BotEventSubscriber;
-import de.nplay.moderationbot.serverlog.ModerationSubscriber;
+import de.nplay.moderationbot.serverlog.ModerationEventSubscriber;
 import de.nplay.moderationbot.serverlog.ServerlogSubscriber;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
@@ -48,7 +48,6 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
 public class ModerationBot extends DatabaseModule {
@@ -120,10 +119,6 @@ public class ModerationBot extends DatabaseModule {
                                 result("%s (%s)".formatted(DATE_TIME_LONG.format(time.millis()), RELATIVE.atTimestamp(time.millis()))), RelativeTime.class)
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
                                 result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class)
-                        ).register("RESOLVED_CHANNEL", Function.implicit((_, channel, _) ->
-                                result(channel.getAsMention()), Channel.class)
-                        ).register("RESOLVED_ROLE", Function.implicit((_, role, _) ->
-                                result(role.getAsMention()), Role.class)
                         ).register("UNRESOLVED_SNOWFLAKE", Function.implicit((_, snowflake, _) ->
                                 result(snowflake.getId()), UnresolvedSnowflake.class))
                 ).build();
@@ -137,14 +132,7 @@ public class ModerationBot extends DatabaseModule {
     private JDACommands jdaCommands(Fluava parent) {
         return JDACommands.builder(jda)
                 .packages("de.nplay.moderationbot")
-                .embeds(config -> config.sources(EmbedDataSource.resource("events.json"))
-                        .placeholders(
-                                entry("colorDefault", Color.decode(EmbedColors.DEFAULT.hex)),
-                                entry("colorSuccess", Color.decode(EmbedColors.SUCCESS.hex)),
-                                entry("colorWarning", Color.decode(EmbedColors.WARNING.hex)),
-                                entry("colorError", Color.decode(EmbedColors.ERROR.hex))
-                        )
-                ).localizer(FluavaLocalizer.create(parent))
+                .localizer(FluavaLocalizer.create(parent))
                 .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())
                         .keepComponents(false))
                 ).globalCommandConfig(CommandConfig.of(config -> config
@@ -167,26 +155,6 @@ public class ModerationBot extends DatabaseModule {
 
         ServerlogSubscriber.Data data = new ServerlogSubscriber.Data(guild, configService(), resolver);
         lifecycle().subscribe(BotEvent.class, new BotEventSubscriber(data));
-        lifecycle().subscribe(ModerationEvent.class, new ModerationSubscriber(data));
-
-    }
-
-    @Deprecated
-    public enum EmbedColors {
-        DEFAULT("#020C24"),
-        ERROR("#FF0000"),
-        SUCCESS("#00FF00"),
-        WARNING("#FFFF00");
-
-        public final String hex;
-
-        EmbedColors(String hex) {
-            this.hex = hex;
-        }
-
-        @Override
-        public String toString() {
-            return hex;
-        }
+        lifecycle().subscribe(ModerationEvent.class, new ModerationEventSubscriber(data));
     }
 }

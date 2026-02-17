@@ -8,6 +8,6 @@ public record SpielersucheFreigabeEvent(UserSnowflake issuer, UserSnowflake targ
 
     @Override
     public AuditlogType type() {
-        return AuditlogType.SPIELERSUCHE_AUSSCHLUSS;
+        return AuditlogType.SPIELERSUCHE_FREIGABE;
     }
 }
