@@ -1,6 +1,7 @@
 package de.nplay.moderationbot.moderation.act.model;
 
 import de.chojo.sadu.mapper.wrapper.Row;
+import de.nplay.moderationbot.Replies.AbsoluteTime;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import java.sql.SQLException;
@@ -26,8 +27,8 @@ public final class RevertedModerationAct extends ModerationAct {
         return revertedBy;
     }
 
-    public Timestamp revertedAt() {
-        return revertedAt;
+    public AbsoluteTime revertedAt() {
+        return new AbsoluteTime(revertedAt);
     }
 
     public String revertingReason() {

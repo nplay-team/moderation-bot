@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.moderation.commands.purge;
 
+import de.nplay.moderationbot.Replies;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -29,8 +30,12 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class PurgeMessagesCommands {
 
+    private final Serverlog serverlog;
+
     @Inject
-    private Serverlog serverlog;
+    public PurgeMessagesCommands(Serverlog serverlog) {
+        this.serverlog = serverlog;
+    }
 
     @Command("mod purge messages")
     public void purgeMessagesByAmount(CommandEvent event, @Min(1) @Max(100) int amount) {
@@ -67,7 +72,7 @@ public class PurgeMessagesCommands {
     }
 
     private void replyEvent(CommandEvent event, int amount) {
-        var message = event.with().embeds("bulkDeleteSuccessful", entry("amount", amount)).reply();
+        var message = event.reply(Replies.success("purge-success"), entry("amount", amount));
         message.delete().queueAfter(5, TimeUnit.SECONDS);
     }
 

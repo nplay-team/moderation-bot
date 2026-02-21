@@ -1,5 +1,7 @@
 package de.nplay.moderationbot.slowmode;
 
+import de.nplay.moderationbot.Replies;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
@@ -13,6 +15,7 @@ import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
+@Bundle("slowmode")
 @Interaction("slowmode")
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 public class SlowmodeCommands {
@@ -22,32 +25,32 @@ public class SlowmodeCommands {
         var guildChannel = channel.orElse(event.getGuildChannel());
         var slowmode = SlowmodeService.getSlowmode(guildChannel);
         if (slowmode.isEmpty()) {
-            event.with().embeds("slowmodeNotSet", entry("channelId", guildChannel.getId())).reply();
+            event.reply(Replies.error("not-set"), entry("channel", guildChannel));
             return;
         }
-        event.with().embeds("slowmodeInfo",
-                entry("channelId", guildChannel.getId()),
-                entry("duration", Helpers.formatDuration(Duration.ofSeconds(slowmode.get().duration())))
-        ).reply();
+        event.reply(
+                Replies.standard("info"),
+                entry("channel", guildChannel),
+                entry("duration", Helpers.formatDuration(slowmode.get().duration()))
+        );
     }
 
     @Command("set")
-    public void slowmodeSetCommand(CommandEvent event,
-                                   @DurationMax(amount = Integer.MAX_VALUE, unit = ChronoUnit.SECONDS)
-                                   Duration duration,
-                                   Optional<GuildChannel> channel) {
+    public void slowmodeSetCommand(
+            CommandEvent event,
+            @DurationMax(amount = Integer.MAX_VALUE, unit = ChronoUnit.SECONDS)
+            Duration duration,
+            Optional<GuildChannel> channel
+    ) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         SlowmodeService.setSlowmode(guildChannel, (int) duration.toSeconds());
-        event.with().embeds("slowmodeSet",
-                entry("channelId", guildChannel.getId()),
-                entry("duration", Helpers.formatDuration(duration))
-        ).reply();
+        event.reply(Replies.success("set"), entry("channel", guildChannel), entry("duration", Helpers.formatDuration(duration)));
     }
 
     @Command("remove")
     public void slowmodeRemoveCommand(CommandEvent event, Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         SlowmodeService.removeSlowmode(guildChannel);
-        event.with().embeds("slowmodeRemove", entry("channelId", guildChannel.getId())).reply();
+        event.reply(Replies.standard("remove"), entry("channel", guildChannel));
     }
 }
