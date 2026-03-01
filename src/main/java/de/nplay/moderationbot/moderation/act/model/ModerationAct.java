@@ -97,7 +97,7 @@ public sealed class ModerationAct permits RevertedModerationAct {
         SeparatedContainer container = new SeparatedContainer(
                 TextDisplay.of("revert$revert-info"),
                 Separator.createDivider(Separator.Spacing.SMALL),
-                entry("type", type.localized(locale))
+                entry("type", type)
         ).withAccentColor(Replies.SUCCESS);
         container.append(
                 TextDisplay.of("revert$revert-info.body"),
