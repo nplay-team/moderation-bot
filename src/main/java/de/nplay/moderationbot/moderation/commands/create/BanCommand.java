@@ -68,15 +68,7 @@ public class BanCommand extends CreateCommand {
 
         builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
-        String type;
-        if (until != null) {
-            builder.duration(until);
-            type = "Temp-Bann";
-        } else {
-            type = "Bann";
-        }
-
         event.kv().put(BUILDER, builder);
-        replyModal(event, type);
+        replyModal(event, until == null ? "Bann" : "Temp-Bann");
     }
 }

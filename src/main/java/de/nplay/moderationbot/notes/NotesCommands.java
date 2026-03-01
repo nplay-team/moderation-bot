@@ -27,7 +27,7 @@ import java.util.Optional;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("notes")
-@Interaction
+@Interaction("notes")
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class NotesCommands {
 
@@ -49,7 +49,7 @@ public class NotesCommands {
         onCreate(event, target);
     }
 
-    @Command("notes create")
+    @Command("create")
     public void onCreate(CommandEvent event, User target) {
         this.target = target;
 
@@ -82,7 +82,7 @@ public class NotesCommands {
         event.with().ephemeral(ephemeral).reply(container);
     }
 
-    @Command("notes list")
+    @Command("list")
     public void onList(CommandEvent event, User target) {
         List<Note> notes = notesService.getAll(target);
 
@@ -101,7 +101,7 @@ public class NotesCommands {
         event.reply(container);
     }
 
-    @Command("notes delete")
+    @Command("delete")
     public void onDelete(CommandEvent event, long noteId) {
         Optional<Note> note = notesService.get(noteId);
 

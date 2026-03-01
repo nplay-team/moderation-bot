@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -120,9 +119,7 @@ public class ModerationBot extends DatabaseModule {
                         ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
                                 result("%s (%s)".formatted(DATE_TIME_LONG.format(time.millis()), RELATIVE.atTimestamp(time.millis()))), RelativeTime.class)
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
-                                result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class)
-                        ).register("RESOLVED_CHANNEL", Function.implicit((_, channel, _) ->
-                                result(channel.getAsMention()), Channel.class))
+                                result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class))
                 ).build();
     }
 
@@ -141,7 +138,7 @@ public class ModerationBot extends DatabaseModule {
                                 entry("colorWarning", Color.decode(EmbedColors.WARNING.hex)),
                                 entry("colorError", Color.decode(EmbedColors.ERROR.hex))
                         )
-                ).localizer(new FluavaLocalizer(parent))
+                ).localizer(FluavaLocalizer.builder(parent).build())
                 .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())
                         .keepComponents(false))
                 ).globalCommandConfig(CommandConfig.of(config -> config
