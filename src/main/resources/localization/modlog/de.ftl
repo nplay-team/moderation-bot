@@ -18,6 +18,7 @@ detail =
         ### Aufhebung | { $revertedAt }
         { "**Grund:**" } { $revertingReason }
         { "**Revidierender Moderator:**" } { $reverter }
+        { "**Dauer:**" } { $duration }
     .revoke =
         ### Aufhebung
         { "**Aktiv bis:**" } { $revokeAt }
