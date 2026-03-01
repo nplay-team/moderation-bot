@@ -19,6 +19,10 @@ duration-too-long = Die angegebene Dauer ist zu lang! Die maximale Dauer beträg
 invalid-link = Der angegebene Link ist nicht gültig!
 invalid-act = Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!
 
-## Other / These cannot be localized
+## Other
+default-reason = Kein Grund angegeben
+invalid-rule = Ungültige Paragraphen ID
+# Cannot be localized
 automatic-revert-reason = Automatische Aufhebung nach Ablauf der Dauer
+# Cannot be localized
 bot-status = Hört euren Nachrichten zu
