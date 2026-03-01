@@ -1,7 +1,11 @@
 package de.nplay.moderationbot.duration;
 
+import com.google.inject.Inject;
+import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.adapter.TypeAdapter;
 import io.github.kaktushose.jdac.guice.Implementation;
+import io.github.kaktushose.jdac.introspection.Introspection;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import io.github.kaktushose.proteus.mapping.MappingResult;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -16,12 +20,18 @@ import java.util.regex.Pattern;
 public class DurationAdapter implements TypeAdapter<String, Duration> {
 
     private static final Logger log = LoggerFactory.getLogger(DurationAdapter.class);
+    private final MessageResolver resolver;
+
+    @Inject
+    public DurationAdapter(MessageResolver resolver) {
+        this.resolver = resolver;
+    }
 
     @Override
     public MappingResult<Duration> from(String source, MappingContext<String, Duration> context) {
         return parse(source)
                 .map(it -> (MappingResult<Duration>) MappingResult.lossless(it))
-                .orElse(MappingResult.failure("Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an."));
+                .orElse(MappingResult.failure(resolver.resolve("invalid-duration", Introspection.scopedGet(Property.JDA_EVENT).getUserLocale())));
     }
 
     public Optional<Duration> parse(@Nullable String raw) {
@@ -38,8 +48,12 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
         var minutes = extractValue(normalizedRaw, "MIN");
         var seconds = extractValue(normalizedRaw, "S");
 
-        if (years != null) days = (days != null ? days : 0) + years * 365;
-        if (months != null) days = (days != null ? days : 0) + months * 30; // Approximation, as months vary in length
+        if (years != null) {
+            days = (days != null ? days : 0) + years * 365;
+        }
+        if (months != null) {
+            days = (days != null ? days : 0) + months * 30; // Approximation, as months vary in length
+        }
 
         var parseString = "P" +
                           (days != null ? days + "D" : "") +

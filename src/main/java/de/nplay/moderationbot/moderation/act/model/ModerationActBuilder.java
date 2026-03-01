@@ -1,20 +1,27 @@
 package de.nplay.moderationbot.moderation.act.model;
 
-import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
-import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.NPLAYModerationBot;
+import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.util.SeparatedContainer;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
+import io.github.kaktushose.jdac.configuration.Property;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.introspection.Introspection;
+import net.dv8tion.jda.api.components.separator.Separator;
+import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.utils.TimeFormat;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -94,13 +101,17 @@ public class ModerationActBuilder {
                 ModerationActType.BAN,
                 target.getIdLong(),
                 data -> {
-                    log.info("User {} has been{} banned by {}", target, data.revokeAt().isPresent() ? " temp" : "", issuer);
+                    log.info(
+                            "User {} has been{} banned by {}", target, data.revokeAt().isPresent()
+                                    ? " temp"
+                                    : "", issuer
+                    );
                     guild.ban(target, data.deletionDays(), TimeUnit.DAYS).reason(data.reason()).queue();
                 }
         );
     }
 
-    public ModerationActBuilder reason(@Nullable String reason) {
+    public ModerationActBuilder reason(String reason) {
         this.reason = reason;
         return this;
     }
@@ -152,14 +163,6 @@ public class ModerationActBuilder {
         throw new UnsupportedOperationException("Cannot set deletion days on moderation act with type: " + type);
     }
 
-    public long issuerId() {
-        return issuerId;
-    }
-
-    public long targetId() {
-        return targetId;
-    }
-
     public ModerationAct execute(ReplyableEvent<?> event) {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, messageReference, paragraphId, duration, deletionDays);
         ModerationAct act = ModerationActService.create(data);
@@ -168,53 +171,44 @@ public class ModerationActBuilder {
         return act;
     }
 
-    private void sendModerationToTarget(ModerationAct moderationAct, ReplyableEvent<?> event) {
-        Embed embed = event.embed("moderationActTargetInfo").placeholders(
-                entry("title", moderationAct.type().toString()),
-                entry("reason", moderationAct.reason()),
-                entry("id", moderationAct.id()),
-                entry("date", TimeFormat.DEFAULT.format(moderationAct.createdAt().getTime()))
+    @Bundle("create")
+    private void sendModerationToTarget(ModerationAct act, ReplyableEvent<?> event) {
+        Color color = switch (act.type()) {
+            case WARN, TIMEOUT -> Replies.WARNING;
+            case KICK, TEMP_BAN, BAN -> Replies.ERROR;
+        };
+        SeparatedContainer container = new SeparatedContainer(
+                TextDisplay.of("act-info"),
+                Separator.createDivider(Separator.Spacing.SMALL),
+                entry("type", type.localized(event.getUserLocale())),
+                entry("description", type)
+        ).footer(TextDisplay.of("act-info.footer"), true).withAccentColor(color);
+
+        container.append(
+                TextDisplay.of("act-info.reason"),
+                entry("id", act.id()),
+                entry("reason", act.reason()),
+                entry("date", act.createdAt())
         );
-        moderationAct.revokeAt().ifPresentOrElse(
-                it -> embed.placeholders(entry("until", Helpers.formatTimestamp(it))),
-                () -> embed.fields().remove("{ $until }")
+        act.revokeAt().ifPresent(it ->
+                container.append(TextDisplay.of("act-info.revoke"), entry("until", it))
         );
-        moderationAct.paragraph().ifPresentOrElse(
-                it -> embed.placeholders(entry("paragraph", it.fullDisplay())),
-                () -> embed.fields().remove("{ $paragraph }")
+        act.paragraph().ifPresent(it ->
+                container.append(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
         );
-        moderationAct.referenceMessage().ifPresentOrElse(
-                it -> embed.placeholders(entry("referenceMessage", it.content())),
-                () -> embed.fields().remove("> { $referenceMessage }")
+        act.referenceMessage().ifPresent(it ->
+                container.append(TextDisplay.of("act-info.reference"), entry("message", it.content()))
         );
 
-        switch (moderationAct.type()) {
-            case WARN -> embed.placeholders(
-                    entry("description", event.localize("warn-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.WARNING));
-            case TIMEOUT -> embed.placeholders(
-                    entry("description", event.localize("timeout-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.WARNING));
-            case KICK -> embed.placeholders(
-                    entry("description", event.localize("kick-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
-            case TEMP_BAN -> embed.placeholders(
-                    entry("description", event.localize("temp-ban-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
-            case BAN -> embed.placeholders(
-                    entry("description", event.localize("ban-description")),
-                    entry("color", NPLAYModerationBot.EmbedColors.ERROR));
-        }
-
-        Helpers.sendDM(moderationAct.user(), event.getJDA(), channel -> channel.sendMessageEmbeds(embed.build()));
+        Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
 
     public enum ModerationActType {
-        WARN("warn"),
-        TIMEOUT("timeout"),
-        KICK("kick"),
-        TEMP_BAN("temp-ban"),
-        BAN("ban");
+        WARN("default$warn"),
+        TIMEOUT("default$timeout"),
+        KICK("default$kick"),
+        TEMP_BAN("default$temp-ban"),
+        BAN("default$ban");
 
         private final String localizationKey;
 
@@ -224,6 +218,10 @@ public class ModerationActBuilder {
 
         public String localizationKey() {
             return localizationKey;
+        }
+
+        public String localized(DiscordLocale locale) {
+            return Introspection.scopedGet(Property.MESSAGE_RESOLVER).resolve(localizationKey, locale, Map.of());
         }
     }
 

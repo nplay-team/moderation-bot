@@ -6,6 +6,7 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
+import java.time.Duration;
 import java.util.Optional;
 
 public class SlowmodeService {
@@ -40,13 +41,13 @@ public class SlowmodeService {
                 .delete();
     }
 
-    public record Slowmode(long channelId, int duration) {
+    public record Slowmode(long channelId, Duration duration) {
 
         @MappingProvider("")
         public static RowMapping<Slowmode> map() {
             return row -> new Slowmode(
                     row.getLong("channel_id"),
-                    row.getInt("duration")
+                    Duration.ofSeconds(row.getInt("duration"))
             );
         }
     }

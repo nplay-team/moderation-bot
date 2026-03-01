@@ -1,5 +1,7 @@
 package de.nplay.moderationbot.moderation.commands.modlog;
 
+import de.nplay.moderationbot.Replies;
+import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import com.google.inject.Inject;
@@ -16,23 +18,27 @@ import org.slf4j.LoggerFactory;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
+@Bundle("revert")
 @Interaction
 public class DeleteCommand {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteCommand.class);
+    private final Serverlog serverlog;
 
     @Inject
-    private Serverlog serverlog;
+    public DeleteCommand(Serverlog serverlog) {
+        this.serverlog = serverlog;
+    }
 
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
     @Command(value = "mod delete")
     @Permissions(BotPermissions.MODERATION_DELETE)
     public void deleteModeration(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct) {
-        RevertedModerationAct reverted = moderationAct.revert(event.getGuild(), event::embed, event.getUser(), "Moderationshandlung wurde gelöscht");
+        RevertedModerationAct reverted = moderationAct.revert(event, "Moderationshandlung wurde gelöscht");
         log.info("Moderation act {} has been deleted by {}", moderationAct.id(), event.getUser().getName());
         ModerationActService.delete(moderationAct.id());
         serverlog.onEvent(ModerationEvents.Deleted(event.getJDA(), event.getGuild(), reverted), event);
-        event.with().embeds("deletionSuccessful", entry("id", moderationAct.id())).reply();
+        event.reply(Replies.success("delete-successful"), entry("id", moderationAct.id()));
     }
 
 }
