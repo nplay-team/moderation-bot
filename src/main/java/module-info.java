@@ -25,4 +25,7 @@ module moderationbot.main {
 
     requires java.desktop;
     requires java.sql;
+
+    // required for logback
+    exports de.nplay.moderationbot.logging;
 }
