@@ -15,15 +15,17 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class ModerationActAdapter implements TypeAdapter<Long, ModerationAct> {
 
     private final MessageResolver resolver;
+    private final ModerationActService actService;
 
     @Inject
-    public ModerationActAdapter(MessageResolver resolver) {
+    public ModerationActAdapter(MessageResolver resolver, ModerationActService actService) {
         this.resolver = resolver;
+        this.actService = actService;
     }
 
     @Override
     public MappingResult<ModerationAct> from(Long source, MappingContext<Long, ModerationAct> context) {
-        return ModerationActService.get(source)
+        return actService.get(source)
                 .map(it -> (MappingResult<ModerationAct>) MappingResult.lossless(it))
                 .orElse(MappingResult.failure(resolver.resolve("invalid-act", Introspection.scopedGet(Property.JDA_EVENT).getUserLocale(), entry("id", source))));
     }

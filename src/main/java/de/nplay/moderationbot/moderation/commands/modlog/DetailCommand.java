@@ -39,7 +39,7 @@ public class DetailCommand {
         moderationAct.paragraph().ifPresent(it ->
             container.append(TextDisplay.of("detail.paragraph"), entry("paragraph", it.fullDisplay()))
         );
-        moderationAct.referenceMessage().ifPresent(it ->
+        moderationAct.messageReference().ifPresent(it ->
              container.append(TextDisplay.of("detail.reference"), entry("reference", it.jumpUrl(event.getGuild())))
         );
 
