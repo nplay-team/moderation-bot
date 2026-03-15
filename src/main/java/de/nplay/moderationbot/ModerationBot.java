@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
-public class ModerationBot extends DatabaseModule {
+public class ModerationBot extends ServiceModule {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationBot.class);
     private final JDA jda;

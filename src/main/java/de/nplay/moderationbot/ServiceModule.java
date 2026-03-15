@@ -1,7 +1,6 @@
 package de.nplay.moderationbot;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 import de.chojo.sadu.datasource.DataSourceCreator;
 import de.chojo.sadu.mapper.RowMapperRegistry;
@@ -22,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class DatabaseModule extends AbstractModule {
+public class ServiceModule extends AbstractModule {
 
-    private static final Logger log = LoggerFactory.getLogger(DatabaseModule.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceModule.class);
     private final MessageReferenceService referenceService;
     private final ModerationActService moderationActService;
     private final NotesService notesService;
@@ -33,7 +32,7 @@ public class DatabaseModule extends AbstractModule {
     private final ConfigService configService;
     private final RuleService ruleService;
 
-    public DatabaseModule() {
+    public ServiceModule() {
         initialize();
         referenceService = new MessageReferenceService();
         ruleService = new RuleService();
