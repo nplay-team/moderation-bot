@@ -1,13 +1,13 @@
 package de.nplay.moderationbot;
 
 import io.github.kaktushose.jdac.JDACommands;
-import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
 import io.github.kaktushose.jdac.embeds.EmbedDataSource;
 import io.github.kaktushose.jdac.guice.GuiceExtensionData;
 import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
+import io.github.kaktushose.jdac.property.JDACProperty;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -60,7 +60,7 @@ public class ModerationBot extends ServiceModule {
         serverlog = new Serverlog(configService());
 
         JDACommands jdaCommands = jdaCommands(fluava());
-        MessageResolver resolver = jdaCommands.property(Property.MESSAGE_RESOLVER);
+        MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
