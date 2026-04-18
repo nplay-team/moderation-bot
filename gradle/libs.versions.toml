@@ -1,6 +1,6 @@
 [versions]
-jda = "6.3.0"
-jda-commands = "5.0.0-SNAPSHOT"
+jda = "6.4.1"
+jda-commands = "5.0.0"
 jdwebhooks = "1.0.1"
 logback = "1.5.13"
 slf4j = "2.0.9"
