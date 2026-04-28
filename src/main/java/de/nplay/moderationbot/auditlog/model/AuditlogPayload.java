@@ -1,8 +1,5 @@
 package de.nplay.moderationbot.auditlog.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.auditlog.lifecycle.events.MessagePurgeEvent;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
@@ -11,12 +8,13 @@ import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.rules.RuleService;
-import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.util.DefaultPrettyPrinter;
+import tools.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
@@ -31,7 +29,7 @@ public sealed interface AuditlogPayload {
         }
         try {
             return Optional.of(objectMapper.readValue(json, type.payloadType()));
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Failed to deserialize AuditlogPayload", e);
             return Optional.empty();
         }
@@ -40,7 +38,7 @@ public sealed interface AuditlogPayload {
     static Optional<String> toJson(AuditlogPayload payload) {
         try {
             return Optional.ofNullable(objectMapper.writeValueAsString(payload));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Failed to serialize AuditlogPayload", e);
             return Optional.empty();
         }
@@ -49,15 +47,17 @@ public sealed interface AuditlogPayload {
     static Optional<String> toPrettyJson(AuditlogPayload payload) {
         try {
             return Optional.ofNullable(objectMapper.writer().with(new DefaultPrettyPrinter()).writeValueAsString(payload));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             log.error("Failed to serialize AuditlogPayload", e);
             return Optional.empty();
         }
     }
 
-    record PermissionsUpdate(int oldPermissions, int newPermissions) implements AuditlogPayload { }
+    record PermissionsUpdate(int oldPermissions, int newPermissions) implements AuditlogPayload {
+    }
 
-    record ConfigUpdate(BotConfig config, String oldValue, String newValue) implements AuditlogPayload { }
+    record ConfigUpdate(BotConfig config, String oldValue, String newValue) implements AuditlogPayload {
+    }
 
     record NoteCreate(long id, String content, long createdAt) implements AuditlogPayload {
 
@@ -66,9 +66,11 @@ public sealed interface AuditlogPayload {
         }
     }
 
-    record NoteDelete(long id) implements AuditlogPayload { }
+    record NoteDelete(long id) implements AuditlogPayload {
+    }
 
-    record SlowmodePayload(long duration) implements AuditlogPayload { }
+    record SlowmodePayload(long duration) implements AuditlogPayload {
+    }
 
     record ModerationCreate(
             long id,
@@ -91,14 +93,16 @@ public sealed interface AuditlogPayload {
         }
     }
 
-    record ModerationRevert(long id, long revertedBy, String revertingReason, boolean automatic) implements AuditlogPayload {
+    record ModerationRevert(long id, long revertedBy, String revertingReason,
+                            boolean automatic) implements AuditlogPayload {
 
         public ModerationRevert(RevertedModerationAct act, boolean automatic) {
             this(act.id(), act.revertedBy().getIdLong(), act.revertingReason(), automatic);
         }
     }
 
-    record ModerationDelete(long id) implements AuditlogPayload { }
+    record ModerationDelete(long id) implements AuditlogPayload {
+    }
 
     record MessagePurge(long pivotMessageId, @Nullable Integer amount) implements AuditlogPayload {
 
