@@ -1,7 +1,8 @@
-package de.nplay.moderationbot.auditlog;
+package de.nplay.moderationbot.auditlog.commands;
 
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.AuditlogService;
 import de.nplay.moderationbot.auditlog.AuditlogService.AuditlogEntry;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
@@ -14,17 +15,17 @@ import java.util.Optional;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("auditlog")
-@Interaction("auditlog")
-public class AuditlogCommands {
+@Interaction
+public class AuditLogDetailCommand {
 
     private final AuditlogService auditlogService;
 
     @Inject
-    public AuditlogCommands(AuditlogService auditlogService) {
+    public AuditLogDetailCommand(AuditlogService auditlogService) {
         this.auditlogService = auditlogService;
     }
 
-    @Command("detail")
+    @Command("auditlog detail")
     public void onDetail(CommandEvent event, long id) {
         Optional<AuditlogEntry> entry = auditlogService.get(id, event.getGuild());
 
