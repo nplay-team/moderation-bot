@@ -15,13 +15,13 @@ import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
-import io.github.kaktushose.jdac.configuration.Property;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ComponentEvent;
 import io.github.kaktushose.jdac.dispatching.reply.Component;
-import io.github.kaktushose.jdac.introspection.Introspection;
 import io.github.kaktushose.jdac.message.placeholder.Entry;
+import io.github.kaktushose.jdac.property.JDACIntrospection;
+import io.github.kaktushose.jdac.property.JDACProperty;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.section.Section;
 import net.dv8tion.jda.api.components.selections.SelectOption;
@@ -209,7 +209,7 @@ public class ModlogCommand {
                 entry("issuer", act.issuer())
         );
         if (act instanceof RevertedModerationAct reverted
-            && !reverted.revertedBy().getId().equals(Introspection.scopedGet(Property.JDA).getSelfUser().getId())
+            && !reverted.revertedBy().getId().equals(JDACIntrospection.scopedGet(JDACProperty.JDA).getSelfUser().getId())
         ) {
             entries.putAll(Entry.toMap(
                     entry("reverter", reverted.revertedBy()),

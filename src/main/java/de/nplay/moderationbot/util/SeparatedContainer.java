@@ -1,10 +1,10 @@
 package de.nplay.moderationbot.util;
 
-import io.github.kaktushose.jdac.configuration.Property;
-import io.github.kaktushose.jdac.introspection.Introspection;
 import io.github.kaktushose.jdac.message.placeholder.Entry;
 import io.github.kaktushose.jdac.message.resolver.ComponentResolver;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
+import io.github.kaktushose.jdac.property.JDACIntrospection;
+import io.github.kaktushose.jdac.property.JDACProperty;
 import net.dv8tion.jda.api.components.MessageTopLevelComponentUnion;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.container.Container;
@@ -36,7 +36,7 @@ public class SeparatedContainer extends AbstractComponentImpl implements Contain
     private @Nullable Footer footer;
 
     public SeparatedContainer(ContainerChildComponent header, Separator separator, Entry... entries) {
-        this(Introspection.scopedGet(Property.MESSAGE_RESOLVER), header, separator, entries);
+        this(JDACIntrospection.scopedGet(JDACProperty.MESSAGE_RESOLVER), header, separator, entries);
     }
 
     public SeparatedContainer(Resolver<String> resolver, ContainerChildComponent header, Separator separator, Entry... entries) {

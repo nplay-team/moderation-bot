@@ -42,7 +42,7 @@ unknown-interaction =
 
 # Constraints
 member-missing-permission = Dem Nutzer fehlt mindestens eine erforderliche Berechtigung.
-member-has-unallowed-permission = Der Nutzer hat mindestens eine Berechtigung, die niocht erlaubt ist.
+member-has-unallowed-permission = Der Nutzer hat mindestens eine Berechtigung, die nicht erlaubt ist.
 # Type Adapter
 member-required-got-user = Ein Server Mitglied ist erforderlich, aber es wurde nur ein Discord Nutzer angegeben.
 # Command Building

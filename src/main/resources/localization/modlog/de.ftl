@@ -1,5 +1,5 @@
 ## Detail
-mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung an
+mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung an.
 mod-detail-options-moderation_act-name = id
 mod-detail-options-moderation_act-description = Die ID der Moderationshandlung.
 detail =
@@ -18,6 +18,7 @@ detail =
         ### Aufhebung | { $revertedAt }
         { "**Grund:**" } { $revertingReason }
         { "**Revidierender Moderator:**" } { $reverter }
+        { "**Dauer:**" } { $duration }
     .revoke =
         ### Aufhebung
         { "**Aktiv bis:**" } { $revokeAt }
@@ -25,11 +26,11 @@ detail =
 ## Modlog
 mod-log-description = Zeigt den Modlog eines Mitglieds an.
 mod-log-options-target-name = nutzer
-mod-log-options-target-description = Der User, dessen Modlog abgerufen werden soll.
+mod-log-options-target-description = Der Benutzer, dessen Modlog abgerufen werden soll.
 mod-log-options-page-name = seite
-mod-log-options-page-description = Die Seite, die angezeigt werden soll
+mod-log-options-page-description = Die Seite, die angezeigt werden soll.
 mod-log-options-count-name = seiten
-mod-log-options-count-description = Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25)
+mod-log-options-count-description = Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25).
 modlog =
     ## NPLAY-Moderation - Datenauskunft
     .header =

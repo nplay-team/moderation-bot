@@ -45,8 +45,8 @@ public class BanCommand extends CreateCommand {
             User target,
             @Param(optional = true) @Nullable Duration until,
             @Param(optional = true) @Min(1) @Max(7) int delDays,
-            @Param(optional = true, type = OptionType.INTEGER) @Nullable RuleParagraph paragraph,
-            @Param(optional = true) @Nullable MessageLink messageLink
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
+            @Param(optional = true) MessageLink messageLink
     ) {
         if (actService.isBanned(target)) {
             event.reply(Replies.error("user-already-banned"));
@@ -68,15 +68,7 @@ public class BanCommand extends CreateCommand {
 
         builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
-        String type;
-        if (until != null) {
-            builder.duration(until);
-            type = "Temp-Bann";
-        } else {
-            type = "Bann";
-        }
-
         event.kv().put(BUILDER, builder);
-        replyModal(event, type);
+        replyModal(event, until == null ? "Bann" : "Temp-Bann");
     }
 }

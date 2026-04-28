@@ -1,5 +1,5 @@
 ## Revert Command
-mod-revert-description = Hebt eine Moderationshandlung auf
+mod-revert-description = Hebt eine Moderationshandlung auf.
 mod-revert-options-moderation_act-name = id
 mod-revert-options-moderation_act-description = Die ID der Moderationshandlung, die aufgehoben werden soll.
 mod-revert-options-reason-name = grund
@@ -7,7 +7,13 @@ mod-revert-options-reason-description = Der Grund für die Aufhebung.
 
 revert-info =
     ### { $type } aufgehoben
-    Dein { $type } auf dem **NPLAY** Discord Server wurde aufgehoben!
+    { $type ->
+        *[WARN] Deine Verwarnung
+        [TIMEOUT] Dein Timeout
+        [KICK] Dein Kick
+        [TEMP_BAN] Dein temporärer Bann
+        [BAN] Dein Bann
+    } auf dem **NPLAY** Discord Server wurde aufgehoben!
     .body =
     { "**ID**" }
     \#{ $id }

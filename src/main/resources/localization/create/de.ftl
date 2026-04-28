@@ -9,11 +9,11 @@
 -del-days-description = Für wie viele Tage in der Vergangenheit sollen Nachrichten dieses Users gelöscht werden?
 
 ## Ban
-mod-ban-description = Bannt einen Benutzer vom Server
+mod-ban-description = Bannt einen Benutzer vom Server.
 mod-ban-options-target-name = { -target }
 mod-ban-options-target-description = Der Benutzer, der gebannt werden soll.
 mod-ban-options-until-name = { -duration }
-mod-ban-options-until-description = Für wie lange der Ban andauern soll.
+mod-ban-options-until-description = Für wie lange der Bann andauern soll.
 mod-ban-options-del_days-name = { -del-days }
 mod-ban-options-del_days-description = { -del-days-description }
 mod-ban-options-paragraph-name = { -paragraph }
@@ -25,7 +25,7 @@ already-banned =
     Der angegebene Nutzer ist bereits gebannt!
 
 ## Kick
-mod-kick-description = Kickt einen Benutzer vom Server
+mod-kick-description = Kickt einen Benutzer vom Server.
 mod-kick-options-target-name = { -target }
 mod-kick-options-target-description = Der Benutzer, der gekickt werden soll.
 mod-kick-options-paragraph-name  = { -paragraph }
@@ -36,9 +36,9 @@ mod-kick-options-message_link-name = { -link }
 mod-kick-options-message_link-description = { -link-description }
 
 ## Timeout
-mod-timeout-description = Versetzt einen Benutzer in den Timeout
+mod-timeout-description = Versetzt einen Benutzer in den Timeout.
 mod-timeout-options-target-name = { -target }
-mod-timeout-options-target-description = Der Benutzer, den in den Timeout versetzt werden soll.
+mod-timeout-options-target-description = Der Benutzer, der in den Timeout versetzt werden soll.
 mod-timeout-options-until-name = { -duration }
 mod-timeout-options-until-description = Für wie lange der Timeout andauern soll (max. 28 Tage).
 mod-timeout-options-paragraph-name = { -paragraph }
@@ -50,7 +50,7 @@ already-timeout =
     Der angegebene Nutzer hat bereits ein aktives Timeout!
 
 ## Warn
-mod-warn-description = Verwarnt einen Benutzer
+mod-warn-description = Verwarnt einen Benutzer.
 mod-warn-options-target-name = { -target }
 mod-warn-options-target-description = Der Benutzer, der verwarnt werden soll.
 mod-warn-options-paragraph-name = { -paragraph }

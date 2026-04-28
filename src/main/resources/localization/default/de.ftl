@@ -1,7 +1,7 @@
 ## BulkDelete
-mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig
+mod-purge-messages-description = Löscht eine bestimmte Anzahl an Nachrichten gleichzeitig.
 mod-purge-messages-options-amount-name = anzahl
-mod-purge-messages-options-amount-description = Anzahl der Nachrichten die gelöscht werden sollen
+mod-purge-messages-options-amount-description = Anzahl der Nachrichten die gelöscht werden sollen.
 purge-success =
     ### Erfolgreich
     Die letzten **{ $amount }** Nachrichten wurden erfolgreich gelöscht!

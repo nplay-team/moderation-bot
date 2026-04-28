@@ -35,7 +35,7 @@ confirm =
 
 ## Bot Permissions
 admin = Administrator
-mod-read = Einsehen von moderativen Handlung
+mod-read = Einsehen von moderativen Handlungen
 mod-create = Moderieren von Benutzern
 mod-revert = Rückgängig machen von moderativen Handlungen
 mod-delete = Löschen von moderativen Handlungen

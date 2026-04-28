@@ -48,7 +48,8 @@ public class DetailCommand {
                     TextDisplay.of("detail.reverted"),
                     entry("reverter", reverted.revertedBy()),
                     entry("revertedAt", reverted.revertedAt()),
-                    entry("revertingReason", reverted.revertingReason())
+                    entry("revertingReason", reverted.revertingReason()),
+                    entry("duration", Helpers.formatDuration(reverted.duration()))
             );
         } else if (moderationAct.revokeAt().isPresent()) {
             container.append(
