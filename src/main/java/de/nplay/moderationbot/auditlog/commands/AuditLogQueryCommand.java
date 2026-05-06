@@ -17,8 +17,10 @@ import jakarta.inject.Inject;
 import net.dv8tion.jda.api.components.container.ContainerChildComponent;
 import net.dv8tion.jda.api.components.separator.Separator.Spacing;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Bundle("auditlog")
@@ -40,9 +42,40 @@ public class AuditLogQueryCommand {
         );
     }
 
-    @Command("auditlog query")
-    public void onQuery(CommandEvent event) {
-        event.reply(pagination);
+    @Command("list type")
+    public void onQueryType(CommandEvent event,
+                            @Choices({
+                                    "MODERATION_CREATE", "MODERATION_REVERT", "MODERATION_DELETE", "MESSAGE_PURGE",
+                                    "NOTE_CREATE", "NOTE_DELETE", "PERMISSIONS_USER_UPDATE",
+                                    "PERMISSIONS_ROLE_UPDATE", "CONFIG_UPDATE", "SLOWMODE_UPDATE",
+                                    "SPIELERSUCHE_AUSSCHLUSS", "SPIELERSUCHE_FREIGABE"
+                            }) String type
+    ) {
+
+    }
+
+    @Command("list issuer")
+    public void onQueryIssuer(CommandEvent event, User issuer,
+                              @Choices({
+                                      "MODERATION_CREATE", "MODERATION_REVERT", "MODERATION_DELETE", "MESSAGE_PURGE",
+                                      "NOTE_CREATE", "NOTE_DELETE", "PERMISSIONS_USER_UPDATE",
+                                      "PERMISSIONS_ROLE_UPDATE", "CONFIG_UPDATE", "SLOWMODE_UPDATE",
+                                      "SPIELERSUCHE_AUSSCHLUSS", "SPIELERSUCHE_FREIGABE"
+                              }) Optional<String> type
+    ) {
+
+    }
+
+    @Command("list target")
+    public void onQueryTarget(CommandEvent event, User target,
+                              @Choices({
+                                      "MODERATION_CREATE", "MODERATION_REVERT", "MODERATION_DELETE", "MESSAGE_PURGE",
+                                      "NOTE_CREATE", "NOTE_DELETE", "PERMISSIONS_USER_UPDATE",
+                                      "PERMISSIONS_ROLE_UPDATE", "CONFIG_UPDATE", "SLOWMODE_UPDATE",
+                                      "SPIELERSUCHE_AUSSCHLUSS", "SPIELERSUCHE_FREIGABE"
+                              }) Optional<String> type
+    ) {
+
     }
 
     @Button(value = "pagination.back", emoji = "◀\uFE0F")
