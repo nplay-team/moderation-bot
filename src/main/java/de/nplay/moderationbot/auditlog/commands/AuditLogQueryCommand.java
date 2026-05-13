@@ -3,6 +3,7 @@ package de.nplay.moderationbot.auditlog.commands;
 import de.nplay.moderationbot.auditlog.AuditlogService;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Button;
+import io.github.kaktushose.jdac.annotations.interactions.Choices;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.components.pagination.Page;
@@ -43,39 +44,27 @@ public class AuditLogQueryCommand {
     }
 
     @Command("list type")
-    public void onQueryType(CommandEvent event,
-                            @Choices({
-                                    "MODERATION_CREATE", "MODERATION_REVERT", "MODERATION_DELETE", "MESSAGE_PURGE",
-                                    "NOTE_CREATE", "NOTE_DELETE", "PERMISSIONS_USER_UPDATE",
-                                    "PERMISSIONS_ROLE_UPDATE", "CONFIG_UPDATE", "SLOWMODE_UPDATE",
-                                    "SPIELERSUCHE_AUSSCHLUSS", "SPIELERSUCHE_FREIGABE"
-                            }) String type
-    ) {
+    public void onQueryType(CommandEvent event, @Choices(provider = "choices") String type) {
 
     }
 
     @Command("list issuer")
-    public void onQueryIssuer(CommandEvent event, User issuer,
-                              @Choices({
-                                      "MODERATION_CREATE", "MODERATION_REVERT", "MODERATION_DELETE", "MESSAGE_PURGE",
-                                      "NOTE_CREATE", "NOTE_DELETE", "PERMISSIONS_USER_UPDATE",
-                                      "PERMISSIONS_ROLE_UPDATE", "CONFIG_UPDATE", "SLOWMODE_UPDATE",
-                                      "SPIELERSUCHE_AUSSCHLUSS", "SPIELERSUCHE_FREIGABE"
-                              }) Optional<String> type
-    ) {
+    public void onQueryIssuer(CommandEvent event, User issuer, @Choices(provider = "choices") Optional<String> type) {
 
     }
 
     @Command("list target")
-    public void onQueryTarget(CommandEvent event, User target,
-                              @Choices({
-                                      "MODERATION_CREATE", "MODERATION_REVERT", "MODERATION_DELETE", "MESSAGE_PURGE",
-                                      "NOTE_CREATE", "NOTE_DELETE", "PERMISSIONS_USER_UPDATE",
-                                      "PERMISSIONS_ROLE_UPDATE", "CONFIG_UPDATE", "SLOWMODE_UPDATE",
-                                      "SPIELERSUCHE_AUSSCHLUSS", "SPIELERSUCHE_FREIGABE"
-                              }) Optional<String> type
-    ) {
+    public void onQueryTarget(CommandEvent event, User target, @Choices(provider = "choices") Optional<String> type) {
 
+    }
+
+    public static List<String> choices() {
+        return List.of(
+                "MODERATION_CREATE", "MODERATION_REVERT", "MODERATION_DELETE", "MESSAGE_PURGE",
+                "NOTE_CREATE", "NOTE_DELETE", "PERMISSIONS_USER_UPDATE",
+                "PERMISSIONS_ROLE_UPDATE", "CONFIG_UPDATE", "SLOWMODE_UPDATE",
+                "SPIELERSUCHE_AUSSCHLUSS", "SPIELERSUCHE_FREIGABE"
+        );
     }
 
     @Button(value = "pagination.back", emoji = "◀\uFE0F")

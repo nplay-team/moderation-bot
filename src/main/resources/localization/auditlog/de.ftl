@@ -1,5 +1,6 @@
 auditlog-detail-description = Zeigt einen Auditlog Eintrag an
 auditlog-detail-options-id-description = Die ID des Auditlog Eintrags
+auditlog-query-description = Durchsucht den Auditlog nach Einträgen
 
 ## detail
 not-found =
@@ -15,3 +16,8 @@ entry =
     ```
     { $payload }
     ```
+
+## detail
+pagination = Auditlog Query
+    .back = Zurück
+    .forth = Weiter
