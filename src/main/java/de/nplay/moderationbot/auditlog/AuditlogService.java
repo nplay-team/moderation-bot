@@ -53,7 +53,14 @@ public class AuditlogService {
                 .all();
     }
 
-    private List<AuditlogEntry> getAll(AuditlogType type, int limit, int offset, Guild guild) {
+    public int countByType(AuditlogType type) {
+        return Query.query("SELECT COUNT(id) FROM auditlog WHERE type = ?::AUDITLOG_TYPE")
+                .single(Call.of().bind(type))
+                .mapAs(Integer.class)
+                .first().orElse(0);
+    }
+
+    public List<AuditlogEntry> getAll(AuditlogType type, int limit, int offset, Guild guild) {
         return Query.query("""
                                 SELECT * FROM auditlog
                                 WHERE type = :type::AUDITLOG_TYPE

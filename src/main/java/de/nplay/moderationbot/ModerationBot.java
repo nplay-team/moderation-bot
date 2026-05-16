@@ -89,6 +89,11 @@ public class ModerationBot extends DatabaseModule {
         return moderationActLock;
     }
 
+    @Provides
+    public Guild guild() {
+        return guild;
+    }
+
     private JDA jda(String token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(token)
                             .enableIntents(
