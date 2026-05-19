@@ -1,6 +1,10 @@
 package de.nplay.moderationbot.moderation.commands.purge;
 
+import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
+import de.nplay.moderationbot.auditlog.lifecycle.events.MessagePurgeEvent;
+import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -8,10 +12,6 @@ import io.github.kaktushose.jdac.annotations.interactions.CommandConfig;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.annotations.interactions.Permissions;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
-import com.google.inject.Inject;
-import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
-import de.nplay.moderationbot.serverlog.Serverlog;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
@@ -30,11 +30,11 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class PurgeMessagesCommands {
 
-    private final Serverlog serverlog;
+    private final Lifecycle lifecycle;
 
     @Inject
-    public PurgeMessagesCommands(Serverlog serverlog) {
-        this.serverlog = serverlog;
+    public PurgeMessagesCommands(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
     }
 
     @Command("mod purge messages")
@@ -67,7 +67,7 @@ public class PurgeMessagesCommands {
         );
 
         channel.purgeMessagesById(messageIds);
-        serverlog.onEvent(ModerationEvents.BulkMessageDeletion(channel.getJDA(), event.getGuild(), messageIds.size(), event.getUser()), event);
+        lifecycle.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId),  messageIds.size()));
         return messageIds.size();
     }
 

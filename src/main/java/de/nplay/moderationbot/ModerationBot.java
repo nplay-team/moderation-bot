@@ -1,38 +1,42 @@
 package de.nplay.moderationbot;
 
-import io.github.kaktushose.jdac.JDACommands;
-import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
-import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
-import io.github.kaktushose.jdac.embeds.EmbedDataSource;
-import io.github.kaktushose.jdac.guice.GuiceExtensionData;
-import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
-import io.github.kaktushose.jdac.message.resolver.MessageResolver;
-import io.github.kaktushose.jdac.property.JDACProperty;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.interactions.IntegrationType;
-import net.dv8tion.jda.api.interactions.InteractionContextType;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
+import de.nplay.moderationbot.auditlog.AuditlogService.UnresolvedSnowflake;
+import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
+import de.nplay.moderationbot.auditlog.LoggingSubscriber;
+import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
+import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
-import de.nplay.moderationbot.serverlog.Serverlog;
+import de.nplay.moderationbot.serverlog.BotEventSubscriber;
+import de.nplay.moderationbot.serverlog.ModerationEventSubscriber;
+import de.nplay.moderationbot.serverlog.ServerlogSubscriber;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import dev.goldmensch.fluava.Fluava;
 import dev.goldmensch.fluava.Result;
 import dev.goldmensch.fluava.Result.Success;
 import dev.goldmensch.fluava.function.Function;
 import dev.goldmensch.fluava.function.Value.Text;
+import io.github.kaktushose.jdac.JDACommands;
+import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
+import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
+import io.github.kaktushose.jdac.guice.GuiceExtensionData;
+import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
+import io.github.kaktushose.jdac.message.resolver.Resolver;
+import io.github.kaktushose.jdac.property.JDACProperty;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.IntegrationType;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,24 +47,23 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
-public class ModerationBot extends ServiceModule {
+public class ModerationBot extends DatabaseModule {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationBot.class);
     private final JDA jda;
     private final Guild guild;
-    private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
-        serverlog = new Serverlog(configService());
 
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
+
+        subscribers(resolver);
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
@@ -82,13 +85,13 @@ public class ModerationBot extends ServiceModule {
     }
 
     @Provides
-    public Serverlog serverlog() {
-        return serverlog;
+    public ModerationActLock moderationActLock() {
+        return moderationActLock;
     }
 
     @Provides
-    public ModerationActLock moderationActLock() {
-        return moderationActLock;
+    public Guild guild() {
+        return guild;
     }
 
     private JDA jda(String token) throws InterruptedException {
@@ -119,7 +122,9 @@ public class ModerationBot extends ServiceModule {
                         ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
                                 result("%s (%s)".formatted(DATE_TIME_LONG.format(time.millis()), RELATIVE.atTimestamp(time.millis()))), RelativeTime.class)
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
-                                result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class))
+                                result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class)
+                        ).register("UNRESOLVED_SNOWFLAKE", Function.implicit((_, snowflake, _) ->
+                                result(snowflake.getId()), UnresolvedSnowflake.class))
                 ).build();
     }
 
@@ -131,14 +136,7 @@ public class ModerationBot extends ServiceModule {
     private JDACommands jdaCommands(Fluava parent) {
         return JDACommands.builder(jda)
                 .packages("de.nplay.moderationbot")
-                .embeds(config -> config.sources(EmbedDataSource.resource("events.json"))
-                        .placeholders(
-                                entry("colorDefault", Color.decode(EmbedColors.DEFAULT.hex)),
-                                entry("colorSuccess", Color.decode(EmbedColors.SUCCESS.hex)),
-                                entry("colorWarning", Color.decode(EmbedColors.WARNING.hex)),
-                                entry("colorError", Color.decode(EmbedColors.ERROR.hex))
-                        )
-                ).localizer(FluavaLocalizer.builder(parent).build())
+                .localizer(FluavaLocalizer.create(parent))
                 .globalReplyConfig(ReplyConfig.of(config -> config.allowedMentions(List.of())
                         .keepComponents(false))
                 ).globalCommandConfig(CommandConfig.of(config -> config
@@ -156,22 +154,13 @@ public class ModerationBot extends ServiceModule {
         return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
     }
 
-    @Deprecated
-    public enum EmbedColors {
-        DEFAULT("#020C24"),
-        ERROR("#FF0000"),
-        SUCCESS("#00FF00"),
-        WARNING("#FFFF00");
+    private void subscribers(Resolver<String> resolver) {
+        lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
 
-        public final String hex;
+        lifecycle().subscribe(BotEvent.class, new LoggingSubscriber());
 
-        EmbedColors(String hex) {
-            this.hex = hex;
-        }
-
-        @Override
-        public String toString() {
-            return hex;
-        }
+        ServerlogSubscriber.Data data = new ServerlogSubscriber.Data(guild, configService(), resolver);
+        lifecycle().subscribe(BotEvent.class, new BotEventSubscriber(data));
+        lifecycle().subscribe(ModerationEvent.class, new ModerationEventSubscriber(data));
     }
 }

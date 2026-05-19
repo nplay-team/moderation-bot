@@ -2,23 +2,23 @@ package de.nplay.moderationbot;
 
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import de.nplay.moderationbot.messagelink.MessageLink;
+import org.jetbrains.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 public final class Helpers {
 
@@ -28,8 +28,15 @@ public final class Helpers {
             ErrorResponse.CANNOT_SEND_TO_USER
     );
 
-    public static void sendDM(UserSnowflake user, JDA jda, Function<PrivateChannel, MessageCreateAction> function) {
-        complete(jda.retrieveUserById(user.getId()).flatMap(User::openPrivateChannel).flatMap(function));
+    public static void sendDM(UserSnowflake user, JDA jda, MessageTopLevelComponent component) {
+        complete(jda.retrieveUserById(user.getId()).flatMap(User::openPrivateChannel).flatMap(channel ->
+                sendComponentsV2(component, channel)
+        ));
+    }
+
+    @CheckReturnValue
+    public static MessageCreateAction sendComponentsV2(MessageTopLevelComponent component, MessageChannel channel) {
+        return channel.sendMessageComponents(component).useComponentsV2().setAllowedMentions(List.of());
     }
 
     public static <T> void complete(RestAction<T> restAction) {

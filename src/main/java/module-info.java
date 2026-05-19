@@ -25,6 +25,8 @@ module moderationbot.main {
 
     requires java.desktop;
     requires java.sql;
+    requires tools.jackson.databind;
+    requires net.fellbaum.jemoji;
     requires dev.goldmensch.propane;
 
     // required for logback

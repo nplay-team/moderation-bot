@@ -8,6 +8,8 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.auditlog.AuditlogService;
+import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
@@ -21,9 +23,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class ServiceModule extends AbstractModule {
+public class DatabaseModule extends AbstractModule {
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceModule.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseModule.class);
+    private final Lifecycle lifecycle;
     private final MessageReferenceService referenceService;
     private final ModerationActService moderationActService;
     private final NotesService notesService;
@@ -31,16 +34,24 @@ public class ServiceModule extends AbstractModule {
     private final SlowmodeService slowmodeService;
     private final ConfigService configService;
     private final RuleService ruleService;
+    private final AuditlogService auditlogService;
 
-    public ServiceModule() {
+    public DatabaseModule() {
         initialize();
+        lifecycle = new Lifecycle();
         referenceService = new MessageReferenceService();
         ruleService = new RuleService();
-        moderationActService = new ModerationActService(referenceService, ruleService);
-        notesService = new NotesService();
-        permissionsService = new PermissionsService();
+        moderationActService = new ModerationActService(referenceService, ruleService, lifecycle);
+        notesService = new NotesService(lifecycle);
+        permissionsService = new PermissionsService(lifecycle);
         slowmodeService = new SlowmodeService();
-        configService = new ConfigService();
+        configService = new ConfigService(lifecycle);
+        auditlogService = new AuditlogService();
+    }
+
+    @Provides
+    public Lifecycle lifecycle() {
+        return lifecycle;
     }
 
     @Provides
@@ -76,6 +87,11 @@ public class ServiceModule extends AbstractModule {
     @Provides
     public RuleService ruleService() {
         return ruleService;
+    }
+
+    @Provides
+    public AuditlogService auditlogService() {
+        return auditlogService;
     }
 
     private void initialize() {

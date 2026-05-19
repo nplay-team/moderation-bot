@@ -29,7 +29,7 @@ public class SlowmodeService {
                 .insert();
     }
 
-    public void removeSlowmode(GuildChannel channel) {
+    public void delete(GuildChannel channel) {
         Query.query("DELETE FROM slowmode_channels WHERE channel_id = ?")
                 .single(Call.of().bind(channel.getIdLong()))
                 .delete();

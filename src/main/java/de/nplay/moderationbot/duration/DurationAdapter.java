@@ -65,7 +65,7 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
         try {
             return Optional.of(Duration.parse(parseString));
         } catch (DateTimeParseException e) {
-            log.warn("User provided invalid duration: {}", raw);
+            log.debug("User provided invalid duration: {}", raw);
             return Optional.empty();
         }
     }
