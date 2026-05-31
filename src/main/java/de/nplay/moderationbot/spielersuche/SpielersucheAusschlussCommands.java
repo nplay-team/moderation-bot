@@ -12,12 +12,12 @@ import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.annotations.interactions.Param;
 import io.github.kaktushose.jdac.annotations.interactions.Permissions;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -84,12 +84,15 @@ public class SpielersucheAusschlussCommands {
         }
 
         event.getGuild().removeRoleFromMember(target, role.get()).queue();
-        SeparatedContainer container = new SeparatedContainer(
+        SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("unblock-target"),
-                Separator.createDivider(Separator.Spacing.SMALL),
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(
                 entry("issuer", event.getUser()),
                 entry("createdAt", AbsoluteTime.now())
-        ).append(TextDisplay.of("unblock-target.body")).withAccentColor(Replies.STANDARD);
+        ).withAccentColor(
+                Replies.STANDARD
+        ).add(TextDisplay.of("unblock-target.body"));
         Helpers.sendDM(target, event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);

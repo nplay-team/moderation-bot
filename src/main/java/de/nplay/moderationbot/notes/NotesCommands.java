@@ -4,12 +4,12 @@ import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.annotations.interactions.Modal;
 import io.github.kaktushose.jdac.annotations.interactions.Permissions;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ModalEvent;
 import net.dv8tion.jda.api.components.label.Label;
@@ -65,15 +65,14 @@ public class NotesCommands {
     public void onModal(ModalEvent event) {
         var note = notesService.create(target, event.getMember(), event.value(NOTE_ID).getAsString());
 
-        SeparatedContainer container = new SeparatedContainer(
+        SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("created"),
-                Separator.createDivider(Separator.Spacing.SMALL),
-                entry("id", note.id())
-        ).withAccentColor(Replies.SUCCESS);
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(entry("id", note.id())).withAccentColor(Replies.SUCCESS);
 
-        container.append(TextDisplay.of("created.content"), entry("content", note.content()));
-        container.append(TextDisplay.of("created.target"), entry("target", target));
-        container.append(
+        container.add(TextDisplay.of("created.content"), entry("content", note.content()));
+        container.add(TextDisplay.of("created.target"), entry("target", target));
+        container.add(
                 TextDisplay.of("created.creator"),
                 entry("createdBy", event.getMember()),
                 entry("createdAt", note.createdAt())
@@ -86,16 +85,15 @@ public class NotesCommands {
     public void onList(CommandEvent event, User target) {
         List<Note> notes = notesService.getAll(target);
 
-        SeparatedContainer container = new SeparatedContainer(
+        SeparatedContainer container = SeparatedContainer.of(
             TextDisplay.of("list"),
-            Separator.createDivider(Separator.Spacing.SMALL),
-            entry("target", target)
-        ).withAccentColor(Replies.STANDARD);
+            Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(entry("target", target)).withAccentColor(Replies.STANDARD);
 
         if (notes.isEmpty()) {
-            container.append(TextDisplay.of("list.empty"));
+            container.add(TextDisplay.of("list.empty"));
         } else {
-            notes.forEach(note -> container.append(note.toTextDisplay(event.messageResolver(), event.getUserLocale())));
+            notes.forEach(note -> container.add(note.toTextDisplay(event.messageResolver(), event.getUserLocale())));
         }
 
         event.reply(container);

@@ -7,10 +7,10 @@ import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.serverlog.ModerationEvents;
 import de.nplay.moderationbot.serverlog.Serverlog;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.annotations.interactions.Modal;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ModalEvent;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -42,22 +42,23 @@ public class ReasonModal {
                 .reason(event.value(REASON_ID).getAsString())
                 .execute(event, actService);
 
-        SeparatedContainer container = new SeparatedContainer(
+        SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("executed"),
-                Separator.createDivider(Separator.Spacing.SMALL),
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(
                 entry("type", act.type().localized(event.getUserLocale())),
                 entry("id", act.id()),
                 entry("target", act.user()),
                 entry("reason", act.reason())
         ).withAccentColor(SUCCESS);
         act.revokeAt().ifPresent(it ->
-                container.append(TextDisplay.of("executed.until"), entry("until", it))
+                container.add(TextDisplay.of("executed.until"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
-                container.append(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
+                container.add(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
         );
         act.messageReference().ifPresent(it ->
-                container.append(TextDisplay.of("executed.reference"), entry("message", it.content()))
+                container.add(TextDisplay.of("executed.reference"), entry("message", it.content()))
         );
         event.reply(container);
 

@@ -4,8 +4,8 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.property.JDACIntrospection;
 import io.github.kaktushose.jdac.property.JDACProperty;
@@ -165,7 +165,7 @@ public class ModerationActBuilder {
     public ModerationAct execute(ReplyableEvent<?> event, ModerationActService service) {
         reason = reason == null ? event.resolve("default-reason") : reason;
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, Optional.ofNullable(messageReference),
-                                               Optional.ofNullable(paragraph), duration, deletionDays);
+                Optional.ofNullable(paragraph), duration, deletionDays);
         ModerationAct act = service.create(data);
         executor.accept(data);
         sendModerationToTarget(act, event);
@@ -178,28 +178,30 @@ public class ModerationActBuilder {
             case WARN, TIMEOUT -> Replies.WARNING;
             case KICK, TEMP_BAN, BAN -> Replies.ERROR;
         };
-        SeparatedContainer container = new SeparatedContainer(
+        SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("act-info"),
-                Separator.createDivider(Separator.Spacing.SMALL),
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(
                 entry("type", type.localized(event.getUserLocale())),
                 entry("description", type)
-        ).footer(TextDisplay.of("act-info.footer"), true).withAccentColor(color);
+        ).withAccentColor(color);
 
-        container.append(
+        container.add(
                 TextDisplay.of("act-info.reason"),
                 entry("id", act.id()),
                 entry("reason", act.reason()),
                 entry("date", act.createdAt())
         );
         act.revokeAt().ifPresent(it ->
-                                         container.append(TextDisplay.of("act-info.revoke"), entry("until", it))
+                container.add(TextDisplay.of("act-info.revoke"), entry("until", it))
         );
         act.paragraph().ifPresent(it ->
-                                          container.append(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
+                container.add(TextDisplay.of("act-info.paragraph"), entry("paragraph", it.fullDisplay()))
         );
         act.messageReference().ifPresent(it ->
-                                                 container.append(TextDisplay.of("act-info.reference"), entry("message", it.content()))
+                container.add(TextDisplay.of("act-info.reference"), entry("message", it.content()))
         );
+        container.addLast(TextDisplay.of("act-info.footer"));
 
         Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }

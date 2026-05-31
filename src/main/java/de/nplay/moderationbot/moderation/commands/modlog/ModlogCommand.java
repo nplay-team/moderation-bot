@@ -10,11 +10,11 @@ import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ComponentEvent;
@@ -117,36 +117,39 @@ public class ModlogCommand {
     private void replyModlog(ReplyableEvent<?> event) {
         Thumbnail thumbnail = Thumbnail.fromFile(avatarUrl().downloadAsFileUpload("avatar.png"));
 
-        SeparatedContainer container = new SeparatedContainer(
+        SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("modlog"),
-                Separator.createDivider(Spacing.LARGE),
+                Separator.createDivider(Spacing.LARGE)
+        ).entries(
                 entry("target", target()),
                 entry("id", target().getIdLong()),
                 entry("createdAt", RelativeTime.of(target().getTimeCreated())),
                 joinedAt()
-        ).withAccentColor(Replies.STANDARD).add(Section.of(thumbnail, TextDisplay.of("modlog.header")));
+        ).withAccentColor(
+                Replies.STANDARD
+        ).add(Section.of(thumbnail, TextDisplay.of("modlog.header")));
 
-        container.append(TextDisplay.of("modlog.notes"));
+        container.add(TextDisplay.of("modlog.notes"));
         List<Note> notes = notesService.getAll(target());
         if (!notes.isEmpty()) {
             boolean first = true;
             for (Note note : notes) {
-                container.append(
+                container.add(
                         note.toTextDisplay(event.messageResolver(), event.getUserLocale()),
                         first ? null : Separator.createInvisible(Spacing.SMALL)
                 );
                 first = false;
             }
         } else {
-            container.add(TextDisplay.of("modlog.empty"));
+            container.add(TextDisplay.of("modlog.empty"), (Separator) null);
         }
 
-        container.append(TextDisplay.of("modlog.moderations"));
+        container.add(TextDisplay.of("modlog.moderations"));
         List<ModerationAct> moderationActs = actService.get(target(), limit, offset);
         if (!moderationActs.isEmpty()) {
             boolean first = true;
             for (ModerationAct act : moderationActs) {
-                container.append(
+                container.add(
                         toTextDisplay(event, act),
                         first ? null : Separator.createInvisible(Spacing.SMALL)
                 );
@@ -162,13 +165,12 @@ public class ModlogCommand {
                 pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
             }
 
-            container.append(ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages)));
+            container.add(ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages)));
             container.add(ActionRow.of(
                     Component.button("back").enabled(page > 1),
                     Component.button("next").enabled(page < maxPage)
-            )).footer(
+            ), (Separator) null).addLast(
                     TextDisplay.of("modlog.pages"),
-                    true,
                     entry("page", page),
                     entry("maxPage", maxPage)
             );

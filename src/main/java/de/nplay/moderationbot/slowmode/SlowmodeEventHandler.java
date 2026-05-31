@@ -5,8 +5,8 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.permissions.PermissionsService;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.TimeUtil;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.Locale;
 import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
@@ -157,13 +158,17 @@ public class SlowmodeEventHandler extends ListenerAdapter {
     private void notifyUser(User user, JDA jda, Channel channel, Duration duration, OffsetDateTime last) {
         SeparatedContainer container = new SeparatedContainer(
                 resolver,
+                Locale.GERMAN,
                 TextDisplay.of("removed"),
-                Separator.createDivider(Separator.Spacing.SMALL),
+                Separator.createDivider(Separator.Spacing.SMALL)
+
+        ).entries(
                 entry("channel", channel),
                 entry("duration", Helpers.formatDuration(duration))
         ).withAccentColor(Replies.STANDARD);
-        container.append(TextDisplay.of("removed.next"), entry("next", RelativeTime.of(last.plus(duration))));
-        container.append(TextDisplay.of("removed.last"), entry("last", RelativeTime.of(last)));
+
+        container.add(TextDisplay.of("removed.next"), entry("next", RelativeTime.of(last.plus(duration))));
+        container.add(TextDisplay.of("removed.last"), entry("last", RelativeTime.of(last)));
         Helpers.sendDM(user, jda, it -> it.sendMessageComponents(container).useComponentsV2());
     }
 }
