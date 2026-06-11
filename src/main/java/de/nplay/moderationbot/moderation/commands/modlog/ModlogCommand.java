@@ -8,12 +8,12 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.notes.NotesService;
-import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.components.SequencedTextDisplay;
 import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -46,14 +45,14 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommand {
 
+    private final NotesService notesService;
+    private final ModerationActService actService;
     private int offset = 0;
     private int limit = 5;
     private int page = 1;
     private int maxPage = 1;
     private @Nullable User user;
     private @Nullable Member member;
-    private final NotesService notesService;
-    private final ModerationActService actService;
 
     @Inject
     public ModlogCommand(NotesService notesService, ModerationActService actService) {
@@ -115,8 +114,6 @@ public class ModlogCommand {
     }
 
     private void replyModlog(ReplyableEvent<?> event) {
-        Thumbnail thumbnail = Thumbnail.fromFile(avatarUrl().downloadAsFileUpload("avatar.png"));
-
         SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("modlog"),
                 Separator.createDivider(Spacing.LARGE)
@@ -127,49 +124,37 @@ public class ModlogCommand {
                 joinedAt()
         ).withAccentColor(
                 Replies.STANDARD
-        ).add(Section.of(thumbnail, TextDisplay.of("modlog.header")));
+        ).add(
+                Section.of(Thumbnail.fromUrl(avatarUrl()), TextDisplay.of("modlog.header"))
+        );
 
-        container.add(TextDisplay.of("modlog.notes"));
-        List<Note> notes = notesService.getAll(target());
-        if (!notes.isEmpty()) {
-            boolean first = true;
-            for (Note note : notes) {
-                container.add(
-                        note.toTextDisplay(event.messageResolver(), event.getUserLocale()),
-                        first ? null : Separator.createInvisible(Spacing.SMALL)
-                );
-                first = false;
-            }
-        } else {
-            container.add(TextDisplay.of("modlog.empty"), (Separator) null);
+        SequencedTextDisplay noteDisplay = SequencedTextDisplay.of("modlog.notes");
+        var notes = notesService.getAll(target());
+        notes.forEach(note -> noteDisplay.add(note.toTextDisplay(event.messageResolver(), event.getUserLocale())));
+        if (notes.isEmpty()) {
+            noteDisplay.add("modlog.empty");
         }
+        container.add(noteDisplay);
 
-        container.add(TextDisplay.of("modlog.moderations"));
-        List<ModerationAct> moderationActs = actService.get(target(), limit, offset);
-        if (!moderationActs.isEmpty()) {
-            boolean first = true;
-            for (ModerationAct act : moderationActs) {
-                container.add(
-                        toTextDisplay(event, act),
-                        first ? null : Separator.createInvisible(Spacing.SMALL)
-                );
-                first = false;
-            }
-        } else {
-            container.add(TextDisplay.of("modlog.empty"));
+        SequencedTextDisplay moderationDisplay = SequencedTextDisplay.of("modlog.moderations");
+        var moderationActs = actService.get(target(), limit, offset);
+        moderationActs.forEach(act -> moderationDisplay.add(toTextDisplay(event, act)));
+        if (moderationActs.isEmpty()) {
+            moderationDisplay.add("modlog.empty");
         }
+        container.add(moderationDisplay);
 
         if (!(maxPage < 2)) {
-            List<SelectOption> pages = new ArrayList<SelectOption>();
+            List<SelectOption> pages = new ArrayList<>();
             for (int i = 2; i <= maxPage && i < 26; i++) {
                 pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
             }
 
-            container.add(ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages)));
-            container.add(ActionRow.of(
-                    Component.button("back").enabled(page > 1),
-                    Component.button("next").enabled(page < maxPage)
-            ), (Separator) null).addLast(
+            container.add(
+                    ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages))
+            ).addUnseparated(
+                    ActionRow.of(Component.button("back").enabled(page > 1), Component.button("next").enabled(page < maxPage))
+            ).addLast(
                     TextDisplay.of("modlog.pages"),
                     entry("page", page),
                     entry("maxPage", maxPage)
@@ -187,10 +172,10 @@ public class ModlogCommand {
     }
 
     @SuppressWarnings("PatternVariableHidesField")
-    private ImageProxy avatarUrl() {
+    private String avatarUrl() {
         return switch (target()) {
-            case Member member -> member.getEffectiveAvatar();
-            case User user -> user.getEffectiveAvatar();
+            case Member member -> member.getEffectiveAvatarUrl();
+            case User user -> user.getEffectiveAvatarUrl();
             default -> throw new IllegalStateException("Unexpected value: " + target());
         };
     }
