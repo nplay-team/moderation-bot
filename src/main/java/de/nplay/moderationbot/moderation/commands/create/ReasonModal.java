@@ -37,7 +37,7 @@ public class ReasonModal {
 
     @Modal("reason-title")
     public void onModerate(ModalEvent event) {
-        ModerationAct act = event.kv().get(BUILDER, ModerationActBuilder.class)
+        ModerationAct act = event.keyValueStore().get(BUILDER, ModerationActBuilder.class)
                 .orElseThrow()
                 .reason(event.value(REASON_ID).getAsString())
                 .execute(event, actService);

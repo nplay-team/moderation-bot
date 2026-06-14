@@ -28,7 +28,7 @@ public class WarnCommand extends CreateCommand {
             @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
             @Param(optional = true) MessageLink messageLink
     ) {
-        event.kv().put(BUILDER, ModerationActBuilder.warn(target, event.getUser())
+        event.keyValueStore().put(BUILDER, ModerationActBuilder.warn(target, event.getUser())
                 .paragraph(paragraph)
                 .messageReference(Helpers.retrieveMessage(event, messageLink)));
 

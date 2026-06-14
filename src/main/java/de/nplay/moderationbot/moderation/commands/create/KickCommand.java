@@ -30,7 +30,7 @@ public class KickCommand extends CreateCommand {
             @Param(optional = true) @Max(7) int delDays,
             @Param(optional = true) MessageLink messageLink
     ) {
-        event.kv().put(BUILDER, ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph)
+        event.keyValueStore().put(BUILDER, ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph)
                 .deletionDays(delDays)
                 .messageReference(Helpers.retrieveMessage(event, messageLink)));
 

@@ -51,7 +51,7 @@ public class TimeoutCommand extends CreateCommand {
             return;
         }
 
-        event.kv().put(BUILDER, ModerationActBuilder.timeout(target, event.getUser())
+        event.keyValueStore().put(BUILDER, ModerationActBuilder.timeout(target, event.getUser())
                 .duration(until)
                 .paragraph(paragraph)
                 .messageReference(Helpers.retrieveMessage(event, messageLink)));

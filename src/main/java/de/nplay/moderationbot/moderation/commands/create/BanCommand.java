@@ -68,7 +68,7 @@ public class BanCommand extends CreateCommand {
 
         builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
-        event.kv().put(BUILDER, builder);
+        event.keyValueStore().put(BUILDER, builder);
         replyModal(event, until == null ? "Bann" : "Temp-Bann");
     }
 }
