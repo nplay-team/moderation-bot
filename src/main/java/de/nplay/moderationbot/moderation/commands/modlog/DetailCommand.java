@@ -30,7 +30,7 @@ public class DetailCommand {
                 TextDisplay.of("detail"),
                 Separator.createDivider(Spacing.SMALL)
         ).entries(
-                entry("id", String.valueOf(moderationAct.id())),
+                entry("id", moderationAct.id()),
                 entry("type", moderationAct.type().localized(event.getUserLocale())),
                 entry("createdAt", moderationAct.createdAt()),
                 entry("reason", moderationAct.reason()),

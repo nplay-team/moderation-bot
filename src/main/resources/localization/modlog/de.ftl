@@ -3,7 +3,7 @@ mod-detail-description = Zeigt mehr Informationen zu einer Moderationshandlung a
 mod-detail-options-moderation_act-name = id
 mod-detail-options-moderation_act-description = Die ID der Moderationshandlung.
 detail =
-    ## \#{ $id } | { $type } | { $createdAt }
+    ## \#{ RAW($id) } | { $type } | { $createdAt }
     { "**Grund:**" }
     { $reason }
     { "**Moderator:**" }
@@ -55,7 +55,7 @@ navigation = Seitenauswahl
     .next = :arrow_right: Weiter
 
 entry =
-    { "**" }#{ $id } | { $type } | { $createdAt }{ "**" }
+    { "**" }#{ RAW($id) } | { $type } | { $createdAt }{ "**" }
     { $reason }
     -# Moderator: { $issuer }
     .reverted =

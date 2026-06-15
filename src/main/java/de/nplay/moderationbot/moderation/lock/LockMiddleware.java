@@ -39,7 +39,7 @@ public class LockMiddleware implements Middleware {
             context.cancel(
                     Replies.error("target-locked"),
                     entry("target", target.getAsMention()),
-                    entry("moderator", "<@%s>".formatted(moderationLock.whoSetLock(target.getIdLong()).get()))
+                    entry("moderator", moderationLock.whoSetLock(target.getIdLong()).orElse(null))
             );
         }
     }
