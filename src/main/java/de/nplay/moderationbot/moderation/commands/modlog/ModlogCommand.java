@@ -37,6 +37,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
@@ -69,11 +70,11 @@ public class ModlogCommand {
     ) {
         user = target;
         member = Helpers.completeOpt(event.getGuild().retrieveMember(target)).orElse(null);
+        limit = count != null ? count : limit;
+       
         if (page != null) {
-            count = count == null ? limit : count;
-            offset = (page - 1) * count;
+            offset = (page - 1) * limit;
             this.page = page;
-            limit = count;
         }
 
         maxPage = (int) Math.ceil(actService.count(target) / (double) limit);
@@ -144,11 +145,11 @@ public class ModlogCommand {
         }
         container.add(moderationDisplay);
 
-        if (!(maxPage < 2)) {
-            List<SelectOption> pages = new ArrayList<>();
-            for (int i = 2; i <= maxPage && i < 26; i++) {
-                pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
-            }
+        if (maxPage > 1) {
+            List<SelectOption> pages = IntStream.range(1, maxPage + 1)
+                .filter(it -> it != page)
+                .mapToObj(it -> SelectOption.of("Seite %s".formatted(it), Integer.toString(it)))
+                .toList();
 
             container.add(
                     ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages))

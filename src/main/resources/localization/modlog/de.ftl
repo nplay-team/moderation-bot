@@ -29,7 +29,7 @@ mod-log-options-target-name = nutzer
 mod-log-options-target-description = Der Benutzer, dessen Modlog abgerufen werden soll.
 mod-log-options-page-name = seite
 mod-log-options-page-description = Die Seite, die angezeigt werden soll.
-mod-log-options-count-name = seiten
+mod-log-options-count-name = anzahl
 mod-log-options-count-description = Wie viele Moderationshandlungen pro Seite angezeigt werden sollen (max. 25).
 modlog =
     ## NPLAY-Moderation - Datenauskunft
