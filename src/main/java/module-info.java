@@ -25,4 +25,8 @@ module moderationbot.main {
 
     requires java.desktop;
     requires java.sql;
+    requires dev.goldmensch.propane;
+
+    // required for logback
+    exports de.nplay.moderationbot.logging;
 }

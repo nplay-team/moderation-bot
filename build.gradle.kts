@@ -11,6 +11,7 @@ version = "1.1.0"
 
 repositories {
     mavenCentral()
+    maven("https://central.sonatype.com/repository/maven-snapshots/")
 }
 
 dependencies {
@@ -42,8 +43,12 @@ tasks.test {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.isIncremental = true
-    options.compilerArgs.add("-parameters")
+    options.compilerArgs.addAll(listOf("-parameters", "--enable-preview"))
     sourceCompatibility = "25"
+}
+
+tasks.withType<JavaExec>() {
+    jvmArgs("--enable-preview", "--sun-misc-unsafe-memory-access=allow")
 }
 
 tasks.withType<ShadowJar> {

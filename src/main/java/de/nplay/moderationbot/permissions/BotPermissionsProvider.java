@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.permissions;
 
+import com.google.inject.Inject;
 import io.github.kaktushose.jdac.dispatching.context.InvocationContext;
 import io.github.kaktushose.jdac.guice.Implementation;
 import io.github.kaktushose.jdac.permissions.PermissionsProvider;
@@ -11,9 +12,16 @@ import net.dv8tion.jda.api.entities.User;
 @Implementation
 public class BotPermissionsProvider implements PermissionsProvider {
 
+    private final PermissionsService permissionsService;
+
+    @Inject
+    public BotPermissionsProvider(PermissionsService permissionsService) {
+        this.permissionsService = permissionsService;
+    }
+
     @Override
     public boolean hasPermission(User user, InvocationContext<?> context) {
-        return BotPermissionsService.getUserPermissions(user).hasPermissions(context);
+        return permissionsService.getUser(user).hasPermissions(context);
     }
 
     @Override
@@ -21,6 +29,6 @@ public class BotPermissionsProvider implements PermissionsProvider {
         if (member.hasPermission(Permission.ADMINISTRATOR)) {
             return true;
         }
-        return BotPermissionsService.getUserPermissions(member).hasPermissions(context);
+        return permissionsService.getCombined(member).hasPermissions(context);
     }
 }

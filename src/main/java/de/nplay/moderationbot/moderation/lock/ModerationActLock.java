@@ -1,15 +1,13 @@
-package de.nplay.moderationbot.moderation.act;
+package de.nplay.moderationbot.moderation.lock;
 
-import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-
-import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationActLock {
 
@@ -19,26 +17,21 @@ public class ModerationActLock {
     /// Attempts to lock the given target and moderator based on the event. If the lock is already set, returns `true`
     /// and will send an error message. Else returns `false`.
     ///
-    /// @param event     the corresponding [ReplyableEvent] of the moderation act
     /// @param target    the [target][UserSnowflake] of the moderation act
     /// @param moderator the [moderator][UserSnowflake] performing the moderation act
     /// @return `true` if the moderation act is already locked, else returns `false`
-    public boolean checkLocked(ReplyableEvent<?> event, UserSnowflake target, UserSnowflake moderator) {
+    public boolean checkLocked(UserSnowflake target, UserSnowflake moderator) {
         if (lock(target.getIdLong(), moderator.getIdLong())) {
             return false;
         }
-
-        if (moderator.getIdLong() == activeModeratedUsers.get(target.getIdLong())) {
-            return false;
+        return moderator.getIdLong() != activeModeratedUsers.get(target.getIdLong());
+    }
+    
+    public Optional<UserSnowflake> whoSetLock(Long target) {
+        if (!activeModeratedUsers.containsKey(target)) {
+            return Optional.empty();
         }
-
-        event.with().ephemeral(true)
-                .embeds("moderationTargetBlocked",
-                        entry("target", target.getAsMention()),
-                        entry("moderator", UserSnowflake.fromId(activeModeratedUsers.get(target.getIdLong())).getAsMention())
-                ).reply();
-
-        return true;
+        return Optional.of(UserSnowflake.fromId(activeModeratedUsers.get(target)));
     }
 
     public void unlock(long userId) {
