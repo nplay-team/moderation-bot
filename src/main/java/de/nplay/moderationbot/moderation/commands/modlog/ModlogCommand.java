@@ -209,7 +209,7 @@ public class ModlogCommand {
 	
 	private TextDisplay toTextDisplay(ReplyableEvent<?> event, ModerationAct act) {
 		var entries = Entry.toMap(
-				entry("id", act.id()),
+				entry("id", String.valueOf(act.id())),
 				entry("type", act.type().localized(event.getUserLocale())),
 				entry("createdAt", act.createdAt()),
 				entry("reason", act.reason()),
