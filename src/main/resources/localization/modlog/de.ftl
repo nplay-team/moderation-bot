@@ -59,7 +59,7 @@ entry =
     { $reason }
     -# Moderator: { $issuer }
     .reverted =
-        ~~{ "**" }#{ $id } | { $type } | { $createdAt }{ "**" }~~
+        ~~{ "**" }#{ RAW($id) } | { $type } | { $createdAt }{ "**" }~~
         ~~{ $reason }~~
         -# ~~Moderator: { $issuer }~~
         -# Aufgehoben von: { $reverter } | { $revertedAt }
