@@ -73,6 +73,8 @@ public class SpielersucheAusschlussCommands {
     @Command(value = "freigeben")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void spielersucheFreigeben(CommandEvent event, Member target) {
+        event.deferReply();
+
         var role = role(event);
         if (role.isEmpty()) {
             event.reply(Replies.error("role-error"));

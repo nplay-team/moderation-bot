@@ -174,6 +174,8 @@ public class ModerationActBuilder {
 
     @Bundle("create")
     private void sendModerationToTarget(ModerationAct act, ReplyableEvent<?> event) {
+        event.deferReply();
+
         Color color = switch (act.type()) {
             case WARN, TIMEOUT -> Replies.WARNING;
             case KICK, TEMP_BAN, BAN -> Replies.ERROR;

@@ -36,6 +36,7 @@ public class DeleteCommand {
     @Command(value = "mod delete")
     @Permissions(BotPermissions.MODERATION_DELETE)
     public void deleteModeration(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct) {
+        event.deferReply();
         RevertedModerationAct reverted = actService.revert(moderationAct, event, event.resolve("delete-reason"));
         log.info("Moderation act {} has been deleted by {}", moderationAct.id(), event.getUser().getName());
         actService.delete(moderationAct.id());
