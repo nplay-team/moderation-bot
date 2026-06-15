@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +25,11 @@ public class ModerationActLock {
             return false;
         }
         return moderator.getIdLong() != activeModeratedUsers.get(target.getIdLong());
+    }
+    
+    public Optional<Long> whoSetLock(Long target) {
+        if(!activeModeratedUsers.containsKey(target)) return Optional.empty();
+        return Optional.of(activeModeratedUsers.get(target));
     }
 
     public void unlock(long userId) {
