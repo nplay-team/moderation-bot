@@ -41,6 +41,10 @@ modlog =
             [empty] Kein Servermitglied
             *[other] { $joinedAt }
         }
+        { "**Rollen:**" } { $roles ->
+            [empty] Keine besonderen Rollen
+            *[other] { $roles }
+        }
     .notes = ## Notizen
     .moderations = ## Moderationshandlungen
     .empty = Keine Eintragungen
