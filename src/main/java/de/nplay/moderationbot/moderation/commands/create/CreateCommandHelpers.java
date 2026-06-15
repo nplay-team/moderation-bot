@@ -9,17 +9,17 @@ import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("create")
-public abstract class CreateCommand {
-
-    static final String REASON_ID = "create-reason";
-    static final String BUILDER = "create-builder";
-
-    public void replyModal(CommandEvent event, String type) {
-        event.replyModal(
-                ReasonModal.class,
-                "onModerate",
-                Label.of("reason-label", TextInput.of(REASON_ID, TextInputStyle.PARAGRAPH)),
-                entry("type", type)
-        );
-    }
+final class CreateCommandHelpers {
+	
+	public static String REASON_ID = "create-reason";
+	public static String BUILDER = "create-builder";
+	
+	public static void replyModal(CommandEvent event, String type) {
+		event.replyModal(
+				ReasonModal.class,
+				"onModerate",
+				Label.of("reason-label", TextInput.of(REASON_ID, TextInputStyle.PARAGRAPH)),
+				entry("type", type)
+		);
+	}
 }
