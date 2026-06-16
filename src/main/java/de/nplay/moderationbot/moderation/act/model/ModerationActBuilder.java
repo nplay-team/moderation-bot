@@ -167,8 +167,8 @@ public class ModerationActBuilder {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, Optional.ofNullable(messageReference),
                 Optional.ofNullable(paragraph), duration, deletionDays);
         ModerationAct act = service.create(data);
-        executor.accept(data);
         sendModerationToTarget(act, event);
+        executor.accept(data);
         return act;
     }
 
