@@ -1,5 +1,7 @@
 <configuration>
 
+    <variable name="ROOT_LOG_LEVEL" value="${ROOT_LOG_LEVEL:-INFO}" />
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -20,7 +22,7 @@
 
     <appender name="DISCORD" class="de.nplay.moderationbot.logging.DiscordAppender"/>
 
-    <root level="info">
+    <root level="${ROOT_LOG_LEVEL}">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
         <appender-ref ref="DISCORD"/>
