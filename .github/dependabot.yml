@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    cooldown:
+      default-days: 7
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    labels:
+      - "type:dependencies"
+    assignees:
+      - finnmargraf
+      - Kaktushose
+  - package-ecosystem: "gradle"
+    directory: "/"
+    cooldown:
+      default-days: 7
+    schedule:
+      interval: "weekly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "gradle"
+    labels:
+      - "type:dependencies"
+    assignees:
+      - Kaktushose
+      - finnmargraf
