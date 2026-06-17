@@ -15,6 +15,10 @@ BEGIN
 
 	UPDATE moderations
 	SET reverted_by = botId
-	WHERE reverted_by IS NULL;
+	WHERE reverted_by IS NULL and reverted = true;
 END;
 $$;
+
+ALTER TABLE moderations ADD CONSTRAINT revertedBy_notNull CHECK (
+	 (reverted_by IS NOT NULL) = reverted
+);
