@@ -18,5 +18,3 @@ BEGIN
 	WHERE reverted_by IS NULL;
 END;
 $$;
-
-ALTER TABLE moderations ALTER reverted_by SET NOT NULL;
