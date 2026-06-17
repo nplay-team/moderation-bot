@@ -62,10 +62,10 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         }
 
         var channel = event.getGuildChannel();
-			
-				if(isDiscordHandled(channel)) return;
-			
-				var slowmode = slowmodeService.get(channel);
+
+        if (isDiscordHandled(channel)) return;
+
+        var slowmode = slowmodeService.get(channel);
 
         if (slowmode.isEmpty()) {
             return;
@@ -109,8 +109,8 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         if (event.getChannel().getType() != ChannelType.GUILD_PUBLIC_THREAD) {
             return;
         }
-        
-        if(isDiscordHandled(event.getChannel().asGuildChannel())) return;
+
+        if (isDiscordHandled(event.getChannel().asGuildChannel())) return;
 
         var thread = event.getChannel().asThreadChannel();
         Member owner = event.getGuild().retrieveMemberById(thread.getOwnerId()).complete();
@@ -161,10 +161,10 @@ public class SlowmodeEventHandler extends ListenerAdapter {
     private boolean isWithinSlowmode(Instant current, Instant last, Duration slowmode) {
         return current.toEpochMilli() - last.toEpochMilli() < slowmode.toMillis();
     }
-		
-		private boolean isDiscordHandled(GuildChannel channel) {
-			return channel instanceof ISlowmodeChannel slowmodeChannel && slowmodeChannel.getSlowmode() > 0;
-		}
+
+    private boolean isDiscordHandled(GuildChannel channel) {
+        return channel instanceof ISlowmodeChannel slowmodeChannel && slowmodeChannel.getSlowmode() > 0;
+    }
 
     private void notifyUser(User user, JDA jda, Channel channel, Duration duration, OffsetDateTime last) {
         SeparatedContainer container = new SeparatedContainer(
