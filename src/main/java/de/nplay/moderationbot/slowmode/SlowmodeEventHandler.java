@@ -18,7 +18,9 @@ import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.channel.ChannelCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -60,6 +62,9 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         }
 
         var channel = event.getGuildChannel();
+
+        if (isDiscordHandled(channel)) return;
+
         var slowmode = slowmodeService.get(channel);
 
         if (slowmode.isEmpty()) {
@@ -105,6 +110,8 @@ public class SlowmodeEventHandler extends ListenerAdapter {
             return;
         }
 
+        if (isDiscordHandled(event.getChannel().asGuildChannel())) return;
+
         var thread = event.getChannel().asThreadChannel();
         Member owner = event.getGuild().retrieveMemberById(thread.getOwnerId()).complete();
         if (thread.getParentChannel().getType() != ChannelType.FORUM || slowModeImmune(owner)) {
@@ -145,7 +152,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         if (member.getUser().isBot()) {
             return true;
         }
-        if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
+        if (member.hasPermission(Permission.BYPASS_SLOWMODE)) {
             return true;
         }
         return permissionsService.getCombined(member).hasPermission(BotPermissions.MODERATION_CREATE);
@@ -153,6 +160,10 @@ public class SlowmodeEventHandler extends ListenerAdapter {
 
     private boolean isWithinSlowmode(Instant current, Instant last, Duration slowmode) {
         return current.toEpochMilli() - last.toEpochMilli() < slowmode.toMillis();
+    }
+
+    private boolean isDiscordHandled(GuildChannel channel) {
+        return channel instanceof ISlowmodeChannel slowmodeChannel && slowmodeChannel.getSlowmode() > 0;
     }
 
     private void notifyUser(User user, JDA jda, Channel channel, Duration duration, OffsetDateTime last) {
