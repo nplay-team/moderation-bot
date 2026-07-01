@@ -7,6 +7,7 @@ import de.chojo.sadu.queries.api.query.Query;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -35,11 +36,15 @@ public class SlowmodeService {
                 .delete();
     }
 
-    public record Slowmode(long channelId, Duration duration) {
+    public record Slowmode(long channelId, Duration duration, Timestamp createdAt) {
 
         @MappingProvider("")
         public Slowmode(Row row) throws SQLException {
-            this(row.getLong("channel_id"), Duration.ofSeconds(row.getInt("duration")));
+            this(
+                    row.getLong("channel_id"),
+                    Duration.ofSeconds(row.getInt("duration")),
+                    row.getTimestamp("created_at")
+            );
         }
     }
 }

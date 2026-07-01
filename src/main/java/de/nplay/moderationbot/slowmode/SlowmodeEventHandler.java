@@ -87,7 +87,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                 .stream()
                 .filter(it -> author.getId().equals(it.getAuthor().getId()))
                 .filter(it -> !it.getId().equals(message.getId()))
-                .filter(it -> isWithinSlowmode(message.getTimeCreated().toInstant(), it.getTimeCreated().toInstant(), slowmode.get().duration()))
+                .filter(it -> isWithinSlowmode(message.getTimeCreated().toInstant(), it.getTimeCreated().toInstant(), slowmode.get()))
                 .findFirst();
 
         if (lastMessage.isEmpty()) {
@@ -131,7 +131,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
                 .filter(it -> forumChannel.getId().equals(it.getParentChannel().getId()))
                 .filter(it -> thread.getOwnerId().equals(it.getOwnerId()))
                 .filter(it -> !thread.getId().equals(it.getId()))
-                .filter(it -> isWithinSlowmode(thread.getTimeCreated().toInstant(), it.getTimeCreated().toInstant(), slowmode.get().duration()))
+                .filter(it -> isWithinSlowmode(thread.getTimeCreated().toInstant(), it.getTimeCreated().toInstant(), slowmode.get()))
                 .findFirst();
 
         if (lastPost.isEmpty()) {
@@ -158,8 +158,9 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         return permissionsService.getCombined(member).hasPermission(BotPermissions.MODERATION_CREATE);
     }
 
-    private boolean isWithinSlowmode(Instant current, Instant last, Duration slowmode) {
-        return current.toEpochMilli() - last.toEpochMilli() < slowmode.toMillis();
+    private boolean isWithinSlowmode(Instant current, Instant last, SlowmodeService.Slowmode slowmode) {
+        if(last.isBefore(slowmode.createdAt().toInstant())) return false;
+        return current.toEpochMilli() - last.toEpochMilli() < slowmode.duration().toMillis();
     }
 
     private boolean isDiscordHandled(GuildChannel channel) {
