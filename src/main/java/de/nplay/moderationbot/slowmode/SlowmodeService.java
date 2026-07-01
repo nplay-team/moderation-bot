@@ -4,6 +4,7 @@ import de.chojo.sadu.mapper.annotation.MappingProvider;
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.sql.SQLException;
@@ -21,6 +22,10 @@ public class SlowmodeService {
     }
 
     public void set(GuildChannel channel, Duration duration) {
+        if (duration.getSeconds() <= ISlowmodeChannel.MAX_SLOWMODE && channel instanceof ISlowmodeChannel slowmodeChannel) {
+            slowmodeChannel.getManager().setSlowmode(((int) duration.getSeconds())).queue();
+        }
+
         Query.query("INSERT INTO slowmode_channels (channel_id, duration) VALUES (?, ?) ON CONFLICT (channel_id) DO UPDATE SET duration = ?")
                 .single(Call.of()
                         .bind(channel.getIdLong())
@@ -31,6 +36,10 @@ public class SlowmodeService {
     }
 
     public void removeSlowmode(GuildChannel channel) {
+        if (channel instanceof ISlowmodeChannel slowmodeChannel) {
+            slowmodeChannel.getManager().setSlowmode(0).queue();
+        }
+
         Query.query("DELETE FROM slowmode_channels WHERE channel_id = ?")
                 .single(Call.of().bind(channel.getIdLong()))
                 .delete();

@@ -8,7 +8,6 @@ import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
-import net.dv8tion.jda.api.entities.channel.attribute.ISlowmodeChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 
 import java.time.Duration;
@@ -53,14 +52,6 @@ public class SlowmodeCommands {
     ) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         slowmodeService.set(guildChannel, duration);
-
-        if (
-                duration.getSeconds() <= ISlowmodeChannel.MAX_SLOWMODE
-                        && guildChannel instanceof ISlowmodeChannel slowmodeChannel
-        ) {
-            slowmodeChannel.getManager().setSlowmode(((int) duration.getSeconds())).queue();
-        }
-
         event.reply(Replies.success("set"), entry("channel", guildChannel), entry("duration", Helpers.formatDuration(duration)));
     }
 
@@ -68,11 +59,6 @@ public class SlowmodeCommands {
     public void slowmodeRemoveCommand(CommandEvent event, Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         slowmodeService.removeSlowmode(guildChannel);
-
-        if (guildChannel instanceof ISlowmodeChannel slowmodeChannel) {
-            slowmodeChannel.getManager().setSlowmode(0).queue();
-        }
-
         event.reply(Replies.standard("remove"), entry("channel", guildChannel));
     }
 }
