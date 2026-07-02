@@ -53,11 +53,7 @@ public class SlowmodeEventHandler extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getMember() == null) {
-            return;
-        }
-
-        if (slowModeImmune(event.getMember())) {
+        if (event.getMember() == null || slowModeImmune(event.getMember())) {
             return;
         }
 
@@ -73,12 +69,6 @@ public class SlowmodeEventHandler extends ListenerAdapter {
 
         var message = event.getMessage();
         var author = event.getAuthor();
-
-        var discordChannel = event.getGuild().getTextChannelById(channel.getId());
-
-        if (discordChannel == null) {
-            return;
-        }
 
         Optional<Message> lastMessage = MessageHistory
                 .getHistoryAfter(channel, Long.toUnsignedString(TimeUtil.getDiscordTimestamp(System.currentTimeMillis() - slowmode.get().duration().toMillis())))
