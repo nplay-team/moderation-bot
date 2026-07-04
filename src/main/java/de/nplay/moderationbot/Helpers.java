@@ -1,5 +1,6 @@
 package de.nplay.moderationbot;
 
+import de.nplay.moderationbot.messagelink.MessageLink;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -11,7 +12,6 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import de.nplay.moderationbot.messagelink.MessageLink;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
@@ -55,11 +55,11 @@ public final class Helpers {
         long years = days >= 365 ? Math.floorDiv(days, 365) : 0;
         long months = days >= 30 ? Math.floorDiv(duration.toDays(), 30) - years * 12 : 0;
         builder.append(format(years, "Jahr", "e"))
-               .append(format(months, "Monat", "e"))
-               .append(format(days - (years * 365) - (months * 30), "Tag", "e"))
-               .append(format(duration.toHoursPart(), "Stunde", "n"))
-               .append(format(duration.toMinutesPart(), "Minute", "n"))
-               .append(format(duration.toSecondsPart(), "Sekunde", "n"));
+                .append(format(months, "Monat", "e"))
+                .append(format(days - (years * 365) - (months * 30), "Tag", "e"))
+                .append(format(duration.toHoursPart(), "Stunde", "n"))
+                .append(format(duration.toMinutesPart(), "Minute", "n"))
+                .append(format(duration.toSecondsPart(), "Sekunde", "n"));
         return builder.toString().trim();
     }
 

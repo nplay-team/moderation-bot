@@ -1,10 +1,10 @@
 package de.nplay.moderationbot.serverlog;
 
-import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
-import io.github.kaktushose.jdac.embeds.Embed;
 import de.nplay.moderationbot.ModerationBot.EmbedColors;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
+import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.embeds.Embed;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -106,6 +106,6 @@ public class ModerationEvents {
 
     private static String formatTimestamp(Timestamp timestamp) {
         return "%s (%s)".formatted(TimeFormat.DATE_TIME_LONG.format(timestamp.getTime()),
-                                   TimeFormat.RELATIVE.atTimestamp(timestamp.getTime()));
+                TimeFormat.RELATIVE.atTimestamp(timestamp.getTime()));
     }
 }

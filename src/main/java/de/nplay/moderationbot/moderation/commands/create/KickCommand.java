@@ -22,20 +22,20 @@ import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHel
 @Permissions(BotPermissions.MODERATION_CREATE)
 @CommandConfig(enabledFor = Permission.KICK_MEMBERS)
 public class KickCommand {
-	
-	@Lock("target")
-	@Command("mod kick")
-	public void kickMember(
-			CommandEvent event,
-			Member target,
-			@Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-			@Param(optional = true) @Max(7) int delDays,
-			@Param(optional = true) MessageLink messageLink
-	) {
-		event.keyValueStore().put(BUILDER, ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph)
-				.deletionDays(delDays)
-				.messageReference(Helpers.retrieveMessage(event, messageLink)));
-		
-		replyModal(event, "Kick");
-	}
+
+    @Lock("target")
+    @Command("mod kick")
+    public void kickMember(
+            CommandEvent event,
+            Member target,
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
+            @Param(optional = true) @Max(7) int delDays,
+            @Param(optional = true) MessageLink messageLink
+    ) {
+        event.keyValueStore().put(BUILDER, ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph)
+                .deletionDays(delDays)
+                .messageReference(Helpers.retrieveMessage(event, messageLink)));
+
+        replyModal(event, "Kick");
+    }
 }

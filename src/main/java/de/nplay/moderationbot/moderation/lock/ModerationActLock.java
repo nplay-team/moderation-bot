@@ -26,7 +26,7 @@ public class ModerationActLock {
         }
         return moderator.getIdLong() != activeModeratedUsers.get(target.getIdLong());
     }
-    
+
     public Optional<UserSnowflake> whoSetLock(Long target) {
         if (!activeModeratedUsers.containsKey(target)) {
             return Optional.empty();

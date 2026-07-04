@@ -1,5 +1,17 @@
 package de.nplay.moderationbot;
 
+import com.google.inject.Guice;
+import com.google.inject.Provides;
+import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.Replies.RelativeTime;
+import de.nplay.moderationbot.moderation.lock.ModerationActLock;
+import de.nplay.moderationbot.serverlog.Serverlog;
+import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
+import dev.goldmensch.fluava.Fluava;
+import dev.goldmensch.fluava.Result;
+import dev.goldmensch.fluava.Result.Success;
+import dev.goldmensch.fluava.function.Function;
+import dev.goldmensch.fluava.function.Value.Text;
 import io.github.kaktushose.jdac.JDACommands;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
@@ -21,18 +33,6 @@ import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
-import de.nplay.moderationbot.Replies.AbsoluteTime;
-import de.nplay.moderationbot.Replies.RelativeTime;
-import de.nplay.moderationbot.moderation.lock.ModerationActLock;
-import de.nplay.moderationbot.serverlog.Serverlog;
-import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
-import dev.goldmensch.fluava.Fluava;
-import dev.goldmensch.fluava.Result;
-import dev.goldmensch.fluava.Result.Success;
-import dev.goldmensch.fluava.function.Function;
-import dev.goldmensch.fluava.function.Value.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,16 +93,16 @@ public class ModerationBot extends ServiceModule {
 
     private JDA jda(String token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(token)
-                            .enableIntents(
-                                    GatewayIntent.GUILD_MEMBERS,
-                                    GatewayIntent.GUILD_PRESENCES,
-                                    GatewayIntent.MESSAGE_CONTENT
-                            ).setMemberCachePolicy(MemberCachePolicy.ALL)
-                            .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
-                            .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
-                            .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                            .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
-                            .build().awaitReady();
+                .enableIntents(
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.GUILD_PRESENCES,
+                        GatewayIntent.MESSAGE_CONTENT
+                ).setMemberCachePolicy(MemberCachePolicy.ALL)
+                .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
+                .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
+                .build().awaitReady();
 
         Runtime.getRuntime().addShutdownHook(new Thread(jda::shutdown));
 

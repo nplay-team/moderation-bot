@@ -172,4 +172,3 @@ public class SlowmodeEventHandler extends ListenerAdapter {
         Helpers.sendDM(user, jda, it -> it.sendMessageComponents(container).useComponentsV2());
     }
 }
-
