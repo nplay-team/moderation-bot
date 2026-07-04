@@ -221,17 +221,19 @@ public class ModlogCommand {
                 entry("reason", act.reason()),
                 entry("issuer", act.issuer())
         );
-        if (act instanceof RevertedModerationAct reverted
-                && !reverted.revertedBy().getId().equals(JDACIntrospection.scopedGet(JDACProperty.JDA).getSelfUser().getId())
-        ) {
-            entries.putAll(Entry.toMap(
+        var jda = JDACIntrospection.scopedGet(JDACProperty.JDA);
+		var isReverted =act instanceof RevertedModerationAct reverted
+                && !reverted.revertedBy().getId().equals(jda.getSelfUser().getId());
+
+            if (isReverted) {
+			var reverted = (RevertedModerationAct) act;entries.putAll(Entry.toMap(
                     entry("reverter", reverted.revertedBy()),
                     entry("revertedAt", reverted.revertedAt()),
                     entry("revertingReason", reverted.revertingReason())
             ));
         }
         return TextDisplay.of(event.resolve(
-                act instanceof RevertedModerationAct ? "entry.reverted" : "entry",
+                isReverted ? "entry.reverted" : "entry",
                 entries
         ));
     }

@@ -50,6 +50,11 @@ public class SlowmodeCommands {
             Duration duration,
             Optional<GuildChannel> channel
     ) {
+        if(!duration.isPositive()) {
+            slowmodeRemoveCommand(event, channel);
+            return;
+        }
+
         var guildChannel = channel.orElse(event.getGuildChannel());
         slowmodeService.set(guildChannel, duration);
         event.reply(Replies.success("set"), entry("channel", guildChannel), entry("duration", Helpers.formatDuration(duration)));
