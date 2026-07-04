@@ -32,45 +32,45 @@ import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHel
 @Permissions(BotPermissions.MODERATION_CREATE)
 @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
 public class BanCommand {
-	
-	private final ModerationActService actService;
-	
-	@Inject
-	public BanCommand(ModerationActService actService) {
-		this.actService = actService;
-	}
-	
-	@Lock("target")
-	@Command("mod ban")
-	public void banMember(
-			CommandEvent event,
-			User target,
-			@Param(optional = true) @Nullable Duration until,
-			@Param(optional = true) @Min(1) @Max(7) int delDays,
-			@Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-			@Param(optional = true) MessageLink messageLink
-	) {
-		if (actService.isBanned(target)) {
-			event.reply(Replies.error("user-already-banned"));
-			return;
-		}
-		
-		Member member;
-		ModerationActBuilder builder;
-		try {
-			member = event.getGuild().retrieveMember(target).complete();
-			builder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays);
-		} catch (ErrorResponseException e) {
-			if (e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
-				builder = ModerationActBuilder.ban(target, event.getGuild(), event.getUser()).deletionDays(delDays);
-			} else {
-				throw new IllegalStateException(e);
-			}
-		}
-		
-		builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
-		
-		event.keyValueStore().put(BUILDER, builder);
-		replyModal(event, until == null ? "Bann" : "Temp-Bann");
-	}
+
+    private final ModerationActService actService;
+
+    @Inject
+    public BanCommand(ModerationActService actService) {
+        this.actService = actService;
+    }
+
+    @Lock("target")
+    @Command("mod ban")
+    public void banMember(
+            CommandEvent event,
+            User target,
+            @Param(optional = true) @Nullable Duration until,
+            @Param(optional = true) @Min(1) @Max(7) int delDays,
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
+            @Param(optional = true) MessageLink messageLink
+    ) {
+        if (actService.isBanned(target)) {
+            event.reply(Replies.error("user-already-banned"));
+            return;
+        }
+
+        Member member;
+        ModerationActBuilder builder;
+        try {
+            member = event.getGuild().retrieveMember(target).complete();
+            builder = ModerationActBuilder.ban(member, event.getUser()).deletionDays(delDays);
+        } catch (ErrorResponseException e) {
+            if (e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+                builder = ModerationActBuilder.ban(target, event.getGuild(), event.getUser()).deletionDays(delDays);
+            } else {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
+
+        event.keyValueStore().put(BUILDER, builder);
+        replyModal(event, until == null ? "Bann" : "Temp-Bann");
+    }
 }

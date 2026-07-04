@@ -23,46 +23,46 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Interaction
 @Bundle("create")
 public class ReasonModal {
-	
-	private final ModerationActLock moderationActLock;
-	private final Serverlog serverlog;
-	private final ModerationActService actService;
-	
-	@Inject
-	public ReasonModal(ModerationActLock moderationActLock, Serverlog serverlog, ModerationActService actService) {
-		this.moderationActLock = moderationActLock;
-		this.serverlog = serverlog;
-		this.actService = actService;
-	}
-	
-	@Modal("reason-title")
-	public void onModerate(ModalEvent event) {
-		ModerationAct act = event.keyValueStore().get(BUILDER, ModerationActBuilder.class)
-				.orElseThrow()
-				.reason(event.value(REASON_ID).getAsString())
-				.execute(event, actService);
-		
-		SeparatedContainer container = SeparatedContainer.of(
-				TextDisplay.of("executed"),
-				Separator.createDivider(Separator.Spacing.SMALL)
-		).entries(
-				entry("type", act.type().localized(event.getUserLocale())),
-				entry("id", act.id()),
-				entry("target", act.user()),
-				entry("reason", act.reason())
-		).withAccentColor(SUCCESS);
-		act.revokeAt().ifPresent(it ->
-				container.add(TextDisplay.of("executed.until"), entry("until", it))
-		);
-		act.paragraph().ifPresent(it ->
-				container.add(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
-		);
-		act.messageReference().ifPresent(it ->
-				container.add(TextDisplay.of("executed.reference"), entry("message", it.content()))
-		);
-		event.reply(container);
-		
-		serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), act), event);
-		moderationActLock.unlock(act.user().getIdLong());
-	}
+
+    private final ModerationActLock moderationActLock;
+    private final Serverlog serverlog;
+    private final ModerationActService actService;
+
+    @Inject
+    public ReasonModal(ModerationActLock moderationActLock, Serverlog serverlog, ModerationActService actService) {
+        this.moderationActLock = moderationActLock;
+        this.serverlog = serverlog;
+        this.actService = actService;
+    }
+
+    @Modal("reason-title")
+    public void onModerate(ModalEvent event) {
+        ModerationAct act = event.keyValueStore().get(BUILDER, ModerationActBuilder.class)
+                .orElseThrow()
+                .reason(event.value(REASON_ID).getAsString())
+                .execute(event, actService);
+
+        SeparatedContainer container = SeparatedContainer.of(
+                TextDisplay.of("executed"),
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(
+                entry("type", act.type().localized(event.getUserLocale())),
+                entry("id", act.id()),
+                entry("target", act.user()),
+                entry("reason", act.reason())
+        ).withAccentColor(SUCCESS);
+        act.revokeAt().ifPresent(it ->
+                container.add(TextDisplay.of("executed.until"), entry("until", it))
+        );
+        act.paragraph().ifPresent(it ->
+                container.add(TextDisplay.of("executed.paragraph"), entry("paragraph", it.shortDisplay()))
+        );
+        act.messageReference().ifPresent(it ->
+                container.add(TextDisplay.of("executed.reference"), entry("message", it.content()))
+        );
+        event.reply(container);
+
+        serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), act), event);
+        moderationActLock.unlock(act.user().getIdLong());
+    }
 }

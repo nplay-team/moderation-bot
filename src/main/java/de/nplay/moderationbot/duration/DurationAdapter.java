@@ -56,11 +56,11 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
         }
 
         var parseString = "P" +
-                          (days != null ? days + "D" : "") +
-                          (hours != null || minutes != null || seconds != null ? "T" : "") +
-                          (hours != null ? hours + "H" : "") +
-                          (minutes != null ? minutes + "M" : "") +
-                          (seconds != null ? seconds + "S" : "");
+                (days != null ? days + "D" : "") +
+                (hours != null || minutes != null || seconds != null ? "T" : "") +
+                (hours != null ? hours + "H" : "") +
+                (minutes != null ? minutes + "M" : "") +
+                (seconds != null ? seconds + "S" : "");
 
         try {
             return Optional.of(Duration.parse(parseString));
@@ -70,8 +70,7 @@ public class DurationAdapter implements TypeAdapter<String, Duration> {
         }
     }
 
-    @Nullable
-    private Integer extractValue(String input, String unit) {
+    @Nullable private Integer extractValue(String input, String unit) {
         var pattern = "(?i)(\\d+)" + (unit.equals("MIN") ? "MIN" : unit + "(?!IN)");
         var matcher = Pattern.compile(pattern).matcher(input);
         return matcher.find() ? Integer.parseInt(matcher.group(1)) : null;

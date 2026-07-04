@@ -30,34 +30,34 @@ import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHel
 @Bundle("create")
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class TimeoutCommand {
-	
-	private final ModerationActService actService;
-	
-	@Inject
-	public TimeoutCommand(ModerationActService actService) {
-		this.actService = actService;
-	}
-	
-	@Lock("target")
-	@Command("mod timeout")
-	public void timeoutMember(
-			CommandEvent event,
-			Member target,
-			@DurationMax(amount = 28, unit = ChronoUnit.DAYS) Duration until,
-			@Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-			@Param(optional = true) MessageLink messageLink
-	) {
-		
-		if (actService.isTimeOuted(target)) {
-			event.reply(Replies.error("already-timeout"));
-			return;
-		}
-		
-		event.keyValueStore().put(BUILDER, ModerationActBuilder.timeout(target, event.getUser())
-				.duration(until)
-				.paragraph(paragraph)
-				.messageReference(Helpers.retrieveMessage(event, messageLink)));
-		
-		replyModal(event, "Timeout");
-	}
+
+    private final ModerationActService actService;
+
+    @Inject
+    public TimeoutCommand(ModerationActService actService) {
+        this.actService = actService;
+    }
+
+    @Lock("target")
+    @Command("mod timeout")
+    public void timeoutMember(
+            CommandEvent event,
+            Member target,
+            @DurationMax(amount = 28, unit = ChronoUnit.DAYS) Duration until,
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
+            @Param(optional = true) MessageLink messageLink
+    ) {
+
+        if (actService.isTimeOuted(target)) {
+            event.reply(Replies.error("already-timeout"));
+            return;
+        }
+
+        event.keyValueStore().put(BUILDER, ModerationActBuilder.timeout(target, event.getUser())
+                .duration(until)
+                .paragraph(paragraph)
+                .messageReference(Helpers.retrieveMessage(event, messageLink)));
+
+        replyModal(event, "Timeout");
+    }
 }

@@ -50,7 +50,7 @@ public class SlowmodeCommands {
             Duration duration,
             Optional<GuildChannel> channel
     ) {
-        if(!duration.isPositive()) {
+        if (!duration.isPositive()) {
             slowmodeRemoveCommand(event, channel);
             return;
         }

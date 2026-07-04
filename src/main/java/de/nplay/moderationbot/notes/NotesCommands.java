@@ -33,10 +33,9 @@ public class NotesCommands {
 
     private static final int NOTE_LIMIT = 10;
     private static final String NOTE_ID = "note-id";
+    private final NotesService notesService;
     private @Nullable User target;
     private boolean ephemeral;
-
-    private final NotesService notesService;
 
     @Inject
     public NotesCommands(NotesService notesService) {
@@ -86,8 +85,8 @@ public class NotesCommands {
         List<Note> notes = notesService.getAll(target);
 
         SeparatedContainer container = SeparatedContainer.of(
-            TextDisplay.of("list"),
-            Separator.createDivider(Separator.Spacing.SMALL)
+                TextDisplay.of("list"),
+                Separator.createDivider(Separator.Spacing.SMALL)
         ).entries(entry("target", target)).withAccentColor(Replies.STANDARD);
 
         if (notes.isEmpty()) {

@@ -133,12 +133,12 @@ public class ModerationActService {
         }
 
         Query.query("UPDATE moderations SET reverted = true, reverted_by = ?, reverted_at = ?, revert_reason = ? WHERE id = ?")
-             .single(Call.of()
-                         .bind(revertedBy.getIdLong())
-                         .bind(new Timestamp(System.currentTimeMillis()))
-                         .bind(reason)
-                         .bind(act.id()))
-             .update();
+                .single(Call.of()
+                        .bind(revertedBy.getIdLong())
+                        .bind(new Timestamp(System.currentTimeMillis()))
+                        .bind(reason)
+                        .bind(act.id()))
+                .update();
 
         switch (act.type()) {
             case BAN, TEMP_BAN -> Helpers.complete(guild.unban(act.user()));
