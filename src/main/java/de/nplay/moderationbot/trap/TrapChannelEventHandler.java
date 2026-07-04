@@ -15,20 +15,20 @@ import java.util.Objects;
 
 public class TrapChannelEventHandler extends ListenerAdapter {
 
-    private final List<String> cache;
     private final MessageResolver messageResolver;
+    private final TrapChannelService service;
     private final ModerationActService moderationActService;
 
     public TrapChannelEventHandler(MessageResolver messageResolver, TrapChannelService service, ModerationActService moderationActService) {
         this.messageResolver = messageResolver;
-        cache = service.getAll().stream().map(TrapChannelService.TrapChannel::channelId).toList();
+        this.service = service;
         this.moderationActService = moderationActService;
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getChannel() instanceof TextChannel channel) {
-            if (!cache.contains(channel.getId())) return;
+            if (service.get(channel).isEmpty()) return;
             handleBot(Objects.requireNonNull(event.getMember()), event.getMessage());
         }
     }
