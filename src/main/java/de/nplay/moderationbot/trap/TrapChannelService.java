@@ -26,11 +26,11 @@ public class TrapChannelService {
                 .delete();
     }
 
-    public record TrapChannel(String channelId, Timestamp createdAt) {
+    public record TrapChannel(Long channelId, Timestamp createdAt) {
         @MappingProvider("")
         public TrapChannel(Row row) throws SQLException {
             this(
-                    row.getString("channel_id"),
+                    row.getLong("channel_id"),
                     row.getTimestamp("created_at")
             );
         }
