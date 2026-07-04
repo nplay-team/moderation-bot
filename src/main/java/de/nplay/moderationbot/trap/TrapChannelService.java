@@ -20,13 +20,6 @@ public class TrapChannelService {
                 .first();
     }
 
-    public List<TrapChannel> getAll() {
-        return Query.query("SELECT * FROM trap_channels")
-                .single()
-                .mapAs(TrapChannel.class)
-                .all();
-    }
-
     public void remove(TextChannel channel) {
         Query.query("DELETE FROM trap_channels WHERE channel_id = ?")
                 .single(Call.of().bind(channel.getIdLong()))

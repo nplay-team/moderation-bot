@@ -1,0 +1,1 @@
+kick-reason = Verdacht auf Spam-Bot
