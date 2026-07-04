@@ -59,7 +59,9 @@ public class SlowmodeEventHandler extends ListenerAdapter {
 
         var channel = event.getGuildChannel();
 
-        if (isDiscordHandled(channel)) return;
+        if (isDiscordHandled(channel)) {
+            return;
+        }
 
         var slowmode = slowmodeService.get(channel);
 
@@ -100,7 +102,9 @@ public class SlowmodeEventHandler extends ListenerAdapter {
             return;
         }
 
-        if (isDiscordHandled(event.getChannel().asGuildChannel())) return;
+        if (isDiscordHandled(event.getChannel().asGuildChannel())) {
+            return;
+        }
 
         var thread = event.getChannel().asThreadChannel();
         Member owner = event.getGuild().retrieveMemberById(thread.getOwnerId()).complete();
@@ -149,7 +153,9 @@ public class SlowmodeEventHandler extends ListenerAdapter {
     }
 
     private boolean isWithinSlowmode(Instant current, Instant last, SlowmodeService.Slowmode slowmode) {
-        if(last.isBefore(slowmode.createdAt().toInstant())) return false;
+        if (last.isBefore(slowmode.createdAt().toInstant())) {
+            return false;
+        }
         return current.toEpochMilli() - last.toEpochMilli() < slowmode.duration().toMillis();
     }
 

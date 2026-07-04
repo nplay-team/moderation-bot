@@ -222,11 +222,12 @@ public class ModlogCommand {
                 entry("issuer", act.issuer())
         );
         var jda = JDACIntrospection.scopedGet(JDACProperty.JDA);
-		var isReverted =act instanceof RevertedModerationAct reverted
+        var isReverted = act instanceof RevertedModerationAct reverted
                 && !reverted.revertedBy().getId().equals(jda.getSelfUser().getId());
 
-            if (isReverted) {
-			var reverted = (RevertedModerationAct) act;entries.putAll(Entry.toMap(
+        if (isReverted) {
+            var reverted = (RevertedModerationAct) act;
+            entries.putAll(Entry.toMap(
                     entry("reverter", reverted.revertedBy()),
                     entry("revertedAt", reverted.revertedAt()),
                     entry("revertingReason", reverted.revertingReason())
