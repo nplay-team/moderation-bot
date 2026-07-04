@@ -1,15 +1,25 @@
 [versions]
 sadu = "2.3.8"
 logback = "1.5.32"
+jda = "6.4.2"
+jdacommands = "5.1.1"
+jdwebhooks = "1.0.1"
+hikari = "7.0.2"
+postgres = "42.7.10"
+slf4j = "2.0.18"
+jspecify = "1.0.0"
+shadow = "9.2.2"
+spotless = "8.6.0"
 
 [libraries]
 # Core
-jda = { group = "net.dv8tion", name = "JDA", version = "6.4.2" }
-jdacommands = { group = "io.github.kaktushose", name = "jda-commands", version = "5.1.0" }
+jda = { group = "net.dv8tion", name = "JDA", version.ref = "jda" }
+jdacommands = { group = "io.github.kaktushose", name = "jda-commands", version.ref = "jdacommands" }
+jdwebhooks = { group = "io.github.4drian3d", name = "jdwebhooks", version.ref = "jdwebhooks" }
 
 # Database
-hikari = { group = "com.zaxxer", name = "HikariCP", version = "7.0.2" }
-postgres = { group = "org.postgresql", name = "postgresql", version = "42.7.10" }
+hikari = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikari" }
+postgres = { group = "org.postgresql", name = "postgresql", version.ref = "postgres" }
 sadu-postgresql = { group = "de.chojo.sadu", name = "sadu-postgresql", version.ref = "sadu" }
 sadu-datasource = { group = "de.chojo.sadu", name = "sadu-datasource", version.ref = "sadu" }
 sadu-queries = { group = "de.chojo.sadu", name = "sadu-queries", version.ref = "sadu" }
@@ -17,19 +27,23 @@ sadu-mapper = { group = "de.chojo.sadu", name = "sadu-mapper", version.ref = "sa
 sadu-updater = { group = "de.chojo.sadu", name = "sadu-updater", version.ref = "sadu" }
 
 # Logging
-slf4j = { group = "org.slf4j", name = "slf4j-api", version = "2.0.18" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 logback-core = { group = "ch.qos.logback", name = "logback-core", version.ref = "logback" }
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
 # Annotations
-jspecify = { group = "org.jspecify", name = "jspecify", version = "1.0.0" }
+jspecify = { group = "org.jspecify", name = "jspecify", version.ref = "jspecify" }
 
 [bundles]
 logging = [
+    "slf4j",
     "logback-core",
     "logback-classic"
 ]
+
 database = [
+    "hikari",
+    "postgres",
     "sadu-postgresql",
     "sadu-datasource",
     "sadu-queries",
@@ -38,5 +52,5 @@ database = [
 ]
 
 [plugins]
-shadow = "com.gradleup.shadow:9.2.2"
-spotless = "com.diffplug.spotless:8.6.0"
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

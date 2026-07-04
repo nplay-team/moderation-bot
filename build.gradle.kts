@@ -19,6 +19,7 @@ dependencies {
         exclude(module = "opus-java")
     }
     implementation(libs.jdacommands)
+    implementation(libs.jdwebhooks)
     implementation(libs.bundles.database)
     implementation(libs.bundles.logging)
     implementation(libs.jspecify)
