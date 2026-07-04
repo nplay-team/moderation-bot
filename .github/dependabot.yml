@@ -10,8 +10,13 @@ updates:
       github-actions:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
     labels:
-      - "type:dependencies"
+      - "t:dependencies"
     assignees:
       - finnmargraf
       - Kaktushose
@@ -28,7 +33,7 @@ updates:
     ignore:
       - dependency-name: "gradle"
     labels:
-      - "type:dependencies"
+      - "t:dependencies"
     assignees:
       - Kaktushose
       - finnmargraf
