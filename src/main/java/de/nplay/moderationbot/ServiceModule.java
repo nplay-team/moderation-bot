@@ -15,6 +15,7 @@ import de.nplay.moderationbot.notes.NotesService;
 import de.nplay.moderationbot.permissions.PermissionsService;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.slowmode.SlowmodeService;
+import de.nplay.moderationbot.trap.TrapChannelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class ServiceModule extends AbstractModule {
     private final SlowmodeService slowmodeService;
     private final ConfigService configService;
     private final RuleService ruleService;
+    private final TrapChannelService trapChannelService;
 
     public ServiceModule() {
         initialize();
@@ -41,6 +43,7 @@ public class ServiceModule extends AbstractModule {
         permissionsService = new PermissionsService();
         slowmodeService = new SlowmodeService();
         configService = new ConfigService();
+        trapChannelService = new TrapChannelService();
     }
 
     @Provides
@@ -76,6 +79,11 @@ public class ServiceModule extends AbstractModule {
     @Provides
     public RuleService ruleService() {
         return ruleService;
+    }
+
+    @Provides
+    public TrapChannelService trapChannelService() {
+        return trapChannelService;
     }
 
     private void initialize() {

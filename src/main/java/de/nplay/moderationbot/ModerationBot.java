@@ -1,5 +1,6 @@
 package de.nplay.moderationbot;
 
+import de.nplay.moderationbot.trap.TrapChannelEventHandler;
 import io.github.kaktushose.jdac.JDACommands;
 import io.github.kaktushose.jdac.definitions.interactions.InteractionDefinition.ReplyConfig;
 import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition.CommandConfig;
@@ -62,6 +63,7 @@ public class ModerationBot extends ServiceModule {
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
+        jda.addEventListener(new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> moderationActService().automaticRevert(guild, resolver),

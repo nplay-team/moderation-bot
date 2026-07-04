@@ -40,7 +40,7 @@ public class ReasonModal {
 		ModerationAct act = event.keyValueStore().get(BUILDER, ModerationActBuilder.class)
 				.orElseThrow()
 				.reason(event.value(REASON_ID).getAsString())
-				.execute(event, actService);
+				.execute(actService, event);
 		
 		SeparatedContainer container = SeparatedContainer.of(
 				TextDisplay.of("executed"),
