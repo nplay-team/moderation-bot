@@ -8,10 +8,15 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Optional;
 
 public class TrapChannelService {
+
+    public void set(TextChannel channel) {
+        Query.query("INSERT INTO trap_channels (channel_id) VALUES (?)")
+                .single(Call.of().bind(channel.getIdLong()))
+                .insert();
+    }
 
     public Optional<TrapChannel> get(TextChannel channel) {
         return Query.query("SELECT * FROM trap_channels WHERE channel_id = ?")
