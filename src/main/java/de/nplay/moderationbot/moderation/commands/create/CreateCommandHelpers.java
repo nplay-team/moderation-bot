@@ -10,16 +10,16 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("create")
 final class CreateCommandHelpers {
-	
-	public static String REASON_ID = "create-reason";
-	public static String BUILDER = "create-builder";
-	
-	public static void replyModal(CommandEvent event, String type) {
-		event.replyModal(
-				ReasonModal.class,
-				"onModerate",
-				Label.of("reason-label", TextInput.of(REASON_ID, TextInputStyle.PARAGRAPH)),
-				entry("type", type)
-		);
-	}
+
+    public static String REASON_ID = "create-reason";
+    public static String BUILDER = "create-builder";
+
+    public static void replyModal(CommandEvent event, String type) {
+        event.replyModal(
+                ReasonModal.class,
+                "onModerate",
+                Label.of("reason-label", TextInput.of(REASON_ID, TextInputStyle.PARAGRAPH)),
+                entry("type", type)
+        );
+    }
 }

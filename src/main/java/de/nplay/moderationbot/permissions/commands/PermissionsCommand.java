@@ -20,9 +20,9 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public abstract class PermissionsCommand {
 
+    protected final PermissionsService permissionsService;
     private final StableValue<Integer> roleCount = StableValue.of();
     private final String type;
-    protected final PermissionsService permissionsService;
 
     protected PermissionsCommand(String type, PermissionsService permissionsService) {
         this.type = type;

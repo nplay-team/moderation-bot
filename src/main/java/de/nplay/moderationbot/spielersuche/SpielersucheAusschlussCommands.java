@@ -49,7 +49,8 @@ public class SpielersucheAusschlussCommands {
 
     @Command("ausschluss")
     @Permissions(BotPermissions.MODERATION_CREATE)
-    public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph) {
+    public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true,
+            type = OptionType.INTEGER) RuleParagraph paragraph) {
         var role = role(event);
         if (role.isEmpty()) {
             event.reply(Replies.error("role-error"));

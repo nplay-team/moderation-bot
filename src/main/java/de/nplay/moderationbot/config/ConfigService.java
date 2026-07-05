@@ -3,8 +3,6 @@ package de.nplay.moderationbot.config;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Optional;
 
 public class ConfigService {

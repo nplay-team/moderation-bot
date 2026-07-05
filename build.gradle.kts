@@ -2,7 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     application
-    id("com.gradleup.shadow") version "9.2.2"
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.spotless)
 }
 
 application.mainClass = "de.nplay.moderationbot.Bootstrapper"
@@ -11,7 +12,6 @@ version = "2.0.0"
 
 repositories {
     mavenCentral()
-    maven("https://central.sonatype.com/repository/maven-snapshots/")
 }
 
 dependencies {
@@ -20,19 +20,8 @@ dependencies {
     }
     implementation(libs.jdacommands)
     implementation(libs.jdwebhooks)
-
-    implementation(libs.logback.core)
-    implementation(libs.logback.classic)
-    implementation(libs.slf4j)
-
-    implementation(libs.postgres)
-    implementation(libs.hikari)
-    implementation(libs.sadu.datasource)
-    implementation(libs.sadu.queries)
-    implementation(libs.sadu.mapper)
-    implementation(libs.sadu.postgresql)
-    implementation(libs.sadu.updater)
-
+    implementation(libs.bundles.database)
+    implementation(libs.bundles.logging)
     implementation(libs.jspecify)
 }
 
@@ -47,10 +36,42 @@ tasks.withType<JavaCompile> {
     sourceCompatibility = "25"
 }
 
-tasks.withType<JavaExec>() {
+tasks.withType<JavaExec>{
     jvmArgs("--enable-preview", "--sun-misc-unsafe-memory-access=allow")
 }
 
 tasks.withType<ShadowJar> {
     archiveFileName = "moderationbot.jar"
+}
+
+spotless {
+    encoding("UTF-8")
+
+    format("misc") {
+        target("*.gradle.kts", ".gitattributes", ".gitignore")
+
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    java {
+        target("**/*.java")
+        targetExclude(".github/workflows/**", "build/**")
+
+        importOrder("", "java", "javax", "\\#")
+        forbidModuleImports()
+        formatAnnotations()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+// separate task for potential additional formatting tasks in the future
+tasks.register("format") {
+    group = "verification"
+    dependsOn(tasks.named("spotlessApply"))
+}
+
+tasks.named("check").configure {
+    dependsOn(tasks.named("spotlessCheck"))
 }

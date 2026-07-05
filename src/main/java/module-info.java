@@ -15,11 +15,12 @@ module moderationbot.main {
     requires ch.qos.logback.classic;
     requires ch.qos.logback.core;
 
-    requires sadu.sadu.datasource.main;
-    requires sadu.sadu.mapper.main;
-    requires sadu.sadu.postgresql.main;
-    requires sadu.sadu.queries.main;
-    requires sadu.sadu.updater.main;
+    requires de.chojo.sadu.core;
+    requires de.chojo.sadu.datasource;
+    requires de.chojo.sadu.mapper;
+    requires de.chojo.sadu.postgresql;
+    requires de.chojo.sadu.queries;
+    requires de.chojo.sadu.updater;
 
     requires org.jspecify;
 

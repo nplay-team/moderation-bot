@@ -22,19 +22,19 @@ import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHel
 @Bundle("create")
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class WarnCommand {
-	
-	@Lock("target")
-	@Command("mod warn")
-	public void warnMember(
-			CommandEvent event,
-			Member target,
-			@Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-			@Param(optional = true) MessageLink messageLink
-	) {
-		event.keyValueStore().put(BUILDER, ModerationActBuilder.warn(target, event.getUser())
-				.paragraph(paragraph)
-				.messageReference(Helpers.retrieveMessage(event, messageLink)));
-		
-		replyModal(event, "Warn");
-	}
+
+    @Lock("target")
+    @Command("mod warn")
+    public void warnMember(
+            CommandEvent event,
+            Member target,
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
+            @Param(optional = true) MessageLink messageLink
+    ) {
+        event.keyValueStore().put(BUILDER, ModerationActBuilder.warn(target, event.getUser())
+                .paragraph(paragraph)
+                .messageReference(Helpers.retrieveMessage(event, messageLink)));
+
+        replyModal(event, "Warn");
+    }
 }

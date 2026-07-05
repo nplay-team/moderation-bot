@@ -1,5 +1,10 @@
 package de.nplay.moderationbot.moderation.commands.modlog;
 
+import de.nplay.moderationbot.Helpers;
+import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.moderation.act.model.ModerationAct;
+import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
+import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -11,11 +16,6 @@ import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.separator.Separator.Spacing;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.moderation.act.model.ModerationAct;
-import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
-import de.nplay.moderationbot.permissions.BotPermissions;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
@@ -38,10 +38,10 @@ public class DetailCommand {
         ).withAccentColor(Replies.STANDARD);
 
         moderationAct.paragraph().ifPresent(it ->
-            container.add(TextDisplay.of("detail.paragraph"), entry("paragraph", it.fullDisplay()))
+                container.add(TextDisplay.of("detail.paragraph"), entry("paragraph", it.fullDisplay()))
         );
         moderationAct.messageReference().ifPresent(it ->
-             container.add(TextDisplay.of("detail.reference"), entry("reference", it.jumpUrl(event.getGuild())))
+                container.add(TextDisplay.of("detail.reference"), entry("reference", it.jumpUrl(event.getGuild())))
         );
 
         if (moderationAct instanceof RevertedModerationAct reverted) {

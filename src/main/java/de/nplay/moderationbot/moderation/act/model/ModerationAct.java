@@ -69,15 +69,15 @@ public sealed class ModerationAct permits RevertedModerationAct {
         return reason;
     }
 
-    public Optional<@Nullable RuleParagraph> paragraph() {
+    public Optional<RuleParagraph> paragraph() {
         return Optional.ofNullable(paragraph);
     }
 
-    public Optional<@Nullable MessageReference> messageReference() {
+    public Optional<MessageReference> messageReference() {
         return Optional.ofNullable(messageReference);
     }
 
-    public Optional<@Nullable RelativeTime> revokeAt() {
+    public Optional<RelativeTime> revokeAt() {
         return Optional.ofNullable(revokeAt).map(RelativeTime::new);
     }
 
