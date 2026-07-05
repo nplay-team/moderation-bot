@@ -1,6 +1,5 @@
 package de.nplay.moderationbot;
 
-import de.nplay.moderationbot.trap.TrapChannelEventHandler;
 import com.google.inject.Guice;
 import com.google.inject.Provides;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
@@ -8,6 +7,7 @@ import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
+import de.nplay.moderationbot.trap.TrapChannelEventHandler;
 import dev.goldmensch.fluava.Fluava;
 import dev.goldmensch.fluava.Result;
 import dev.goldmensch.fluava.Result.Success;
