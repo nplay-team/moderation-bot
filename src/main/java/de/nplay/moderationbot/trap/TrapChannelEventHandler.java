@@ -30,9 +30,10 @@ public class TrapChannelEventHandler extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getChannel() instanceof TextChannel channel) {
             var member = Objects.requireNonNull(event.getMember());
-            if(isImmune(member)) return;
-            if (service.get(channel).isEmpty()) return;
-            handleBot(member, event.getMessage());
+            if (isImmune(member) || service.get(channel).isEmpty()) {
+                return;
+            }
+            handleSpamBot(member, event.getMessage());
         }
     }
 
@@ -40,7 +41,7 @@ public class TrapChannelEventHandler extends ListenerAdapter {
         return member.hasPermission(Permission.MESSAGE_MANAGE);
     }
 
-    private void handleBot(Member member, Message message) {
+    private void handleSpamBot(Member member, Message message) {
         message.delete().queue();
 
         var locale = member.getGuild().getLocale();
