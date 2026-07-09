@@ -1,7 +1,7 @@
 ## place
 trap-place-name = platzieren
 trap-place-description = Platziert eine Bot-Falle in dem aktuellen Textkanal.
-trap-place-options-channel-description = Der Textkanal indem die Falle platziert werden soll.
+trap-place-options-channel-description = Der Textkanal, in dem die Falle platziert werden soll.
 
 placed =
     ### Falle platziert in { $channel }
@@ -10,7 +10,7 @@ placed =
 ## info
 trap-info-name = info
 trap-info-description = Abfrage ob in dem aktuellen Textkanal eine Bot-Falle platziert ist.
-trap-info-options-channel-description = Der Textkanal indem abgefragt werden soll.
+trap-info-options-channel-description = Der Textkanal, der abgefragt werden soll.
 info =
     ### Bot-Fallen in { $channel }
     { $placed ->
@@ -21,7 +21,7 @@ info =
 ## remove
 trap-remove-name = entfernen
 trap-remove-description = Entfernt eine Bot-Falle aus dem aktuellen Textkanal.
-trap-remove-options-channel-description = Der Textkanal indem die Falle entfernt werden soll.
+trap-remove-options-channel-description = Der Textkanal, in dem die Falle entfernt werden soll.
 removed =
     ### Falle aus { $channel } entfernt
     Die Falle wurde erfolgreich entfernt, es werden nun keine Nutzer mehr gekickt.
@@ -36,4 +36,4 @@ already-trap-channel =
     In dem Kanal { $channel } ist bereits eine Falle platziert!
 
 ## Internals
-kick-reason = Verdacht auf Spam-Bot. Wenn du ein echter Mensch bist, kannst du jederzeit unter discord.gg/nplay den Server wieder beitreten.
+kick-reason = Verdacht auf Spam-Bot. Wenn du ein echter Mensch bist, kannst du jederzeit unter discord.gg/nplay dem Server wieder beitreten.
