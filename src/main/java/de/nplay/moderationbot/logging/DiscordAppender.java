@@ -22,7 +22,7 @@ public class DiscordAppender extends AppenderBase<ILoggingEvent> {
         if (webhookUrl == null) {
             return;
         }
-        WebHookClient client = WebHookClient.fromURL(System.getenv("WEBHOOK_URL"));
+        WebHookClient client = WebHookClient.fromURL(webhookUrl);
 
         client.executeWebHook(builder -> builder.component(
                 Component.container().components(
