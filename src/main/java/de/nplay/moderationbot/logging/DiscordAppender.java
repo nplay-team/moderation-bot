@@ -26,10 +26,10 @@ public class DiscordAppender extends AppenderBase<ILoggingEvent> {
 
         client.executeWebHook(builder -> builder.component(
                 Component.container().components(
-                        Component.textDisplay("### Error"),
+                        Component.textDisplay("### Error: %s".formatted(event.getFormattedMessage())),
                         Component.textDisplay("```%s```".formatted(ThrowableProxyUtil.asString(event.getThrowableProxy()))),
                         Component.textDisplay("-# %s".formatted(Instant.now().toString()))
-                ).accentColor(Replies.ERROR.getRGB()).build()
+                ).accentColor(Replies.ERROR.getRGB() & 0xFFFFFF).build() // remove alpha channel
         ));
     }
 }
