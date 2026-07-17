@@ -34,8 +34,10 @@ public class TrapChannelCommands {
 
     @Command("info")
     public void info(CommandEvent event, TextChannel channel) {
-        var placed = Boolean.toString(service.get(channel).isPresent());
-        event.reply(Replies.success("info"), entry("channel", channel), entry("placed", placed));
+        event.reply(
+                Replies.success("info"),
+                entry("channel", channel), entry("placed", service.get(channel).isPresent())
+        );
     }
 
     @Command("remove")
