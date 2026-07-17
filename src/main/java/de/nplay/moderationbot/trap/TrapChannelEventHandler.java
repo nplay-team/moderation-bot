@@ -1,5 +1,6 @@
 package de.nplay.moderationbot.trap;
 
+import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
@@ -19,11 +20,13 @@ public class TrapChannelEventHandler extends ListenerAdapter {
     private final MessageResolver messageResolver;
     private final TrapChannelService service;
     private final ModerationActService moderationActService;
+    private final ConfigService configService;
 
-    public TrapChannelEventHandler(MessageResolver messageResolver, TrapChannelService service, ModerationActService moderationActService) {
+    public TrapChannelEventHandler(MessageResolver messageResolver, TrapChannelService service, ModerationActService moderationActService, ConfigService configService) {
         this.messageResolver = messageResolver;
         this.service = service;
         this.moderationActService = moderationActService;
+        this.configService = configService;
     }
 
     @Override
@@ -51,6 +54,17 @@ public class TrapChannelEventHandler extends ListenerAdapter {
                 .reason(messageResolver.resolve("kick-reason", locale))
                 .deletionDays(1)
                 .execute(moderationActService, locale, member.getJDA(), messageResolver);
+
+        // TODO Needed until #69 is merged
+        if (configService.get(ConfigService.BotConfig.SERVERLOG_KANAL).isEmpty()) {
+            return;
+        }
+        var channel = member.getGuild().getTextChannelById(configService.get(ConfigService.BotConfig.SERVERLOG_KANAL).get());
+        if (channel == null) {
+            return;
+        }
+        channel.sendMessage("User %s was kicked, ran into trap in %s".formatted(member.getAsMention(), message.getChannel().getAsMention()))
+                .queue();
     }
 
 }
