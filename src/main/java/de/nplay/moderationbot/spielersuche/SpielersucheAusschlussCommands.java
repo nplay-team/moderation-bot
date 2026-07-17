@@ -65,7 +65,7 @@ public class SpielersucheAusschlussCommands {
         ModerationActBuilder.warn(target, event.getUser())
                 .reason(event.resolve("spielersuche-ausschluss-reason"))
                 .paragraph(paragraph)
-                .execute(event, actService);
+                .execute(actService, event);
 
         serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
         event.reply(Replies.success("block"), entry("target", target));

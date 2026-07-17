@@ -7,6 +7,7 @@ import de.nplay.moderationbot.Replies.RelativeTime;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
+import de.nplay.moderationbot.trap.TrapChannelEventHandler;
 import dev.goldmensch.fluava.Fluava;
 import dev.goldmensch.fluava.Result;
 import dev.goldmensch.fluava.Result.Success;
@@ -62,6 +63,7 @@ public class ModerationBot extends ServiceModule {
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
+        jda.addEventListener(new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> moderationActService().automaticRevert(guild, resolver),

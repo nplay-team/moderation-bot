@@ -7,8 +7,10 @@ import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
+import io.github.kaktushose.jdac.message.resolver.MessageResolver;
 import io.github.kaktushose.jdac.property.JDACIntrospection;
 import io.github.kaktushose.jdac.property.JDACProperty;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.Guild;
@@ -24,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -162,29 +163,35 @@ public class ModerationActBuilder {
         throw new UnsupportedOperationException("Cannot set deletion days on moderation act with type: " + type);
     }
 
-    public ModerationAct execute(ReplyableEvent<?> event, ModerationActService service) {
+    public ModerationAct execute(ModerationActService service, ReplyableEvent<?> event) {
+        event.deferReply();
         reason = reason == null ? event.resolve("default-reason") : reason;
+        return execute(service, event.getUserLocale(), event.getJDA(), event.messageResolver());
+    }
+
+    public ModerationAct execute(ModerationActService service, DiscordLocale locale, JDA jda, MessageResolver resolver) {
+        reason = reason == null ? resolver.resolve("default-reason", locale) : reason;
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, Optional.ofNullable(messageReference),
                 Optional.ofNullable(paragraph), duration, deletionDays);
         ModerationAct act = service.create(data);
-        sendModerationToTarget(act, event);
+        sendModerationToTarget(act, locale, jda, resolver);
         executor.accept(data);
         return act;
     }
 
     @Bundle("create")
-    private void sendModerationToTarget(ModerationAct act, ReplyableEvent<?> event) {
-        event.deferReply();
-
+    private void sendModerationToTarget(ModerationAct act, DiscordLocale locale, JDA jda, MessageResolver resolver) {
         Color color = switch (act.type()) {
             case WARN, TIMEOUT -> Replies.WARNING;
             case KICK, TEMP_BAN, BAN -> Replies.ERROR;
         };
-        SeparatedContainer container = SeparatedContainer.of(
+        SeparatedContainer container = new SeparatedContainer(
+                resolver,
+                locale,
                 TextDisplay.of("act-info"),
                 Separator.createDivider(Separator.Spacing.SMALL)
         ).entries(
-                entry("type", type.localized(event.getUserLocale())),
+                entry("type", type.localized(locale, resolver)),
                 entry("description", type)
         ).withAccentColor(color);
 
@@ -205,7 +212,7 @@ public class ModerationActBuilder {
         );
         container.addLast(TextDisplay.of("act-info.footer"));
 
-        Helpers.sendDM(act.user(), event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
+        Helpers.sendDM(act.user(), jda, channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
 
     public enum ModerationActType {
@@ -226,7 +233,11 @@ public class ModerationActBuilder {
         }
 
         public String localized(DiscordLocale locale) {
-            return JDACIntrospection.scopedGet(JDACProperty.MESSAGE_RESOLVER).resolve(localizationKey, locale, Map.of());
+            return localized(locale, JDACIntrospection.scopedGet(JDACProperty.MESSAGE_RESOLVER));
+        }
+
+        public String localized(DiscordLocale locale, MessageResolver resolver) {
+            return resolver.resolve(localizationKey, locale);
         }
     }
 
