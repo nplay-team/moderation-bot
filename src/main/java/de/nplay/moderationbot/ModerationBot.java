@@ -62,8 +62,10 @@ public class ModerationBot extends ServiceModule {
 
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
-        jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
-        jda.addEventListener(new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService()));
+        jda.addEventListener(
+                new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()),
+                new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService())
+        );
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> moderationActService().automaticRevert(guild, resolver),
