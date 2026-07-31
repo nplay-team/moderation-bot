@@ -70,7 +70,9 @@ public class BanCommand {
 
         builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
-        if(until != null) builder.duration(until);
+        if (until != null) {
+            builder.duration(until);
+        }
 
         event.keyValueStore().put(BUILDER, builder);
         replyModal(event, until == null ? "Bann" : "Temp-Bann");
