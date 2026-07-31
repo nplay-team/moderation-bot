@@ -31,7 +31,7 @@ public class TrapChannelEventHandler extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
-        if (event.getChannel() instanceof TextChannel channel) {
+        if (event.getChannel() instanceof TextChannel channel && !event.isWebhookMessage()) {
             var member = Objects.requireNonNull(event.getMember());
             if (isImmune(member) || service.get(channel).isEmpty()) {
                 return;
