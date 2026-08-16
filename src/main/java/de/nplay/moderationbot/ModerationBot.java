@@ -99,7 +99,7 @@ public class ModerationBot extends ServiceModule {
         JDA jda = JDABuilder.createDefault(token)
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT
-                ).setMemberCachePolicy(MemberCachePolicy.ALL)
+                ).setMemberCachePolicy(MemberCachePolicy.NONE)
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
