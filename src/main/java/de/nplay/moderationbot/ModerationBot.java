@@ -100,7 +100,6 @@ public class ModerationBot extends ServiceModule {
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT
                 ).setMemberCachePolicy(MemberCachePolicy.NONE)
-                .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
