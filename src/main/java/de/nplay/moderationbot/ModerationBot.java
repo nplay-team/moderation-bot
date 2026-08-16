@@ -98,8 +98,6 @@ public class ModerationBot extends ServiceModule {
     private JDA jda(String token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(token)
                 .enableIntents(
-                        GatewayIntent.GUILD_MEMBERS,
-                        GatewayIntent.GUILD_PRESENCES,
                         GatewayIntent.MESSAGE_CONTENT
                 ).setMemberCachePolicy(MemberCachePolicy.ALL)
                 .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
