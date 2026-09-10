@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jspecify.annotations.Nullable;
@@ -31,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
+import static net.dv8tion.jda.api.requests.ErrorResponse.NO_MUTUAL_GUILDS;
+import static net.dv8tion.jda.api.requests.ErrorResponse.UNKNOWN_MESSAGE;
 
 /// Builder class for creating instances of [ModerationAct] used for creating a new moderation action.
 public class ModerationActBuilder {
@@ -174,8 +177,14 @@ public class ModerationActBuilder {
         var data = new ModerationActCreateData(targetId, type, issuerId, reason, Optional.ofNullable(messageReference),
                 Optional.ofNullable(paragraph), duration, deletionDays);
         ModerationAct act = service.create(data);
-        sendModerationToTarget(act, locale, jda, resolver);
-        executor.accept(data);
+        try {
+            sendModerationToTarget(act, locale, jda, resolver);
+        } catch (ErrorResponseException e) {
+            if (e.getErrorCode() != NO_MUTUAL_GUILDS.getCode()) throw e;
+            // ignore
+        } finally {
+            executor.accept(data);
+        }
         return act;
     }
 
