@@ -181,6 +181,7 @@ public class ModerationActBuilder {
             sendModerationToTarget(act, locale, jda, resolver);
         } catch (ErrorResponseException e) {
             if (e.getErrorCode() != NO_MUTUAL_GUILDS.getCode()) throw e;
+            log.warn("Cannot send message to {} due to having no mutual guilds.", targetId);
             // ignore
         } finally {
             executor.accept(data);
