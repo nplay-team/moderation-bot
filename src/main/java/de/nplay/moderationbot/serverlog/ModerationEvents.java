@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.TimeFormat;
 
+import java.awt.*;
 import java.sql.Timestamp;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
@@ -61,13 +62,13 @@ public class ModerationEvents {
         return genericModerationEmbed(event, "REVIDIERUNG", act)
                 .placeholders(
                         entry("moderator", act.revertedBy()),
-                        entry("color", EmbedColors.WARNING)
+                        entry("color", Color.decode(EmbedColors.WARNING.hex))
                 );
     }
 
     private static Embed deleteEmbed(ReplyableEvent<?> event, RevertedModerationAct act) {
         Embed embed = genericModerationEmbed(event, "LÖSCHUNG", act)
-                .placeholders(entry("color", EmbedColors.ERROR));
+                .placeholders(entry("color", Color.decode(EmbedColors.ERROR.hex)));
         embed.fields().remove("{ $revertedAt }");
         return embed;
     }
