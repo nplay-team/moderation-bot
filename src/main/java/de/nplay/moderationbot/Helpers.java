@@ -25,7 +25,8 @@ public final class Helpers {
     private static final Collection<ErrorResponse> ALLOWED_ERRORS = List.of(
             ErrorResponse.UNKNOWN_USER,
             ErrorResponse.UNKNOWN_MEMBER,
-            ErrorResponse.CANNOT_SEND_TO_USER
+            ErrorResponse.CANNOT_SEND_TO_USER,
+            ErrorResponse.NO_MUTUAL_GUILDS
     );
 
     public static void sendDM(UserSnowflake user, JDA jda, Function<PrivateChannel, MessageCreateAction> function) {
