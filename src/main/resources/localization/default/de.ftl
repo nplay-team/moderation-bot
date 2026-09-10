@@ -17,7 +17,7 @@ ban = Bann
 invalid-duration = Die angegebene Dauer ist ungültig. Bitte gib eine gültige Dauer an!
 duration-too-long = Die angegebene Dauer ist zu lang! Die maximale Dauer beträgt { $duration }!
 invalid-link = Der angegebene Link ist nicht gültig!
-invalid-act = Die Moderationshandlung mit der ID **#{ $id }** existiert nicht!
+invalid-act = Die Moderationshandlung mit der ID **#{ RAW($id) }** existiert nicht!
 
 ## Other
 default-reason = Kein Grund angegeben
