@@ -16,7 +16,7 @@ revert-info =
     } auf dem **NPLAY** Discord Server wurde aufgehoben!
     .body =
     { "**ID**" }
-    \#{ $id }
+    \#{ RAW($id) }
     { "**Datum**" }
     { $date }
     { "**Begründung**" }
@@ -26,10 +26,10 @@ revert-info =
     { $revertedBy }
 revert-successful =
     ### Erfolgreich
-    Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich rückgängig gemacht!
+    Die Moderationshandlung mit der ID **#{ RAW($id) }** wurde erfolgreich rückgängig gemacht!
 revert-failed =
     ### Fehler
-    Die Moderationshandlung mit der ID **#{ $id }** wurde bereits rückgängig gemacht!
+    Die Moderationshandlung mit der ID **#{ RAW($id) }** wurde bereits rückgängig gemacht!
 
 ## Delete Command
 mod-delete-description = Löscht eine Moderationshandlung
@@ -38,5 +38,5 @@ mod-delete-options-moderation_act-description = Die ID der Moderationshandlung, 
 
 delete-successful =
     ### Erfolgreich
-    Die Moderationshandlung mit der ID **#{ $id }** wurde erfolgreich gelöscht!
+    Die Moderationshandlung mit der ID **#{ RAW($id) }** wurde erfolgreich gelöscht!
 delete-reason = Moderationshandlung wurde gelöscht
