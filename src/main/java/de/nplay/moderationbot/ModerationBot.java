@@ -25,10 +25,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -115,7 +112,7 @@ public class ModerationBot extends ServiceModule {
                 .fallback(Locale.GERMAN)
                 .bundleRoot("localization")
                 .functions(config ->
-                        config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
+                        config.register("RESOLVED_USERSNOWFLAKE", Function.implicit((_, user, _) ->
                                 result(formatUser(jda, user)), UserSnowflake.class)
                         ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
                                 result("%s (%s)".formatted(DATE_TIME_LONG.format(time.millis()), RELATIVE.atTimestamp(time.millis()))), RelativeTime.class)
