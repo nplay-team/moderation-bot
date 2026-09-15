@@ -70,6 +70,8 @@ public class ModlogCommand {
             @Param(optional = true) @Min(1) @Nullable Integer page,
             @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count
     ) {
+        event.deferReply();
+
         user = target;
         member = Helpers.completeOpt(event.getGuild().retrieveMember(target)).orElse(null);
         limit = count != null ? count : limit;
