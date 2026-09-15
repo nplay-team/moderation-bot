@@ -31,7 +31,7 @@ updates:
         patterns:
           - "*"
     ignore:
-      - dependency-name: "gradle"
+      - dependency-name: "gradle-wrapper"
     labels:
       - "t:dependencies"
     assignees:
