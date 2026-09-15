@@ -25,12 +25,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +98,7 @@ public class ModerationBot extends ServiceModule {
         JDA jda = JDABuilder.createDefault(token)
                 .enableIntents(
                         GatewayIntent.MESSAGE_CONTENT
-                ).setMemberCachePolicy(MemberCachePolicy.NONE)
+                ).setMemberCachePolicy(MemberCachePolicy.lru(100).withActiveMemberCache(true))
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
