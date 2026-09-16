@@ -124,14 +124,17 @@ public class ModerationActService extends LifecycleService {
     }
 
     public void automaticRevert(Guild guild, Resolver<String> resolver) {
-        getToRevert().forEach(act -> revert(
-                act,
-                guild,
-                guild.getJDA().getSelfUser(),
-                resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
-                DiscordLocale.GERMAN
-        ));
-        publish(new ModerationEvent.Revert(reverted, true));
+        getToRevert().forEach(act -> {
+            var reverted = revert(
+                    act,
+                    guild,
+                    guild.getJDA().getSelfUser(),
+                    resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
+                    DiscordLocale.GERMAN
+            );
+            publish(new ModerationEvent.Revert(reverted, true));
+        });
+
     }
 
     private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {

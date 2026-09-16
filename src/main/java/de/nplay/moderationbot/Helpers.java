@@ -3,6 +3,7 @@ package de.nplay.moderationbot;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import org.jetbrains.annotations.CheckReturnValue;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
@@ -79,5 +81,10 @@ public final class Helpers {
             return channel.retrieveMessageById(link.messageId()).complete();
         }
         return null;
+    }
+
+    @CheckReturnValue
+    public static MessageCreateAction sendComponentsV2(MessageTopLevelComponent component, MessageChannel channel) {
+        return channel.sendMessageComponents(component).useComponentsV2().setAllowedMentions(List.of());
     }
 }

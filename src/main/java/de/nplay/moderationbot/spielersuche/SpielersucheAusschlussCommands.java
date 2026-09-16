@@ -12,7 +12,6 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService;
-import de.nplay.moderationbot.serverlog.Serverlog;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -40,7 +39,7 @@ public class SpielersucheAusschlussCommands {
 
     @Inject
     public SpielersucheAusschlussCommands(
-            Serverlog serverlog, ModerationActService actService,
+            ModerationActService actService,
             ConfigService configService,
             Lifecycle lifecycle
     ) {

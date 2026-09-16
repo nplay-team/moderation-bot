@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Provides;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
-import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
 import de.nplay.moderationbot.auditlog.LoggingSubscriber;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
 import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
@@ -155,7 +154,7 @@ public class ModerationBot extends ServiceModule {
     }
 
     private void subscribers(Resolver<String> resolver) {
-        lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
+        // lifecycle().subscribe(BotEvent.class, new AuditlogSubscriber(auditlogService()));
 
         lifecycle().subscribe(BotEvent.class, new LoggingSubscriber());
 

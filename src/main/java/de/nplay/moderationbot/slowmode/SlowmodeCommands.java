@@ -28,7 +28,7 @@ public class SlowmodeCommands {
     private final Lifecycle lifecycle;
 
     @Inject
-    public SlowmodeCommands(SlowmodeService slowmodeService) {
+    public SlowmodeCommands(SlowmodeService slowmodeService, Lifecycle lifecycle) {
         this.slowmodeService = slowmodeService;
         this.lifecycle = lifecycle;
     }
