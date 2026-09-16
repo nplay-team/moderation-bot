@@ -47,11 +47,11 @@ public class NotesService extends LifecycleService {
                 .first().orElseThrow();
     }
 
-    public Note create(UserSnowflake target, UserSnowflake issuer, String content) {
+    public Note create(UserSnowflake user, UserSnowflake creator, String content) {
         var result = Query.query("INSERT INTO notes (user_id, creator_id, content, created_at) VALUES (?, ?, ?, ?)")
                 .single(Call.of()
-                        .bind(target.getIdLong())
-                        .bind(issuer.getIdLong())
+                        .bind(user.getIdLong())
+                        .bind(creator.getIdLong())
                         .bind(content)
                         .bind(new Timestamp(System.currentTimeMillis()))
                 ).insertAndGetKeys();

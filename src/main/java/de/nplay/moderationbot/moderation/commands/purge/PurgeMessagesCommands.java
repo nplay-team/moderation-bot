@@ -67,7 +67,7 @@ public class PurgeMessagesCommands {
         );
 
         channel.purgeMessagesById(messageIds);
-        lifecycle.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId),  messageIds.size()));
+        lifecycle.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId), messageIds.size()));
         return messageIds.size();
     }
 

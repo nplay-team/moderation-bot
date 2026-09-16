@@ -5,10 +5,9 @@ import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
-import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
@@ -25,11 +24,14 @@ import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 
+import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHelpers.BUILDER;
+import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHelpers.replyModal;
+
 @Interaction
 @Bundle("create")
 @Permissions(BotPermissions.MODERATION_CREATE)
 @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
-public class BanCommand extends CreateCommand {
+public class BanCommand {
 
     private final ModerationActService actService;
 
@@ -68,7 +70,11 @@ public class BanCommand extends CreateCommand {
 
         builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
 
-        event.kv().put(BUILDER, builder);
+        if (until != null) {
+            builder.duration(until);
+        }
+
+        event.keyValueStore().put(BUILDER, builder);
         replyModal(event, until == null ? "Bann" : "Temp-Bann");
     }
 }

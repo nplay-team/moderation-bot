@@ -4,17 +4,18 @@ import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.Replies.RelativeTime;
+import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.notes.NotesService;
-import de.nplay.moderationbot.notes.NotesService.Note;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.*;
+import io.github.kaktushose.jdac.components.SequencedTextDisplay;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.CommandEvent;
 import io.github.kaktushose.jdac.dispatching.events.interactions.ComponentEvent;
@@ -32,12 +33,11 @@ import net.dv8tion.jda.api.components.thumbnail.Thumbnail;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.utils.ImageProxy;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
@@ -46,19 +46,21 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_READ)
 public class ModlogCommand {
 
+    private final NotesService notesService;
+    private final ModerationActService actService;
+    private final ConfigService configService;
     private int offset = 0;
     private int limit = 5;
     private int page = 1;
     private int maxPage = 1;
     private @Nullable User user;
     private @Nullable Member member;
-    private final NotesService notesService;
-    private final ModerationActService actService;
 
     @Inject
-    public ModlogCommand(NotesService notesService, ModerationActService actService) {
+    public ModlogCommand(NotesService notesService, ModerationActService actService, ConfigService configService) {
         this.notesService = notesService;
         this.actService = actService;
+        this.configService = configService;
     }
 
     @Command(value = "mod log")
@@ -68,13 +70,15 @@ public class ModlogCommand {
             @Param(optional = true) @Min(1) @Nullable Integer page,
             @Param(optional = true) @Min(1) @Max(25) @Nullable Integer count
     ) {
+        event.deferReply();
+
         user = target;
         member = Helpers.completeOpt(event.getGuild().retrieveMember(target)).orElse(null);
+        limit = count != null ? count : limit;
+
         if (page != null) {
-            count = count == null ? limit : count;
-            offset = (page - 1) * count;
+            offset = (page - 1) * limit;
             this.page = page;
-            limit = count;
         }
 
         maxPage = (int) Math.ceil(actService.count(target) / (double) limit);
@@ -115,60 +119,49 @@ public class ModlogCommand {
     }
 
     private void replyModlog(ReplyableEvent<?> event) {
-        Thumbnail thumbnail = Thumbnail.fromFile(avatarUrl().downloadAsFileUpload("avatar.png"));
-
-        SeparatedContainer container = new SeparatedContainer(
+        SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("modlog"),
-                Separator.createDivider(Spacing.LARGE),
+                Separator.createDivider(Spacing.LARGE)
+        ).entries(
                 entry("target", target()),
                 entry("id", target().getIdLong()),
                 entry("createdAt", RelativeTime.of(target().getTimeCreated())),
-                joinedAt()
-        ).withAccentColor(Replies.STANDARD).add(Section.of(thumbnail, TextDisplay.of("modlog.header")));
+                joinedAt(),
+                roles(target())
+        ).withAccentColor(
+                Replies.STANDARD
+        ).add(
+                Section.of(Thumbnail.fromUrl(avatarUrl()), TextDisplay.of("modlog.header"))
+        );
 
-        container.append(TextDisplay.of("modlog.notes"));
-        List<Note> notes = notesService.getAll(target());
-        if (!notes.isEmpty()) {
-            boolean first = true;
-            for (Note note : notes) {
-                container.append(
-                        note.toTextDisplay(event.messageResolver(), event.getUserLocale()),
-                        first ? null : Separator.createInvisible(Spacing.SMALL)
-                );
-                first = false;
-            }
-        } else {
-            container.add(TextDisplay.of("modlog.empty"));
+        SequencedTextDisplay noteDisplay = SequencedTextDisplay.of("modlog.notes");
+        var notes = notesService.getAll(target());
+        notes.forEach(note -> noteDisplay.add(note.toTextDisplay(event.messageResolver(), event.getUserLocale())));
+        if (notes.isEmpty()) {
+            noteDisplay.add("modlog.empty");
         }
+        container.add(noteDisplay);
 
-        container.append(TextDisplay.of("modlog.moderations"));
-        List<ModerationAct> moderationActs = actService.get(target(), limit, offset);
-        if (!moderationActs.isEmpty()) {
-            boolean first = true;
-            for (ModerationAct act : moderationActs) {
-                container.append(
-                        toTextDisplay(event, act),
-                        first ? null : Separator.createInvisible(Spacing.SMALL)
-                );
-                first = false;
-            }
-        } else {
-            container.add(TextDisplay.of("modlog.empty"));
+        SequencedTextDisplay moderationDisplay = SequencedTextDisplay.of("modlog.moderations");
+        var moderationActs = actService.get(target(), limit, offset);
+        moderationActs.forEach(act -> moderationDisplay.add(toTextDisplay(event, act)));
+        if (moderationActs.isEmpty()) {
+            moderationDisplay.add("modlog.empty");
         }
+        container.add(moderationDisplay);
 
-        if (!(maxPage < 2)) {
-            List<SelectOption> pages = new ArrayList<SelectOption>();
-            for (int i = 2; i <= maxPage && i < 26; i++) {
-                pages.add(SelectOption.of("Seite " + i, Integer.toString(i)));
-            }
+        if (maxPage > 1) {
+            List<SelectOption> pages = IntStream.range(1, maxPage + 1)
+                    .filter(it -> it != page)
+                    .mapToObj(it -> SelectOption.of("Seite %s".formatted(it), Integer.toString(it)))
+                    .toList();
 
-            container.append(ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages)));
-            container.add(ActionRow.of(
-                    Component.button("back").enabled(page > 1),
-                    Component.button("next").enabled(page < maxPage)
-            )).footer(
+            container.add(
+                    ActionRow.of(Component.stringSelect("selectPage").enabled(maxPage > 1).selectOptions(pages))
+            ).addUnseparated(
+                    ActionRow.of(Component.button("back").enabled(page > 1), Component.button("next").enabled(page < maxPage))
+            ).addLast(
                     TextDisplay.of("modlog.pages"),
-                    true,
                     entry("page", page),
                     entry("maxPage", maxPage)
             );
@@ -185,10 +178,10 @@ public class ModlogCommand {
     }
 
     @SuppressWarnings("PatternVariableHidesField")
-    private ImageProxy avatarUrl() {
+    private String avatarUrl() {
         return switch (target()) {
-            case Member member -> member.getEffectiveAvatar();
-            case User user -> user.getEffectiveAvatar();
+            case Member member -> member.getEffectiveAvatarUrl();
+            case User user -> user.getEffectiveAvatarUrl();
             default -> throw new IllegalStateException("Unexpected value: " + target());
         };
     }
@@ -200,6 +193,28 @@ public class ModlogCommand {
         return entry("joinedAt", RelativeTime.of(member.getTimeJoined()));
     }
 
+    private Entry roles(UserSnowflake snowflake) {
+        if (!(snowflake instanceof Member member)) {
+            return entry("roles", "empty");
+        }
+
+        var spielersucheAusschlussRoleId = configService.get(ConfigService.BotConfig.SPIELERSUCHE_AUSSCHLUSS_ROLLE);
+        if (spielersucheAusschlussRoleId.isEmpty()) {
+            return entry("roles", "empty");
+        }
+
+        if (
+                member
+                        .getRoles()
+                        .stream()
+                        .noneMatch(it -> it.getId().equals(spielersucheAusschlussRoleId.get()))
+        ) {
+            return entry("roles", "empty");
+        }
+
+        return entry("roles", "<@&%s>".formatted(spielersucheAusschlussRoleId.get()));
+    }
+
     private TextDisplay toTextDisplay(ReplyableEvent<?> event, ModerationAct act) {
         var entries = Entry.toMap(
                 entry("id", act.id()),
@@ -208,9 +223,12 @@ public class ModlogCommand {
                 entry("reason", act.reason()),
                 entry("issuer", act.issuer())
         );
-        if (act instanceof RevertedModerationAct reverted
-            && !reverted.revertedBy().getId().equals(JDACIntrospection.scopedGet(JDACProperty.JDA).getSelfUser().getId())
-        ) {
+        var jda = JDACIntrospection.scopedGet(JDACProperty.JDA);
+        var isReverted = act instanceof RevertedModerationAct reverted
+                && !reverted.revertedBy().getId().equals(jda.getSelfUser().getId());
+
+        if (isReverted) {
+            var reverted = (RevertedModerationAct) act;
             entries.putAll(Entry.toMap(
                     entry("reverter", reverted.revertedBy()),
                     entry("revertedAt", reverted.revertedAt()),
@@ -218,7 +236,7 @@ public class ModlogCommand {
             ));
         }
         return TextDisplay.of(event.resolve(
-                act instanceof RevertedModerationAct ? "entry.reverted" : "entry",
+                isReverted ? "entry.reverted" : "entry",
                 entries
         ));
     }

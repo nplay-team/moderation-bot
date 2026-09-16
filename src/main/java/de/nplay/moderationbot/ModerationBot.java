@@ -4,7 +4,6 @@ import com.google.inject.Guice;
 import com.google.inject.Provides;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
-import de.nplay.moderationbot.auditlog.AuditlogService.UnresolvedSnowflake;
 import de.nplay.moderationbot.auditlog.AuditlogSubscriber;
 import de.nplay.moderationbot.auditlog.LoggingSubscriber;
 import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
@@ -14,6 +13,7 @@ import de.nplay.moderationbot.serverlog.BotEventSubscriber;
 import de.nplay.moderationbot.serverlog.ModerationEventSubscriber;
 import de.nplay.moderationbot.serverlog.ServerlogSubscriber;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
+import de.nplay.moderationbot.trap.TrapChannelEventHandler;
 import dev.goldmensch.fluava.Fluava;
 import dev.goldmensch.fluava.Result;
 import dev.goldmensch.fluava.Result.Success;
@@ -31,16 +31,17 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -49,7 +50,7 @@ import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.utils.TimeFormat.*;
 
-public class ModerationBot extends DatabaseModule {
+public class ModerationBot extends ServiceModule {
 
     private static final Logger log = LoggerFactory.getLogger(ModerationBot.class);
     private final JDA jda;
@@ -62,6 +63,10 @@ public class ModerationBot extends DatabaseModule {
 
         JDACommands jdaCommands = jdaCommands(fluava());
         MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
+        jda.addEventListener(
+                new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()),
+                new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService())
+        );
 
         subscribers(resolver);
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
@@ -96,16 +101,13 @@ public class ModerationBot extends DatabaseModule {
 
     private JDA jda(String token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(token)
-                            .enableIntents(
-                                    GatewayIntent.GUILD_MEMBERS,
-                                    GatewayIntent.GUILD_PRESENCES,
-                                    GatewayIntent.MESSAGE_CONTENT
-                            ).setMemberCachePolicy(MemberCachePolicy.ALL)
-                            .enableCache(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS)
-                            .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
-                            .setStatus(OnlineStatus.DO_NOT_DISTURB)
-                            .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
-                            .build().awaitReady();
+                .enableIntents(
+                        GatewayIntent.MESSAGE_CONTENT
+                ).setMemberCachePolicy(MemberCachePolicy.lru(100).withActiveMemberCache(true))
+                .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
+                .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
+                .build().awaitReady();
 
         Runtime.getRuntime().addShutdownHook(new Thread(jda::shutdown));
 
@@ -117,14 +119,12 @@ public class ModerationBot extends DatabaseModule {
                 .fallback(Locale.GERMAN)
                 .bundleRoot("localization")
                 .functions(config ->
-                        config.register("RESOLVED_USER", Function.implicit((_, user, _) ->
+                        config.register("RESOLVED_USERSNOWFLAKE", Function.implicit((_, user, _) ->
                                 result(formatUser(jda, user)), UserSnowflake.class)
                         ).register("RELATIVE_TIME", Function.implicit((_, time, _) ->
                                 result("%s (%s)".formatted(DATE_TIME_LONG.format(time.millis()), RELATIVE.atTimestamp(time.millis()))), RelativeTime.class)
                         ).register("ABSOLUTE_TIME", Function.implicit((_, time, _) ->
-                                result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class)
-                        ).register("UNRESOLVED_SNOWFLAKE", Function.implicit((_, snowflake, _) ->
-                                result(snowflake.getId()), UnresolvedSnowflake.class))
+                                result(DATE_TIME_SHORT.format(time.millis())), AbsoluteTime.class))
                 ).build();
     }
 

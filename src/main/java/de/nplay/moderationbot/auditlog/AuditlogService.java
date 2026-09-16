@@ -62,10 +62,10 @@ public class AuditlogService {
 
     public List<AuditlogEntry> getAll(AuditlogType type, int limit, int offset, Guild guild) {
         return Query.query("""
-                                SELECT * FROM auditlog
-                                WHERE type = :type::AUDITLOG_TYPE
-                                ORDER BY created_at DESC LIMIT :limit OFFSET :offset
-                                """
+                        SELECT * FROM auditlog
+                        WHERE type = :type::AUDITLOG_TYPE
+                        ORDER BY created_at DESC LIMIT :limit OFFSET :offset
+                        """
                 ).single(Call.of()
                         .bind("type", type)
                         .bind("limit", limit)

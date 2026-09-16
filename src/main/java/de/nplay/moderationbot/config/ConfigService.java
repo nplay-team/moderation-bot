@@ -25,7 +25,6 @@ public class ConfigService extends LifecycleService {
 
     public void set(BotConfig config, String value, UserSnowflake issuer) {
         publish(new ConfigEvent(AuditlogType.CONFIG_UPDATE, issuer, config, get(config).orElse(""), value));
-
         Query.query("INSERT INTO configs (name, value) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value")
                 .single(Call.of().bind(config).bind(value))
                 .insert();

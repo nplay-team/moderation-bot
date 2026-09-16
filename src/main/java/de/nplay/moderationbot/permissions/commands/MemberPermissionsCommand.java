@@ -51,7 +51,7 @@ public class MemberPermissionsCommand extends PermissionsCommand {
     @Permissions(BotPermissions.PERMISSION_MANAGE)
     @Button(value = "confirm.confirm", style = ButtonStyle.DANGER)
     public void onConfirm(ComponentEvent event) {
-        permissionsService.updateUser(member, 0, event.getUser());
+        permissionsService.updateUser(member, 0);
         replyList(event, permissionsService.getCombined(member), member.getEffectiveName());
     }
 
@@ -78,7 +78,7 @@ public class MemberPermissionsCommand extends PermissionsCommand {
     @Button(value = "edit.save", style = ButtonStyle.SUCCESS)
     public void onSave(ComponentEvent event) {
         if (newPermissions != null) {
-            permissionsService.updateUser(member, newPermissions, event.getUser());
+            permissionsService.updateUser(member, newPermissions);
         }
         replyList(event, member);
     }

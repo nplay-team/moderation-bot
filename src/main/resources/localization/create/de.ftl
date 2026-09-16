@@ -71,7 +71,7 @@ reason-label = Begründung der Moderationshandlung
 executed =
     ### { $type } erfolgreich ausgeführt
     { "**ID**" }
-    \#{ $id }
+    \#{ RAW($id) }
     { "**Betroffener Nutzer**" }
     { $target }
     { "**Begründung**" }
@@ -98,7 +98,7 @@ act-info =
     }
     .reason =
     { "**ID**" }
-    \#{ $id }
+    \#{ RAW($id) }
     { "**Datum**" }
     { $date }
     { "**Begründung**" }

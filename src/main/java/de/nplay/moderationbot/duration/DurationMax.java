@@ -17,4 +17,3 @@ public @interface DurationMax {
 
     ChronoUnit unit();
 }
-

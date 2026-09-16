@@ -28,7 +28,7 @@ public class SlowmodeCommands {
     private final Lifecycle lifecycle;
 
     @Inject
-    public SlowmodeCommands(SlowmodeService slowmodeService, Lifecycle lifecycle) {
+    public SlowmodeCommands(SlowmodeService slowmodeService) {
         this.slowmodeService = slowmodeService;
         this.lifecycle = lifecycle;
     }
@@ -55,6 +55,11 @@ public class SlowmodeCommands {
             Duration duration,
             Optional<GuildChannel> channel
     ) {
+        if (!duration.isPositive()) {
+            slowmodeRemoveCommand(event, channel);
+            return;
+        }
+
         var guildChannel = channel.orElse(event.getGuildChannel());
         slowmodeService.set(guildChannel, duration);
         lifecycle.publish(new SlowmodeEvent(AuditlogType.SLOWMODE_UPDATE, event.getUser(), guildChannel, duration));
@@ -64,7 +69,7 @@ public class SlowmodeCommands {
     @Command("remove")
     public void slowmodeRemoveCommand(CommandEvent event, Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
-        slowmodeService.delete(guildChannel);
+        slowmodeService.removeSlowmode(guildChannel);
         lifecycle.publish(new SlowmodeEvent(AuditlogType.SLOWMODE_UPDATE, event.getUser(), guildChannel, null));
         event.reply(Replies.standard("remove"), entry("channel", guildChannel));
     }

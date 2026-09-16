@@ -15,7 +15,7 @@ import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder.Moderati
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;
 import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
-import de.nplay.moderationbot.util.SeparatedContainer;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.separator.Separator;
@@ -124,16 +124,14 @@ public class ModerationActService extends LifecycleService {
     }
 
     public void automaticRevert(Guild guild, Resolver<String> resolver) {
-        getToRevert().forEach(act -> {
-            RevertedModerationAct reverted = revert(
-                    act,
-                    guild,
-                    guild.getJDA().getSelfUser(),
-                    resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
-                    DiscordLocale.GERMAN
-            );
-            publish(new ModerationEvent.Revert(reverted, true));
-        });
+        getToRevert().forEach(act -> revert(
+                act,
+                guild,
+                guild.getJDA().getSelfUser(),
+                resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
+                DiscordLocale.GERMAN
+        ));
+        publish(new ModerationEvent.Revert(reverted, true));
     }
 
     private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {
@@ -142,12 +140,12 @@ public class ModerationActService extends LifecycleService {
         }
 
         Query.query("UPDATE moderations SET reverted = true, reverted_by = ?, reverted_at = ?, revert_reason = ? WHERE id = ?")
-             .single(Call.of()
-                         .bind(revertedBy.getIdLong())
-                         .bind(new Timestamp(System.currentTimeMillis()))
-                         .bind(reason)
-                         .bind(act.id()))
-             .update();
+                .single(Call.of()
+                        .bind(revertedBy.getIdLong())
+                        .bind(new Timestamp(System.currentTimeMillis()))
+                        .bind(reason)
+                        .bind(act.id()))
+                .update();
 
         switch (act.type()) {
             case BAN, TEMP_BAN -> Helpers.complete(guild.unban(act.user()));
@@ -160,20 +158,21 @@ public class ModerationActService extends LifecycleService {
     }
 
     private void sendRevertMessageToUser(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {
-        SeparatedContainer container = new SeparatedContainer(
+
+        SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("revert$revert-info"),
-                Separator.createDivider(Separator.Spacing.SMALL),
-                entry("type", act.type().localized(locale))
-        ).withAccentColor(Replies.SUCCESS);
-        container.append(
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(entry("type", act.type().localized(locale))).withAccentColor(Replies.SUCCESS);
+
+        container.add(
                 TextDisplay.of("revert$revert-info.body"),
                 entry("id", act.id()),
                 entry("date", act.createdAt()),
                 entry("reason", reason)
         );
-        container.append(TextDisplay.of("revert$revert-info.reverter"), entry("revertedBy", revertedBy));
+        container.add(TextDisplay.of("revert$revert-info.reverter"), entry("revertedBy", revertedBy));
 
-        Helpers.sendDM(act.user(), guild.getJDA(), container);
+        Helpers.sendDM(act.user(), guild.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
     }
 
     private ModerationAct map(Row row) throws SQLException {

@@ -1,27 +1,27 @@
-CREATE TYPE AUDITLOG_TYPE AS ENUM (
-    'MODERATION_CREATE',
-    'MODERATION_REVERT',
-    'MODERATION_DELETE',
-    'MESSAGE_PURGE',
-    'NOTE_CREATE',
-    'NOTE_DELETE',
-    'PERMISSIONS_USER_UPDATE',
-    'PERMISSIONS_ROLE_UPDATE',
-    'CONFIG_UPDATE',
-    'SLOWMODE_UPDATE',
-    'SPIELERSUCHE_AUSSCHLUSS',
-    'SPIELERSUCHE_FREIGABE'
-    );
+DO
+$$
+    DECLARE
+        botId moderations.reverted_by%TYPE;
+    BEGIN
+        -- we detect the bot id by finding the most occurring reverted_by id (should be the bot)
+        SELECT reverted_by
+        INTO botId
+        FROM moderations
+        WHERE reverted_by IS NOT NULL
+        GROUP BY reverted_by
+        ORDER BY count(*) desc, reverted_by
+        LIMIT 1;
 
-CREATE TABLE auditlog
-(
-    id         BIGSERIAL     NOT NULL PRIMARY KEY,
-    type       AUDITLOG_TYPE NOT NULL,
-    created_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    issuer_id  BIGINT        NOT NULL,
-    target_id  BIGINT        NOT NULL,
-    payload    JSONB
-);
+        RAISE INFO 'Detected botId: %', botId;
 
-CREATE INDEX idx_auditlog_query_issuer ON auditlog (issuer_id, type);
-CREATE INDEX idx_auditlog_query_target ON auditlog (target_id, type);
+        UPDATE moderations
+        SET reverted_by = botId
+        WHERE reverted_by IS NULL
+          and reverted = true;
+    END;
+$$;
+
+ALTER TABLE moderations
+    ADD CONSTRAINT revertedBy_notNull CHECK (
+        (reverted_by IS NOT NULL) = reverted
+        );

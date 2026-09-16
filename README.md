@@ -7,7 +7,7 @@
 
 <img align="right" src="https://github.com/user-attachments/assets/31d3691b-c79d-42bb-8bca-437aa1e030f0?s=400&u=c3ca1781422297c0f4f4b236e634b4864d431943&v=4" height=200 width=200>
 
-# NPLAY-Moderation
+# NPLAY-Moderation 
 
 This bot was created specifically for the Discord [server](https://discord.gg/qcpeZQhJf5) of the german YouTuber and
 Twitch Streamer [NPLAY](https://www.youtube.com/user/nordrheintvplay). The sole purpose of the bot is to provide custom

@@ -6,10 +6,9 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.duration.DurationMax;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
-import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
+import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -23,11 +22,14 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHelpers.BUILDER;
+import static de.nplay.moderationbot.moderation.commands.create.CreateCommandHelpers.replyModal;
+
 
 @Interaction
 @Bundle("create")
 @Permissions(BotPermissions.MODERATION_CREATE)
-public class TimeoutCommand extends CreateCommand {
+public class TimeoutCommand {
 
     private final ModerationActService actService;
 
@@ -51,7 +53,7 @@ public class TimeoutCommand extends CreateCommand {
             return;
         }
 
-        event.kv().put(BUILDER, ModerationActBuilder.timeout(target, event.getUser())
+        event.keyValueStore().put(BUILDER, ModerationActBuilder.timeout(target, event.getUser())
                 .duration(until)
                 .paragraph(paragraph)
                 .messageReference(Helpers.retrieveMessage(event, messageLink)));

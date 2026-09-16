@@ -31,6 +31,7 @@ public class RevertCommand {
     @Command("mod revert")
     @Permissions(BotPermissions.MODERATION_REVERT)
     public void revertModeration(CommandEvent event, @Param(type = OptionType.NUMBER) ModerationAct moderationAct, String reason) {
+        event.deferReply();
         if (moderationAct instanceof RevertedModerationAct) {
             event.reply(Replies.error("revert-failed"), entry("id", moderationAct.id()));
             return;

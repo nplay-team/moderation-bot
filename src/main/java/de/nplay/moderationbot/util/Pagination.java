@@ -69,7 +69,7 @@ public class Pagination<T> {
     public Container current() {
         SeparatedContainer container = new SeparatedContainer(header, separator, placeholders.toArray(Entry[]::new));
 
-        if (separatorSetting == SeparatorSetting.ALWAYS ||separatorSetting == SeparatorSetting.BODY) {
+        if (separatorSetting == SeparatorSetting.ALWAYS || separatorSetting == SeparatorSetting.BODY) {
             container.add(separator);
         }
         bodySupplier.apply(page, offset).forEach(it -> add(container, it));

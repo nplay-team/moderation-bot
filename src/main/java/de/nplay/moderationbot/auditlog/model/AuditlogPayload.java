@@ -93,8 +93,10 @@ public sealed interface AuditlogPayload {
         }
     }
 
-    record ModerationRevert(long id, long revertedBy, String revertingReason,
-                            boolean automatic) implements AuditlogPayload {
+    record ModerationRevert(
+            long id, long revertedBy, String revertingReason,
+            boolean automatic
+    ) implements AuditlogPayload {
 
         public ModerationRevert(RevertedModerationAct act, boolean automatic) {
             this(act.id(), act.revertedBy().getIdLong(), act.revertingReason(), automatic);

@@ -1,11 +1,11 @@
 package de.nplay.moderationbot.moderation;
 
 import com.google.inject.Inject;
+import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.interactions.AutoComplete;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
 import io.github.kaktushose.jdac.dispatching.events.interactions.AutoCompleteEvent;
-import de.nplay.moderationbot.rules.RuleService;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.util.function.Function;

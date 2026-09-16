@@ -11,7 +11,7 @@ public record MessagePurgeEvent(
         MessageChannel target,
         long pivotMessageId,
         @Nullable Integer amount
-        ) implements BotEvent {
+) implements BotEvent {
 
     @Override
     public AuditlogType type() {
