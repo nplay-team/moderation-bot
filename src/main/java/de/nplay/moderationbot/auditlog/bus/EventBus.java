@@ -1,10 +1,10 @@
-package de.nplay.moderationbot.auditlog.lifecycle;
+package de.nplay.moderationbot.auditlog.bus;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Lifecycle {
+public class EventBus {
 
     private final Map<Class<? extends BotEvent>, Set<Subscriber<BotEvent>>> subscriptions = new ConcurrentHashMap<>();
 

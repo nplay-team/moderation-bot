@@ -1,9 +1,9 @@
 package de.nplay.moderationbot.auditlog;
 
 import de.nplay.moderationbot.auditlog.AuditlogService.AuditlogCreateData;
-import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
-import de.nplay.moderationbot.auditlog.lifecycle.Subscriber;
-import de.nplay.moderationbot.auditlog.lifecycle.events.*;
+import de.nplay.moderationbot.auditlog.bus.BotEvent;
+import de.nplay.moderationbot.auditlog.bus.Subscriber;
+import de.nplay.moderationbot.auditlog.bus.events.*;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload.*;
 

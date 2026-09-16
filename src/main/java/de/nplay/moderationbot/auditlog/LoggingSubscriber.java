@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.auditlog;
 
-import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
-import de.nplay.moderationbot.auditlog.lifecycle.Subscriber;
+import de.nplay.moderationbot.auditlog.bus.BotEvent;
+import de.nplay.moderationbot.auditlog.bus.Subscriber;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

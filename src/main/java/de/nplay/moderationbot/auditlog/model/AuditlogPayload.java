@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.auditlog.model;
 
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.auditlog.lifecycle.events.MessagePurgeEvent;
+import de.nplay.moderationbot.auditlog.bus.events.MessagePurgeEvent;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;

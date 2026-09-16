@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.auditlog.lifecycle;
+package de.nplay.moderationbot.auditlog.bus;
 
 public interface Subscriber<T extends BotEvent> {
 

@@ -3,15 +3,14 @@ package de.nplay.moderationbot.spielersuche;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
-import de.nplay.moderationbot.auditlog.lifecycle.events.SpielersucheAusschlussEvent;
-import de.nplay.moderationbot.auditlog.lifecycle.events.SpielersucheFreigabeEvent;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
+import de.nplay.moderationbot.auditlog.bus.events.SpielersucheAusschlussEvent;
+import de.nplay.moderationbot.auditlog.bus.events.SpielersucheFreigabeEvent;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.rules.RuleService;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -36,17 +35,17 @@ public class SpielersucheAusschlussCommands {
 
     private final ModerationActService actService;
     private final ConfigService configService;
-    private final Lifecycle lifecycle;
+    private final EventBus eventBus;
 
     @Inject
     public SpielersucheAusschlussCommands(
             ModerationActService actService,
             ConfigService configService,
-            Lifecycle lifecycle
+            EventBus eventBus
     ) {
         this.actService = actService;
         this.configService = configService;
-        this.lifecycle = lifecycle;
+        this.eventBus = eventBus;
     }
 
     @Command("ausschluss")
@@ -69,7 +68,7 @@ public class SpielersucheAusschlussCommands {
                 .paragraph(paragraph)
                 .execute(actService, event);
 
-        lifecycle.publish(new SpielersucheAusschlussEvent(target, event.getUser()));
+        eventBus.publish(new SpielersucheAusschlussEvent(target, event.getUser()));
         event.reply(Replies.success("block"), entry("target", target));
     }
 
@@ -100,7 +99,7 @@ public class SpielersucheAusschlussCommands {
         ).add(TextDisplay.of("unblock-target.body"));
         Helpers.sendDM(target, event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
 
-        lifecycle.publish(new SpielersucheFreigabeEvent(target, event.getUser()));
+        eventBus.publish(new SpielersucheFreigabeEvent(target, event.getUser()));
         event.reply(Replies.success("unblock"), entry("target", target));
     }
 

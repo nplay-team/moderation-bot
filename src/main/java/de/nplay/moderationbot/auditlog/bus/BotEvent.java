@@ -1,4 +1,4 @@
-package de.nplay.moderationbot.auditlog.lifecycle;
+package de.nplay.moderationbot.auditlog.bus;
 
 import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import net.dv8tion.jda.api.entities.ISnowflake;

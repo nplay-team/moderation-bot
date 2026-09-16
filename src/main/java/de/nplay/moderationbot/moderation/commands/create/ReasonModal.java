@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import com.google.inject.Inject;
-import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
+import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;

@@ -5,9 +5,9 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
-import de.nplay.moderationbot.auditlog.lifecycle.LifecycleService;
-import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
+import de.nplay.moderationbot.auditlog.bus.EventBusService;
+import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
@@ -32,13 +32,13 @@ import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-public class ModerationActService extends LifecycleService {
+public class ModerationActService extends EventBusService {
 
     private final MessageReferenceService referenceService;
     private final RuleService ruleService;
 
-    public ModerationActService(MessageReferenceService referenceService, RuleService ruleService, Lifecycle lifecycle) {
-        super(lifecycle);
+    public ModerationActService(MessageReferenceService referenceService, RuleService ruleService, EventBus eventBus) {
+        super(eventBus);
         this.referenceService = referenceService;
         this.ruleService = ruleService;
     }

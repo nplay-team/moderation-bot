@@ -2,8 +2,8 @@ package de.nplay.moderationbot.moderation.commands.purge;
 
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
-import de.nplay.moderationbot.auditlog.lifecycle.events.MessagePurgeEvent;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
+import de.nplay.moderationbot.auditlog.bus.events.MessagePurgeEvent;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
@@ -30,11 +30,11 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class PurgeMessagesCommands {
 
-    private final Lifecycle lifecycle;
+    private final EventBus eventBus;
 
     @Inject
-    public PurgeMessagesCommands(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
+    public PurgeMessagesCommands(EventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
     @Command("mod purge messages")
@@ -67,7 +67,7 @@ public class PurgeMessagesCommands {
         );
 
         channel.purgeMessagesById(messageIds);
-        lifecycle.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId), messageIds.size()));
+        eventBus.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId), messageIds.size()));
         return messageIds.size();
     }
 

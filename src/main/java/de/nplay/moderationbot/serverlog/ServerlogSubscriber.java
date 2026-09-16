@@ -1,8 +1,8 @@
 package de.nplay.moderationbot.serverlog;
 
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
-import de.nplay.moderationbot.auditlog.lifecycle.Subscriber;
+import de.nplay.moderationbot.auditlog.bus.BotEvent;
+import de.nplay.moderationbot.auditlog.bus.Subscriber;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.message.resolver.Resolver;

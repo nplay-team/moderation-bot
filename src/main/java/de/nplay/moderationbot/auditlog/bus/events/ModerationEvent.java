@@ -1,6 +1,6 @@
-package de.nplay.moderationbot.auditlog.lifecycle.events;
+package de.nplay.moderationbot.auditlog.bus.events;
 
-import de.nplay.moderationbot.auditlog.lifecycle.BotEvent;
+import de.nplay.moderationbot.auditlog.bus.BotEvent;
 import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.RevertedModerationAct;

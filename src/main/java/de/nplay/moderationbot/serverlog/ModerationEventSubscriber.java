@@ -1,7 +1,7 @@
 package de.nplay.moderationbot.serverlog;
 
 import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.auditlog.lifecycle.events.ModerationEvent;
+import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 
