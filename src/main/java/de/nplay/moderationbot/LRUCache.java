@@ -31,6 +31,6 @@ public class LRUCache<K, V> {
     }
 
     public Optional<V> get(K key) {
-        return Optional.of(map.get(key));
+        return Optional.ofNullable(map.get(key));
     }
 }

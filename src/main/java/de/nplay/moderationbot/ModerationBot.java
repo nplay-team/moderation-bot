@@ -54,7 +54,7 @@ public class ModerationBot extends ServiceModule {
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
-    private final LRUCache<UserSnowflake, User> userCache = new LRUCache<>(100);
+    private final LRUCache<Long, User> userCache = new LRUCache<>(100);
 
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
@@ -156,9 +156,9 @@ public class ModerationBot extends ServiceModule {
             return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
         }
 
-        var resolved = userCache.get(user).orElseGet(() -> {
+        var resolved = userCache.get(user.getIdLong()).orElseGet(() -> {
             var jdaUser = jda.retrieveUserById(user.getId()).complete();
-            userCache.put(user, jdaUser);
+            userCache.put(user.getIdLong(), jdaUser);
             return jdaUser;
         });
 
