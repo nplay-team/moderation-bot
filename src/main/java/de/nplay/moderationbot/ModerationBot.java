@@ -54,6 +54,8 @@ public class ModerationBot extends ServiceModule {
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
+    private final LRUCache<UserSnowflake, User> fluavaUserCache = new LRUCache<>(100);
+
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
@@ -153,7 +155,14 @@ public class ModerationBot extends ServiceModule {
         if (user instanceof User resolved) {
             return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
         }
-        return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
+
+        var resolved = fluavaUserCache.get(user).orElseGet(() -> {
+            var jdaUser = jda.retrieveUserById(user.getId()).complete();
+            fluavaUserCache.put(user, jdaUser);
+            return jdaUser;
+        });
+
+        return "%s (%s)".formatted(user.getAsMention(), resolved.getEffectiveName());
     }
 
     @Deprecated
