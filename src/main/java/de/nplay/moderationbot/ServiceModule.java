@@ -8,6 +8,7 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.auditlog.AuditlogService;
 import de.nplay.moderationbot.auditlog.lifecycle.Lifecycle;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
@@ -35,6 +36,7 @@ public class ServiceModule extends AbstractModule {
     private final ConfigService configService;
     private final RuleService ruleService;
     private final TrapChannelService trapChannelService;
+    private final AuditlogService auditlogService;
 
     public ServiceModule() {
         initialize();
@@ -47,6 +49,7 @@ public class ServiceModule extends AbstractModule {
         slowmodeService = new SlowmodeService();
         configService = new ConfigService(lifecycle);
         trapChannelService = new TrapChannelService();
+        auditlogService = new AuditlogService();
     }
 
     @Provides
@@ -92,6 +95,11 @@ public class ServiceModule extends AbstractModule {
     @Provides
     public TrapChannelService trapChannelService() {
         return trapChannelService;
+    }
+
+    @Provides
+    public AuditlogService auditlogService() {
+        return auditlogService;
     }
 
     private void initialize() {

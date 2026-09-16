@@ -12,6 +12,7 @@ import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService;
+import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -51,7 +52,7 @@ public class SpielersucheAusschlussCommands {
     @Command("ausschluss")
     @Permissions(BotPermissions.MODERATION_CREATE)
     public void spielersucheAusschluss(CommandEvent event, Member target, @Param(optional = true,
-            type = OptionType.INTEGER) RuleService.RuleParagraph paragraph) {
+            type = OptionType.INTEGER) RuleParagraph paragraph) {
         var role = role(event);
         if (role.isEmpty()) {
             event.reply(Replies.error("role-error"));

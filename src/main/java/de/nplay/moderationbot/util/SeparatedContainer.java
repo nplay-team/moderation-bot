@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.List;
 
 /// This is a proof of concept and will probably get moved to JDA-Commands
+@Deprecated
 public class SeparatedContainer extends AbstractComponentImpl implements Container, MessageTopLevelComponentUnion {
 
     private final ComponentResolver<Container> resolver;
