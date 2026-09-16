@@ -2,6 +2,7 @@ package de.nplay.moderationbot.moderation.commands.modlog;
 
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
 import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
@@ -20,10 +21,12 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class DeleteCommand {
 
     private final ModerationActService actService;
+    private final EventBus eventBus;
 
     @Inject
-    public DeleteCommand(ModerationActService actService) {
+    public DeleteCommand(ModerationActService actService, EventBus eventBus) {
         this.actService = actService;
+        this.eventBus = eventBus;
     }
 
     @CommandConfig(enabledFor = Permission.BAN_MEMBERS)
@@ -33,7 +36,7 @@ public class DeleteCommand {
         event.deferReply();
         RevertedModerationAct reverted = actService.revert(moderationAct, event, event.resolve("delete-reason"));
         actService.delete(moderationAct.id());
-        actService.publish(new ModerationEvent.Delete(reverted, event.getUser()));
+        eventBus.publish(new ModerationEvent.Delete(reverted, event.getUser()));
         event.reply(Replies.success("delete-successful"), entry("id", moderationAct.id()));
     }
 

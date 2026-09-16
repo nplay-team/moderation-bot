@@ -6,7 +6,6 @@ import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.auditlog.bus.EventBus;
-import de.nplay.moderationbot.auditlog.bus.EventBusService;
 import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.MessageReferenceService.MessageReference;
@@ -32,15 +31,16 @@ import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-public class ModerationActService extends EventBusService {
+public class ModerationActService {
 
     private final MessageReferenceService referenceService;
     private final RuleService ruleService;
+    private final EventBus eventBus;
 
     public ModerationActService(MessageReferenceService referenceService, RuleService ruleService, EventBus eventBus) {
-        super(eventBus);
         this.referenceService = referenceService;
         this.ruleService = ruleService;
+        this.eventBus = eventBus;
     }
 
     public ModerationAct create(ModerationActCreateData data) {
@@ -64,7 +64,7 @@ public class ModerationActService extends EventBusService {
         ).insertAndGetKeys().keys().getFirst();
 
         ModerationAct act = get(id).orElseThrow();
-        publish(new ModerationEvent.Create(act));
+        eventBus.publish(new ModerationEvent.Create(act));
         return act;
     }
 
@@ -132,7 +132,7 @@ public class ModerationActService extends EventBusService {
                     resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
                     DiscordLocale.GERMAN
             );
-            publish(new ModerationEvent.Revert(reverted, true));
+            eventBus.publish(new ModerationEvent.Revert(reverted, true));
         });
 
     }

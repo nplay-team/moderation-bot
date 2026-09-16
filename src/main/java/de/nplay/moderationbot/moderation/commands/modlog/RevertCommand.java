@@ -2,6 +2,7 @@ package de.nplay.moderationbot.moderation.commands.modlog;
 
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
 import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
@@ -22,10 +23,12 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class RevertCommand {
 
     private final ModerationActService actService;
+    private final EventBus eventBus;
 
     @Inject
-    public RevertCommand(ModerationActService actService) {
+    public RevertCommand(ModerationActService actService, EventBus eventBus) {
         this.actService = actService;
+        this.eventBus = eventBus;
     }
 
     @Command("mod revert")
@@ -37,7 +40,7 @@ public class RevertCommand {
             return;
         }
         RevertedModerationAct reverted = actService.revert(moderationAct, event, reason);
-        actService.publish(new ModerationEvent.Revert(reverted, false));
+        eventBus.publish(new ModerationEvent.Revert(reverted, false));
         event.reply(Replies.success("revert-successful"), entry("id", moderationAct.id()));
     }
 }

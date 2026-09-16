@@ -5,8 +5,6 @@ import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
-import de.nplay.moderationbot.auditlog.bus.EventBus;
-import de.nplay.moderationbot.auditlog.bus.EventBusService;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -20,11 +18,7 @@ import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-public class NotesService extends EventBusService {
-
-    public NotesService(EventBus eventBus) {
-        super(eventBus);
-    }
+public class NotesService {
 
     public Optional<Note> get(long id) {
         return Query.query("SELECT * FROM notes WHERE id = ?")

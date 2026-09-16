@@ -5,7 +5,6 @@ import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.nplay.moderationbot.auditlog.bus.EventBus;
-import de.nplay.moderationbot.auditlog.bus.EventBusService;
 import de.nplay.moderationbot.auditlog.bus.events.PermissionsEvent;
 import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import de.nplay.moderationbot.permissions.BotPermissions.BitFields;
@@ -17,10 +16,12 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import java.sql.SQLException;
 
-public class PermissionsService extends EventBusService {
+public class PermissionsService {
+
+    private final EventBus eventBus;
 
     public PermissionsService(EventBus eventBus) {
-        super(eventBus);
+        this.eventBus = eventBus;
     }
 
     public EntityPermissions getUser(UserSnowflake user) {
@@ -51,7 +52,7 @@ public class PermissionsService extends EventBusService {
                 .mapAs(EntityPermissions.class)
                 .first();
 
-        publish(new PermissionsEvent(
+        eventBus.publish(new PermissionsEvent(
                 AuditlogType.PERMISSIONS_USER_UPDATE,
                 issuer,
                 target,
@@ -77,7 +78,7 @@ public class PermissionsService extends EventBusService {
                 .mapAs(EntityPermissions.class)
                 .first();
 
-        publish(new PermissionsEvent(
+        eventBus.publish(new PermissionsEvent(
                 AuditlogType.PERMISSIONS_ROLE_UPDATE,
                 issuer,
                 role,

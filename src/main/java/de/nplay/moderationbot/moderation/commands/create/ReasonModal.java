@@ -1,7 +1,6 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import com.google.inject.Inject;
-import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationAct;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
@@ -59,7 +58,6 @@ public class ReasonModal {
         );
         event.reply(container);
 
-        actService.publish(new ModerationEvent.Create(act));
         moderationActLock.unlock(act.user().getIdLong());
     }
 }
