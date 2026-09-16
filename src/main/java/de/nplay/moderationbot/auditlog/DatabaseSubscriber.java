@@ -7,11 +7,11 @@ import de.nplay.moderationbot.auditlog.bus.events.*;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload.*;
 
-public class AuditlogSubscriber implements Subscriber<BotEvent> {
+public class DatabaseSubscriber implements Subscriber<BotEvent> {
 
     private final AuditlogService service;
 
-    public AuditlogSubscriber(AuditlogService service) {
+    public DatabaseSubscriber(AuditlogService service) {
         this.service = service;
     }
 
