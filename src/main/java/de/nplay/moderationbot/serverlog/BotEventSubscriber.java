@@ -5,8 +5,8 @@ import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.auditlog.bus.BotEvent;
 import de.nplay.moderationbot.auditlog.bus.events.*;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("serverlog")
-public class BotEventSubscriber extends ServerlogSubscriber<BotEvent> {
+public class BotEventSubscriber extends GenericServerlogSubscriber<BotEvent> {
 
     public BotEventSubscriber(Data data) {
         super(data);

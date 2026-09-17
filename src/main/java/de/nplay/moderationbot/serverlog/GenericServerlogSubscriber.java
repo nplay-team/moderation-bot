@@ -4,7 +4,7 @@ import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.auditlog.bus.BotEvent;
 import de.nplay.moderationbot.auditlog.bus.Subscriber;
 import de.nplay.moderationbot.config.ConfigService;
-import de.nplay.moderationbot.util.SeparatedContainer;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
@@ -13,18 +13,19 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
-public abstract class ServerlogSubscriber<T extends BotEvent> implements Subscriber<T> {
+public abstract class GenericServerlogSubscriber<T extends BotEvent> implements Subscriber<T> {
 
-    protected static final Logger log = LoggerFactory.getLogger(ServerlogSubscriber.class);
+    protected static final Logger log = LoggerFactory.getLogger(GenericServerlogSubscriber.class);
     protected final Guild guild;
     protected final ConfigService configService;
     protected final Resolver<String> resolver;
 
-    protected ServerlogSubscriber(Data data) {
+    protected GenericServerlogSubscriber(Data data) {
         this.guild = data.guild();
         this.configService = data.configService();
         this.resolver = data.resolver();
@@ -42,8 +43,10 @@ public abstract class ServerlogSubscriber<T extends BotEvent> implements Subscri
     protected SeparatedContainer container(T event, String key) {
         return new SeparatedContainer(
                 resolver,
+                Locale.GERMAN,
                 TextDisplay.of(key),
-                Separator.createDivider(Separator.Spacing.SMALL),
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(
                 entry("type", event.type()),
                 entry("target", event.target()),
                 entry("issuer", event.issuer())

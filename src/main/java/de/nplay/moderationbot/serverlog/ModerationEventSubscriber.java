@@ -2,15 +2,15 @@ package de.nplay.moderationbot.serverlog;
 
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
-import de.nplay.moderationbot.util.SeparatedContainer;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
+import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 
 import java.util.Locale;
 
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("serverlog")
-public class ModerationEventSubscriber extends ServerlogSubscriber<ModerationEvent> {
+public class ModerationEventSubscriber extends GenericServerlogSubscriber<ModerationEvent> {
 
     public ModerationEventSubscriber(Data data) {
         super(data);
