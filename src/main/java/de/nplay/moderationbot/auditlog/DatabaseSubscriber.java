@@ -6,6 +6,7 @@ import de.nplay.moderationbot.auditlog.bus.Subscriber;
 import de.nplay.moderationbot.auditlog.bus.events.*;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload;
 import de.nplay.moderationbot.auditlog.model.AuditlogPayload.*;
+import de.nplay.moderationbot.auditlog.model.AuditlogType;
 
 public class DatabaseSubscriber implements Subscriber<BotEvent> {
 
@@ -18,7 +19,8 @@ public class DatabaseSubscriber implements Subscriber<BotEvent> {
     @Override
     public void accept(BotEvent botEvent) {
         AuditlogPayload payload = switch (botEvent) {
-            case NoteEvent event -> new NoteCreate(event.note());
+            case NoteEvent event when event.type() == AuditlogType.NOTE_CREATE -> new NoteCreate(event.note());
+            case NoteEvent event when event.type() == AuditlogType.NOTE_DELETE -> new NoteDelete(event.note().id());
             case PermissionsEvent event -> new PermissionsUpdate(event.oldPermissions(), event.newPermissions());
             case ConfigEvent event -> new ConfigUpdate(event.config(), event.oldValue(), event.newValue());
             case SlowmodeEvent event -> new SlowmodePayload(event.durationMillis());
