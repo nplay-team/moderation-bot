@@ -44,7 +44,7 @@ public class ServiceModule extends AbstractModule {
         referenceService = new MessageReferenceService();
         ruleService = new RuleService();
         moderationActService = new ModerationActService(referenceService, ruleService, eventBus);
-        notesService = new NotesService();
+        notesService = new NotesService(eventBus);
         permissionsService = new PermissionsService(eventBus);
         slowmodeService = new SlowmodeService();
         configService = new ConfigService(eventBus);
