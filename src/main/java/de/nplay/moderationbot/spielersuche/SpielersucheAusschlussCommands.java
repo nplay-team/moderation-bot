@@ -68,7 +68,7 @@ public class SpielersucheAusschlussCommands {
                 .paragraph(paragraph)
                 .execute(actService, event);
 
-        eventBus.publish(new SpielersucheAusschlussEvent(target, event.getUser()));
+        eventBus.publish(new SpielersucheAusschlussEvent(event.getUser(), target));
         event.reply(Replies.success("block"), entry("target", target));
     }
 
@@ -99,7 +99,7 @@ public class SpielersucheAusschlussCommands {
         ).add(TextDisplay.of("unblock-target.body"));
         Helpers.sendDM(target, event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
 
-        eventBus.publish(new SpielersucheFreigabeEvent(target, event.getUser()));
+        eventBus.publish(new SpielersucheFreigabeEvent(event.getUser(), target));
         event.reply(Replies.success("unblock"), entry("target", target));
     }
 
