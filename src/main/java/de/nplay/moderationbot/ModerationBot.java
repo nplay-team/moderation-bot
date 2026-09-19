@@ -25,10 +25,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -53,6 +50,8 @@ public class ModerationBot extends ServiceModule {
     private final Guild guild;
     private final Serverlog serverlog;
     private final ModerationActLock moderationActLock = new ModerationActLock();
+
+    private final LRUCache<Long, User> userCache = new LRUCache<>(100);
 
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
@@ -149,11 +148,18 @@ public class ModerationBot extends ServiceModule {
                 .start();
     }
 
-    private String formatUser(JDA jda, UserSnowflake user) {
-        if (user instanceof User resolved) {
-            return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
-        }
-        return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
+    private String formatUser(JDA jda, UserSnowflake snowflake) {
+        User resolved = switch (snowflake) {
+            case User user -> user;
+            case Member member -> member.getUser();
+            default -> userCache.get(snowflake.getIdLong()).orElseGet(() -> {
+                var user = jda.retrieveUserById(snowflake.getId()).complete();
+                userCache.put(snowflake.getIdLong(), user);
+                return user;
+            });
+        };
+
+        return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
     }
 
     @Deprecated
