@@ -8,6 +8,8 @@ import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
+import de.nplay.moderationbot.auditlog.AuditlogService;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.moderation.MessageReferenceService;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
@@ -25,6 +27,7 @@ import java.sql.SQLException;
 public class ServiceModule extends AbstractModule {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceModule.class);
+    private final EventBus eventBus;
     private final MessageReferenceService referenceService;
     private final ModerationActService moderationActService;
     private final NotesService notesService;
@@ -33,17 +36,25 @@ public class ServiceModule extends AbstractModule {
     private final ConfigService configService;
     private final RuleService ruleService;
     private final TrapChannelService trapChannelService;
+    private final AuditlogService auditlogService;
 
     public ServiceModule() {
         initialize();
+        eventBus = new EventBus();
         referenceService = new MessageReferenceService();
         ruleService = new RuleService();
-        moderationActService = new ModerationActService(referenceService, ruleService);
-        notesService = new NotesService();
-        permissionsService = new PermissionsService();
+        moderationActService = new ModerationActService(referenceService, ruleService, eventBus);
+        notesService = new NotesService(eventBus);
+        permissionsService = new PermissionsService(eventBus);
         slowmodeService = new SlowmodeService();
-        configService = new ConfigService();
+        configService = new ConfigService(eventBus);
         trapChannelService = new TrapChannelService();
+        auditlogService = new AuditlogService();
+    }
+
+    @Provides
+    public EventBus lifecycle() {
+        return eventBus;
     }
 
     @Provides
@@ -84,6 +95,11 @@ public class ServiceModule extends AbstractModule {
     @Provides
     public TrapChannelService trapChannelService() {
         return trapChannelService;
+    }
+
+    @Provides
+    public AuditlogService auditlogService() {
+        return auditlogService;
     }
 
     private void initialize() {
