@@ -15,7 +15,7 @@ CREATE TYPE AUDITLOG_TYPE AS ENUM (
 
 CREATE TABLE auditlog
 (
-    id         BIGSERIAL     NOT NULL PRIMARY KEY,
+    id         BIGSERIAL     PRIMARY KEY,
     type       AUDITLOG_TYPE NOT NULL,
     created_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     issuer_id  BIGINT        NOT NULL,

@@ -3,10 +3,10 @@ package de.nplay.moderationbot.serverlog;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.auditlog.bus.BotEvent;
+import de.nplay.moderationbot.auditlog.bus.Subscriber;
 import de.nplay.moderationbot.auditlog.bus.events.*;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
-import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -14,35 +14,36 @@ import java.util.Optional;
 import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 @Bundle("serverlog")
-public class BotEventSubscriber extends GenericServerlogSubscriber<BotEvent> {
+public class BotEventSubscriber implements Subscriber<BotEvent> {
 
-    public BotEventSubscriber(Data data) {
-        super(data);
+    private final ServerlogHelper helper;
+
+    public BotEventSubscriber(ServerlogHelper helper) {
+        this.helper = helper;
     }
 
-    @Override
     public void accept(BotEvent event) {
-        SeparatedContainer container = switch (event) {
-            case ConfigEvent config -> container(event, "config").entries(
+        var container = switch (event) {
+            case ConfigEvent config -> helper.container(event, "config").entries(
                     entry("config", config.config()),
                     entry("oldValue", config.oldValue()),
                     entry("newValue", config.newValue())
             );
-            case MessagePurgeEvent purge -> container(event, "purge").entries(
+            case MessagePurgeEvent purge -> helper.container(event, "purge").entries(
                     entry("amount", Objects.requireNonNullElse(purge.amount(), purge.pivotMessageId()))
             );
-            case NoteEvent note -> container(event, "note").entries(
+            case NoteEvent note -> helper.container(event, "note").entries(
                     entry("id", note.note().id()),
                     entry("note", note.note().content())
             );
-            case PermissionsEvent permissions -> container(event, "permissions").entries(
+            case PermissionsEvent permissions -> helper.container(event, "permissions").entries(
                     entry("oldValue", BotPermissions.decode(permissions.oldPermissions())),
                     entry("newValue", BotPermissions.decode(permissions.newPermissions()))
             );
-            case SlowmodeEvent slowmode -> container(event, "slowmode").entries(
+            case SlowmodeEvent slowmode -> helper.container(event, "slowmode").entries(
                     entry("duration", Optional.ofNullable(slowmode.duration()).map(Helpers::formatDuration).orElse("kein Slowmode"))
             );
-            case SpielersucheAusschlussEvent _, SpielersucheFreigabeEvent _ -> container(event, "spielersuche");
+            case SpielersucheAusschlussEvent _, SpielersucheFreigabeEvent _ -> helper.container(event, "spielersuche");
             default -> null;
         };
 
@@ -51,6 +52,6 @@ public class BotEventSubscriber extends GenericServerlogSubscriber<BotEvent> {
         }
         container.entries(entry("createdAt", AbsoluteTime.now()));
 
-        channel().ifPresent(it -> Helpers.sendComponentsV2(container, it).complete());
+        helper.send(container);
     }
 }

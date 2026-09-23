@@ -10,8 +10,8 @@ import de.nplay.moderationbot.auditlog.bus.BotEvent;
 import de.nplay.moderationbot.auditlog.bus.events.ModerationEvent;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.BotEventSubscriber;
-import de.nplay.moderationbot.serverlog.GenericServerlogSubscriber;
 import de.nplay.moderationbot.serverlog.ModerationEventSubscriber;
+import de.nplay.moderationbot.serverlog.ServerlogHelper;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
 import de.nplay.moderationbot.trap.TrapChannelEventHandler;
 import dev.goldmensch.fluava.Fluava;
@@ -159,8 +159,8 @@ public class ModerationBot extends ServiceModule {
 
         lifecycle().subscribe(BotEvent.class, new LoggingSubscriber());
 
-        GenericServerlogSubscriber.Data data = new GenericServerlogSubscriber.Data(guild, configService(), resolver);
-        lifecycle().subscribe(BotEvent.class, new BotEventSubscriber(data));
-        lifecycle().subscribe(ModerationEvent.class, new ModerationEventSubscriber(data));
+        ServerlogHelper helper = new ServerlogHelper(guild, configService(), resolver);
+        lifecycle().subscribe(BotEvent.class, new BotEventSubscriber(helper));
+        lifecycle().subscribe(ModerationEvent.class, new ModerationEventSubscriber(helper));
     }
 }

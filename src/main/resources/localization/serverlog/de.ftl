@@ -3,6 +3,7 @@ moderation =
     ### { $type } | #{ $id }
     { "**Betroffener Nutzer**" }
     { $target }
+    .revert =
     { $revert ->
         [true]
             { "**Ursprünglicher Moderator**" }
@@ -13,8 +14,10 @@ moderation =
             { "**Moderator**" }
             { $issuer }
     }
+    .reason =
     { "**Begründung**" }
     { $reason }
+    .date =
     { "**Datum**" }
     { $createdAt }
     .until =
