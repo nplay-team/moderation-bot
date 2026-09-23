@@ -3,6 +3,9 @@ package de.nplay.moderationbot.slowmode;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
+import de.nplay.moderationbot.auditlog.bus.events.SlowmodeEvent;
+import de.nplay.moderationbot.auditlog.model.AuditlogType;
 import de.nplay.moderationbot.duration.DurationMax;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -22,10 +25,12 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 public class SlowmodeCommands {
 
     private final SlowmodeService slowmodeService;
+    private final EventBus eventBus;
 
     @Inject
-    public SlowmodeCommands(SlowmodeService slowmodeService) {
+    public SlowmodeCommands(SlowmodeService slowmodeService, EventBus eventBus) {
         this.slowmodeService = slowmodeService;
+        this.eventBus = eventBus;
     }
 
     @Command("info")
@@ -57,6 +62,7 @@ public class SlowmodeCommands {
 
         var guildChannel = channel.orElse(event.getGuildChannel());
         slowmodeService.set(guildChannel, duration);
+        eventBus.publish(new SlowmodeEvent(AuditlogType.SLOWMODE_UPDATE, event.getUser(), guildChannel, duration));
         event.reply(Replies.success("set"), entry("channel", guildChannel), entry("duration", Helpers.formatDuration(duration)));
     }
 
@@ -64,6 +70,7 @@ public class SlowmodeCommands {
     public void slowmodeRemoveCommand(CommandEvent event, Optional<GuildChannel> channel) {
         var guildChannel = channel.orElse(event.getGuildChannel());
         slowmodeService.removeSlowmode(guildChannel);
+        eventBus.publish(new SlowmodeEvent(AuditlogType.SLOWMODE_UPDATE, event.getUser(), guildChannel, null));
         event.reply(Replies.standard("remove"), entry("channel", guildChannel));
     }
 }
