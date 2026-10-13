@@ -50,7 +50,7 @@ public class BanCommand {
             @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
             @Param(optional = true) MessageLink messageLink
     ) {
-        if(target.isBot()) {
+        if (target.isBot()) {
             event.reply(Replies.error("user-is-bot"));
             return;
         }
