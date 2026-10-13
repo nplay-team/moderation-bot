@@ -21,14 +21,14 @@ mod-ban-options-paragraph-description = { -paragraph-description }
 mod-ban-options-message_link-name = { -link }
 mod-ban-options-message_link-description = { -link-description }
 already-banned =
-### Fehler
-Der angegebene Nutzer ist bereits gebannt!
+    ### Fehler
+    Der angegebene Nutzer ist bereits gebannt!
 
 ## Kick
 mod-kick-description = Kickt einen Benutzer vom Server.
 mod-kick-options-target-name = { -target }
 mod-kick-options-target-description = Der Benutzer, der gekickt werden soll.
-mod-kick-options-paragraph-name = { -paragraph }
+mod-kick-options-paragraph-name  = { -paragraph }
 mod-kick-options-paragraph-description = { -paragraph-description }
 mod-kick-options-del_days-name = { -del-days }
 mod-kick-options-del_days-description = { -del-days-description }
@@ -46,8 +46,8 @@ mod-timeout-options-paragraph-description = { -paragraph-description }
 mod-timeout-options-message_link-name = { -link }
 mod-timeout-options-message_link-description = { -link-description }
 already-timeout =
-### Fehler
-Der angegebene Nutzer hat bereits ein aktives Timeout!
+    ### Fehler
+    Der angegebene Nutzer hat bereits ein aktives Timeout!
 
 ## Warn
 mod-warn-description = Verwarnt einen Benutzer.
@@ -63,8 +63,8 @@ user-is-bot = Der angegebene Benutzer ist ein Bot und kann nicht moderiert werde
 
 ## LockMiddleware
 target-locked =
-### Fehler
-Der angegebene Nutzer {$target} wird bereits durch {$moderator} moderiert!
+    ### Fehler
+    Der angegebene Nutzer { $target } wird bereits durch { $moderator } moderiert!
 
 ## Modal
 reason-title = Begründung angeben ({ $type })
@@ -72,47 +72,47 @@ reason-label = Begründung der Moderationshandlung
 
 ## Moderator Reply
 executed =
-### { $type } erfolgreich ausgeführt
-{"**ID**"}
-\#{RAW($id)}
-{"**Betroffener Nutzer**"}
-{$target}
-{"**Begründung**"}
-{$reason}
-.until =
-{"**Aktiv bis**"}
-{$until}
-.paragraph =
-{"**Paragraph**"}
-{$paragraph}
-.reference =
-{"**Referenznachricht**"}
-> {$message}
+    ### { $type } erfolgreich ausgeführt
+    { "**ID**" }
+    \#{ RAW($id) }
+    { "**Betroffener Nutzer**" }
+    { $target }
+    { "**Begründung**" }
+    { $reason }
+    .until =
+    { "**Aktiv bis**" }
+    { $until }
+    .paragraph =
+    { "**Paragraph**" }
+    { $paragraph }
+    .reference =
+    { "**Referenznachricht**" }
+    > { $message }
 
 ## Act Target Info
 act-info =
-### { $type }
-{$description ->
-*[WARN] Dir wurde eine Verwarnung auf dem **NPLAY**Discord Server ausgesprochen!
-[TIMEOUT] Dir wurde ein Timeout auf dem **NPLAY**Discord Server auferlegt!
-[KICK] Du wurdest vom **NPLAY**Discord Server gekickt!
-[TEMP_BAN] Du wurdest temporär vom **NPLAY**Discord Server gebannt!
-[BAN] Du wurdest vom **NPLAY**Discord Server gebannt!
-}
-.reason =
-{"**ID**"}
-\#{RAW($id)}
-{"**Datum**"}
-{$date}
-{"**Begründung**"}
-{$reason}
-.revoke =
-{"**Aktiv bis**"}
-{$until}
-.paragraph =
-{"**Regel, gegen die du verstoßen hast**"}
-{$paragraph}
-.reference =
-{"**Referenznachricht**"}
-> {$message}
-.footer = -# Bei Fragen oder Problemen wende dich bitte an den Ticket-Support!
+    ### { $type }
+    { $description ->
+        *[WARN] Dir wurde eine Verwarnung auf dem **NPLAY** Discord Server ausgesprochen!
+        [TIMEOUT] Dir wurde ein Timeout auf dem **NPLAY** Discord Server auferlegt!
+        [KICK] Du wurdest vom **NPLAY** Discord Server gekickt!
+        [TEMP_BAN] Du wurdest temporär vom **NPLAY** Discord Server gebannt!
+        [BAN] Du wurdest vom **NPLAY** Discord Server gebannt!
+    }
+    .reason =
+    { "**ID**" }
+    \#{ RAW($id) }
+    { "**Datum**" }
+    { $date }
+    { "**Begründung**" }
+    { $reason }
+    .revoke =
+    { "**Aktiv bis**" }
+    { $until }
+    .paragraph =
+    { "**Regel, gegen die du verstoßen hast**" }
+    { $paragraph }
+    .reference =
+    { "**Referenznachricht**" }
+    > { $message }
+    .footer = -# Bei Fragen oder Problemen wende dich bitte an den Ticket-Support!

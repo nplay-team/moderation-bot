@@ -32,7 +32,7 @@ public class WarnCommand {
             @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
             @Param(optional = true) MessageLink messageLink
     ) {
-        if (target.getUser().isBot()) {
+        if(target.getUser().isBot()) {
             event.reply(Replies.error("user-is-bot"));
             return;
         }
