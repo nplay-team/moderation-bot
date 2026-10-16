@@ -50,6 +50,11 @@ public class BanCommand {
             @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
             @Param(optional = true) MessageLink messageLink
     ) {
+        if (target.isBot()) {
+            event.reply(Replies.error("user-is-bot"));
+            return;
+        }
+
         if (actService.isBanned(target)) {
             event.reply(Replies.error("user-already-banned"));
             return;

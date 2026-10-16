@@ -47,6 +47,10 @@ public class TimeoutCommand {
             @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
             @Param(optional = true) MessageLink messageLink
     ) {
+        if (target.getUser().isBot()) {
+            event.reply(Replies.error("user-is-bot"));
+            return;
+        }
 
         if (actService.isTimeOuted(target)) {
             event.reply(Replies.error("already-timeout"));
