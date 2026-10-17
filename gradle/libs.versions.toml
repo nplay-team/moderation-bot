@@ -1,15 +1,15 @@
 [versions]
 sadu = "2.3.9"
-logback = "1.6.3"
-jda = "6.6.0"
+logback = "1.6.5"
+jda = "6.7.0"
 jdacommands = "5.1.1"
 jdwebhooks = "2.0.0"
 hikari = "7.1.0"
-postgres = "42.7.13"
-slf4j = "2.0.19"
+postgres = "42.7.14"
+slf4j = "2.0.20"
 jspecify = "1.0.1"
 shadow = "9.6.1"
-spotless = "8.10.2"
+spotless = "8.10.4"
 
 [libraries]
 # Core
