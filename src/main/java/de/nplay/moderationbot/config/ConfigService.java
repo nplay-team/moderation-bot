@@ -2,10 +2,20 @@ package de.nplay.moderationbot.config;
 
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
+import de.nplay.moderationbot.auditlog.bus.events.ConfigEvent;
+import de.nplay.moderationbot.auditlog.model.AuditlogType;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 
 import java.util.Optional;
 
 public class ConfigService {
+
+    private final EventBus eventBus;
+
+    public ConfigService(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 
     public Optional<String> get(BotConfig config) {
         return Query.query("SELECT value FROM configs WHERE name = ?")
@@ -14,7 +24,8 @@ public class ConfigService {
                 .first();
     }
 
-    public void set(BotConfig config, String value) {
+    public void set(BotConfig config, String value, UserSnowflake issuer) {
+        eventBus.publish(new ConfigEvent(AuditlogType.CONFIG_UPDATE, issuer, config, get(config).orElse(""), value));
         Query.query("INSERT INTO configs (name, value) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value")
                 .single(Call.of().bind(config).bind(value))
                 .insert();

@@ -107,7 +107,7 @@ public class NotesCommands {
             return;
         }
 
-        notesService.delete(note.get().id());
+        notesService.delete(note.get(), event.getUser());
         event.reply(Replies.success("deleted"), entry("id", noteId));
     }
 }

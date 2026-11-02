@@ -3,15 +3,15 @@ package de.nplay.moderationbot.spielersuche;
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.Replies.AbsoluteTime;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
+import de.nplay.moderationbot.auditlog.bus.events.SpielersucheAusschlussEvent;
+import de.nplay.moderationbot.auditlog.bus.events.SpielersucheFreigabeEvent;
 import de.nplay.moderationbot.config.ConfigService;
 import de.nplay.moderationbot.config.ConfigService.BotConfig;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.permissions.BotPermissions;
 import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
-import de.nplay.moderationbot.serverlog.Serverlog;
 import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -33,18 +33,19 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Interaction("spielersuche")
 public class SpielersucheAusschlussCommands {
 
-    private final Serverlog serverlog;
     private final ModerationActService actService;
     private final ConfigService configService;
+    private final EventBus eventBus;
 
     @Inject
     public SpielersucheAusschlussCommands(
-            Serverlog serverlog, ModerationActService actService,
-            ConfigService configService
+            ModerationActService actService,
+            ConfigService configService,
+            EventBus eventBus
     ) {
-        this.serverlog = serverlog;
         this.actService = actService;
         this.configService = configService;
+        this.eventBus = eventBus;
     }
 
     @Command("ausschluss")
@@ -67,7 +68,7 @@ public class SpielersucheAusschlussCommands {
                 .paragraph(paragraph)
                 .execute(actService, event);
 
-        serverlog.onEvent(ModerationEvents.SpielersucheAusschluss(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
+        eventBus.publish(new SpielersucheAusschlussEvent(event.getUser(), target));
         event.reply(Replies.success("block"), entry("target", target));
     }
 
@@ -92,13 +93,13 @@ public class SpielersucheAusschlussCommands {
                 Separator.createDivider(Separator.Spacing.SMALL)
         ).entries(
                 entry("issuer", event.getUser()),
-                entry("createdAt", AbsoluteTime.now())
+                entry("createdAt", Replies.AbsoluteTime.now())
         ).withAccentColor(
                 Replies.STANDARD
         ).add(TextDisplay.of("unblock-target.body"));
         Helpers.sendDM(target, event.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
 
-        serverlog.onEvent(ModerationEvents.SpielersucheAusschlussRevert(event.getJDA(), event.getGuild(), target.getUser(), event.getUser()), event);
+        eventBus.publish(new SpielersucheFreigabeEvent(event.getUser(), target));
         event.reply(Replies.success("unblock"), entry("target", target));
     }
 
