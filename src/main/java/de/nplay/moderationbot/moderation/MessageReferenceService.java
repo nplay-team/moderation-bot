@@ -36,7 +36,7 @@ public class MessageReferenceService {
             }
         }
 
-        @MappingProvider("")
+        @MappingProvider({})
         public MessageReference(Row row) throws SQLException {
             this(row.getLong("message_id"), row.getLong("channel_id"), row.getString("content"));
         }

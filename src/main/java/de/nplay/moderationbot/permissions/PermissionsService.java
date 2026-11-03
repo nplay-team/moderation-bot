@@ -76,7 +76,7 @@ public class PermissionsService {
 
     public record EntityPermissions(int permissions) {
 
-        @MappingProvider("")
+        @MappingProvider({})
         public EntityPermissions(Row row) throws SQLException {
             this(row.getInt("permissions"));
         }

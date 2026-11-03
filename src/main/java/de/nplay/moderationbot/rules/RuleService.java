@@ -40,7 +40,7 @@ public class RuleService {
 
     public record RuleParagraph(int id, String number, String title, Optional<String> content) {
 
-        @MappingProvider("this")
+        @MappingProvider({})
         public RuleParagraph(Row row) throws SQLException {
             this(
                     row.getInt("id"),

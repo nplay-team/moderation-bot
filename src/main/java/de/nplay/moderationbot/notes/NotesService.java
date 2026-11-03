@@ -61,7 +61,7 @@ public class NotesService {
 
     public record Note(long id, UserSnowflake userId, UserSnowflake createdBy, String content, AbsoluteTime createdAt) {
 
-        @MappingProvider("")
+        @MappingProvider({})
         public Note(Row row) throws SQLException {
             this(
                     row.getLong("id"),
