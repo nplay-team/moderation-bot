@@ -1,6 +1,6 @@
 [versions]
 sadu = "2.4.0"
-logback = "1.6.5"
+logback = "1.6.6"
 jda = "6.7.0"
 jdacommands = "5.1.1"
 jdwebhooks = "2.0.0"
