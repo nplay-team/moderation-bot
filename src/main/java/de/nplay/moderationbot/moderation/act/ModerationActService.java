@@ -18,7 +18,11 @@ import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -31,6 +35,7 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationActService {
 
+    private static final Logger log = LoggerFactory.getLogger(ModerationActService.class);
     private final MessageReferenceService referenceService;
     private final RuleService ruleService;
 
@@ -141,7 +146,16 @@ public class ModerationActService {
                 .update();
 
         switch (act.type()) {
-            case BAN, TEMP_BAN -> Helpers.complete(guild.unban(act.user()));
+            case BAN, TEMP_BAN -> {
+                try {
+                    Helpers.complete(guild.unban(act.user()));
+                } catch (ErrorResponseException e) {
+                    if (e.getErrorResponse() != ErrorResponse.UNKNOWN_BAN) {
+                        throw e;
+                    }
+                    log.warn("Ban on user {} was reverted, but user was already unbanned", act.user());
+                }
+            }
             case TIMEOUT -> Helpers.complete(guild.retrieveMember(act.user()).flatMap(Member::removeTimeout));
         }
 

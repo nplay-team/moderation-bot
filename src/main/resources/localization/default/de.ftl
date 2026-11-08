@@ -26,3 +26,7 @@ invalid-rule = Ungültige Paragraphen ID
 automatic-revert-reason = Automatische Aufhebung nach Ablauf der Dauer
 # Cannot be localized
 bot-status = Hört euren Nachrichten zu
+# ModerationActSync
+manual-moderation-sync =
+    Diese Moderationshandlung wurde nicht über den Bot abgewickelt und nur automatisiert mit dem Bot synchronisiert. Bitte wende dich bei Fragen an den zuständigen Moderator.
+    Von Discord übermittelter Grund: { $reason }

@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Provides;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
+import de.nplay.moderationbot.moderation.ModerationActSync;
 import de.nplay.moderationbot.moderation.lock.ModerationActLock;
 import de.nplay.moderationbot.serverlog.Serverlog;
 import de.nplay.moderationbot.slowmode.SlowmodeEventHandler;
@@ -62,7 +63,8 @@ public class ModerationBot extends ServiceModule {
         MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
         jda.addEventListener(
                 new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()),
-                new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService())
+                new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService()),
+                new ModerationActSync(resolver, moderationActService())
         );
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
