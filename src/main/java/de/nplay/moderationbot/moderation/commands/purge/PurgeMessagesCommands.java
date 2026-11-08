@@ -2,9 +2,9 @@ package de.nplay.moderationbot.moderation.commands.purge;
 
 import com.google.inject.Inject;
 import de.nplay.moderationbot.Replies;
+import de.nplay.moderationbot.auditlog.bus.EventBus;
+import de.nplay.moderationbot.auditlog.bus.events.MessagePurgeEvent;
 import de.nplay.moderationbot.permissions.BotPermissions;
-import de.nplay.moderationbot.serverlog.ModerationEvents;
-import de.nplay.moderationbot.serverlog.Serverlog;
 import io.github.kaktushose.jdac.annotations.constraints.Max;
 import io.github.kaktushose.jdac.annotations.constraints.Min;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
@@ -30,11 +30,11 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 @Permissions(BotPermissions.MODERATION_CREATE)
 public class PurgeMessagesCommands {
 
-    private final Serverlog serverlog;
+    private final EventBus eventBus;
 
     @Inject
-    public PurgeMessagesCommands(Serverlog serverlog) {
-        this.serverlog = serverlog;
+    public PurgeMessagesCommands(EventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
     @Command("mod purge messages")
@@ -67,7 +67,7 @@ public class PurgeMessagesCommands {
         );
 
         channel.purgeMessagesById(messageIds);
-        serverlog.onEvent(ModerationEvents.BulkMessageDeletion(channel.getJDA(), event.getGuild(), messageIds.size(), event.getUser()), event);
+        eventBus.publish(new MessagePurgeEvent(event.getUser(), channel, Long.parseLong(pivotMessageId), messageIds.size()));
         return messageIds.size();
     }
 

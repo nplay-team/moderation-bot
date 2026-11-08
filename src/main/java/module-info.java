@@ -10,6 +10,8 @@ module moderationbot.main {
     requires dev.goldmensch.fluava;
     requires io.github.kaktushose.proteus;
     requires com.google.guice;
+    requires tools.jackson.core;
+    requires tools.jackson.databind;
 
     requires org.slf4j;
     requires ch.qos.logback.classic;
