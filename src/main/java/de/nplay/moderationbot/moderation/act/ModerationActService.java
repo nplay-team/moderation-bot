@@ -125,16 +125,14 @@ public class ModerationActService {
     }
 
     public void automaticRevert(Guild guild, Resolver<String> resolver) {
-        getToRevert().forEach(act -> {
-            revert(
-                    act,
-                    guild,
-                    guild.getJDA().getSelfUser(),
-                    resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
-                    DiscordLocale.GERMAN,
-                    resolver
-            );
-        });
+        getToRevert().forEach(act -> revert(
+                act,
+                guild,
+                guild.getJDA().getSelfUser(),
+                resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
+                DiscordLocale.GERMAN,
+                resolver
+        ));
     }
 
     private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {
