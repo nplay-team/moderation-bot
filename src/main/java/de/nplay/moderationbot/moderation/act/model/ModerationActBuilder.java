@@ -8,6 +8,7 @@ import io.github.kaktushose.jdac.annotations.i18n.Bundle;
 import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.message.resolver.MessageResolver;
+import io.github.kaktushose.jdac.message.resolver.Resolver;
 import io.github.kaktushose.jdac.property.JDACIntrospection;
 import io.github.kaktushose.jdac.property.JDACProperty;
 import net.dv8tion.jda.api.JDA;
@@ -236,7 +237,7 @@ public class ModerationActBuilder {
             return localized(locale, JDACIntrospection.scopedGet(JDACProperty.MESSAGE_RESOLVER));
         }
 
-        public String localized(DiscordLocale locale, MessageResolver resolver) {
+        public String localized(DiscordLocale locale, Resolver<String> resolver) {
             return resolver.resolve(localizationKey, locale);
         }
     }
