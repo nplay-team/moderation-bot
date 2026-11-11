@@ -15,12 +15,14 @@ import de.nplay.moderationbot.rules.RuleService.RuleParagraph;
 import io.github.kaktushose.jdac.components.container.SeparatedContainer;
 import io.github.kaktushose.jdac.dispatching.events.ReplyableEvent;
 import io.github.kaktushose.jdac.message.resolver.Resolver;
+import io.github.kaktushose.jdac.property.JDACIntrospection;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,16 +125,25 @@ public class ModerationActService {
     }
 
     public void automaticRevert(Guild guild, Resolver<String> resolver) {
-        getToRevert().forEach(act -> revert(
-                act,
-                guild,
-                guild.getJDA().getSelfUser(),
-                resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
-                DiscordLocale.GERMAN
-        ));
+        log.info("TRIGGER AUTOMATIC REVERTION");
+        getToRevert().forEach(act -> {
+            log.info("Revert {}", act);
+            revert(
+                    act,
+                    guild,
+                    guild.getJDA().getSelfUser(),
+                    resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
+                    DiscordLocale.GERMAN,
+                    resolver
+            );
+        });
     }
 
     private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {
+        return revert(act, guild, revertedBy, reason, locale, null);
+    }
+
+    private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale, @Nullable Resolver<String> resolver) {
         if (act instanceof RevertedModerationAct reverted) {
             return reverted;
         }
@@ -159,17 +170,27 @@ public class ModerationActService {
             case TIMEOUT -> Helpers.complete(guild.retrieveMember(act.user()).flatMap(Member::removeTimeout));
         }
 
-        sendRevertMessageToUser(act, guild, revertedBy, reason, locale);
+        sendRevertMessageToUser(act, guild, revertedBy, reason, locale, resolver);
 
         return (RevertedModerationAct) get(act.id()).orElseThrow();
     }
 
-    private void sendRevertMessageToUser(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {
+    private void sendRevertMessageToUser(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale, @Nullable Resolver<String> resolver) {
 
-        SeparatedContainer container = SeparatedContainer.of(
-                TextDisplay.of("revert$revert-info"),
-                Separator.createDivider(Separator.Spacing.SMALL)
-        ).entries(entry("type", act.type().localized(locale))).withAccentColor(Replies.SUCCESS);
+        SeparatedContainer container;
+
+        if (JDACIntrospection.accessible()) {
+            container = SeparatedContainer.of(
+                    TextDisplay.of("revert$revert-info"),
+                    Separator.createDivider(Separator.Spacing.SMALL)
+            );
+        } else if (resolver != null) {
+            container = new SeparatedContainer(resolver, locale, TextDisplay.of("revert$revert-info"), Separator.createDivider(Separator.Spacing.SMALL));
+        } else {
+            throw new RuntimeException("Called sendRevertMessageToUser but couldn’t find any MessageResolver.");
+        }
+
+        container = container.entries(entry("type", resolver == null ? act.type().localized(locale) : act.type().localized(locale, resolver))).withAccentColor(Replies.SUCCESS);
 
         container.add(
                 TextDisplay.of("revert$revert-info.body"),
@@ -179,7 +200,8 @@ public class ModerationActService {
         );
         container.add(TextDisplay.of("revert$revert-info.reverter"), entry("revertedBy", revertedBy));
 
-        Helpers.sendDM(act.user(), guild.getJDA(), channel -> channel.sendMessageComponents(container).useComponentsV2());
+        SeparatedContainer finalContainer = container;
+        Helpers.sendDM(act.user(), guild.getJDA(), channel -> channel.sendMessageComponents(finalContainer).useComponentsV2());
     }
 
     private ModerationAct map(Row row) throws SQLException {
