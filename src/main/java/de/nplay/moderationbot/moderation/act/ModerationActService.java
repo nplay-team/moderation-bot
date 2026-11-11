@@ -183,8 +183,12 @@ public class ModerationActService {
     }
 
     private void sendRevertMessageToUser(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale, Resolver<String> resolver) {
-        SeparatedContainer container = new SeparatedContainer(resolver, locale, TextDisplay.of("revert$revert-info"), Separator.createDivider(Separator.Spacing.SMALL))
-                .entries(entry("type", act.type().localized(locale, resolver))).withAccentColor(Replies.SUCCESS);
+        SeparatedContainer container = new SeparatedContainer(
+                resolver,
+                locale,
+                TextDisplay.of("revert$revert-info"),
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(entry("type", act.type().localized(locale, resolver))).withAccentColor(Replies.SUCCESS);
         sendRevertMessageToUser(act, guild, revertedBy, reason, locale, container);
     }
 
