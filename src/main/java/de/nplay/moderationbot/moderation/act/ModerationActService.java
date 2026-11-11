@@ -125,9 +125,7 @@ public class ModerationActService {
     }
 
     public void automaticRevert(Guild guild, Resolver<String> resolver) {
-        log.info("TRIGGER AUTOMATIC REVERTION");
         getToRevert().forEach(act -> {
-            log.info("Revert {}", act);
             revert(
                     act,
                     guild,
