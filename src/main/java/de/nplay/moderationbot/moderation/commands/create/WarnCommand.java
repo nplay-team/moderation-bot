@@ -29,8 +29,7 @@ public class WarnCommand {
     public void warnMember(
             CommandEvent event,
             Member target,
-            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-            @Param(optional = true) MessageLink messageLink
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph
     ) {
         if (target.getUser().isBot()) {
             event.reply(Replies.error("user-is-bot"));
@@ -38,8 +37,7 @@ public class WarnCommand {
         }
 
         event.keyValueStore().put(BUILDER, ModerationActBuilder.warn(target, event.getUser())
-                .paragraph(paragraph)
-                .messageReference(Helpers.retrieveMessage(event, messageLink)));
+                .paragraph(paragraph));
 
         replyModal(event, "Warn");
     }

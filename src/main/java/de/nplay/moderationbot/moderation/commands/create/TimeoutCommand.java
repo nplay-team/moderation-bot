@@ -1,10 +1,8 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import com.google.inject.Inject;
-import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.duration.DurationMax;
-import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.lock.Lock;
@@ -44,8 +42,7 @@ public class TimeoutCommand {
             CommandEvent event,
             Member target,
             @DurationMax(amount = 28, unit = ChronoUnit.DAYS) Duration until,
-            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-            @Param(optional = true) MessageLink messageLink
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph
     ) {
         if (target.getUser().isBot()) {
             event.reply(Replies.error("user-is-bot"));
@@ -59,8 +56,7 @@ public class TimeoutCommand {
 
         event.keyValueStore().put(BUILDER, ModerationActBuilder.timeout(target, event.getUser())
                 .duration(until)
-                .paragraph(paragraph)
-                .messageReference(Helpers.retrieveMessage(event, messageLink)));
+                .paragraph(paragraph));
 
         replyModal(event, "Timeout");
     }

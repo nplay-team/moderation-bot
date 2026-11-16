@@ -1,7 +1,5 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
-import de.nplay.moderationbot.Helpers;
-import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.lock.Lock;
 import de.nplay.moderationbot.permissions.BotPermissions;
@@ -29,12 +27,10 @@ public class KickCommand {
             CommandEvent event,
             Member target,
             @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-            @Param(optional = true) @Max(7) int delDays,
-            @Param(optional = true) MessageLink messageLink
+            @Param(optional = true) @Max(7) int delDays
     ) {
         event.keyValueStore().put(BUILDER, ModerationActBuilder.kick(target, event.getUser()).paragraph(paragraph)
-                .deletionDays(delDays)
-                .messageReference(Helpers.retrieveMessage(event, messageLink)));
+                .deletionDays(delDays));
 
         replyModal(event, "Kick");
     }

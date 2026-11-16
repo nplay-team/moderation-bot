@@ -1,9 +1,7 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import com.google.inject.Inject;
-import de.nplay.moderationbot.Helpers;
 import de.nplay.moderationbot.Replies;
-import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.ModerationActService;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.lock.Lock;
@@ -47,8 +45,7 @@ public class BanCommand {
             User target,
             @Param(optional = true) @Nullable Duration until,
             @Param(optional = true) @Min(1) @Max(7) int delDays,
-            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-            @Param(optional = true) MessageLink messageLink
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph
     ) {
         if (target.isBot()) {
             event.reply(Replies.error("user-is-bot"));
@@ -73,7 +70,7 @@ public class BanCommand {
             }
         }
 
-        builder.paragraph(paragraph).messageReference(Helpers.retrieveMessage(event, messageLink));
+        builder.paragraph(paragraph);
 
         if (until != null) {
             builder.duration(until);

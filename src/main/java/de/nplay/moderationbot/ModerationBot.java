@@ -97,9 +97,7 @@ public class ModerationBot extends ServiceModule {
 
     private JDA jda(String token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(token)
-                .enableIntents(
-                        GatewayIntent.MESSAGE_CONTENT
-                ).setMemberCachePolicy(MemberCachePolicy.lru(100).withActiveMemberCache(true))
+                .setMemberCachePolicy(MemberCachePolicy.lru(100).withActiveMemberCache(true))
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
