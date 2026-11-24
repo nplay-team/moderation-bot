@@ -50,7 +50,7 @@ public class ReasonModal {
                 entry("id", act.id()),
                 entry("target", act.user()),
                 entry("reason", act.reason())
-        ).withAccentColor(SUCCESS);
+        );
         act.revokeAt().ifPresent(it ->
                 container.add(TextDisplay.of("executed.until"), entry("until", it))
         );
@@ -60,7 +60,7 @@ public class ReasonModal {
         act.messageReference().ifPresent(it ->
                 container.add(TextDisplay.of("executed.reference"), entry("message", it.content()))
         );
-        event.reply(container);
+        event.reply(container.withAccentColor(SUCCESS));
 
         serverlog.onEvent(ModerationEvents.Created(event.getJDA(), event.getGuild(), act), event);
         moderationActLock.unlock(act.user().getIdLong());
