@@ -137,8 +137,8 @@ public class ModerationActService {
                     guild.getJDA().getSelfUser(),
                     resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
                     DiscordLocale.GERMAN,
-            resolver
-        );
+                    resolver
+            );
             eventBus.publish(new ModerationEvent.Revert(reverted, true));
         });
     }
