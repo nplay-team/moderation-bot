@@ -68,7 +68,14 @@ public class ModerationBot extends ServiceModule {
         );
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
-                () -> moderationActService().automaticRevert(guild, resolver),
+                () -> {
+                    try {
+                        moderationActService().automaticRevert(guild, resolver);
+                    } catch (Exception e) {
+                        log.error("An exception occurred during automatic reversion of moderation acts!", e);
+                        throw new RuntimeException(e);
+                    }
+                },
                 0, 1, TimeUnit.MINUTES
         );
 
