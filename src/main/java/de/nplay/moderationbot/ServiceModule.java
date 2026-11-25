@@ -53,7 +53,7 @@ public class ServiceModule extends AbstractModule {
     }
 
     @Provides
-    public EventBus lifecycle() {
+    public EventBus eventBus() {
         return eventBus;
     }
 

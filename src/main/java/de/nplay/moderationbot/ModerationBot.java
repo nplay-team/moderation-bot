@@ -155,12 +155,12 @@ public class ModerationBot extends ServiceModule {
     }
 
     private void subscribers(Resolver<String> resolver) {
-        lifecycle().subscribe(BotEvent.class, new DatabaseSubscriber(auditlogService()));
+        eventBus().subscribe(BotEvent.class, new DatabaseSubscriber(auditlogService()));
 
-        lifecycle().subscribe(BotEvent.class, new LoggingSubscriber());
+        eventBus().subscribe(BotEvent.class, new LoggingSubscriber());
 
         ServerlogHelper helper = new ServerlogHelper(guild, configService(), resolver);
-        lifecycle().subscribe(BotEvent.class, new BotEventSubscriber(helper));
-        lifecycle().subscribe(ModerationEvent.class, new ModerationEventSubscriber(helper));
+        eventBus().subscribe(BotEvent.class, new BotEventSubscriber(helper));
+        eventBus().subscribe(ModerationEvent.class, new ModerationEventSubscriber(helper));
     }
 }
