@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Provides;
 import de.nplay.moderationbot.Replies.AbsoluteTime;
 import de.nplay.moderationbot.Replies.RelativeTime;
+import de.nplay.moderationbot.moderation.ModerationActSync;
 import de.nplay.moderationbot.auditlog.DatabaseSubscriber;
 import de.nplay.moderationbot.auditlog.LoggingSubscriber;
 import de.nplay.moderationbot.auditlog.bus.BotEvent;
@@ -31,10 +32,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.IntegrationType;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -57,6 +55,8 @@ public class ModerationBot extends ServiceModule {
     private final Guild guild;
     private final ModerationActLock moderationActLock = new ModerationActLock();
 
+    private final LRUCache<Long, User> userCache = new LRUCache<>(100);
+
     private ModerationBot(String guildId, String token) throws InterruptedException {
         jda = jda(token);
         guild = Objects.requireNonNull(jda.getGuildById(guildId), "Failed to load guild");
@@ -65,14 +65,22 @@ public class ModerationBot extends ServiceModule {
         MessageResolver resolver = jdaCommands.property(JDACProperty.MESSAGE_RESOLVER);
         jda.addEventListener(
                 new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()),
-                new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService())
+                new TrapChannelEventHandler(resolver, trapChannelService(), moderationActService(), configService()),
+                new ModerationActSync(resolver, moderationActService())
         );
 
         subscribers(resolver);
         jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
-                () -> moderationActService().automaticRevert(guild, resolver),
+                () -> {
+                    try {
+                        moderationActService().automaticRevert(guild, resolver);
+                    } catch (Exception e) {
+                        log.error("An exception occurred during automatic reversion of moderation acts!", e);
+                        throw new RuntimeException(e);
+                    }
+                },
                 0, 1, TimeUnit.MINUTES
         );
 
@@ -101,9 +109,7 @@ public class ModerationBot extends ServiceModule {
 
     private JDA jda(String token) throws InterruptedException {
         JDA jda = JDABuilder.createDefault(token)
-                .enableIntents(
-                        GatewayIntent.MESSAGE_CONTENT
-                ).setMemberCachePolicy(MemberCachePolicy.lru(100).withActiveMemberCache(true))
+                .setMemberCachePolicy(MemberCachePolicy.lru(100).withActiveMemberCache(true))
                 .setActivity(Activity.customStatus("NPLAY Moderation - Booting..."))
                 .setStatus(OnlineStatus.DO_NOT_DISTURB)
                 .setEventPool(Executors.newVirtualThreadPerTaskExecutor())
@@ -147,11 +153,18 @@ public class ModerationBot extends ServiceModule {
                 .start();
     }
 
-    private String formatUser(JDA jda, UserSnowflake user) {
-        if (user instanceof User resolved) {
-            return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
-        }
-        return "%s (%s)".formatted(user.getAsMention(), jda.retrieveUserById(user.getId()).complete().getEffectiveName());
+    private String formatUser(JDA jda, UserSnowflake snowflake) {
+        User resolved = switch (snowflake) {
+            case User user -> user;
+            case Member member -> member.getUser();
+            default -> userCache.get(snowflake.getIdLong()).orElseGet(() -> {
+                var user = jda.retrieveUserById(snowflake.getId()).complete();
+                userCache.put(snowflake.getIdLong(), user);
+                return user;
+            });
+        };
+
+        return "%s (%s)".formatted(resolved.getAsMention(), resolved.getEffectiveName());
     }
 
     private void subscribers(Resolver<String> resolver) {

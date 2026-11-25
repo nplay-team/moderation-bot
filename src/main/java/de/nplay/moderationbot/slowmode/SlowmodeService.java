@@ -47,7 +47,7 @@ public class SlowmodeService {
 
     public record Slowmode(long channelId, Duration duration, Timestamp createdAt) {
 
-        @MappingProvider("")
+        @MappingProvider({})
         public Slowmode(Row row) throws SQLException {
             this(
                     row.getLong("channel_id"),

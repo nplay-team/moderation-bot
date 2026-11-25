@@ -32,7 +32,7 @@ public class TrapChannelService {
     }
 
     public record TrapChannel(Long channelId, Timestamp createdAt) {
-        @MappingProvider("")
+        @MappingProvider({})
         public TrapChannel(Row row) throws SQLException {
             this(
                     row.getLong("channel_id"),

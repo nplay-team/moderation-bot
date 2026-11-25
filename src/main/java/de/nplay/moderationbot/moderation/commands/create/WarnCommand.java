@@ -1,6 +1,7 @@
 package de.nplay.moderationbot.moderation.commands.create;
 
 import de.nplay.moderationbot.Helpers;
+import de.nplay.moderationbot.Replies;
 import de.nplay.moderationbot.messagelink.MessageLink;
 import de.nplay.moderationbot.moderation.act.model.ModerationActBuilder;
 import de.nplay.moderationbot.moderation.lock.Lock;
@@ -28,12 +29,15 @@ public class WarnCommand {
     public void warnMember(
             CommandEvent event,
             Member target,
-            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph,
-            @Param(optional = true) MessageLink messageLink
+            @Param(optional = true, type = OptionType.INTEGER) RuleParagraph paragraph
     ) {
+        if (target.getUser().isBot()) {
+            event.reply(Replies.error("user-is-bot"));
+            return;
+        }
+
         event.keyValueStore().put(BUILDER, ModerationActBuilder.warn(target, event.getUser())
-                .paragraph(paragraph)
-                .messageReference(Helpers.retrieveMessage(event, messageLink)));
+                .paragraph(paragraph));
 
         replyModal(event, "Warn");
     }

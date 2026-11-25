@@ -20,7 +20,7 @@ mod-ban-options-paragraph-name = { -paragraph }
 mod-ban-options-paragraph-description = { -paragraph-description }
 mod-ban-options-message_link-name = { -link }
 mod-ban-options-message_link-description = { -link-description }
-already-banned =
+user-already-banned =
     ### Fehler
     Der angegebene Nutzer ist bereits gebannt!
 
@@ -57,6 +57,9 @@ mod-warn-options-paragraph-name = { -paragraph }
 mod-warn-options-paragraph-description = { -paragraph-description }
 mod-warn-options-message_link-name = { -link }
 mod-warn-options-message_link-description = { -link-description }
+
+## Common
+user-is-bot = Der angegebene Benutzer ist ein Bot und kann nicht moderiert werden!
 
 ## LockMiddleware
 target-locked =

@@ -20,7 +20,12 @@ import io.github.kaktushose.jdac.message.resolver.Resolver;
 import net.dv8tion.jda.api.components.separator.Separator;
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -33,6 +38,7 @@ import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 
 public class ModerationActService {
 
+    private static final Logger log = LoggerFactory.getLogger(ModerationActService.class);
     private final MessageReferenceService referenceService;
     private final RuleService ruleService;
     private final EventBus eventBus;
@@ -63,9 +69,7 @@ public class ModerationActService {
                 .bind(new Timestamp(System.currentTimeMillis()))
         ).insertAndGetKeys().keys().getFirst();
 
-        ModerationAct act = get(id).orElseThrow();
-        eventBus.publish(new ModerationEvent.Create(act));
-        return act;
+        return get(id).orElseThrow();
     }
 
     public Optional<ModerationAct> get(long moderationId) {
@@ -130,14 +134,18 @@ public class ModerationActService {
                     guild,
                     guild.getJDA().getSelfUser(),
                     resolver.resolve("automatic-revert-reason", DiscordLocale.GERMAN),
-                    DiscordLocale.GERMAN
-            );
+                    DiscordLocale.GERMAN,
+            resolver
+        );
             eventBus.publish(new ModerationEvent.Revert(reverted, true));
         });
-
     }
 
     private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {
+        return revert(act, guild, revertedBy, reason, locale, null);
+    }
+
+    private RevertedModerationAct revert(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale, @Nullable Resolver<String> resolver) {
         if (act instanceof RevertedModerationAct reverted) {
             return reverted;
         }
@@ -151,22 +159,47 @@ public class ModerationActService {
                 .update();
 
         switch (act.type()) {
-            case BAN, TEMP_BAN -> Helpers.complete(guild.unban(act.user()));
+            case BAN, TEMP_BAN -> {
+                try {
+                    Helpers.complete(guild.unban(act.user()));
+                } catch (ErrorResponseException e) {
+                    if (e.getErrorResponse() != ErrorResponse.UNKNOWN_BAN) {
+                        throw e;
+                    }
+                    log.warn("Ban on user {} was reverted, but user was already unbanned", act.user());
+                }
+            }
             case TIMEOUT -> Helpers.complete(guild.retrieveMember(act.user()).flatMap(Member::removeTimeout));
         }
 
-        sendRevertMessageToUser(act, guild, revertedBy, reason, locale);
+        if (resolver != null) {
+            sendRevertMessageToUser(act, guild, revertedBy, reason, locale, resolver);
+        } else {
+            sendRevertMessageToUser(act, guild, revertedBy, reason, locale);
+        }
 
         return (RevertedModerationAct) get(act.id()).orElseThrow();
     }
 
     private void sendRevertMessageToUser(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale) {
-
         SeparatedContainer container = SeparatedContainer.of(
                 TextDisplay.of("revert$revert-info"),
                 Separator.createDivider(Separator.Spacing.SMALL)
         ).entries(entry("type", act.type().localized(locale))).withAccentColor(Replies.SUCCESS);
+        sendRevertMessageToUser(act, guild, revertedBy, reason, locale, container);
+    }
 
+    private void sendRevertMessageToUser(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale, Resolver<String> resolver) {
+        SeparatedContainer container = new SeparatedContainer(
+                resolver,
+                locale,
+                TextDisplay.of("revert$revert-info"),
+                Separator.createDivider(Separator.Spacing.SMALL)
+        ).entries(entry("type", act.type().localized(locale, resolver))).withAccentColor(Replies.SUCCESS);
+        sendRevertMessageToUser(act, guild, revertedBy, reason, locale, container);
+    }
+
+    private void sendRevertMessageToUser(ModerationAct act, Guild guild, User revertedBy, String reason, DiscordLocale locale, SeparatedContainer container) {
         container.add(
                 TextDisplay.of("revert$revert-info.body"),
                 entry("id", act.id()),
