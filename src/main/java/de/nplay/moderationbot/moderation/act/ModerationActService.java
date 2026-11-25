@@ -69,7 +69,9 @@ public class ModerationActService {
                 .bind(new Timestamp(System.currentTimeMillis()))
         ).insertAndGetKeys().keys().getFirst();
 
-        return get(id).orElseThrow();
+        ModerationAct act = get(id).orElseThrow();
+        eventBus.publish(new ModerationEvent.Create(act));
+        return act;
     }
 
     public Optional<ModerationAct> get(long moderationId) {
