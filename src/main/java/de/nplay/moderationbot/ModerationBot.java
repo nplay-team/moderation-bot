@@ -69,7 +69,6 @@ public class ModerationBot extends ServiceModule {
         );
 
         subscribers(resolver);
-        jda.addEventListener(new SlowmodeEventHandler(resolver, slowmodeService(), permissionsService()));
 
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(
                 () -> {
